@@ -11,7 +11,7 @@ import SwiftUI
 struct Flor_ShopApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
         }
     }
 }

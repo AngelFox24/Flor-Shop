@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* Flor_ShopApp.swift */; };
-		274CE29C29E6D792007C703D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* ContentView.swift */; };
+		274CE29C29E6D792007C703D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* HomeView.swift */; };
 		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
 		274CE2A129E6D793007C703D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE2A029E6D793007C703D /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -16,7 +16,7 @@
 /* Begin PBXFileReference section */
 		274CE29629E6D792007C703D /* Flor Shop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flor Shop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		274CE29929E6D792007C703D /* Flor_ShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flor_ShopApp.swift; sourceTree = "<group>"; };
-		274CE29B29E6D792007C703D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		274CE29B29E6D792007C703D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		274CE29D29E6D793007C703D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		274CE2A029E6D793007C703D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,8 +51,10 @@
 		274CE29829E6D792007C703D /* Flor Shop */ = {
 			isa = PBXGroup;
 			children = (
+				274CE2A729E6D811007C703D /* Model */,
+				274CE2A829E6D817007C703D /* ViewModel */,
+				274CE2A929E6D81E007C703D /* View */,
 				274CE29929E6D792007C703D /* Flor_ShopApp.swift */,
-				274CE29B29E6D792007C703D /* ContentView.swift */,
 				274CE29D29E6D793007C703D /* Assets.xcassets */,
 				274CE29F29E6D793007C703D /* Preview Content */,
 			);
@@ -65,6 +67,28 @@
 				274CE2A029E6D793007C703D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		274CE2A729E6D811007C703D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		274CE2A829E6D817007C703D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		274CE2A929E6D81E007C703D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				274CE29B29E6D792007C703D /* HomeView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,7 +161,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				274CE29C29E6D792007C703D /* ContentView.swift in Sources */,
+				274CE29C29E6D792007C703D /* HomeView.swift in Sources */,
 				274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
