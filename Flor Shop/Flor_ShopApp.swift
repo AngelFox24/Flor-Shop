@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct Flor_ShopApp: App {
+    @StateObject var productos = ProductoListViewModel()
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .environmentObject(productos)
         }
     }
 }

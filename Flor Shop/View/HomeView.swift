@@ -29,6 +29,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+            .environmentObject(ProductoListViewModel())
     }
 }
 
@@ -85,15 +86,16 @@ struct ButtonPlus: View {
 }
 
 struct ListaControler: View {
+    @EnvironmentObject var productos: ProductoListViewModel
     var body: some View {
         ScrollView(.vertical,showsIndicators: false){
             
             VStack{
-                ForEach(1..<11, id: \.self){index in
-                    ProductoCardView(size: 120.0)
+                ForEach(productos.productosDiccionario.sorted(by: { $0.0 < $1.0 }), id: \.key){idProducto,producto in
+                    ProductoCardView(idProducto: idProducto, producto: producto, size: 120.0)
                     /*NavigationLink(
                      
-                     //destination: DetailScreen(mueble: mueble),
+                     destination: DetailScreen(mueble: mueble),
                      
                      label: {
                      ProductoCardView(size: 120.0)
@@ -102,8 +104,7 @@ struct ListaControler: View {
                      .navigationBarHidden(true)
                      .foregroundColor(.black)
                      
-                     }
-                     .padding(.leading)*/
+                     }*/
                 }
             }
         }
@@ -111,32 +112,33 @@ struct ListaControler: View {
 }
 
 struct ProductoCardView: View {
-    //var mueble: Mueble
-    //@EnvironmentObject var muebles: MueblesViewModel
-    //@ObservedObject var imagenMuebleNetwork = NetworkModelMueble()
-    
+    var idProducto: String
+    var producto: ProductoModel
     let size: CGFloat
+    //@EnvironmentObject var muebles: MueblesViewModel
+    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
+    
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                Image("papas_lays_clasic")
+                imageProductNetwork.imageProduct
                     .resizable()
                     .frame(width: size,height: size)
                     .cornerRadius(20.0)
                 VStack {
-                    Text("Papas")
+                    Text(producto.name)
                         .font(.headline)
                         .fontWeight(.bold)
                         .padding(.bottom,10)
                     Spacer()
-                    Text("FV 27/09/2023")
+                    Text(producto.expiredate)
                         .padding(.top,10)
                 }
                 .padding(.vertical,10)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity)
                 VStack {
-                    Text(String("23 u"))
+                    Text(String(producto.quantity))
                     //.frame(width: 55, height: 20)
                         .padding(.vertical,10)
                         .padding(.horizontal,10)
@@ -144,7 +146,7 @@ struct ProductoCardView: View {
                         .foregroundColor(Color("color_icons"))
                         .background(Color("color_secondary"))
                         .cornerRadius(10)
-                    Text(String("S/. 6.90"))
+                    Text(String("S/. \(producto.price)"))
                     //.frame(width: 55, height: 20)
                         .padding(.vertical,10)
                         .padding(.horizontal,10)
@@ -161,7 +163,7 @@ struct ProductoCardView: View {
             .padding(.horizontal,15)
             
         }.onAppear{
-            //imagenMuebleNetwork.getImage(url: mueble.rutaFoto)
+            imageProductNetwork.getImage(url: (URL(string: producto.imageURL )!))
             //imagencita=mueble.imagenRenderizada
             //muebles.guardarImagenRenderizada(idMuebleInput: mueble.id, imagenInput: imagenMuebleNetwork.fotoMueble)
             //mueble.imagenRenderizada = imagenMuebleNetwork.fotoMueble

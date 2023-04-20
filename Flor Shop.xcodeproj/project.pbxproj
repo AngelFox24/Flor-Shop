@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		271A7E1129F0DF1300BBAEA3 /* ProductoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */; };
+		271A7E1329F0E27700BBAEA3 /* ProductoListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1229F0E27700BBAEA3 /* ProductoListViewModel.swift */; };
+		271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */; };
 		274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* Flor_ShopApp.swift */; };
 		274CE29C29E6D792007C703D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* HomeView.swift */; };
 		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
@@ -14,6 +17,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductoModel.swift; sourceTree = "<group>"; };
+		271A7E1229F0E27700BBAEA3 /* ProductoListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductoListViewModel.swift; sourceTree = "<group>"; };
+		271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProductNetworkViewModel.swift; sourceTree = "<group>"; };
 		274CE29629E6D792007C703D /* Flor Shop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flor Shop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		274CE29929E6D792007C703D /* Flor_ShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flor_ShopApp.swift; sourceTree = "<group>"; };
 		274CE29B29E6D792007C703D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -72,6 +78,7 @@
 		274CE2A729E6D811007C703D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -79,6 +86,8 @@
 		274CE2A829E6D817007C703D /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				271A7E1229F0E27700BBAEA3 /* ProductoListViewModel.swift */,
+				271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -163,6 +172,9 @@
 			files = (
 				274CE29C29E6D792007C703D /* HomeView.swift in Sources */,
 				274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */,
+				271A7E1329F0E27700BBAEA3 /* ProductoListViewModel.swift in Sources */,
+				271A7E1129F0DF1300BBAEA3 /* ProductoModel.swift in Sources */,
+				271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
