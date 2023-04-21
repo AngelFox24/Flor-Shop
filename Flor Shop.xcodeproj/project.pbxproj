@@ -14,6 +14,8 @@
 		274CE29C29E6D792007C703D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* HomeView.swift */; };
 		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
 		274CE2A129E6D793007C703D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE2A029E6D793007C703D /* Preview Assets.xcassets */; };
+		27C318D429F2FA45004CC146 /* BDFlor.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */; };
+		27C318D629F30517004CC146 /* ProductoCoreDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C318D529F30517004CC146 /* ProductoCoreDataViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,8 @@
 		274CE29B29E6D792007C703D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		274CE29D29E6D793007C703D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		274CE2A029E6D793007C703D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		27C318D329F2FA45004CC146 /* BDFlor.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BDFlor.xcdatamodel; sourceTree = "<group>"; };
+		27C318D529F30517004CC146 /* ProductoCoreDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductoCoreDataViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +61,7 @@
 		274CE29829E6D792007C703D /* Flor Shop */ = {
 			isa = PBXGroup;
 			children = (
+				27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */,
 				274CE2A729E6D811007C703D /* Model */,
 				274CE2A829E6D817007C703D /* ViewModel */,
 				274CE2A929E6D81E007C703D /* View */,
@@ -88,6 +93,7 @@
 			children = (
 				271A7E1229F0E27700BBAEA3 /* ProductoListViewModel.swift */,
 				271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */,
+				27C318D529F30517004CC146 /* ProductoCoreDataViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -174,6 +180,8 @@
 				274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */,
 				271A7E1329F0E27700BBAEA3 /* ProductoListViewModel.swift in Sources */,
 				271A7E1129F0DF1300BBAEA3 /* ProductoModel.swift in Sources */,
+				27C318D629F30517004CC146 /* ProductoCoreDataViewModel.swift in Sources */,
+				27C318D429F2FA45004CC146 /* BDFlor.xcdatamodeld in Sources */,
 				271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,6 +383,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				27C318D329F2FA45004CC146 /* BDFlor.xcdatamodel */,
+			);
+			currentVersion = 27C318D329F2FA45004CC146 /* BDFlor.xcdatamodel */;
+			name = BDFlor.xcdatamodeld;
+			path = "Core Data/BDFlor.xcdatamodeld";
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 274CE28E29E6D792007C703D /* Project object */;
 }

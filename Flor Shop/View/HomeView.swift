@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
+
+    //@FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \TB_Productos.id, ascending: true)],animation: .default) private var productos_tb: FetchedResults<TB_Productos>
+    
     var body: some View {
         ZStack{
             Color("color_background")

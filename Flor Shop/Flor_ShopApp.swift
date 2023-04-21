@@ -9,11 +9,13 @@ import SwiftUI
 
 @main
 struct Flor_ShopApp: App {
-    @StateObject var productos = ProductoListViewModel()
+    @StateObject var productosApi = ProductoListViewModel()
+    @StateObject var productosCodeData = ProductoCoreDataViewModel()
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .environmentObject(productos)
+                .environmentObject(productosApi)
+                .environment(\.managedObjectContext, productosCodeData.productsContainer.viewContext)
         }
     }
 }

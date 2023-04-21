@@ -4,12 +4,10 @@
 //
 //  Created by Angel Curi Laurente on 19/04/23.
 //
-
 import Foundation
 
 class ProductoListViewModel: ObservableObject {
     @Published var productosDiccionario: [String:ProductoModel]
-    
     init(){
         productosDiccionario = [:]
         
