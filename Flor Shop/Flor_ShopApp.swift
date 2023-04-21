@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct Flor_ShopApp: App {
+    //Tenemos 2 Variables de Entorno
     @StateObject var productosApi = ProductoListViewModel()
     @StateObject var productosCodeData = ProductoCoreDataViewModel()
     var body: some Scene {
