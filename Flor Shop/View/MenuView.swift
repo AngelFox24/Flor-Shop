@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct MenuView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
+    //@Environment(\.managedObjectContext) private var viewContext
+    //@FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
     @State private var tabSelected: Tab = .magnifyingglass
     var body: some View {
         ZStack {

@@ -23,6 +23,7 @@
 		27C318DE29F33E72004CC146 /* ProductoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C318DD29F33E72004CC146 /* ProductoCardView.swift */; };
 		27C318E029F34062004CC146 /* AgregarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C318DF29F34062004CC146 /* AgregarView.swift */; };
 		27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C318E129F34498004CC146 /* DefaultTopBar.swift */; };
+		27EE72EA29F83E2E007C3B5F /* ProductCoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EE72E929F83E2E007C3B5F /* ProductCoreDataModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		27C318DD29F33E72004CC146 /* ProductoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductoCardView.swift; sourceTree = "<group>"; };
 		27C318DF29F34062004CC146 /* AgregarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarView.swift; sourceTree = "<group>"; };
 		27C318E129F34498004CC146 /* DefaultTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTopBar.swift; sourceTree = "<group>"; };
+		27EE72E929F83E2E007C3B5F /* ProductCoreDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCoreDataModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */,
+				27EE72E929F83E2E007C3B5F /* ProductCoreDataModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				27C318DB29F333C5004CC146 /* BottonBar.swift in Sources */,
 				27B3937029F7575C0085D4EC /* BuscarTopBar.swift in Sources */,
 				274CE29C29E6D792007C703D /* HomeView.swift in Sources */,
+				27EE72EA29F83E2E007C3B5F /* ProductCoreDataModel.swift in Sources */,
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
 				274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */,
 				271A7E1329F0E27700BBAEA3 /* ProductoListViewModel.swift in Sources */,

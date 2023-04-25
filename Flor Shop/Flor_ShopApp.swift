@@ -12,11 +12,13 @@ struct Flor_ShopApp: App {
     //Tenemos 2 Variables de Entorno
     @StateObject var productosApi = ProductoListViewModel()
     @StateObject var productosCodeData = ProductoCoreDataViewModel()
+    
+    //let persistenceController = PersistenceController.shared
     var body: some Scene {
         WindowGroup {
             MenuView()
                 .environmentObject(productosApi)
-                .environment(\.managedObjectContext, productosCodeData.productsContainer.viewContext)
+                .environmentObject(productosCodeData)
         }
     }
 }

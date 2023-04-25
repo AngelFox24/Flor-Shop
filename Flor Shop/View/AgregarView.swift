@@ -47,113 +47,124 @@ struct CampoIndividual:View {
 }
 
 struct CamposProductoAgregar: View {
-    @State private var nombreProducto:String = ""
-    @State private var costoTotal:String = ""
-    @State private var cantidadProducto:String = ""
-    @State private var tipoMedicion:String = "Kilos"
-    @State private var urlProducto:String = ""
-    @State private var palabrasClave:String = ""
-    @State private var fechaVencimiento:String = ""
-    @State private var costoUnitario:String = ""
-    @State private var margenGanancia:String = ""
-    @State private var precioUnitario:String = ""
+    @EnvironmentObject var productosCoreDataViewModel: ProductoCoreDataViewModel
+    @State private var nombreProducto:String = "Chisitos"
+    @State private var costoTotal:String = "25.00"
+    @State private var cantidadProducto:String = "10"
+    @State private var tipoMedicion:String = "Uni"
+    @State private var urlProducto:String = "https://falabella.scene7.com/is/image/FalabellaPE/19316385_1?wid=180"
+    @State private var palabrasClave:String = "TUR"
+    @State private var fechaVencimiento:String = "2023-09-23"
+    @State private var costoUnitario:String = "2.00"
+    @State private var margenGanancia:String = "0.3"
+    @State private var precioUnitario:String = "2.50"
     var sizeCampo:CGFloat = 200
     var body: some View{
-        ScrollView(.vertical,showsIndicators: false) {
-            VStack{
-                HStack {
-                    Image(systemName: "hourglass")
-                        .resizable()
-                        .frame(width: 100,height: 100)
-                    Spacer()
-                    VStack{
-                        Text("Nombre del Producto")
-                            .font(.headline)
-                        CampoIndividual(contenido: $nombreProducto)
-                    }
-                    .frame(width: sizeCampo)
-                }
-                HStack {
-                    Text("Costo Total")
+        VStack{
+            HStack {
+                Image(systemName: "hourglass")
+                    .resizable()
+                    .frame(width: 100,height: 100)
+                Spacer()
+                VStack{
+                    Text("Nombre del Producto")
                         .font(.headline)
-                    Spacer()
-                    CampoIndividual(contenido: $costoTotal)
-                        .frame(width: sizeCampo)
+                    CampoIndividual(contenido: $nombreProducto)
                 }
-                HStack {
-                    Text("Cantidad")
-                        .font(.headline)
-                    Spacer()
-                    HStack {
-                        CampoIndividual(contenido: $cantidadProducto)
-                        Menu {
-                            Button(){
-                                self.tipoMedicion = "Kg"
-                            } label: {
-                                Text("Kilos")
-                            }
-                            Button(){
-                                self.tipoMedicion = "Uni"
-                            } label: {
-                                Text("Unidades")
-                            }
-                        }label: {
-                            Text(tipoMedicion)
-                                //.padding(.horizontal,10)
-                                
-                        }
-                        .buttonStyle(.bordered)
-                        .cornerRadius(10)
-                    }
-                    .frame(width: sizeCampo)
-                }
-                HStack {
-                    Text("URL")
-                        .font(.headline)
-                    Spacer()
-                    CampoIndividual(contenido: $costoTotal)
-                        .frame(width: sizeCampo)
-                }
-                HStack {
-                    Text("Palabras Clave")
-                        .font(.headline)
-                    Spacer()
-                    CampoIndividual(contenido: $costoTotal)
-                        .frame(width: sizeCampo)
-                }
-                HStack {
-                    Text("Fecha Vencimiento")
-                        .font(.headline)
-                    Spacer()
-                    CampoIndividual(contenido: $costoTotal)
-                        .frame(width: sizeCampo)
-                }
-                HStack {
-                    VStack{
-                        Text("Costo Unitario")
-                            .font(.headline)
-                        Spacer()
-                        CampoIndividual(contenido: $costoTotal)
-                    }
-                    .padding(.vertical,10)
-                    VStack{
-                        Text("Margen de Ganancia")
-                            .font(.headline)
-                        Spacer()
-                        CampoIndividual(contenido: $costoTotal)
-                    }
-                    .padding(.vertical,10)
-                    VStack{
-                        Text("Precio Unitario")
-                            .font(.headline)
-                        Spacer()
-                        CampoIndividual(contenido: $costoTotal)
-                    }
-                    .padding(.vertical,10)
-                }
+                .frame(width: sizeCampo)
             }
+            HStack {
+                Text("Costo Total")
+                    .font(.headline)
+                Spacer()
+                CampoIndividual(contenido: $costoTotal)
+                    .frame(width: sizeCampo)
+            }
+            HStack {
+                Text("Cantidad")
+                    .font(.headline)
+                Spacer()
+                HStack {
+                    CampoIndividual(contenido: $cantidadProducto)
+                    Menu {
+                        Button(){
+                            self.tipoMedicion = "Kg"
+                        } label: {
+                            Text("Kilos")
+                        }
+                        Button(){
+                            self.tipoMedicion = "Uni"
+                        } label: {
+                            Text("Unidades")
+                        }
+                    }label: {
+                        Text(self.tipoMedicion)
+                        //.padding(.horizontal,10)
+                        
+                    }
+                    .buttonStyle(.bordered)
+                    .cornerRadius(10)
+                }
+                .frame(width: sizeCampo)
+            }
+            HStack {
+                Text("URL")
+                    .font(.headline)
+                Spacer()
+                CampoIndividual(contenido: $urlProducto)
+                    .frame(width: sizeCampo)
+            }
+            HStack {
+                Text("Palabras Clave")
+                    .font(.headline)
+                Spacer()
+                CampoIndividual(contenido: $palabrasClave)
+                    .frame(width: sizeCampo)
+            }
+            HStack {
+                Text("Fecha Vencimiento")
+                    .font(.headline)
+                Spacer()
+                CampoIndividual(contenido: $fechaVencimiento)
+                    .frame(width: sizeCampo)
+            }
+            HStack {
+                VStack{
+                    Text("Costo Unitario")
+                        .font(.headline)
+                    CampoIndividual(contenido: $costoUnitario)
+                }
+                .padding(.vertical,10)
+                VStack{
+                    Text("Margen de Ganancia")
+                        .font(.headline)
+                    CampoIndividual(contenido: $margenGanancia)
+                }
+                .padding(.vertical,10)
+                VStack{
+                    Text("Precio Unitario")
+                        .font(.headline)
+                    CampoIndividual(contenido: $precioUnitario)
+                }
+                .padding(.vertical,10)
+            }
+            HStack {
+                Button(action: {
+                    productosCoreDataViewModel.addProducts(nombre_producto: nombreProducto, cantidad: cantidadProducto, costo_unitario: costoUnitario, precio_unitario: precioUnitario, fecha_vencimiento: fechaVencimiento, tipo: tipoMedicion, url: urlProducto)
+                }, label:{
+                    Text("Guardar")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(height: 55)
+                        .frame(maxWidth: .infinity)
+                        .background(Color(.systemPink))
+                        .cornerRadius(20)
+                })
+                Spacer()
+            }
+            .padding(.horizontal,20)
+            .padding(.vertical,60)
         }
-        .padding(.horizontal,20)
-        .padding(.vertical,60)
     }
+    
 }
