@@ -17,10 +17,8 @@ struct AgregarView: View {
             VStack {
                 DefaultTopBar(titleBar: "Agregar Producto")
                 Spacer()
-                BottonBar(vista: viewName)
             }
         }
-        .navigationBarHidden(true)
     }
     
 }
@@ -90,19 +88,22 @@ struct CamposProductoAgregar: View {
                         CampoIndividual(contenido: $cantidadProducto)
                         Menu {
                             Button(){
-                                self.tipoMedicion = "Kilos"
+                                self.tipoMedicion = "Kg"
                             } label: {
                                 Text("Kilos")
                             }
                             Button(){
-                                self.tipoMedicion = "Unidades"
+                                self.tipoMedicion = "Uni"
                             } label: {
                                 Text("Unidades")
                             }
                         }label: {
                             Text(tipoMedicion)
-                                .padding(.horizontal,10)
+                                //.padding(.horizontal,10)
+                                
                         }
+                        .buttonStyle(.bordered)
+                        .cornerRadius(10)
                     }
                     .frame(width: sizeCampo)
                 }

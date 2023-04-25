@@ -8,13 +8,36 @@
 import SwiftUI
 
 struct HomeView: View {
-    let viewName = "BuscarView"
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
     
     //@FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \TB_Productos.id, ascending: true)],animation: .default) private var productos_tb: FetchedResults<TB_Productos>
     
     var body: some View {
+        /*NavigationView () {
+            ZStack{
+                Color("color_background")
+                    .ignoresSafeArea()
+                VStack{
+                    TopBar()
+                    ListaControler()
+                    //BottonBar(vista: viewName)
+                    CustomTabBar()
+                }
+            }
+        }
+        .navigationBarHidden(true)
+        .navigationViewStyle(StackNavigationViewStyle())*/
+        //.ignoresSafeArea()
+        /*ZStack{
+            Color("color_background")
+                .ignoresSafeArea()
+            VStack{
+                TopBar()
+                ListaControler()
+                CustomTabBar(selectedTab: $tabSelected)
+            }
+        }*/
         NavigationView () {
             ZStack{
                 Color("color_background")
@@ -22,16 +45,13 @@ struct HomeView: View {
                 VStack{
                     TopBar()
                     ListaControler()
-                    BottonBar(vista: viewName)
                 }
             }
         }
         .navigationBarHidden(true)
         .navigationViewStyle(StackNavigationViewStyle())
-        //.ignoresSafeArea()
     }
 }
-
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
