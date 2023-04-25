@@ -14,7 +14,7 @@ struct Flor_ShopApp: App {
     @StateObject var productosCodeData = ProductoCoreDataViewModel()
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            MenuView()
                 .environmentObject(productosApi)
                 .environment(\.managedObjectContext, productosCodeData.productsContainer.viewContext)
         }

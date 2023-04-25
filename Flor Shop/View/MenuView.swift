@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct MenuView: View {
-    
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
     @State private var tabSelected: Tab = .magnifyingglass
     var body: some View {
         ZStack {
@@ -17,12 +18,7 @@ struct MenuView: View {
                     AgregarView()
                         .tag(Tab.plus)
                     
-                    HStack {
-                        Image(systemName: Tab.cart.rawValue)
-                        Text("\(Tab.cart.rawValue.capitalized)")
-                            .bold()
-                            .animation(nil, value: tabSelected)
-                    }
+                    HomeView()
                         .tag(Tab.magnifyingglass)
                     
                     HStack {
@@ -45,5 +41,6 @@ struct MenuView: View {
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         MenuView()
+            .environmentObject(ProductoListViewModel())
     }
 }
