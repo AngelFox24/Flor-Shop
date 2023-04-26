@@ -43,5 +43,6 @@ struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         MenuView()
             .environmentObject(ProductoListViewModel())
+            .environmentObject(ProductoCoreDataViewModel())
     }
 }

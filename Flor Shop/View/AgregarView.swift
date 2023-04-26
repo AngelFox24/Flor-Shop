@@ -26,6 +26,7 @@ struct AgregarView: View {
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         AgregarView()
+            .environmentObject(ProductoCoreDataViewModel())
     }
 }
 
@@ -150,7 +151,22 @@ struct CamposProductoAgregar: View {
             }
             HStack {
                 Button(action: {
-                    productosCoreDataViewModel.addProducts(nombre_producto: nombreProducto, cantidad: cantidadProducto, costo_unitario: costoUnitario, precio_unitario: precioUnitario, fecha_vencimiento: fechaVencimiento, tipo: tipoMedicion, url: urlProducto)
+                    if productosCoreDataViewModel.addProduct(nombre_producto: nombreProducto, cantidad: cantidadProducto, costo_unitario: costoUnitario, precio_unitario: precioUnitario, fecha_vencimiento: fechaVencimiento, tipo: tipoMedicion, url: urlProducto)
+                    {
+                        nombreProducto = ""
+                        costoTotal = ""
+                        cantidadProducto = ""
+                        tipoMedicion = "Uni"
+                        urlProducto = "https://falabella.scene7.com/is/image/FalabellaPE/19316385_1?wid=180"
+                        palabrasClave = ""
+                        fechaVencimiento = "2023-09-23"
+                        costoUnitario = ""
+                        margenGanancia = ""
+                        precioUnitario = ""
+                    }else{
+                        
+                    }
+                    //ProductoCoreDataViewModel.
                 }, label:{
                     Text("Guardar")
                         .font(.headline)

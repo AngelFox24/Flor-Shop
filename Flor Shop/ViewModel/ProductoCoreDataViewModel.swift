@@ -33,11 +33,12 @@ class ProductoCoreDataViewModel: ObservableObject {
         }
     }
     
-    func addProducts (nombre_producto:String, cantidad:String, costo_unitario: String, precio_unitario: String,fecha_vencimiento: String,tipo: String,url: String) {
+    func addProduct (nombre_producto:String, cantidad:String, costo_unitario: String, precio_unitario: String,fecha_vencimiento: String,tipo: String,url: String) -> Bool{
         
         if isProductNameValid(nombre_producto),isCantidadValid(cantidad, tipo),isCostoUnitarioValid(costo_unitario),isPrecioUnitarioValid(precio_unitario),isFechaVencimientoValid(fecha_vencimiento),isURLValid(url){
             
             let newProduct = ProductoEntity(context: productsContainer.viewContext)
+            newProduct.id = UUID()
             newProduct.nombre_producto=nombre_producto
             newProduct.cantidad=Double(cantidad)!
             newProduct.costo_unitario=Double(costo_unitario)!
@@ -48,7 +49,9 @@ class ProductoCoreDataViewModel: ObservableObject {
             newProduct.tipo=tipo
             newProduct.url=url
             saveData()
+            fetchProducts()
             print ("Se guardo en Core Data correctamente!!!")
+            return true
         }else{
             print ("No se pudo guardar en Core Data correctamente!!!")
             if !isProductNameValid(nombre_producto){
@@ -69,8 +72,17 @@ class ProductoCoreDataViewModel: ObservableObject {
             else if !isURLValid(url){
                 print ("La URL esta mal \(url)")
             }
+            return false
         }
         
+    }
+    
+    func deleteProduct (indexSet: IndexSet) {
+        do{
+            try self.productsContainer.viewContext.save()
+        }catch let error {
+            print("Error saving. \(error)")
+        }
     }
     
     func saveData () {
@@ -124,7 +136,7 @@ class ProductoCoreDataViewModel: ObservableObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd" // formato esperado de la fecha
         
-        if let date = dateFormatter.date(from: fechaVencimiento) {
+        if dateFormatter.date(from: fechaVencimiento) != nil {
             // la fecha se pudo transformar exitosamente
             return true
         } else {
@@ -134,7 +146,7 @@ class ProductoCoreDataViewModel: ObservableObject {
     }
     
     func isURLValid(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
+        guard URL(string: urlString) != nil else {
             return false
         }
         return true

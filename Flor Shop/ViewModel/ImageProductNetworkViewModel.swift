@@ -10,7 +10,6 @@ import SwiftUI
 import Combine
 
 class ImageProductNetworkViewModel: ObservableObject {
-    //@Binding var imagencita: Image?
     @Published var imageProduct: Image = Image(systemName: "basketball")
     var suscriber = Set<AnyCancellable>()
     
@@ -21,7 +20,8 @@ class ImageProductNetworkViewModel: ObservableObject {
             .map{Image(uiImage: $0)}
             .replaceEmpty(with: Image(systemName: "basketball"))
             .replaceError(with: Image(systemName: "basketball"))
-            .assign(to: \.imageProduct,on: self)
+            .receive(on: DispatchQueue.main) //Regresamos al hilo principal, es una buena practica de Swift
+            .assign(to: \.imageProduct,on: self) //Aqui asignamos luego de validar
             .store(in: &suscriber)
     }
 }
