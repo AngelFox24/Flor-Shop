@@ -83,18 +83,18 @@ struct ProductCardView: View {
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(Color("color_primary"))
             .cornerRadius(20.0)
-            .padding(.horizontal,15)
+            //.padding(.horizontal,15)
             
-        }.onAppear{
+        }
+        .onAppear{
             imageProductNetwork.getImage(url: (URL(string: urlProducto )!))
         }
     }
 }
 
-/*
+
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        let newProduct = ProductoEntity()
-        ProductCardView(idProducto: "1", producto: newProduct, size: 100)
+        ProductCardView(nombreProducto: "Paloma", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=180", size: 120)
     }
-}*/
+}
