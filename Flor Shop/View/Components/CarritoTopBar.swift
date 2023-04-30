@@ -27,7 +27,7 @@ struct CarritoTopBar: View {
             .font(.title)
         }
         .frame(maxWidth: .infinity)
-        .padding(.bottom,10)
+        .padding(.bottom,8)
         .padding(.horizontal,20)
         .background(Color("color_primary"))
     }

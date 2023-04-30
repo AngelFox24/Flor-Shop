@@ -36,22 +36,29 @@ struct CustomTabBar: View {
         VStack {
             HStack {
                 ForEach(Tab.allCases, id: \.rawValue) { tab in
-                    Spacer()
                     VStack {
-                        Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
-                            .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
-                            .foregroundColor(tab == selectedTab ? Color("color_secondary") : .gray)
-                            .font(.system(size: 20))
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0.1)) {
-                                    selectedTab = tab
-                                }
+                        HStack {
+                            Spacer()
+                            VStack {
+                                Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
+                                    .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
+                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : .gray)
+                                    .font(.system(size: 20))
+                                
+                                Text(getTabText(for: tab))
+                                    .fontWeight(.regular)
+                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : .gray)
                             }
-                        Text(getTabText(for: tab))
-                            .fontWeight(.regular)
-                            .foregroundColor(tab == selectedTab ? Color("color_secondary") : .gray)
+                            Spacer()
+                        }
+                        .frame(maxHeight: .infinity)
                     }
-                    Spacer()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            selectedTab = tab
+                        }
+                    }
                 }
             }
             .frame(width: nil, height: 60)

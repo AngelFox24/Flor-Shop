@@ -14,7 +14,7 @@ struct CarritoView: View {
             ZStack{
                 Color("color_background")
                     .ignoresSafeArea()
-                VStack{
+                VStack(spacing: 0){
                     CarritoTopBar(totalText: $sumaTotal)
                     ListaCarritoControler()
                 }

@@ -16,7 +16,7 @@ struct HomeView: View {
             ZStack{
                 Color("color_background")
                     .ignoresSafeArea()
-                VStack{
+                VStack(spacing: 0){
                     BuscarTopBar()
                     ListaControler()
                 }
