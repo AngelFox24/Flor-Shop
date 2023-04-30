@@ -1,24 +1,22 @@
 //
-//  HomeView.swift
+//  CarritoView.swift
 //  Flor Shop
 //
-//  Created by Angel Curi Laurente on 12/04/23.
+//  Created by Angel Curi Laurente on 29/04/23.
 //
 
 import SwiftUI
 
-struct HomeView: View {
-    //@Environment(\.managedObjectContext) private var viewContext
-    //@FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
-    
+struct CarritoView: View {
+    @State var sumaTotal:Double = 56.50
     var body: some View {
         NavigationView () {
             ZStack{
                 Color("color_background")
                     .ignoresSafeArea()
                 VStack{
-                    BuscarTopBar()
-                    ListaControler()
+                    CarritoTopBar(totalText: $sumaTotal)
+                    ListaCarritoControler()
                 }
             }
         }
@@ -26,29 +24,27 @@ struct HomeView: View {
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }
-struct HomeView_Previews: PreviewProvider {
+
+struct CarritoView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        CarritoView()
             .environmentObject(ProductoListViewModel())
             .environmentObject(ProductoCoreDataViewModel())
     }
 }
 
-struct ListaControler: View {
-    @EnvironmentObject var productos: ProductoListViewModel
+struct ListaCarritoControler: View {
     @EnvironmentObject var productosCoreDataViewModel: ProductoCoreDataViewModel
     var body: some View {
-        
         VStack {
             List(){
                 ForEach(productosCoreDataViewModel.productosCoreData){producto in
-                    ProductCardView(nombreProducto: producto.nombre_producto ?? "No hay producto", fechaVencimiento: producto.fecha_vencimiento ?? Date(), cantidadProducto: producto.cantidad, precioUnitarioProducto: producto.precio_unitario, urlProducto: producto.url ?? "", size: 120.0)
+                    CarritoProductCardView(nombreProducto: producto.nombre_producto ?? "No hay producto",  precioUnitarioProducto: producto.precio_unitario, urlProducto: producto.url ?? "", cantidadProducto: producto.cantidad,size: 120.0)
                         .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                 }
                 .onDelete(perform: productosCoreDataViewModel.deleteProduct)
             }
             .listStyle(PlainListStyle())
         }
-        //}
     }
 }

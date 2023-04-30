@@ -22,13 +22,8 @@ struct MenuView: View {
                     HomeView()
                         .tag(Tab.magnifyingglass)
                     
-                    HStack {
-                        Image(systemName: Tab.cart.rawValue)
-                        Text("\(Tab.cart.rawValue.capitalized)")
-                            .bold()
-                            .animation(nil, value: tabSelected)
-                    }
-                    .tag(Tab.cart)
+                    CarritoView()
+                        .tag(Tab.cart)
                 }
             }
             VStack {
