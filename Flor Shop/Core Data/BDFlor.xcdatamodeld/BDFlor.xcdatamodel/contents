@@ -10,4 +10,41 @@
         <attribute name="tipo" optional="YES" attributeType="String"/>
         <attribute name="url" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="Tb_Carrito" representedClassName="Tb_Carrito" syncable="YES" codeGenerationType="class">
+        <attribute name="fechaCarrito" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="idCarrito" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="totalCarrito" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="carrito_to_detalleCarrito" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleCarrito" inverseName="detalleCarrito_to_carrito" inverseEntity="Tb_DetalleCarrito"/>
+    </entity>
+    <entity name="Tb_DetalleCarrito" representedClassName="Tb_DetalleCarrito" syncable="YES" codeGenerationType="class">
+        <attribute name="cantidad" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="idDetalleCarrito" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="subtotal" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="detalleCarrito_to_carrito" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Carrito" inverseName="carrito_to_detalleCarrito" inverseEntity="Tb_Carrito"/>
+        <relationship name="detalleCarrito_to_producto" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Producto" inverseName="producto_to_detalleCarrito" inverseEntity="Tb_Producto"/>
+    </entity>
+    <entity name="Tb_DetalleVenta" representedClassName="Tb_DetalleVenta" syncable="YES" codeGenerationType="class">
+        <attribute name="cantidad" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="idDetalleVenta" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="subtotal" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="detalleVenta_to_producto" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Producto" inverseName="producto_to_detalleVenta" inverseEntity="Tb_Producto"/>
+        <relationship name="detalleVenta_to_venta" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Venta" inverseName="venta_to_detalleVenta" inverseEntity="Tb_Venta"/>
+    </entity>
+    <entity name="Tb_Producto" representedClassName="Tb_Producto" syncable="YES" codeGenerationType="class">
+        <attribute name="cantidadStock" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="costoUnitario" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="fechaVencimiento" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="idProducto" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="nombreProducto" attributeType="String"/>
+        <attribute name="precioUnitario" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="url" attributeType="String"/>
+        <relationship name="producto_to_detalleCarrito" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleCarrito" inverseName="detalleCarrito_to_producto" inverseEntity="Tb_DetalleCarrito"/>
+        <relationship name="producto_to_detalleVenta" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleVenta" inverseName="detalleVenta_to_producto" inverseEntity="Tb_DetalleVenta"/>
+    </entity>
+    <entity name="Tb_Venta" representedClassName="Tb_Venta" syncable="YES" codeGenerationType="class">
+        <attribute name="fechaVenta" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="idVenta" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="totalVenta" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="venta_to_detalleVenta" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleVenta" inverseName="detalleVenta_to_venta" inverseEntity="Tb_DetalleVenta"/>
+    </entity>
 </model>
