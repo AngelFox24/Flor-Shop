@@ -9,16 +9,17 @@ import SwiftUI
 
 @main
 struct Flor_ShopApp: App {
-    //Tenemos 2 Variables de Entorno
+    
     @StateObject var productosApi = ProductoListViewModel()
     @StateObject var productosCodeData = ProductoCoreDataViewModel()
+    @StateObject var productsCodeData = ProductCoreDataViewModel()
     
-    //let persistenceController = PersistenceController.shared
     var body: some Scene {
         WindowGroup {
             MenuView()
                 .environmentObject(productosApi)
                 .environmentObject(productosCodeData)
+                .environmentObject(productsCodeData)
         }
     }
 }

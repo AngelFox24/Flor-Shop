@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct BuscarView: View {
     //@Environment(\.managedObjectContext) private var viewContext
     //@FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
     
@@ -28,24 +28,25 @@ struct HomeView: View {
 }
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        BuscarView()
             .environmentObject(ProductoListViewModel())
             .environmentObject(ProductoCoreDataViewModel())
+            .environmentObject(ProductCoreDataViewModel())
     }
 }
 
 struct ListaControler: View {
     @EnvironmentObject var productos: ProductoListViewModel
-    @EnvironmentObject var productosCoreDataViewModel: ProductoCoreDataViewModel
+    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     var body: some View {
         
         VStack {
             List(){
-                ForEach(productosCoreDataViewModel.productosCoreData){producto in
-                    ProductCardView(nombreProducto: producto.nombre_producto ?? "No hay producto", fechaVencimiento: producto.fecha_vencimiento ?? Date(), cantidadProducto: producto.cantidad, precioUnitarioProducto: producto.precio_unitario, urlProducto: producto.url ?? "", size: 120.0)
+                ForEach(productsCoreDataViewModel.productsCoreData){producto in
+                    ProductCardView(nombreProducto: producto.nombreProducto ?? "No hay producto", fechaVencimiento: producto.fechaVencimiento ?? Date(), cantidadProducto: producto.cantidadStock, precioUnitarioProducto: producto.precioUnitario, urlProducto: producto.url ?? "", size: 120.0)
                         .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                 }
-                .onDelete(perform: productosCoreDataViewModel.deleteProduct)
+                .onDelete(perform: productsCoreDataViewModel.deleteProduct)
             }
             .listStyle(PlainListStyle())
         }

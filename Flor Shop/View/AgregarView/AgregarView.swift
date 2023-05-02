@@ -26,6 +26,7 @@ struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         AgregarView()
             .environmentObject(ProductoCoreDataViewModel())
+            .environmentObject(ProductCoreDataViewModel())
     }
 }
 
@@ -46,7 +47,7 @@ struct CampoIndividual:View {
 }
 
 struct CamposProductoAgregar: View {
-    @EnvironmentObject var productosCoreDataViewModel: ProductoCoreDataViewModel
+    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     @State private var nombreProducto:String = "Chisitos"
     @State private var costoTotal:String = "25.00"
     @State private var cantidadProducto:String = "10"
@@ -149,7 +150,7 @@ struct CamposProductoAgregar: View {
             }
             HStack {
                 Button(action: {
-                    if productosCoreDataViewModel.addProduct(nombre_producto: nombreProducto, cantidad: cantidadProducto, costo_unitario: costoUnitario, precio_unitario: precioUnitario, fecha_vencimiento: fechaVencimiento, tipo: tipoMedicion, url: urlProducto)
+                    if productsCoreDataViewModel.addProduct(nombre_producto: nombreProducto, cantidad: cantidadProducto, costo_unitario: costoUnitario, precio_unitario: precioUnitario, fecha_vencimiento: fechaVencimiento, tipo: tipoMedicion, url: urlProducto)
                     {
                         nombreProducto = ""
                         costoTotal = ""

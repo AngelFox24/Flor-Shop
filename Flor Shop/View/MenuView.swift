@@ -19,7 +19,7 @@ struct MenuView: View {
                     AgregarView()
                         .tag(Tab.plus)
                     
-                    HomeView()
+                    BuscarView()
                         .tag(Tab.magnifyingglass)
                     
                     CarritoView()
@@ -39,5 +39,6 @@ struct MenuView_Previews: PreviewProvider {
         MenuView()
             .environmentObject(ProductoListViewModel())
             .environmentObject(ProductoCoreDataViewModel())
+            .environmentObject(ProductCoreDataViewModel())
     }
 }

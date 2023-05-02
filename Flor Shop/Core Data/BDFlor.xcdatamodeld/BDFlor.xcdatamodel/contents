@@ -31,12 +31,13 @@
         <relationship name="detalleVenta_to_venta" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Venta" inverseName="venta_to_detalleVenta" inverseEntity="Tb_Venta"/>
     </entity>
     <entity name="Tb_Producto" representedClassName="Tb_Producto" syncable="YES" codeGenerationType="class">
-        <attribute name="cantidadStock" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="cantidadStock" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="costoUnitario" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="fechaVencimiento" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idProducto" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="nombreProducto" attributeType="String"/>
         <attribute name="precioUnitario" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="tipoMedicion" optional="YES" attributeType="String"/>
         <attribute name="url" attributeType="String"/>
         <relationship name="producto_to_detalleCarrito" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleCarrito" inverseName="detalleCarrito_to_producto" inverseEntity="Tb_DetalleCarrito"/>
         <relationship name="producto_to_detalleVenta" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleVenta" inverseName="detalleVenta_to_producto" inverseEntity="Tb_DetalleVenta"/>
