@@ -20,7 +20,6 @@ struct AgregarView: View {
             }
         }
     }
-    
 }
 
 struct AgregarView_Previews: PreviewProvider {
@@ -43,7 +42,6 @@ struct CampoIndividual:View {
             .foregroundColor(Color("color_primary"))
         }
         .padding(.horizontal,1)
-            
     }
 }
 
@@ -173,7 +171,7 @@ struct CamposProductoAgregar: View {
                         .foregroundColor(.white)
                         .frame(height: 55)
                         .frame(maxWidth: .infinity)
-                        .background(Color(.systemPink))
+                        .background(Color("color_secondary"))
                         .cornerRadius(20)
                 })
                 Spacer()
@@ -182,5 +180,4 @@ struct CamposProductoAgregar: View {
             .padding(.vertical,60)
         }
     }
-    
 }
