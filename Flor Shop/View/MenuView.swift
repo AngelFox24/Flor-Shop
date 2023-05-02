@@ -9,8 +9,6 @@ import SwiftUI
 import CoreData
 
 struct MenuView: View {
-    //@Environment(\.managedObjectContext) private var viewContext
-    //@FetchRequest(sortDescriptors: []) private var TB_ProductosVar: FetchedResults<TB_Productos>
     @State private var tabSelected: Tab = .magnifyingglass
     var body: some View {
         ZStack {
@@ -19,7 +17,7 @@ struct MenuView: View {
                     AgregarView()
                         .tag(Tab.plus)
                     
-                    BuscarView()
+                    ProductView()
                         .tag(Tab.magnifyingglass)
                     
                     CarritoView()
@@ -37,7 +35,7 @@ struct MenuView: View {
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         MenuView()
-            .environmentObject(ProductoListViewModel())
+            //.environmentObject(ProductoListViewModel())
             .environmentObject(ProductoCoreDataViewModel())
             .environmentObject(ProductCoreDataViewModel())
     }

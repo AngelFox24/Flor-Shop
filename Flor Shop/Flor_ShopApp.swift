@@ -10,16 +10,18 @@ import SwiftUI
 @main
 struct Flor_ShopApp: App {
     
-    @StateObject var productosApi = ProductoListViewModel()
-    @StateObject var productosCodeData = ProductoCoreDataViewModel()
-    @StateObject var productsCodeData = ProductCoreDataViewModel()
+    //@StateObject var productosApi = ProductoListViewModel()
+    //@StateObject var productosCodeData = ProductoCoreDataViewModel()
+    @StateObject var productsCoreData = ProductCoreDataViewModel()
+    @StateObject var carritoCoreData = CarritoCoreDataViewModel()
     
     var body: some Scene {
         WindowGroup {
             MenuView()
-                .environmentObject(productosApi)
-                .environmentObject(productosCodeData)
-                .environmentObject(productsCodeData)
+            //.environmentObject(productosApi)
+            //.environmentObject(productosCodeData)
+                .environmentObject(productsCoreData)
+                .environmentObject(carritoCoreData)
         }
     }
 }
