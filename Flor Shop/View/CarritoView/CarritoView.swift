@@ -40,7 +40,7 @@ struct ListaCarritoControler: View {
             List(){
                 if let detallesCarrito = carritoCoreDataViewModel.carritoCoreData?.carrito_to_detalleCarrito?.allObjects as? [Tb_DetalleCarrito] {
                     ForEach(detallesCarrito) { producto in
-                        CarritoProductCardView(nombreProducto: producto.detalleCarrito_to_producto?.nombreProducto ?? "No hay producto", precioUnitarioProducto: producto.detalleCarrito_to_producto?.precioUnitario ?? 0.0, urlProducto: producto.detalleCarrito_to_producto?.url ?? "", cantidadProducto: producto.detalleCarrito_to_producto?.cantidadStock ?? 0.0, size: 120.0)
+                        CarritoProductCardView(nombreProducto: producto.detalleCarrito_to_producto?.nombreProducto ?? "No hay producto", precioUnitarioProducto: producto.detalleCarrito_to_producto?.precioUnitario ?? 0.0, urlProducto: producto.detalleCarrito_to_producto?.url ?? "", cantidadProducto: producto.cantidad, size: 120.0)
                             .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                     }
                     .onDelete(perform: deleteProducto)

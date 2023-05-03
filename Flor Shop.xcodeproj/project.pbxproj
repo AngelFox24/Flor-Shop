@@ -81,7 +81,7 @@
 		274CE29829E6D792007C703D /* Flor Shop */ = {
 			isa = PBXGroup;
 			children = (
-				27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */,
+				278CECDA2A01F1BC0042AE75 /* Extensions */,
 				274CE2A729E6D811007C703D /* Model */,
 				274CE2A829E6D817007C703D /* ViewModel */,
 				274CE2A929E6D81E007C703D /* View */,
@@ -103,6 +103,7 @@
 		274CE2A729E6D811007C703D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */,
 				271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */,
 			);
 			path = Model;
@@ -129,6 +130,13 @@
 				27B3936D29F74E4B0085D4EC /* MenuView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		278CECDA2A01F1BC0042AE75 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		27C241F52A0088A70045B2A0 /* General */ = {
@@ -495,8 +503,7 @@
 				27C318D329F2FA45004CC146 /* BDFlor.xcdatamodel */,
 			);
 			currentVersion = 27C318D329F2FA45004CC146 /* BDFlor.xcdatamodel */;
-			name = BDFlor.xcdatamodeld;
-			path = "Core Data/BDFlor.xcdatamodeld";
+			path = BDFlor.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

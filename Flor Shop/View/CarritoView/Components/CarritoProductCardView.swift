@@ -49,7 +49,7 @@ struct CarritoProductCardView: View {
                         }
                         
                         HStack {
-                            Text("\(cantidadProducto) u")
+                            Text(String(cantidadProducto))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical,10)
