@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22E261" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="ProductoEntity" representedClassName="ProductoEntity" syncable="YES" codeGenerationType="class">
-        <attribute name="cantidad" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="costo_unitario" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="fecha_vencimiento" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="nombre_producto" optional="YES" attributeType="String"/>
-        <attribute name="precio_unitario" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="tipo" optional="YES" attributeType="String"/>
-        <attribute name="url" optional="YES" attributeType="String"/>
-    </entity>
     <entity name="Tb_Carrito" representedClassName="Tb_Carrito" syncable="YES" codeGenerationType="class">
         <attribute name="fechaCarrito" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idCarrito" attributeType="UUID" usesScalarValueType="NO"/>

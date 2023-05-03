@@ -29,7 +29,7 @@ struct CarritoView_Previews: PreviewProvider {
     static var previews: some View {
         CarritoView()
             .environmentObject(ProductoListViewModel())
-            .environmentObject(ProductoCoreDataViewModel())
+            //.environmentObject(ProductoCoreDataViewModel())
     }
 }
 

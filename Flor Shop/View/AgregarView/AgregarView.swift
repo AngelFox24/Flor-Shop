@@ -25,7 +25,7 @@ struct AgregarView: View {
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         AgregarView()
-            .environmentObject(ProductoCoreDataViewModel())
+            //.environmentObject(ProductoCoreDataViewModel())
             .environmentObject(ProductCoreDataViewModel())
     }
 }

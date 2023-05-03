@@ -21,31 +21,31 @@ class CarritoCoreDataViewModel: ObservableObject {
                 print("Se cargo exitosamente productos del carrito")
             }
         }
-        
-        carritoCoreData = fetchCarrito()
-        
-        if carritoCoreData == nil {
-            let idCarrito = UUID()
-            let fechaCarrito = Date()
-            let totalCarrito = 0.0
-            
-            carritoCoreData = Tb_Carrito(context: self.carritoContainer.viewContext)
-            carritoCoreData?.idCarrito = idCarrito
-            carritoCoreData?.fechaCarrito = fechaCarrito
-            carritoCoreData?.totalCarrito = totalCarrito
-            
-            saveCarritoProducts()
-        }
+        fetchCarrito()
     }
     //MARK: CRUD Core Data
-    func fetchCarrito() -> Tb_Carrito? {
+    func fetchCarrito() {
         let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
         do{
-            let results = try self.carritoContainer.viewContext.fetch(request)
-            return results.first
+            let results = try self.carritoContainer.viewContext.fetch(request).first
+            if results == nil {
+                let idCarrito = UUID()
+                let fechaCarrito = Date()
+                let totalCarrito = 0.0
+                
+                carritoCoreData = Tb_Carrito(context: self.carritoContainer.viewContext)
+                carritoCoreData?.idCarrito = idCarrito
+                carritoCoreData?.fechaCarrito = fechaCarrito
+                carritoCoreData?.totalCarrito = totalCarrito
+                
+                saveCarritoProducts()
+                print("Se creo un nuevo carrito exitosamente \(idCarrito)")
+            }else{
+                self.carritoCoreData = results
+                print("El carrito ya esta creado")
+            }
         }catch let error{
             print("Error al recuperar el carrito de productos \(error)")
-            return nil
         }
     }
     
@@ -60,6 +60,7 @@ class CarritoCoreDataViewModel: ObservableObject {
         }
         
         saveCarritoProducts()
+        fetchCarrito()
     }
     
     func addProductoToCarrito(productoEntity: Tb_Producto){
@@ -72,16 +73,19 @@ class CarritoCoreDataViewModel: ObservableObject {
         
         // Crear el objeto detalleCarrito y establecer sus propiedades
         let detalleCarrito = Tb_DetalleCarrito(context: context)
+        detalleCarrito.detalleCarrito_to_producto = productoInContext
         detalleCarrito.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
-        detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
+        //detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
         detalleCarrito.cantidad = 1
         detalleCarrito.subtotal = productoInContext.precioUnitario * detalleCarrito.cantidad
-        detalleCarrito.detalleCarrito_to_producto = productoInContext
+        
         
         // Agregar el objeto detalleCarrito al carrito
         carrito.addToCarrito_to_detalleCarrito(detalleCarrito)
         
+        
         saveCarritoProducts()
+        fetchCarrito()
     }
     
     func saveCarritoProducts () {
