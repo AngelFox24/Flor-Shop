@@ -58,7 +58,7 @@ class CarritoCoreDataViewModel: ObservableObject {
         if let detalle = detalleAEliminar.first {
             carrito.removeFromCarrito_to_detalleCarrito(detalle)
         }
-        
+        updateTotalCarrito()
         saveCarritoProducts()
         fetchCarrito()
     }
@@ -83,8 +83,56 @@ class CarritoCoreDataViewModel: ObservableObject {
         // Agregar el objeto detalleCarrito al carrito
         carrito.addToCarrito_to_detalleCarrito(detalleCarrito)
         
-        
+        updateTotalCarrito()
         saveCarritoProducts()
+        fetchCarrito()
+    }
+    
+    func updateTotalCarrito(){
+        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+            return
+        }
+        var Total:Double = 0.0
+        for producto in detalleCarrito {
+            print("Producto nombre: \(String(describing: producto.detalleCarrito_to_producto?.nombreProducto)) y su precioUnitario: \(String(describing: producto.detalleCarrito_to_producto?.precioUnitario))")
+            print("Total antes \(Total)")
+            Total += producto.cantidad * (producto.detalleCarrito_to_producto?.precioUnitario ?? 0.0)
+            print("Total despues \(Total)")
+        }
+        carrito.totalCarrito = Total
+        saveCarritoProducts()
+        fetchCarrito()
+    }
+    
+    func increaceProductAmount (productoEntity: Tb_Producto){
+        print("Se presiono incrementar cantidad")
+        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+            return
+        }
+        
+        let detalleAAgregar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == productoEntity.idProducto }
+        if let detalle = detalleAAgregar.first {
+            print("El nombre: \(String(describing: detalle.detalleCarrito_to_producto?.nombreProducto)) Cantidad Antes: \(detalle.cantidad)")
+            detalle.cantidad += 1.0
+            print("Cantidad Despues: \(detalle.cantidad)")
+        }
+        updateTotalCarrito()
+        fetchCarrito()
+    }
+    
+    func decreceProductAmount (productoEntity: Tb_Producto){
+        print("Se presiono reducir cantidad")
+        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+            return
+        }
+        
+        let detalleAAgregar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == productoEntity.idProducto }
+        if let detalle = detalleAAgregar.first {
+            print("El nombre: \(String(describing: detalle.detalleCarrito_to_producto?.nombreProducto)) Cantidad Antes: \(detalle.cantidad)")
+            detalle.cantidad -= 1.0
+            print("Cantidad Despues: \(detalle.cantidad)")
+        }
+        updateTotalCarrito()
         fetchCarrito()
     }
     

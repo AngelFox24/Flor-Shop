@@ -1,17 +1,15 @@
 //
-//  CarritoProductCardView.swift
+//  CarritoViewCardPrueba.swift
 //  Flor Shop
 //
-//  Created by Angel Curi Laurente on 29/04/23.
+//  Created by Angel Curi Laurente on 6/05/23.
 //
 
 import SwiftUI
-import CoreData
 
-struct CarritoProductCardView: View {
+struct CarritoViewCardPrueba: View {
     @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
-    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
-    let detalleCarritoEntity:Tb_DetalleCarrito
+    @State var cantidad:Double = 0.0
     let size: CGFloat
     var body: some View {
         VStack(alignment: .leading){
@@ -22,7 +20,7 @@ struct CarritoProductCardView: View {
                     .cornerRadius(20.0)
                 VStack {
                     HStack {
-                        Text(detalleCarritoEntity.detalleCarrito_to_producto?.nombreProducto ?? "Sin nombre")
+                        Text("Sin nombre")
                             .font(.headline)
                             .fontWeight(.bold)
                             .padding(.horizontal,5)
@@ -41,11 +39,11 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.decreceProductAmount(productoEntity: detalleCarritoEntity.detalleCarrito_to_producto!)
+                            cantidad -= 1
                         })
                         
                         HStack {
-                            Text(String(detalleCarritoEntity.cantidad))
+                            Text(String(cantidad))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical,10)
@@ -54,8 +52,7 @@ struct CarritoProductCardView: View {
                         .background(Color("color_secondary"))
                         .cornerRadius(20)
                         
-                        
-                        Button(action: {}) {
+                        Button(action: {}){
                             Image(systemName: "plus")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -66,11 +63,11 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.increaceProductAmount(productoEntity: detalleCarritoEntity.detalleCarrito_to_producto!)
+                            cantidad += 1
                         })
                         
                         HStack {
-                            Text("S/. "+String(detalleCarritoEntity.subtotal))
+                            Text("S/. "+String(23.4 ))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical,10)
@@ -88,16 +85,13 @@ struct CarritoProductCardView: View {
             .cornerRadius(20.0)
         }
         .onAppear{
-            imageProductNetwork.getImage(url: (URL(string: detalleCarritoEntity.detalleCarrito_to_producto?.url ?? "")!))
+            imageProductNetwork.getImage(url: (URL(string: "https://falabella.scene7.com/is/image/FalabellaPE/19038679_1?wid=180")!))
         }
     }
 }
-/*
- struct CarritoProductCardView_Previews: PreviewProvider {
- static var previews: some View {
- let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
- CarritoProductCardView(detalleCarritoEntity: Tb_DetalleCarrito(context: context), size: 120)
- .environmentObject(CarritoCoreDataViewModel())
- }
- }
- */
+
+struct CarritoViewCardPrueba_Previews: PreviewProvider {
+    static var previews: some View {
+        CarritoViewCardPrueba(size: 120)
+    }
+}

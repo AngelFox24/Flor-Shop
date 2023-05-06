@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct CarritoTopBar: View {
-    @Binding var totalText:Double
+    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
     var body: some View {
         HStack{
-            Text("S/. \(totalText)")
+            Text("S/.  " + String(carritoCoreDataViewModel.carritoCoreData!.totalCarrito))
                 .font(.title2)
             Spacer()
             Button(action: { }) {
@@ -35,6 +35,7 @@ struct CarritoTopBar: View {
 
 struct CarritoTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        CarritoTopBar(totalText: .constant(45.84))
+        CarritoTopBar()
+            .environmentObject(CarritoCoreDataViewModel())
     }
 }

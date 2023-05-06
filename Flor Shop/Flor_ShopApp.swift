@@ -18,8 +18,6 @@ struct Flor_ShopApp: App {
     var body: some Scene {
         WindowGroup {
             MenuView()
-            //.environmentObject(productosApi)
-            //.environmentObject(productosCodeData)
                 .environmentObject(productsCoreData)
                 .environmentObject(carritoCoreData)
         }
