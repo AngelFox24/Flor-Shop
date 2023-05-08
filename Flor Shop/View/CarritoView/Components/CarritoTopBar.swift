@@ -14,7 +14,8 @@ struct CarritoTopBar: View {
             Text("S/.  " + String(carritoCoreDataViewModel.carritoCoreData!.totalCarrito))
                 .font(.title2)
             Spacer()
-            Button(action: { }) {
+            Button(action: {
+            }) {
                 Text("Vender")
                     .font(.title)
                     .foregroundColor(Color("color_background"))

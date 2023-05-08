@@ -49,6 +49,15 @@ class CarritoCoreDataViewModel: ObservableObject {
         }
     }
     
+    func saveCarritoProducts () {
+        do{
+            try self.carritoContainer.viewContext.save()
+        }catch let error {
+            print("Error al guardar los productos al carrito. \(error)")
+        }
+    }
+    
+    //Elimina un producto del carrito de compras
     func deleteProduct(productoEntity: Tb_Producto) {
         guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
@@ -73,15 +82,14 @@ class CarritoCoreDataViewModel: ObservableObject {
         
         // Crear el objeto detalleCarrito y establecer sus propiedades
         let detalleCarrito = Tb_DetalleCarrito(context: context)
-        detalleCarrito.detalleCarrito_to_producto = productoInContext
         detalleCarrito.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
         //detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
         detalleCarrito.cantidad = 1
         detalleCarrito.subtotal = productoInContext.precioUnitario * detalleCarrito.cantidad
-        
-        
+        // Agregar el objeto producto al detalle carrito
+        detalleCarrito.detalleCarrito_to_producto = productoInContext
         // Agregar el objeto detalleCarrito al carrito
-        carrito.addToCarrito_to_detalleCarrito(detalleCarrito)
+        detalleCarrito.detalleCarrito_to_carrito = carrito
         
         updateTotalCarrito()
         saveCarritoProducts()
@@ -136,11 +144,10 @@ class CarritoCoreDataViewModel: ObservableObject {
         fetchCarrito()
     }
     
-    func saveCarritoProducts () {
-        do{
-            try self.carritoContainer.viewContext.save()
-        }catch let error {
-            print("Error al guardar los productos al carrito. \(error)")
+    func processSale (){
+        if let carritoCompras = carritoCoreData{
+            var ventasCoreData = VentasCoreDataViewModel()
+            ventasCoreData.registrarVenta(carritoEntity: carritoCompras)
         }
     }
 }

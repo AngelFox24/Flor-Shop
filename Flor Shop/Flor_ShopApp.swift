@@ -14,12 +14,13 @@ struct Flor_ShopApp: App {
     //@StateObject var productosCodeData = ProductoCoreDataViewModel()
     @StateObject var productsCoreData = ProductCoreDataViewModel()
     @StateObject var carritoCoreData = CarritoCoreDataViewModel()
-    
+    @StateObject var ventasCoreData = VentasCoreDataViewModel()
     var body: some Scene {
         WindowGroup {
             MenuView()
                 .environmentObject(productsCoreData)
                 .environmentObject(carritoCoreData)
+                .environmentObject(ventasCoreData)
         }
     }
 }
