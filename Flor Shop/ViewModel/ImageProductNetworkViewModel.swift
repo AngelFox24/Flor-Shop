@@ -25,9 +25,7 @@ class ImageProductNetworkViewModel: ObservableObject {
                 .receive(on: DispatchQueue.main) //Regresamos al hilo principal, es una buena practica de Swift
                 .assign(to: \.imageProduct,on: self) //Aqui asignamos luego de validar
                 .store(in: &suscriber)
-            print ("Se cargo la imagen de internet")
         }else{
-            print ("Tienen la misma imagen, no se actualiza")
         }
     }
 }

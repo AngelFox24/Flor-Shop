@@ -12,7 +12,6 @@ class ProductCoreDataViewModel: ObservableObject {
     @Published var productsCoreData: [Tb_Producto] = []
     let productsContainer: NSPersistentContainer
     init(){
-        //super.init()
         self.productsContainer = NSPersistentContainer(name: "BDFlor")
         self.productsContainer.loadPersistentStores { description,error in
             if let error=error{
@@ -25,7 +24,7 @@ class ProductCoreDataViewModel: ObservableObject {
     }
     //MARK: CRUD Core Data
     func fetchProducts () {
-        let request = NSFetchRequest<Tb_Producto>(entityName: "Tb_Producto")
+        let request: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
         do{
             self.productsCoreData = try self.productsContainer.viewContext.fetch(request)
         }catch let error {
@@ -48,8 +47,8 @@ class ProductCoreDataViewModel: ObservableObject {
             newProduct.fechaVencimiento=dateFormatter.date(from: fecha_vencimiento)
             newProduct.tipoMedicion=tipo
             newProduct.url=url
-            saveData()
             fetchProducts()
+            saveData()
             print ("Se guardo en Core Data correctamente!!!")
             return true
         }else{
@@ -77,6 +76,37 @@ class ProductCoreDataViewModel: ObservableObject {
         
     }
     
+    func reducirStock (carritoDeCompras: Tb_Carrito?) -> Bool {
+        
+        var guardarCambios:Bool = true
+        if let listaCarrito = carritoDeCompras?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+            for detalleCarrito in listaCarrito {
+                let cantidadReducida:Double = detalleCarrito.cantidad
+                let productosFiltrados = productsCoreData.filter { $0.idProducto == detalleCarrito.detalleCarrito_to_producto?.idProducto }
+                if let productoEncontrado = productosFiltrados.first {
+                    print ("Contexto del producto filtrado \(String(describing: productoEncontrado.managedObjectContext))")
+                    print("El nombre: \(String(describing: productoEncontrado.nombreProducto)) Cantidad Stock Antes: \(productoEncontrado.cantidadStock)")
+                    if productoEncontrado.cantidadStock >= cantidadReducida {
+                        productoEncontrado.cantidadStock -= cantidadReducida
+                        print("Se ha disminuido el producto, Cantidad Despues: \(productoEncontrado.cantidadStock)")
+                    }else{
+                        guardarCambios = false
+                    }
+                }else {
+                    guardarCambios = false
+                }
+            }
+        }
+        if guardarCambios {
+            fetchProducts()
+            saveData()
+        }else{
+            print ("Eliminamos los cambios")
+            self.productsContainer.viewContext.rollback()
+        }
+        return guardarCambios
+    }
+    
     func deleteProduct (indexSet: IndexSet) {
         do{
             try self.productsContainer.viewContext.save()
@@ -87,9 +117,44 @@ class ProductCoreDataViewModel: ObservableObject {
     
     func saveData () {
         do{
+            print ("Se esta guardando en ProductCoreDataViewModel. \(self.productsContainer.viewContext)")
             try self.productsContainer.viewContext.save()
-        }catch let error {
+        }catch let error as NSError {
             print("Error saving. \(error)")
+            if let conflictList = error.userInfo[NSPersistentStoreSaveConflictsErrorKey] as? [NSMergeConflict] {
+                    // Itera sobre la lista de conflictos
+                    for mergeConflict in conflictList {
+                        // Aquí tienes una instancia de NSMergeConflict
+                        // Puedes pasarla a tu función de resolución de conflictos
+                        print ("Se pasa a la resolucion de conflictos")
+                        resolveMergeConflict(mergeConflict)
+                    }
+                } else {
+                    // Manejar otros errores de guardado de cambios
+                }
+        }
+    }
+    
+    func resolveMergeConflict(_ mergeConflict: NSMergeConflict) {
+        // Accede a los objetos en conflicto
+        let sourceObject = mergeConflict.sourceObject
+        let conflictingObject = mergeConflict.objectSnapshot
+        let entity = sourceObject.entity
+        let attributeNames = entity.attributesByName.keys
+        print("Lista de atributos:")
+        for attributeName in attributeNames {
+            print(attributeName)
+        }
+        // Realiza los cambios necesarios para resolver el conflicto
+        // Esto puede implicar combinar cambios, seleccionar uno u otro, etc.
+        // Marca el conflicto como resuelto
+        // Esto puede implicar marcar un atributo o establecer una propiedad específica
+        
+        // Guarda los cambios en el contexto de Core Data
+        do {
+            try sourceObject.managedObjectContext?.save()
+        } catch {
+            print("Error al guardar los cambios después de resolver el conflicto: \(error)")
         }
     }
     

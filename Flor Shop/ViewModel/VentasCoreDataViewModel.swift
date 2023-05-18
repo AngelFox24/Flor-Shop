@@ -25,7 +25,7 @@ class VentasCoreDataViewModel: ObservableObject {
     }
     //MARK: CRUD Core Data
     func fetchVentas () {
-        let request = NSFetchRequest<Tb_Venta>(entityName: "Tb_Venta")
+        let request: NSFetchRequest<Tb_Venta> = Tb_Venta.fetchRequest()
         do{
             self.ventasCoreData = try self.ventaContainer.viewContext.fetch(request)
         }catch let error {
@@ -35,24 +35,25 @@ class VentasCoreDataViewModel: ObservableObject {
     
     func saveVentas () {
         do{
+            print ("Se esta guardando en VentasCoreDataViewModel. \(self.ventaContainer.viewContext)")
             try self.ventaContainer.viewContext.save()
         }catch let error {
             print("Error al guardar los detalles de la venta \(error)")
         }
     }
-    //TODO: Agregar validaciones y reducciones de stock
-    func registrarVenta(carritoEntity: Tb_Carrito){
-        let detallesCarrito = carritoEntity.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito>
+    func registrarVenta(carritoEntity: Tb_Carrito?) -> Bool {
         
-        //Recorremos la lista de detalles del carrito para agregarlo a la venta y reducirlo en los productos
-        if let listaCarrito = detallesCarrito {
+        //Recorremos la lista de detalles del carrito para agregarlo a la venta
+        if let listaCarrito = carritoEntity?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+            
+            //Creamos un nuevo objeto venta
             let newVenta = Tb_Venta(context: ventaContainer.viewContext)
             newVenta.idVenta = UUID()
             newVenta.fechaVenta = Date()
-            newVenta.totalVenta = carritoEntity.totalCarrito //Asignamos el mismo total del carrito a la venta
+            newVenta.totalVenta = carritoEntity?.totalCarrito ?? 0.0 //Asignamos el mismo total del carrito a la venta
+            
             for detalleCarrito in listaCarrito {
-                if let nsSetIDProducto = detalleCarrito.detalleCarrito_to_producto?.objectID {
-                    let productoInContext = ventaContainer.viewContext.object(with: nsSetIDProducto) as! Tb_Producto
+                if let productoInContext = ventaContainer.viewContext.object(with: detalleCarrito.detalleCarrito_to_producto!.objectID) as? Tb_Producto{
                     // Crear el objeto detalleCarrito y establecer sus propiedades
                     let detalleVenta = Tb_DetalleVenta(context: ventaContainer.viewContext)
                     detalleVenta.idDetalleVenta = UUID() // Genera un nuevo UUID para el detalle de la venta
@@ -65,11 +66,10 @@ class VentasCoreDataViewModel: ObservableObject {
                 }
             }
             saveVentas()
-            print("Se ha registrado una nueva venta exitosamente \(String(describing: newVenta.idVenta))")
             fetchVentas()
+            return true
         }else{
-            print("No hay elementos para vender")
+            return false
         }
     }
 }
-

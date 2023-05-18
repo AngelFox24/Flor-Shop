@@ -51,6 +51,7 @@ class CarritoCoreDataViewModel: ObservableObject {
     
     func saveCarritoProducts () {
         do{
+            print("Se esta guardando en CarritoCoreDataViewModel. \(self.carritoContainer.viewContext)")
             try self.carritoContainer.viewContext.save()
         }catch let error {
             print("Error al guardar los productos al carrito. \(error)")
@@ -73,9 +74,10 @@ class CarritoCoreDataViewModel: ObservableObject {
     }
     
     func addProductoToCarrito(productoEntity: Tb_Producto){
-        guard let carrito = carritoCoreData, let context = carrito.managedObjectContext else {
+        guard let carrito = carritoCoreData else {
             return
         }
+        let context = carritoContainer.viewContext
         
         // Obtener el objeto productoEntity del mismo contexto que el carrito
         let productoInContext = context.object(with: productoEntity.objectID) as! Tb_Producto
@@ -92,8 +94,16 @@ class CarritoCoreDataViewModel: ObservableObject {
         detalleCarrito.detalleCarrito_to_carrito = carrito
         
         updateTotalCarrito()
-        saveCarritoProducts()
         fetchCarrito()
+        saveCarritoProducts()
+    }
+    
+    func vaciarCarrito (){
+        carritoCoreData?.carrito_to_detalleCarrito = nil
+        
+        updateTotalCarrito()
+        fetchCarrito()
+        saveCarritoProducts()
     }
     
     func updateTotalCarrito(){
@@ -108,7 +118,6 @@ class CarritoCoreDataViewModel: ObservableObject {
             print("Total despues \(Total)")
         }
         carrito.totalCarrito = Total
-        saveCarritoProducts()
         fetchCarrito()
     }
     
@@ -126,6 +135,7 @@ class CarritoCoreDataViewModel: ObservableObject {
         }
         updateTotalCarrito()
         fetchCarrito()
+        saveCarritoProducts()
     }
     
     func decreceProductAmount (productoEntity: Tb_Producto){
@@ -142,12 +152,6 @@ class CarritoCoreDataViewModel: ObservableObject {
         }
         updateTotalCarrito()
         fetchCarrito()
-    }
-    
-    func processSale (){
-        if let carritoCompras = carritoCoreData{
-            var ventasCoreData = VentasCoreDataViewModel()
-            ventasCoreData.registrarVenta(carritoEntity: carritoCompras)
-        }
+        saveCarritoProducts()
     }
 }
