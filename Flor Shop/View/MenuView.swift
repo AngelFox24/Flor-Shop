@@ -35,6 +35,6 @@ struct MenuView: View {
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         MenuView()
-            .environmentObject(ProductCoreDataViewModel())
+            .environmentObject(ProductCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
     }
 }

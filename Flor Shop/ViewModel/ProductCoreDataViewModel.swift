@@ -12,15 +12,15 @@ class ProductCoreDataViewModel: ObservableObject {
     @Published var productsCoreData: [Tb_Producto] = []
     let productsContainer: NSPersistentContainer
     
-    init(){
-        self.productsContainer = NSPersistentContainer(name: "BDFlor")
-        self.productsContainer.loadPersistentStores { description,error in
+    init(contenedorBDFlor: NSPersistentContainer){
+        self.productsContainer = contenedorBDFlor
+        /*self.productsContainer.loadPersistentStores { description,error in
             if let error=error{
                 print("Error al cargar datos de CoreData Nuevo Modelo \(error)")
             }else{
                 print("Yeeeees")
             }
-        }
+        }*/
         fetchProducts()
     }
     //MARK: CRUD Core Data
@@ -138,7 +138,7 @@ class ProductCoreDataViewModel: ObservableObject {
     func resolveMergeConflict(_ mergeConflict: NSMergeConflict) {
         // Accede a los objetos en conflicto
         let sourceObject = mergeConflict.sourceObject
-        let conflictingObject = mergeConflict.objectSnapshot
+        //let conflictingObject = mergeConflict.objectSnapshot
         let entity = sourceObject.entity
         let attributeNames = entity.attributesByName.keys
         print("Lista de atributos:")

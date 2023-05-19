@@ -12,15 +12,15 @@ class CarritoCoreDataViewModel: ObservableObject {
     @Published var carritoCoreData: Tb_Carrito?
     let carritoContainer: NSPersistentContainer
     
-    init(){
-        self.carritoContainer = NSPersistentContainer(name: "BDFlor")
-        self.carritoContainer.loadPersistentStores{descripcion,error in
+    init(contenedorBDFlor: NSPersistentContainer){
+        self.carritoContainer = contenedorBDFlor
+        /*self.carritoContainer.loadPersistentStores{descripcion,error in
             if let error=error{
                 print("Error al cargar productos del carrito \(error)")
             }else{
                 print("Se cargo exitosamente productos del carrito")
             }
-        }
+        }*/
         fetchCarrito()
     }
     //MARK: CRUD Core Data

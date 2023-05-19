@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct CarritoView: View {
     var body: some View {
@@ -27,7 +28,7 @@ struct CarritoView: View {
 struct CarritoView_Previews: PreviewProvider {
     static var previews: some View {
         CarritoView()
-            .environmentObject(CarritoCoreDataViewModel())
+            .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
     }
 }
 

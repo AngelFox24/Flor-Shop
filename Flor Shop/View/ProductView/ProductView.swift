@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct ProductView: View {
     var body: some View {
@@ -27,8 +28,8 @@ struct ProductView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         ProductView()
-            .environmentObject(ProductCoreDataViewModel())
-            .environmentObject(CarritoCoreDataViewModel())
+            .environmentObject(ProductCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
+            .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
     }
 }
 

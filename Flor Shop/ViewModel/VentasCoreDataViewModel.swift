@@ -12,15 +12,15 @@ class VentasCoreDataViewModel: ObservableObject {
     @Published var ventasCoreData: [Tb_Venta] = []
     let ventaContainer: NSPersistentContainer
     
-    init(){
-        self.ventaContainer = NSPersistentContainer(name: "BDFlor")
-        self.ventaContainer.loadPersistentStores{descripcion,error in
+    init(contenedorBDFlor: NSPersistentContainer){
+        self.ventaContainer = contenedorBDFlor
+        /*self.ventaContainer.loadPersistentStores{descripcion,error in
             if let error=error{
                 print("Error al cargar productos vendidos \(error)")
             }else{
                 print("Se cargo exitosamente productos vendidos")
             }
-        }
+        }*/
         fetchVentas()
     }
     //MARK: CRUD Core Data

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct AgregarView: View {
     let viewName = "AgregarView"
@@ -25,8 +26,7 @@ struct AgregarView: View {
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         AgregarView()
-            //.environmentObject(ProductoCoreDataViewModel())
-            .environmentObject(ProductCoreDataViewModel())
+            .environmentObject(ProductCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
     }
 }
 
