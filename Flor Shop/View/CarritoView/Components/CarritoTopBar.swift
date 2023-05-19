@@ -23,11 +23,13 @@ struct CarritoTopBar: View {
                 if productsCoreDataViewModel.reducirStock(carritoDeCompras: carritoCoreDataViewModel.carritoCoreData){
                     print ("Se ha reducido el stock en CarritoTopBar exitosamente")
                     //Luego de haber reducido el stock de forma exitosa vendemos
-                    /*if ventasCoreDataViewModel.registrarVenta(carritoEntity: carritoCoreDataViewModel.carritoCoreData){
+                    if ventasCoreDataViewModel.registrarVenta(carritoEntity: carritoCoreDataViewModel.carritoCoreData){
                         carritoCoreDataViewModel.vaciarCarrito()
                     }else{
                         print("Todo esta mal renuncia xd")
-                    }*/
+                    }
+                }else{
+                    print("No hay sufiente stock")
                 }
             }) {
                 Text("Vender")
