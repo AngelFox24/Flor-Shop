@@ -11,6 +11,7 @@ import Foundation
 class ProductCoreDataViewModel: ObservableObject {
     @Published var productsCoreData: [Tb_Producto] = []
     let productsContainer: NSPersistentContainer
+    
     init(){
         self.productsContainer = NSPersistentContainer(name: "BDFlor")
         self.productsContainer.loadPersistentStores { description,error in
@@ -35,7 +36,7 @@ class ProductCoreDataViewModel: ObservableObject {
     func addProduct (nombre_producto:String, cantidad:String, costo_unitario: String, precio_unitario: String,fecha_vencimiento: String,tipo: String,url: String) -> Bool{
         
         if isProductNameValid(nombre_producto),isCantidadValid(cantidad, tipo),isCostoUnitarioValid(costo_unitario),isPrecioUnitarioValid(precio_unitario),isFechaVencimientoValid(fecha_vencimiento),isURLValid(url){
-            
+            print ("El nombre del contenedor xd: \(self.productsContainer.name)")
             let newProduct = Tb_Producto(context: productsContainer.viewContext)
             newProduct.idProducto = UUID()
             newProduct.nombreProducto=nombre_producto
@@ -77,7 +78,6 @@ class ProductCoreDataViewModel: ObservableObject {
     }
     
     func reducirStock (carritoDeCompras: Tb_Carrito?) -> Bool {
-        
         var guardarCambios:Bool = true
         if let listaCarrito = carritoDeCompras?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
             for detalleCarrito in listaCarrito {
