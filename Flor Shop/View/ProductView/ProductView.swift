@@ -27,8 +27,9 @@ struct ProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
+        let repository = ProductRepositoryImpl(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         ProductView()
-            .environmentObject(ProductCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
+            .environmentObject(ProductCoreDataViewModel(repo: repository))
             .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
     }
 }

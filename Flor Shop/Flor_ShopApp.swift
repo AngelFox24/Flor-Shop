@@ -10,21 +10,13 @@ import CoreData
 
 @main
 struct Flor_ShopApp: App {
-    let bdFlorContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "BDFlor")
-        container.loadPersistentStores { _, error in
-            if let error = error {
-                fatalError("Error al cargar el almacén persistente de Core Data: \(error)")
-            }
-        }
-        return container
-    }()
     
     var body: some Scene {
         WindowGroup {
-            let productsCoreData = ProductCoreDataViewModel(contenedorBDFlor: bdFlorContainer)
-            let carritoCoreData = CarritoCoreDataViewModel(contenedorBDFlor: bdFlorContainer)
-            let ventasCoreData = VentasCoreDataViewModel(contenedorBDFlor: bdFlorContainer)
+            let repository = ProductRepositoryImpl(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+            let productsCoreData = ProductCoreDataViewModel(repo: repository)
+            let carritoCoreData = CarritoCoreDataViewModel(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+            let ventasCoreData = VentasCoreDataViewModel(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
             
             MenuView()
                 .environmentObject(productsCoreData)
