@@ -10,7 +10,7 @@ import CoreData
 
 //clas
 public class ProductRepositoryImpl: ProductRepository {
-
+    
     let productsContainer: NSPersistentContainer
     
     init(contenedorBDFlor: NSPersistentContainer){
@@ -54,7 +54,6 @@ public class ProductRepositoryImpl: ProductRepository {
             message = "Success"
             
         }else{
-
             if !isProductNameValid(product.name){
                 message = "El nombre del producto esta mal \(product.name)"
             }
@@ -75,9 +74,7 @@ public class ProductRepositoryImpl: ProductRepository {
             }
         }
         return message
-        
     }
-    
     
     func reduceStock(carritoDeCompras: Tb_Carrito?) -> Bool {
         var guardarCambios:Bool = true
@@ -124,48 +121,10 @@ public class ProductRepositoryImpl: ProductRepository {
     func saveData () {
         do{
             try self.productsContainer.viewContext.save()
-        }catch let error as NSError {
-            if let conflictList = error.userInfo[NSPersistentStoreSaveConflictsErrorKey] as? [NSMergeConflict] {
-                    // Itera sobre la lista de conflictos
-                    for mergeConflict in conflictList {
-                        // Aquí tienes una instancia de NSMergeConflict
-                        // Puedes pasarla a tu función de resolución de conflictos
-                        resolveMergeConflict(mergeConflict)
-                    }
-                } else {
-                    // Manejar otros errores de guardado de cambios
-                }
+        }catch {
+            print ("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
-    
-    
-    func resolveMergeConflict(_ mergeConflict: NSMergeConflict) {
-        // Accede a los objetos en conflicto
-        let sourceObject = mergeConflict.sourceObject
-        //let conflictingObject = mergeConflict.objectSnapshot
-        let entity = sourceObject.entity
-        let attributeNames = entity.attributesByName.keys
-
-        for attributeName in attributeNames {
-            print(attributeName)
-        }
-        // Realiza los cambios necesarios para resolver el conflicto
-        // Esto puede implicar combinar cambios, seleccionar uno u otro, etc.
-        // Marca el conflicto como resuelto
-        // Esto puede implicar marcar un atributo o establecer una propiedad específica
-        
-        // Guarda los cambios en el contexto de Core Data
-        do {
-            try sourceObject.managedObjectContext?.save()
-        } catch {
-            print("Error al guardar los cambios después de resolver el conflicto: \(error)")
-        }
-    }
-    
-    
-    
-    
-    
     
     //MARK: Validacion Crear Producto
     func isProductNameValid(_ productName: String) -> Bool {
@@ -225,10 +184,4 @@ public class ProductRepositoryImpl: ProductRepository {
         }
         return true
     }
-    
-    
-    
-    
-    
-    
 }
