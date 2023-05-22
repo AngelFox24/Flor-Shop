@@ -27,11 +27,14 @@ struct ProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
-        let repository = ProductRepositoryImpl(manager: prdManager)
+        let productManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let productRepository = ProductRepositoryImpl(manager: productManager)
+        
+        let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let carRepository = CarRepositoryImpl(manager: carManager)
         ProductView()
-            .environmentObject(ProductCoreDataViewModel(repo: repository))
-            .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
+            .environmentObject(ProductCoreDataViewModel(productRepository: productRepository))
+            .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
     }
 }
 
@@ -77,10 +80,10 @@ struct ListaControler: View {
     }
     func editarProducto(producto: Product){
         //productsCoreDataViewModel.productsCoreData.
-        print("Se edito el producto \(producto.name ?? "No se sabe xd")")
+        print("Se edito el producto \(producto.name)")
     }
     func agregarProductoACarrito(producto: Product){
-        carritoCoreDataViewModel.addProductoToCarrito(productoEntity: producto)
-        print("Se agrego el producto al carrito \(producto.name ?? "No se sabe")")
+        carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+        print("Se agrego el producto al carrito \(producto.name)")
     }
 }

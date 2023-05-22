@@ -47,7 +47,7 @@ class ProductCoreDataViewModel: ObservableObject {
     }
     
     
-    func reducirStock(carritoDeCompras: Tb_Carrito?) -> Bool {
+    func reducirStock(carritoDeCompras: Car?) -> Bool {
         return productRepository.reduceStock(carritoDeCompras: carritoDeCompras)
     }
     

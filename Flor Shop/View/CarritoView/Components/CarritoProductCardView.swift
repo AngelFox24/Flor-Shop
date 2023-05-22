@@ -11,7 +11,7 @@ import CoreData
 struct CarritoProductCardView: View {
     @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
-    let detalleCarritoEntity:Tb_DetalleCarrito
+    let product: Product
     let size: CGFloat
     var body: some View {
         VStack(alignment: .leading){
@@ -22,7 +22,7 @@ struct CarritoProductCardView: View {
                     .cornerRadius(20.0)
                 VStack {
                     HStack {
-                        Text(detalleCarritoEntity.detalleCarrito_to_producto?.nombreProducto ?? "Sin nombre")
+                        Text(product.name)
                             .font(.headline)
                             .fontWeight(.bold)
                             .padding(.horizontal,5)
@@ -41,11 +41,11 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.decreceProductAmount(productoEntity: detalleCarritoEntity.detalleCarrito_to_producto!)
+                            carritoCoreDataViewModel.decreceProductAmount(product: product)
                         })
                         
                         HStack {
-                            Text(String(detalleCarritoEntity.cantidad))
+                            Text(String(product.qty))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical,10)
@@ -66,11 +66,11 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.increaceProductAmount(productoEntity: detalleCarritoEntity.detalleCarrito_to_producto!)
+                            carritoCoreDataViewModel.increaceProductAmount(product: product)
                         })
                         
                         HStack {
-                            Text("S/. "+String(detalleCarritoEntity.subtotal))
+                            Text("S/. "+String(carritoCoreDataViewModel.carritoCoreData?.total ?? 0))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical,10)
@@ -88,7 +88,7 @@ struct CarritoProductCardView: View {
             .cornerRadius(20.0)
         }
         .onAppear{
-            imageProductNetwork.getImage(url: (URL(string: detalleCarritoEntity.detalleCarrito_to_producto?.url ?? "")!))
+            imageProductNetwork.getImage(url: (URL(string: product.url )!))
         }
     }
 }

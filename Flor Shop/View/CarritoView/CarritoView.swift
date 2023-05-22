@@ -27,8 +27,10 @@ struct CarritoView: View {
 
 struct CarritoView_Previews: PreviewProvider {
     static var previews: some View {
+        let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let carRepository = CarRepositoryImpl(manager: carManager)
         CarritoView()
-            .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
+            .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
     }
 }
 
@@ -37,28 +39,27 @@ struct ListaCarritoControler: View {
     var body: some View {
         VStack {
             List(){
-                if let detallesCarrito = carritoCoreDataViewModel.carritoCoreData?.carrito_to_detalleCarrito?.allObjects as? [Tb_DetalleCarrito] {
-                    ForEach(detallesCarrito) { producto in
-                        CarritoProductCardView(detalleCarritoEntity:  producto, size: 120.0)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                    }
-                    .onDelete(perform: deleteProducto)
+                let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
+                ForEach(detallesCarrito) { producto in
+                    CarritoProductCardView(product: producto, size: 120.0)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                 }
+                .onDelete(perform: deleteProducto)
             }
             .listStyle(PlainListStyle())
         }
     }
     func deleteProducto(at offsets: IndexSet) {
-            // Convertir los índices a un array
-            let indexArray = Array(offsets)
+        // Convertir los índices a un array
+        let indexArray = Array(offsets)
+        
+        // Eliminar los productos correspondientes de la colección
+        for index in indexArray {
+            let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
+            let producto = detallesCarrito[index]
             
-            // Eliminar los productos correspondientes de la colección
-            for index in indexArray {
-                if let detallesCarrito = carritoCoreDataViewModel.carritoCoreData?.carrito_to_detalleCarrito?.allObjects as? [Tb_DetalleCarrito],let producto = detallesCarrito[index].detalleCarrito_to_producto {
-                    
-                    // Eliminar el producto de la colección
-                    carritoCoreDataViewModel.deleteProduct(productoEntity: producto)
-                }
-            }
+            // Eliminar el producto de la colección
+            carritoCoreDataViewModel.deleteProduct(product: producto)
         }
     }
+}

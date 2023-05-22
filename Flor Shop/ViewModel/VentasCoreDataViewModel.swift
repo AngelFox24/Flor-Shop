@@ -21,7 +21,7 @@ class VentasCoreDataViewModel: ObservableObject {
         ventasCoreData = self.saleRepository.getListSales()
     }
     
-    func registrarVenta(car: Car) -> Bool {
-        return saleRepository.registerSale(car: car)
+    func registrarVenta() -> Bool {
+        return saleRepository.registerSale()
     }
 }

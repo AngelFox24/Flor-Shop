@@ -14,7 +14,7 @@ struct CarritoTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     var body: some View {
         HStack{
-            Text("S/.  " + String(carritoCoreDataViewModel.carritoCoreData!.totalCarrito))
+            Text("S/.  " + String(carritoCoreDataViewModel.carritoCoreData!.total))
                 .font(.title2)
             Spacer()
             Button(action: {
@@ -23,7 +23,7 @@ struct CarritoTopBar: View {
                 if productsCoreDataViewModel.reducirStock(carritoDeCompras: carritoCoreDataViewModel.carritoCoreData){
                     print ("Se ha reducido el stock en CarritoTopBar exitosamente")
                     //Luego de haber reducido el stock de forma exitosa vendemos
-                    if ventasCoreDataViewModel.registrarVenta(carritoEntity: carritoCoreDataViewModel.carritoCoreData){
+                    if ventasCoreDataViewModel.registrarVenta(){
                         carritoCoreDataViewModel.vaciarCarrito()
                     }else{
                         print("Todo esta mal renuncia xd")
@@ -52,8 +52,12 @@ struct CarritoTopBar: View {
 
 struct CarritoTopBar_Previews: PreviewProvider {
     static var previews: some View {
+        let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let carRepository = CarRepositoryImpl(manager: carManager)
+        let saleManager = LocalSaleManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let salesRepository = SaleRepositoryImpl(manager: saleManager)
         CarritoTopBar()
-            .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
-            .environmentObject(VentasCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
+            .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
+            .environmentObject(VentasCoreDataViewModel(saleRepository: salesRepository))
     }
 }

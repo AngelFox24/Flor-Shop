@@ -45,4 +45,8 @@ class CarritoCoreDataViewModel: ObservableObject {
     func decreceProductAmount (product: Product){
         self.cartRepository.decreceProductAmount(product: product)
     }
+    
+    func getListProductInCart () -> [Product]{
+        return self.cartRepository.getListProductInCart()
+    }
 }

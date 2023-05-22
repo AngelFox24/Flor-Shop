@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22E261" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tb_Carrito" representedClassName=".Tb_Carrito" syncable="YES" codeGenerationType="class">
-        <attribute name="fechaCarrito" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fechaCarrito" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idCarrito" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="totalCarrito" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="totalCarrito" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="carrito_to_detalleCarrito" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleCarrito" inverseName="detalleCarrito_to_carrito" inverseEntity="Tb_DetalleCarrito"/>
     </entity>
     <entity name="Tb_DetalleCarrito" representedClassName=".Tb_DetalleCarrito" syncable="YES" codeGenerationType="class">
@@ -27,13 +27,13 @@
         <attribute name="idProducto" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="nombreProducto" attributeType="String"/>
         <attribute name="precioUnitario" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="tipoMedicion" optional="YES" attributeType="String"/>
+        <attribute name="tipoMedicion" attributeType="String"/>
         <attribute name="url" attributeType="String"/>
         <relationship name="producto_to_detalleCarrito" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleCarrito" inverseName="detalleCarrito_to_producto" inverseEntity="Tb_DetalleCarrito"/>
         <relationship name="producto_to_detalleVenta" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleVenta" inverseName="detalleVenta_to_producto" inverseEntity="Tb_DetalleVenta"/>
     </entity>
     <entity name="Tb_Venta" representedClassName=".Tb_Venta" syncable="YES" codeGenerationType="class">
-        <attribute name="fechaVenta" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fechaVenta" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idVenta" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="totalVenta" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="venta_to_detalleVenta" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleVenta" inverseName="detalleVenta_to_venta" inverseEntity="Tb_DetalleVenta"/>

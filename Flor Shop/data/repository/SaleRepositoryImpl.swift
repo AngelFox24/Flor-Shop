@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol SaleRepository {
-    func registerSale(car: Car) -> Bool
+    func registerSale() -> Bool
     func getListSales() -> [Sale]
 }
 
@@ -22,8 +22,8 @@ class SaleRepositoryImpl: SaleRepository {
         self.manager = manager
     }
     
-    func registerSale(car: Car) -> Bool {
-        return self.manager.registerSale(car: car)
+    func registerSale() -> Bool {
+        return self.manager.registerSale()
     }
     
     func getListSales() -> [Sale] {

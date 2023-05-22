@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol SaleManager {
-    func registerSale (car: Car) -> Bool
+    func registerSale () -> Bool
     func getListSales () -> [Sale]
 }
 
@@ -21,15 +21,21 @@ class LocalSaleManager: SaleManager {
         self.salesContainer = contenedorBDFlor
     }
     
-    func registerSale(car: Car) -> Bool {
+    func registerSale() -> Bool {
         //Recorremos la lista de detalles del carrito para agregarlo a la venta
-        if let listaCarrito = carritoEntity?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+        if getListCart().count == 1 {
+            
+        }else{
+            return false
+        }
+        
+        if let listaCarrito = getListCart().first!.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
             
             //Creamos un nuevo objeto venta
             let newVenta = Tb_Venta(context: salesContainer.viewContext)
             newVenta.idVenta = UUID()
             newVenta.fechaVenta = Date()
-            newVenta.totalVenta = carritoEntity?.totalCarrito ?? 0.0 //Asignamos el mismo total del carrito a la venta
+            newVenta.totalVenta = getListCart().first!.totalCarrito //Asignamos el mismo total del carrito a la venta
             
             for detalleCarrito in listaCarrito {
                 if let productoInContext = salesContainer.viewContext.object(with: detalleCarrito.detalleCarrito_to_producto!.objectID) as? Tb_Producto{
@@ -49,6 +55,17 @@ class LocalSaleManager: SaleManager {
         }else{
             return false
         }
+    }
+    
+    func getListCart() -> [Tb_Carrito] {
+        var cart:[Tb_Carrito] = []
+            let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
+            do{
+                cart = try self.salesContainer.viewContext.fetch(request)
+            }catch let error {
+                print("Error fetching. \(error)")
+            }
+        return cart
     }
     
     func getListSales() -> [Sale] {

@@ -17,6 +17,7 @@ protocol CarManager {
     func updateTotalCart()
     func increaceProductAmount(product: Product)
     func decreceProductAmount(product: Product)
+    func getListProductInCart () -> [Product]
 }
 
 class LocalCarManager: CarManager {
@@ -26,7 +27,7 @@ class LocalCarManager: CarManager {
         self.carContainer = contenedorBDFlor
     }
     
-    func saveData () {
+    func saveData() {
         do{
             try self.carContainer.viewContext.save()
         }catch {
@@ -59,28 +60,39 @@ class LocalCarManager: CarManager {
         return car!.mapToCar()
     }
     
+    private func getCarEntity() -> Tb_Carrito? {
+        var car: Tb_Carrito? = nil
+        let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
+        do{
+            car = try self.carContainer.viewContext.fetch(request).first
+        }catch let error{
+            print("Error al recuperar el carrito de productos \(error)")
+        }
+        //TODO: Este codigo puede dar error xd
+        return car
+    }
+    
     func deleteProduct(product: Product) {
-        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
         
-        let detalleAEliminar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == productoEntity.idProducto }
+        let detalleAEliminar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detalle = detalleAEliminar.first {
             carrito.removeFromCarrito_to_detalleCarrito(detalle)
         }
-        updateTotalCarrito()
-        saveCarritoProducts()
-        fetchCarrito()
+        updateTotalCart()
+        saveData()
     }
     
     func addProductoToCarrito(product: Product) {
-        guard let carrito = carritoCoreData else {
+        guard let carrito = getCarEntity() else {
             return
         }
-        let context = carritoContainer.viewContext
+        let context = self.carContainer.viewContext
         
         // Obtener el objeto productoEntity del mismo contexto que el carrito
-        let productoInContext = context.object(with: productoEntity.toProductEntity(context: context).objectID) as! Tb_Producto
+        let productoInContext = context.object(with: product.toNewProductEntity(context: context).objectID) as! Tb_Producto
         
         // Crear el objeto detalleCarrito y establecer sus propiedades
         let detalleCarrito = Tb_DetalleCarrito(context: context)
@@ -93,21 +105,22 @@ class LocalCarManager: CarManager {
         // Agregar el objeto detalleCarrito al carrito
         detalleCarrito.detalleCarrito_to_carrito = carrito
         
-        updateTotalCarrito()
-        fetchCarrito()
-        saveCarritoProducts()
+        updateTotalCart()
+        saveData()
     }
     
     func emptyCart() {
-        carritoCoreData?.carrito_to_detalleCarrito = nil
+        guard let carrito = getCarEntity() else {
+            return
+        }
+        carrito.carrito_to_detalleCarrito = nil
         
-        updateTotalCarrito()
-        fetchCarrito()
-        saveCarritoProducts()
+        updateTotalCart()
+        saveData()
     }
     
     func updateTotalCart() {
-        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
         var Total:Double = 0.0
@@ -118,40 +131,52 @@ class LocalCarManager: CarManager {
             print("Total despues \(Total)")
         }
         carrito.totalCarrito = Total
-        fetchCarrito()
     }
     
     func increaceProductAmount (product: Product){
         print("Se presiono incrementar cantidad")
-        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
         
-        let detalleAAgregar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == productoEntity.idProducto }
+        let detalleAAgregar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detalle = detalleAAgregar.first {
             print("El nombre: \(String(describing: detalle.detalleCarrito_to_producto?.nombreProducto)) Cantidad Antes: \(detalle.cantidad)")
             detalle.cantidad += 1.0
             print("Cantidad Despues: \(detalle.cantidad)")
         }
-        updateTotalCarrito()
-        fetchCarrito()
-        saveCarritoProducts()
+        updateTotalCart()
+        saveData()
     }
     
     func decreceProductAmount(product: Product){
         print("Se presiono reducir cantidad")
-        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
         
-        let detalleAAgregar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == productoEntity.idProducto }
+        let detalleAAgregar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detalle = detalleAAgregar.first {
             print("El nombre: \(String(describing: detalle.detalleCarrito_to_producto?.nombreProducto)) Cantidad Antes: \(detalle.cantidad)")
             detalle.cantidad -= 1.0
             print("Cantidad Despues: \(detalle.cantidad)")
         }
-        updateTotalCarrito()
-        fetchCarrito()
-        saveCarritoProducts()
+        updateTotalCart()
+        saveData()
+    }
+    
+    func getListProductInCart () -> [Product] {
+        var products: [Product] = []
+        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+            return products
+        }
+        
+        for product in detalleCarrito {
+            if let productInCar = product.detalleCarrito_to_producto?.toProduct() {
+                products.append(productInCar)
+            }
+        }
+        
+        return products
     }
 }

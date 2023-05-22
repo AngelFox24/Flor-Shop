@@ -12,7 +12,7 @@ import CoreData
 
 extension Product {
     
-    func toProductEntity(context: NSManagedObjectContext) -> Tb_Producto {
+    func toNewProductEntity(context: NSManagedObjectContext) -> Tb_Producto {
         
         let newProduct = Tb_Producto(context: context)
         newProduct.idProducto = UUID()
@@ -54,7 +54,6 @@ extension Tb_Carrito {
 }
 
 extension Array where Element == Tb_Producto {
-    
     func mapToListProduct() -> [Product] {
         return self.map { prd in
             prd.toProduct()
@@ -63,10 +62,9 @@ extension Array where Element == Tb_Producto {
 }
 
 extension Array where Element == Product {
-    
     func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Producto] {
         return self.map { prd in
-            prd.toProductEntity(context: context)
+            prd.toNewProductEntity(context: context)
         }
     }
 }

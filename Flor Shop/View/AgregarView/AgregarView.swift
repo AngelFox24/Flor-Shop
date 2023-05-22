@@ -28,7 +28,7 @@ struct AgregarView_Previews: PreviewProvider {
         let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let repository = ProductRepositoryImpl(manager: prdManager)
         AgregarView()
-            .environmentObject(ProductCoreDataViewModel(repo: repository))
+            .environmentObject(ProductCoreDataViewModel(productRepository: repository))
     }
 }
 

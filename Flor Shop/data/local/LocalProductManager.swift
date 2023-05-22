@@ -12,7 +12,7 @@ import CoreData
 protocol ProductManager {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
-    func reduceStock(carritoDeCompras: Tb_Carrito?) -> Bool
+    func reduceStock(carritoDeCompras: Car?) -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
 }
 
@@ -45,7 +45,7 @@ class LocalProductManager: ProductManager {
            product.isFechaVencimientoValid(),
            product.isURLValid() {
             
-            _ = product.toProductEntity(context: productsContainer.viewContext)
+            _ = product.toNewProductEntity(context: productsContainer.viewContext)
             saveData()
             message = "Success"
             
@@ -72,9 +72,20 @@ class LocalProductManager: ProductManager {
         return message
     }
     
-    func reduceStock(carritoDeCompras: Tb_Carrito?) -> Bool {
+    func getListCart() -> Tb_Carrito? {
+        var cart:Tb_Carrito?
+            let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
+            do{
+                cart = try self.productsContainer.viewContext.fetch(request).first
+            }catch let error {
+                print("Error fetching. \(error)")
+            }
+        return cart
+    }
+    
+    func reduceStock(carritoDeCompras: Car?) -> Bool {
         var guardarCambios:Bool = true
-        if let listaCarrito = carritoDeCompras?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+        if let listaCarrito = getListCart()?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
             for detalleCarrito in listaCarrito {
                 let cantidadReducida:Double = detalleCarrito.cantidad
                 let productosFiltrados = getListProducts().mapToListProductEntity(context: productsContainer.viewContext).filter { $0.idProducto == detalleCarrito.detalleCarrito_to_producto?.idProducto }
