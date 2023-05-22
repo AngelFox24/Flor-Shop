@@ -16,7 +16,6 @@ protocol ProductManager {
     func deleteProduct(indexSet: IndexSet) -> Bool
 }
 
-
 class LocalProductManager: ProductManager {
     
     let productsContainer: NSPersistentContainer
@@ -24,7 +23,6 @@ class LocalProductManager: ProductManager {
     init(contenedorBDFlor: NSPersistentContainer){
         self.productsContainer = contenedorBDFlor
     }
-    
     
     func getListProducts() -> [Product] {
         var productList: [Tb_Producto] = []
@@ -37,7 +35,6 @@ class LocalProductManager: ProductManager {
         
         return productList.mapToListProduct()
     }
-    
     
     func saveProduct(product: Product) -> String {
         var message = ""
@@ -104,7 +101,6 @@ class LocalProductManager: ProductManager {
         return guardarCambios
     }
     
-    
     func deleteProduct(indexSet: IndexSet) -> Bool {
         
         do{
@@ -116,7 +112,6 @@ class LocalProductManager: ProductManager {
         }
     }
     
-    
     func saveData () {
         do{
             try self.productsContainer.viewContext.save()
@@ -124,7 +119,4 @@ class LocalProductManager: ProductManager {
             print ("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
-    
- 
-    
 }

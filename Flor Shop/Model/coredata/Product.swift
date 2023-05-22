@@ -70,16 +70,6 @@ struct Product: Identifiable{
     
     func isFechaVencimientoValid() -> Bool {
         return true
-        /*let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd" // formato esperado de la fecha
-        
-        if dateFormatter.date(from: expirationDate) != nil {
-            // la fecha se pudo transformar exitosamente
-            return true
-        } else {
-            // la fecha no se pudo transformar
-            return false
-        } */
     }
     
     func isURLValid() -> Bool {

@@ -30,5 +30,4 @@ class CoreDataProvider {
     var persistContainer:NSPersistentContainer {
         persistentContainer
     }
-    
 }

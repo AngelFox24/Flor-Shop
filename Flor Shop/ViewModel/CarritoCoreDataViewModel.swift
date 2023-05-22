@@ -9,68 +9,21 @@ import Foundation
 
 
 class CarritoCoreDataViewModel: ObservableObject {
-    @Published var carritoCoreData: Tb_Carrito?
-    let carritoContainer: NSPersistentContainer
+    @Published var carritoCoreData: Car
+    let carRepository: CarRepository
     
-    init(contenedorBDFlor: NSPersistentContainer){
-        self.carritoContainer = contenedorBDFlor
-        /*self.carritoContainer.loadPersistentStores{descripcion,error in
-            if let error=error{
-                print("Error al cargar productos del carrito \(error)")
-            }else{
-                print("Se cargo exitosamente productos del carrito")
-            }
-        }*/
+    init(carRepository: CarRepository){
+        self.carRepository = carRepository
         fetchCarrito()
     }
     //MARK: CRUD Core Data
     func fetchCarrito() {
-        let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
-        do{
-            let results = try self.carritoContainer.viewContext.fetch(request).first
-            if results == nil {
-                let idCarrito = UUID()
-                let fechaCarrito = Date()
-                let totalCarrito = 0.0
-                
-                carritoCoreData = Tb_Carrito(context: self.carritoContainer.viewContext)
-                carritoCoreData?.idCarrito = idCarrito
-                carritoCoreData?.fechaCarrito = fechaCarrito
-                carritoCoreData?.totalCarrito = totalCarrito
-                
-                saveCarritoProducts()
-                print("Se creo un nuevo carrito exitosamente \(idCarrito)")
-            }else{
-                self.carritoCoreData = results
-                print("El carrito ya esta creado")
-            }
-        }catch let error{
-            print("Error al recuperar el carrito de productos \(error)")
-        }
-    }
-    
-    func saveCarritoProducts () {
-        do{
-            print("Se esta guardando en CarritoCoreDataViewModel. \(self.carritoContainer.viewContext)")
-            try self.carritoContainer.viewContext.save()
-        }catch let error {
-            print("Error al guardar los productos al carrito. \(error)")
-        }
+        carritoCoreData = self.carRepository.getCar()
     }
     
     //Elimina un producto del carrito de compras
     func deleteProduct(productoEntity: Tb_Producto) {
-        guard let carrito = carritoCoreData, let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
-            return
-        }
         
-        let detalleAEliminar = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == productoEntity.idProducto }
-        if let detalle = detalleAEliminar.first {
-            carrito.removeFromCarrito_to_detalleCarrito(detalle)
-        }
-        updateTotalCarrito()
-        saveCarritoProducts()
-        fetchCarrito()
     }
     
     func addProductoToCarrito(productoEntity: Product){

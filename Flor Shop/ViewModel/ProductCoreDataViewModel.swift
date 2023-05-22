@@ -10,18 +10,18 @@ import Foundation
 
 class ProductCoreDataViewModel: ObservableObject {
     @Published var productsCoreData: [Product] = []
-    let repo:  ProductRepository
+    let productRepository:  ProductRepository
     
     
-    init(repo:ProductRepository) {
-        self.repo = repo
+    init(productRepository:ProductRepository) {
+        self.productRepository = productRepository
         fetchProducts()
     }
     
     
     //MARK: CRUD Core Data
     func fetchProducts () {
-        productsCoreData = repo.getListProducts()
+        productsCoreData = productRepository.getListProducts()
     }
     
     
@@ -32,7 +32,7 @@ class ProductCoreDataViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date =  dateFormatter.date(from: fecha_vencimiento) ?? Date()
         
-        let result = repo.saveProduct(product: Product(name: nombre_producto,
+        let result = productRepository.saveProduct(product: Product(name: nombre_producto,
                                                        qty: Double(cantidad) ?? 0,
                                                        unitCost: Double(costo_unitario) ?? 0 ,
                                                        unitPrice: Double(precio_unitario) ?? 0,
@@ -48,12 +48,12 @@ class ProductCoreDataViewModel: ObservableObject {
     
     
     func reducirStock(carritoDeCompras: Tb_Carrito?) -> Bool {
-        return repo.reduceStock(carritoDeCompras: carritoDeCompras)
+        return productRepository.reduceStock(carritoDeCompras: carritoDeCompras)
     }
     
     
     func deleteProduct (indexSet: IndexSet) {
-        repo.deleteProduct(indexSet: indexSet)
+        productRepository.deleteProduct(indexSet: indexSet)
     }
     
  

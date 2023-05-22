@@ -16,8 +16,6 @@ protocol ProductRepository {
     func reduceStock(carritoDeCompras: Tb_Carrito?) -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
 }
-
-
 //clas
 public class ProductRepositoryImpl: ProductRepository {
     
@@ -27,7 +25,6 @@ public class ProductRepositoryImpl: ProductRepository {
     init(manager: ProductManager) {
         self.manager = manager
     }
-    
     
     func saveProduct(product: Product) -> String {
         //add to remote logic
@@ -48,8 +45,4 @@ public class ProductRepositoryImpl: ProductRepository {
         //add to remote logic
         return manager.deleteProduct(indexSet: indexSet)
     }
-    
-
-    
-
 }

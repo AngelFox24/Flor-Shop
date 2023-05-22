@@ -25,10 +25,7 @@ extension Product {
         newProduct.url=url
     
         return newProduct
-        
     }
-    
-    
 }
 
 extension Tb_Producto {
@@ -40,10 +37,21 @@ extension Tb_Producto {
                        expirationDate: fechaVencimiento ?? Date(),
                        type: tipoMedicion ?? "",
                        url: url ?? "")
-        
     }
 }
 
+extension Tb_Venta {
+    func toSale() -> Sale {
+        return Sale(saleDate: fechaVenta ?? Date(),
+                    totalSale: totalVenta)
+    }
+}
+
+extension Tb_Carrito {
+    func mapToCar() -> Car {
+        return Car(dateCar: fechaCarrito ?? Date(), total: totalCarrito)
+    }
+}
 
 extension Array where Element == Tb_Producto {
     
@@ -59,6 +67,14 @@ extension Array where Element == Product {
     func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Producto] {
         return self.map { prd in
             prd.toProductEntity(context: context)
+        }
+    }
+}
+
+extension Array where Element == Tb_Venta {
+    func mapToListSale() -> [Sale] {
+        return self.map { sale in
+            sale.toSale()
         }
     }
 }
