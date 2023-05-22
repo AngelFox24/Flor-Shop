@@ -34,7 +34,8 @@ struct MenuView: View {
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        let repository = ProductRepositoryImpl(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let repository = ProductRepositoryImpl(manager: prdManager)
         MenuView()
             .environmentObject(ProductCoreDataViewModel(repo: repository))
     }

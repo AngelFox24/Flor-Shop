@@ -27,7 +27,8 @@ struct ProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let repository = ProductRepositoryImpl(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let repository = ProductRepositoryImpl(manager: prdManager)
         ProductView()
             .environmentObject(ProductCoreDataViewModel(repo: repository))
             .environmentObject(CarritoCoreDataViewModel(contenedorBDFlor: NSPersistentContainer(name: "BDFlor")))
@@ -41,13 +42,14 @@ struct ListaControler: View {
         
         VStack {
             List(){
-                ForEach(productsCoreDataViewModel.productsCoreData){producto in
+                //id: \.self
+                ForEach(productsCoreDataViewModel.productsCoreData){ producto in
                     ProductCardView(
-                        nombreProducto: producto.nombreProducto ?? "No hay producto",
-                        fechaVencimiento: producto.fechaVencimiento ?? Date(),
-                        cantidadProducto: producto.cantidadStock,
-                        precioUnitarioProducto: producto.precioUnitario,
-                        urlProducto: producto.url ?? "",
+                        nombreProducto: producto.name,
+                        fechaVencimiento: producto.expirationDate ,
+                        cantidadProducto: producto.qty,
+                        precioUnitarioProducto: producto.unitPrice,
+                        urlProducto: producto.url ,
                         size: 120.0)
                         .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                         .swipeActions(edge: .leading, allowsFullSwipe: true) {
@@ -73,12 +75,12 @@ struct ListaControler: View {
             
         }
     }
-    func editarProducto(producto: Tb_Producto){
+    func editarProducto(producto: Product){
         //productsCoreDataViewModel.productsCoreData.
-        print("Se edito el producto \(producto.nombreProducto ?? "No se sabe xd")")
+        print("Se edito el producto \(producto.name ?? "No se sabe xd")")
     }
-    func agregarProductoACarrito(producto: Tb_Producto){
+    func agregarProductoACarrito(producto: Product){
         carritoCoreDataViewModel.addProductoToCarrito(productoEntity: producto)
-        print("Se agrego el producto al carrito \(producto.nombreProducto ?? "No se sabe")")
+        print("Se agrego el producto al carrito \(producto.name ?? "No se sabe")")
     }
 }

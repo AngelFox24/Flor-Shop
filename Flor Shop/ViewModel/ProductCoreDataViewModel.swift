@@ -9,11 +9,11 @@ import CoreData
 import Foundation
 
 class ProductCoreDataViewModel: ObservableObject {
-    @Published var productsCoreData: [Tb_Producto] = []
+    @Published var productsCoreData: [Product] = []
     let repo:  ProductRepository
     
     
-    init(repo:ProductRepository){
+    init(repo:ProductRepository) {
         self.repo = repo
         fetchProducts()
     }
@@ -27,7 +27,18 @@ class ProductCoreDataViewModel: ObservableObject {
     
     func addProduct(nombre_producto:String, cantidad:String, costo_unitario: String, precio_unitario: String,fecha_vencimiento: String,tipo: String,url: String) -> Bool {
       
-        let result = repo.saveProduct(product: Product(name: nombre_producto, qty: cantidad, unitCost: costo_unitario, unitPrice: precio_unitario, expirationDate: fecha_vencimiento, type: tipo, url: url))
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date =  dateFormatter.date(from: fecha_vencimiento) ?? Date()
+        
+        let result = repo.saveProduct(product: Product(name: nombre_producto,
+                                                       qty: Double(cantidad) ?? 0,
+                                                       unitCost: Double(costo_unitario) ?? 0 ,
+                                                       unitPrice: Double(precio_unitario) ?? 0,
+                                                       expirationDate: date,
+                                                       type: tipo,
+                                                       url: url))
         
         if(result == "Success"){
             fetchProducts()

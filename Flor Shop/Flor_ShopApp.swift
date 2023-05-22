@@ -12,9 +12,14 @@ import CoreData
 struct Flor_ShopApp: App {
     
     var body: some Scene {
+        
         WindowGroup {
-            let repository = ProductRepositoryImpl(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+            
+            let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+            let repository = ProductRepositoryImpl(manager: prdManager)
             let productsCoreData = ProductCoreDataViewModel(repo: repository)
+            
+            
             let carritoCoreData = CarritoCoreDataViewModel(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
             let ventasCoreData = VentasCoreDataViewModel(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
             

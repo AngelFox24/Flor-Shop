@@ -73,14 +73,14 @@ class CarritoCoreDataViewModel: ObservableObject {
         fetchCarrito()
     }
     
-    func addProductoToCarrito(productoEntity: Tb_Producto){
+    func addProductoToCarrito(productoEntity: Product){
         guard let carrito = carritoCoreData else {
             return
         }
         let context = carritoContainer.viewContext
         
         // Obtener el objeto productoEntity del mismo contexto que el carrito
-        let productoInContext = context.object(with: productoEntity.objectID) as! Tb_Producto
+        let productoInContext = context.object(with: productoEntity.toProductEntity(context: context).objectID) as! Tb_Producto
         
         // Crear el objeto detalleCarrito y establecer sus propiedades
         let detalleCarrito = Tb_DetalleCarrito(context: context)
