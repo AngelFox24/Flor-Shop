@@ -23,8 +23,25 @@ extension Product {
         newProduct.fechaVencimiento=expirationDate
         newProduct.tipoMedicion=type
         newProduct.url=url
-    
         return newProduct
+    }
+    
+    func toProductEntity(context: NSManagedObjectContext) -> Tb_Producto? {
+        let fetchRequest: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
+        var productList: [Tb_Producto] = []
+        do{
+            productList = try context.fetch(fetchRequest)
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        if let product = productList.first(where: { $0.idProducto == id }) {
+            print("Producto encontrado: \(product.nombreProducto ?? "")")
+            return product
+        } else {
+            // No se encontró ningún producto con el ID especificado
+            print("Producto no encontrado")
+            return nil
+        }
     }
 }
 
@@ -67,8 +84,8 @@ extension Array where Element == Tb_Producto {
 
 extension Array where Element == Product {
     func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Producto] {
-        return self.map { prd in
-            prd.toNewProductEntity(context: context)
+        return self.compactMap { prd in
+            prd.toProductEntity(context: context)
         }
     }
 }

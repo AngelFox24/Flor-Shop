@@ -24,6 +24,7 @@ struct CarritoTopBar: View {
                     print ("Se ha reducido el stock en CarritoTopBar exitosamente")
                     //Luego de haber reducido el stock de forma exitosa vendemos
                     if ventasCoreDataViewModel.registrarVenta(){
+                        print ("Se procede a vaciar el carrito")
                         carritoCoreDataViewModel.vaciarCarrito()
                     }else{
                         print("Todo esta mal renuncia xd")

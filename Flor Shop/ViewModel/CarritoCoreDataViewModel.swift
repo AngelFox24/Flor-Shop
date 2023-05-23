@@ -24,6 +24,7 @@ class CarritoCoreDataViewModel: ObservableObject {
     //Elimina un producto del carrito de compras
     func deleteProduct(product: Product) {
         self.cartRepository.deleteProduct(product: product)
+        fetchCart()
     }
     
     func addProductoToCarrito(product: Product){
@@ -33,18 +34,22 @@ class CarritoCoreDataViewModel: ObservableObject {
     
     func vaciarCarrito (){
         self.cartRepository.emptyCart()
+        fetchCart()
     }
     
     func updateTotalCarrito(){
         self.cartRepository.updateTotalCart()
+        fetchCart()
     }
     
     func increaceProductAmount (product: Product){
         self.cartRepository.increaceProductAmount(product: product)
+        fetchCart()
     }
     
     func decreceProductAmount (product: Product){
         self.cartRepository.decreceProductAmount(product: product)
+        fetchCart()
     }
     
     func getListProductInCart () -> [Product]{

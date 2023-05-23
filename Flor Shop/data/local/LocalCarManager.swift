@@ -86,13 +86,13 @@ class LocalCarManager: CarManager {
     }
     
     func addProductoToCarrito(product: Product) {
-        guard let carrito = getCarEntity() else {
+        let context = self.carContainer.viewContext
+        guard let carrito = getCarEntity(),let producto = product.toProductEntity(context: context) else {
             return
         }
-        let context = self.carContainer.viewContext
-        
+        print ("El IdProducto en addProductoToCarrito \(product.id)")
         // Obtener el objeto productoEntity del mismo contexto que el carrito
-        let productoInContext = context.object(with: product.toNewProductEntity(context: context).objectID) as! Tb_Producto
+        let productoInContext = context.object(with: producto.objectID) as! Tb_Producto
         
         // Crear el objeto detalleCarrito y establecer sus propiedades
         let detalleCarrito = Tb_DetalleCarrito(context: context)
@@ -113,10 +113,12 @@ class LocalCarManager: CarManager {
         guard let carrito = getCarEntity() else {
             return
         }
+        print ("Se realizara el vaciado")
         carrito.carrito_to_detalleCarrito = nil
         
         updateTotalCart()
         saveData()
+        print ("Se guardo los cambios en LocalCarManager")
     }
     
     func updateTotalCart() {

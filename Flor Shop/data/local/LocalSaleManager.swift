@@ -24,11 +24,12 @@ class LocalSaleManager: SaleManager {
     func registerSale() -> Bool {
         //Recorremos la lista de detalles del carrito para agregarlo a la venta
         if getListCart().count == 1 {
-            
+            print ("Se encontro un solo carrito")
         }else{
+            print ("Se encontro varios carritos")
             return false
         }
-        
+        print ("Se procede a hacer los calculos para registrar venta")
         if let listaCarrito = getListCart().first!.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
             
             //Creamos un nuevo objeto venta
@@ -48,11 +49,14 @@ class LocalSaleManager: SaleManager {
                     detalleVenta.detalleVenta_to_producto = productoInContext
                     // Agregar el objeto detalleVenta a la venta
                     detalleVenta.detalleVenta_to_venta = newVenta
+                    print ("Se creo una nueva venta")
                 }
             }
+            print ("Se guarda los cambios")
             saveData()
             return true
         }else{
+            print ("Algo salio mal y no se guardo la venta")
             return false
         }
     }
