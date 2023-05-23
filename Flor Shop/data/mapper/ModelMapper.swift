@@ -15,7 +15,7 @@ extension Product {
     func toNewProductEntity(context: NSManagedObjectContext) -> Tb_Producto {
         
         let newProduct = Tb_Producto(context: context)
-        newProduct.idProducto = UUID()
+        newProduct.idProducto = id
         newProduct.nombreProducto=name
         newProduct.cantidadStock=qty
         newProduct.costoUnitario=unitCost
@@ -30,7 +30,8 @@ extension Product {
 
 extension Tb_Producto {
     func toProduct() -> Product {
-        return Product(name: nombreProducto ?? "",
+        return Product(id: idProducto ?? UUID(),
+                       name: nombreProducto ?? "",
                        qty: cantidadStock,
                        unitCost: costoUnitario,
                        unitPrice: precioUnitario,
@@ -42,14 +43,17 @@ extension Tb_Producto {
 
 extension Tb_Venta {
     func toSale() -> Sale {
-        return Sale(saleDate: fechaVenta ?? Date(),
+        return Sale(id: idVenta ?? UUID(),
+                    saleDate: fechaVenta ?? Date(),
                     totalSale: totalVenta)
     }
 }
 
 extension Tb_Carrito {
     func mapToCar() -> Car {
-        return Car(dateCar: fechaCarrito ?? Date(), total: totalCarrito)
+        return Car(id: idCarrito ?? UUID(),
+                   dateCar: fechaCarrito ?? Date(),
+                   total: totalCarrito)
     }
 }
 

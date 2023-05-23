@@ -12,8 +12,8 @@ struct Sale: Identifiable {
     let saleDate: Date
     let totalSale: Double
     
-    init(saleDate: Date, totalSale: Double) {
-        self.id = UUID()
+    init(id: UUID, saleDate: Date, totalSale: Double) {
+        self.id = id
         self.saleDate = saleDate
         self.totalSale = totalSale
     }

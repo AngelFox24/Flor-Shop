@@ -12,8 +12,8 @@ struct Car: Identifiable {
     let dateCar: Date
     let total: Double
     
-    init(dateCar: Date, total: Double) {
-        self.id = UUID()
+    init(id: UUID, dateCar: Date, total: Double) {
+        self.id = id
         self.dateCar = dateCar
         self.total = total
     }

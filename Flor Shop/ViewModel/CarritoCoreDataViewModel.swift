@@ -28,6 +28,7 @@ class CarritoCoreDataViewModel: ObservableObject {
     
     func addProductoToCarrito(product: Product){
         self.cartRepository.addProductoToCarrito(product: product)
+        fetchCart()
     }
     
     func vaciarCarrito (){

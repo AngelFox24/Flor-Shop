@@ -12,7 +12,7 @@ import CoreData
 protocol ProductManager {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
-    func reduceStock(carritoDeCompras: Car?) -> Bool
+    func reduceStock() -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
 }
 
@@ -83,7 +83,7 @@ class LocalProductManager: ProductManager {
         return cart
     }
     
-    func reduceStock(carritoDeCompras: Car?) -> Bool {
+    func reduceStock() -> Bool {
         var guardarCambios:Bool = true
         if let listaCarrito = getListCart()?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
             for detalleCarrito in listaCarrito {

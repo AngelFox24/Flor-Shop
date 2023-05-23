@@ -17,8 +17,8 @@ struct Product: Identifiable{
     let type: String
     let url: String
     
-    init(name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: String, url: String) {
-        self.id = UUID()
+    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: String, url: String) {
+        self.id = id
         self.name = name
         self.qty = qty
         self.unitCost = unitCost
