@@ -52,7 +52,7 @@ class CarritoCoreDataViewModel: ObservableObject {
         fetchCart()
     }
     
-    func getListProductInCart () -> [Product]{
+    func getListProductInCart () -> [CartDetail]{
         return self.cartRepository.getListProductInCart()
     }
 }

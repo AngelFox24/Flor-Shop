@@ -17,7 +17,7 @@ protocol CarManager {
     func updateTotalCart()
     func increaceProductAmount(product: Product)
     func decreceProductAmount(product: Product)
-    func getListProductInCart () -> [Product]
+    func getListProductInCart () -> [CartDetail]
 }
 
 class LocalCarManager: CarManager {
@@ -167,18 +167,19 @@ class LocalCarManager: CarManager {
         saveData()
     }
     
-    func getListProductInCart () -> [Product] {
-        var products: [Product] = []
+    func getListProductInCart () -> [CartDetail] {
+        var cartDetails: [CartDetail] = []
         guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
-            return products
+            return cartDetails
         }
         
         for product in detalleCarrito {
             if let productInCar = product.detalleCarrito_to_producto?.toProduct() {
-                products.append(productInCar)
+                var productDetail = CartDetail(id: product.idDetalleCarrito ?? UUID(), quantity: product.cantidad, subtotal: product.subtotal, product: productInCar)
+                cartDetails.append(productDetail)
             }
         }
         
-        return products
+        return cartDetails
     }
 }

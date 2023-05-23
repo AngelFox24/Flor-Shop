@@ -11,7 +11,7 @@ import CoreData
 struct CarritoProductCardView: View {
     @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
-    let product: Product
+    let cartDetail: CartDetail
     let size: CGFloat
     var body: some View {
         VStack(alignment: .leading){
@@ -22,7 +22,7 @@ struct CarritoProductCardView: View {
                     .cornerRadius(20.0)
                 VStack {
                     HStack {
-                        Text(product.name)
+                        Text(cartDetail.product.name)
                             .font(.headline)
                             .fontWeight(.bold)
                             .padding(.horizontal,5)
@@ -41,11 +41,11 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.decreceProductAmount(product: product)
+                            carritoCoreDataViewModel.decreceProductAmount(product: cartDetail.product)
                         })
                         
                         HStack {
-                            Text(String(product.qty))
+                            Text(String(cartDetail.quantity))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical,10)
@@ -66,7 +66,7 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.increaceProductAmount(product: product)
+                            carritoCoreDataViewModel.increaceProductAmount(product: cartDetail.product)
                         })
                         
                         HStack {
@@ -88,7 +88,7 @@ struct CarritoProductCardView: View {
             .cornerRadius(20.0)
         }
         .onAppear{
-            imageProductNetwork.getImage(url: (URL(string: product.url )!))
+            imageProductNetwork.getImage(url: (URL(string: cartDetail.product.url )!))
         }
     }
 }

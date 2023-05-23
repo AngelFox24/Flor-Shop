@@ -40,8 +40,8 @@ struct ListaCarritoControler: View {
         VStack {
             List(){
                 let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
-                ForEach(detallesCarrito) { producto in
-                    CarritoProductCardView(product: producto, size: 120.0)
+                ForEach(detallesCarrito) { cartDetail in
+                    CarritoProductCardView(cartDetail: cartDetail, size: 120.0)
                         .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                 }
                 .onDelete(perform: deleteProducto)
@@ -56,10 +56,10 @@ struct ListaCarritoControler: View {
         // Eliminar los productos correspondientes de la colección
         for index in indexArray {
             let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
-            let producto = detallesCarrito[index]
+            let productDetail = detallesCarrito[index]
             
             // Eliminar el producto de la colección
-            carritoCoreDataViewModel.deleteProduct(product: producto)
+            carritoCoreDataViewModel.deleteProduct(product: productDetail.product)
         }
     }
 }

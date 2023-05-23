@@ -16,7 +16,7 @@ protocol CarRepository {
     func updateTotalCart()
     func increaceProductAmount (product: Product)
     func decreceProductAmount(product: Product)
-    func getListProductInCart () -> [Product]
+    func getListProductInCart () -> [CartDetail]
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -52,10 +52,10 @@ class CarRepositoryImpl: CarRepository {
     }
     
     func decreceProductAmount(product: Product){
-        self.manager.deleteProduct(product: product)
+        self.manager.decreceProductAmount(product: product)
     }
     
-    func getListProductInCart () -> [Product] {
+    func getListProductInCart () -> [CartDetail] {
         self.manager.getListProductInCart()
     }
     
