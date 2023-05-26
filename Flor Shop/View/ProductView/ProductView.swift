@@ -59,7 +59,7 @@ struct ListaControler: View {
                             Button(action: {
                                 agregarProductoACarrito(producto: producto)
                             }) {
-                                Image(systemName: "heart.fill")
+                                Image(systemName: "cart")
                             }
                             .tint(.red)
                         }
@@ -67,7 +67,7 @@ struct ListaControler: View {
                             Button(action: {
                                 editarProducto(producto: producto)
                             }) {
-                                Image(systemName: "trash")
+                                Image(systemName: "pencil")
                             }
                             .tint(.red)
                         }
@@ -79,8 +79,8 @@ struct ListaControler: View {
         }
     }
     func editarProducto(producto: Product){
-        //productsCoreDataViewModel.productsCoreData.
-        print("Se edito el producto \(producto.name)")
+        productsCoreDataViewModel.editProduct(product: producto)
+        print("Se esta editando el producto \(producto.name)")
     }
     func agregarProductoACarrito(producto: Product){
         carritoCoreDataViewModel.addProductoToCarrito(product: producto)

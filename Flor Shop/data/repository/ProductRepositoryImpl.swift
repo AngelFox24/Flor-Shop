@@ -13,6 +13,7 @@ import CoreData
 protocol ProductRepository {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
+    func getTemporalProduct() -> Product
     func reduceStock() -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
 }
@@ -44,5 +45,9 @@ public class ProductRepositoryImpl: ProductRepository {
     func deleteProduct(indexSet: IndexSet) -> Bool {
         //add to remote logic
         return manager.deleteProduct(indexSet: indexSet)
+    }
+    
+    func getTemporalProduct() -> Product {
+        return manager.getTemporalProduct()
     }
 }

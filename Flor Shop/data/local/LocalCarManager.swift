@@ -175,7 +175,7 @@ class LocalCarManager: CarManager {
         
         for product in detalleCarrito {
             if let productInCar = product.detalleCarrito_to_producto?.toProduct() {
-                var productDetail = CartDetail(id: product.idDetalleCarrito ?? UUID(), quantity: product.cantidad, subtotal: product.subtotal, product: productInCar)
+                let productDetail = CartDetail(id: product.idDetalleCarrito ?? UUID(), quantity: product.cantidad, subtotal: product.subtotal, product: productInCar)
                 cartDetails.append(productDetail)
             }
         }

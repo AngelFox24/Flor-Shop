@@ -7,17 +7,55 @@
 
 import Foundation
 
-struct Product: Identifiable{
-    let id: UUID
-    let name: String
-    let qty: Double
-    let unitCost: Double
-    let unitPrice: Double
-    let expirationDate: Date
-    let type: String
-    let url: String
+
+extension Double {
+    func rounded(toPlaces places: Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
+
+enum TipoMedicion: CustomStringConvertible {
+    case Kg
+    case Uni
+    var description: String {
+            switch self {
+            case .Kg:
+                return "Kilos"
+            case .Uni:
+                return "Unidades"
+            }
+        }
     
-    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: String, url: String) {
+    static var allValues: [TipoMedicion] {
+            return [.Kg, .Uni]
+        }
+    
+    static func from(description: String) -> TipoMedicion? {
+        for case let tipo in TipoMedicion.allValues {
+            if tipo.description == description {
+                return tipo
+            }
+        }
+        return nil
+    }
+}
+
+
+struct Product: Identifiable{
+    var id: UUID
+    var name: String
+    var qty: Double
+    var unitCost: Double
+    var unitPrice: Double
+    var expirationDate: Date
+    var type: TipoMedicion
+    var url: String
+    var totalCost: Double
+    var profitMargin: Double
+    var keyWords: String
+    
+    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: TipoMedicion, url: String) {
         self.id = id
         self.name = name
         self.qty = qty
@@ -26,8 +64,10 @@ struct Product: Identifiable{
         self.expirationDate = expirationDate
         self.type = type
         self.url = url
+        self.totalCost = 0
+        self.profitMargin = 0
+        self.keyWords = "Producto"
     }
-    
     
     //MARK: Validacion Crear Producto
     func isProductNameValid() -> Bool {
@@ -35,13 +75,13 @@ struct Product: Identifiable{
     }
     
     func isCantidadValid() -> Bool {
-        if type == "Uni"{
+        if type == .Uni{
             if Int(qty) > 0 {
                 return true
             } else {
                 return false
             }
-        }else if type == "Kg"{
+        }else if type == .Kg{
             if qty > 0.0 {
                 return true
             } else {

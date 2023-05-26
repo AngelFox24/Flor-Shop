@@ -10,10 +10,12 @@ import Foundation
 
 class ProductCoreDataViewModel: ObservableObject {
     @Published var productsCoreData: [Product] = []
+    @Published var temporalProduct: Product = Product(id: UUID(), name: "", qty: 0.0, unitCost: 0.0, unitPrice: 0.0, expirationDate: Date(), type: .Uni, url: "")
     let productRepository:  ProductRepository
     
     init(productRepository:ProductRepository) {
         self.productRepository = productRepository
+        getTemporalProduct()
         fetchProducts()
     }
     
@@ -22,22 +24,15 @@ class ProductCoreDataViewModel: ObservableObject {
         productsCoreData = productRepository.getListProducts()
     }
     
-    func addProduct(nombre_producto:String, cantidad:String, costo_unitario: String, precio_unitario: String,fecha_vencimiento: String,tipo: String,url: String) -> Bool {
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let date =  dateFormatter.date(from: fecha_vencimiento) ?? Date()
-        
-        let result = productRepository.saveProduct(product: Product(id:UUID(),
-                                                                    name: nombre_producto,
-                                                                    qty: Double(cantidad) ?? 0,
-                                                                    unitCost: Double(costo_unitario) ?? 0 ,
-                                                                    unitPrice: Double(precio_unitario) ?? 0,
-                                                                    expirationDate: date,
-                                                                    type: tipo,
-                                                                    url: url))
+    func getTemporalProduct() {
+        temporalProduct = productRepository.getTemporalProduct()
+    }
+    
+    func addProduct() -> Bool {
+        let result = productRepository.saveProduct(product: temporalProduct)
         
         if(result == "Success"){
+            getTemporalProduct()
             fetchProducts()
             return true
         }else{ return false }
@@ -49,7 +44,7 @@ class ProductCoreDataViewModel: ObservableObject {
         return success
     }
     
-    func deleteProduct (indexSet: IndexSet) {
-        productRepository.deleteProduct(indexSet: indexSet)
+    func editProduct (product: Product) {
+        self.temporalProduct = product
     }
 }

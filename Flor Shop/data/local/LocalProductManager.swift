@@ -12,6 +12,7 @@ import CoreData
 protocol ProductManager {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
+    func getTemporalProduct() -> Product
     func reduceStock() -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
 }
@@ -45,7 +46,19 @@ class LocalProductManager: ProductManager {
            product.isFechaVencimientoValid(),
            product.isURLValid() {
             
-            _ = product.toNewProductEntity(context: productsContainer.viewContext)
+            if let productInContext = product.toProductEntity(context: productsContainer.viewContext) {
+                productInContext.nombreProducto = product.name
+                productInContext.cantidadStock = product.qty
+                productInContext.costoUnitario = product.unitCost
+                productInContext.fechaVencimiento = product.expirationDate
+                productInContext.precioUnitario = product.unitPrice
+                productInContext.tipoMedicion = product.type.description
+                productInContext.url = product.url
+                print ("Se edito producto en LocalProductManager")
+            }else {
+                _ = product.toNewProductEntity(context: productsContainer.viewContext)
+                print ("Se creo nuevo producto en LocalProductManager")
+            }
             saveData()
             message = "Success"
             
@@ -129,5 +142,9 @@ class LocalProductManager: ProductManager {
         }catch {
             print ("Error al guardar en ProductRepositoryImpl \(error)")
         }
+    }
+    
+    func getTemporalProduct() -> Product {
+        return Product(id: UUID(), name: "", qty: 0.0, unitCost: 0.0, unitPrice: 0.0, expirationDate: Date(), type: .Uni, url: "https://falabella.scene7.com/is/image/FalabellaPE/19316385_1?wid=180")
     }
 }

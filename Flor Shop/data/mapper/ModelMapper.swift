@@ -16,13 +16,13 @@ extension Product {
         
         let newProduct = Tb_Producto(context: context)
         newProduct.idProducto = id
-        newProduct.nombreProducto=name
-        newProduct.cantidadStock=qty
-        newProduct.costoUnitario=unitCost
-        newProduct.precioUnitario=unitPrice
-        newProduct.fechaVencimiento=expirationDate
-        newProduct.tipoMedicion=type
-        newProduct.url=url
+        newProduct.nombreProducto = name
+        newProduct.cantidadStock = qty
+        newProduct.costoUnitario = unitCost
+        newProduct.precioUnitario = unitPrice
+        newProduct.fechaVencimiento = expirationDate
+        newProduct.tipoMedicion = type.description
+        newProduct.url = url
         return newProduct
     }
     
@@ -53,7 +53,7 @@ extension Tb_Producto {
                        unitCost: costoUnitario,
                        unitPrice: precioUnitario,
                        expirationDate: fechaVencimiento ?? Date(),
-                       type: tipoMedicion ?? "",
+                       type: TipoMedicion.from(description: tipoMedicion ?? "Kilos") ?? .Kg,
                        url: url ?? "")
     }
 }

@@ -48,18 +48,38 @@ struct CampoIndividual:View {
     }
 }
 
+struct CampoIndividualDouble:View {
+    @Binding var contenido:Double
+    var body: some View {
+        HStack {
+            TextField("", value: $contenido, format: .number)
+                .multilineTextAlignment(.center)
+                .keyboardType(.decimalPad)
+                .overlay(
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(.blue, lineWidth: 2)
+                    )
+            .foregroundColor(Color("color_primary"))
+        }
+        .padding(.horizontal,1)
+    }
+}
+
+struct CampoIndividualDate:View {
+    @Binding var contenido:Date
+    var body: some View {
+        HStack {
+            DatePicker("", selection: $contenido, displayedComponents: .date)
+                            .datePickerStyle(.compact)
+            .foregroundColor(Color("color_primary"))
+            .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding(.horizontal,1)
+    }
+}
+
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
-    @State private var nombreProducto:String = "Chisitos"
-    @State private var costoTotal:String = "25.00"
-    @State private var cantidadProducto:String = "10"
-    @State private var tipoMedicion:String = "Uni"
-    @State private var urlProducto:String = "https://falabella.scene7.com/is/image/FalabellaPE/19316385_1?wid=180"
-    @State private var palabrasClave:String = "TUR"
-    @State private var fechaVencimiento:String = "2023-09-23"
-    @State private var costoUnitario:String = "2.00"
-    @State private var margenGanancia:String = "0.3"
-    @State private var precioUnitario:String = "2.50"
     var sizeCampo:CGFloat = 200
     var body: some View{
         VStack{
@@ -71,7 +91,7 @@ struct CamposProductoAgregar: View {
                 VStack{
                     Text("Nombre del Producto")
                         .font(.headline)
-                    CampoIndividual(contenido: $nombreProducto)
+                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name)
                 }
                 .frame(width: sizeCampo)
             }
@@ -79,7 +99,7 @@ struct CamposProductoAgregar: View {
                 Text("Costo Total")
                     .font(.headline)
                 Spacer()
-                CampoIndividual(contenido: $costoTotal)
+                CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.totalCost)
                     .frame(width: sizeCampo)
             }
             HStack {
@@ -87,22 +107,20 @@ struct CamposProductoAgregar: View {
                     .font(.headline)
                 Spacer()
                 HStack {
-                    CampoIndividual(contenido: $cantidadProducto)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.qty)
                     Menu {
                         Button(){
-                            self.tipoMedicion = "Kg"
+                            productsCoreDataViewModel.temporalProduct.type = .Kg
                         } label: {
                             Text("Kilos")
                         }
                         Button(){
-                            self.tipoMedicion = "Uni"
+                            productsCoreDataViewModel.temporalProduct.type = .Uni
                         } label: {
                             Text("Unidades")
                         }
                     }label: {
-                        Text(self.tipoMedicion)
-                        //.padding(.horizontal,10)
-                        
+                        Text(productsCoreDataViewModel.temporalProduct.type.description)
                     }
                     .buttonStyle(.bordered)
                     .cornerRadius(10)
@@ -113,74 +131,80 @@ struct CamposProductoAgregar: View {
                 Text("URL")
                     .font(.headline)
                 Spacer()
-                CampoIndividual(contenido: $urlProducto)
+                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url)
                     .frame(width: sizeCampo)
             }
             HStack {
                 Text("Palabras Clave")
                     .font(.headline)
                 Spacer()
-                CampoIndividual(contenido: $palabrasClave)
+                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.keyWords)
                     .frame(width: sizeCampo)
             }
             HStack {
                 Text("Fecha Vencimiento")
                     .font(.headline)
                 Spacer()
-                CampoIndividual(contenido: $fechaVencimiento)
+                CampoIndividualDate(contenido: $productsCoreDataViewModel.temporalProduct.expirationDate)
                     .frame(width: sizeCampo)
             }
             HStack {
                 VStack{
                     Text("Costo Unitario")
                         .font(.headline)
-                    CampoIndividual(contenido: $costoUnitario)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost)
                 }
                 .padding(.vertical,10)
                 VStack{
                     Text("Margen de Ganancia")
                         .font(.headline)
-                    CampoIndividual(contenido: $margenGanancia)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin)
                 }
                 .padding(.vertical,10)
                 VStack{
                     Text("Precio Unitario")
                         .font(.headline)
-                    CampoIndividual(contenido: $precioUnitario)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice)
                 }
                 .padding(.vertical,10)
             }
             HStack {
-                Button(action: {
-                    if productsCoreDataViewModel.addProduct(nombre_producto: nombreProducto, cantidad: cantidadProducto, costo_unitario: costoUnitario, precio_unitario: precioUnitario, fecha_vencimiento: fechaVencimiento, tipo: tipoMedicion, url: urlProducto)
-                    {
-                        nombreProducto = ""
-                        costoTotal = ""
-                        cantidadProducto = ""
-                        tipoMedicion = "Uni"
-                        urlProducto = "https://falabella.scene7.com/is/image/FalabellaPE/19316385_1?wid=180"
-                        palabrasClave = ""
-                        fechaVencimiento = "2023-09-23"
-                        costoUnitario = ""
-                        margenGanancia = ""
-                        precioUnitario = ""
-                    }else{
-                        
-                    }
-                    //ProductoCoreDataViewModel.
-                }, label:{
-                    Text("Guardar")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(height: 55)
-                        .frame(maxWidth: .infinity)
-                        .background(Color("color_secondary"))
-                        .cornerRadius(20)
-                })
-                Spacer()
+                HStack {
+                    Button(action: {
+                        productsCoreDataViewModel.getTemporalProduct()
+                    }, label:{
+                        Text("Limpiar")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(height: 55)
+                            .frame(maxWidth: .infinity)
+                            .background(Color("color_secondary"))
+                            .cornerRadius(20)
+                    })
+                }
+                .padding(.leading,20)
+                .padding(.trailing,10)
+                HStack {
+                    Button(action: {
+                        if productsCoreDataViewModel.addProduct()
+                        {
+                            print ("Se agrego un producto exitosamente")
+                        }
+                    }, label:{
+                        Text("Guardar")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(height: 55)
+                            .frame(maxWidth: .infinity)
+                            .background(Color("color_secondary"))
+                            .cornerRadius(20)
+                    })
+                }
+                .padding(.trailing,20)
+                .padding(.leading,10)
             }
-            .padding(.horizontal,20)
-            .padding(.vertical,60)
+            .padding(.vertical,50)
         }
+        .padding(.horizontal,10)
     }
 }
