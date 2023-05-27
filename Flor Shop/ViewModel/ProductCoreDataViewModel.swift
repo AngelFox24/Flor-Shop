@@ -10,12 +10,11 @@ import Foundation
 
 class ProductCoreDataViewModel: ObservableObject {
     @Published var productsCoreData: [Product] = []
-    @Published var temporalProduct: Product = Product(id: UUID(), name: "", qty: 0.0, unitCost: 0.0, unitPrice: 0.0, expirationDate: Date(), type: .Uni, url: "")
+    @Published var temporalProduct: Product = Product()
     let productRepository:  ProductRepository
     
     init(productRepository:ProductRepository) {
         self.productRepository = productRepository
-        getTemporalProduct()
         fetchProducts()
     }
     
@@ -24,15 +23,15 @@ class ProductCoreDataViewModel: ObservableObject {
         productsCoreData = productRepository.getListProducts()
     }
     
-    func getTemporalProduct() {
-        temporalProduct = productRepository.getTemporalProduct()
+    func setDefaultProduct() {
+        temporalProduct = Product()
     }
     
     func addProduct() -> Bool {
         let result = productRepository.saveProduct(product: temporalProduct)
         
         if(result == "Success"){
-            getTemporalProduct()
+            setDefaultProduct()
             fetchProducts()
             return true
         }else{ return false }
@@ -54,5 +53,10 @@ class ProductCoreDataViewModel: ObservableObject {
         }else {
             productsCoreData = self.productRepository.filterProducts(word: word)
         }
+    }
+    
+    func setPrimaryFilter(filter: PrimaryOrder, word: String) {
+        productRepository.setPrimaryFilter(filter: filter)
+        filterProducts(word: word)
     }
 }

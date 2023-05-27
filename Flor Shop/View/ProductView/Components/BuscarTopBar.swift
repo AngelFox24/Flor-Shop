@@ -21,7 +21,7 @@ struct BuscarTopBar: View {
                     TextField("Buscar Producto",text: $seach)
                         .foregroundColor(Color("color_primary"))
                         .onSubmit {
-                            filtrarProductos(word: seach)
+                            filtrarProductos()
                         }
                         .disableAutocorrection(true)
                 }
@@ -29,24 +29,54 @@ struct BuscarTopBar: View {
                 .background(Color("color_background"))
                 .cornerRadius(35.0)
                 .padding(.trailing,8)
-                
-                Button(action: { }) {
-                    Image(systemName: "slider.horizontal.3")
-                        .foregroundColor(Color("color_primary"))
-                        .padding(.horizontal,8)
-                        .padding(.vertical,10)
-                        .background(Color("color_background"))
-                        .cornerRadius(15.0)
+                Menu {
+                    Button(){
+                        setPrimaryOrder(order: .NameAsc)
+                    } label: {
+                        Text("Nombre")
+                    }
+                    Button(){
+                        setPrimaryOrder(order: .QuantityAsc)
+                    } label: {
+                        Text("Sin Stock")
+                    }
+                    Button(){
+                        setPrimaryOrder(order: .QuantityDesc)
+                    } label: {
+                        Text("Cantidad Mayor")
+                    }
+                    Button(){
+                        setPrimaryOrder(order: .PriceDesc)
+                    } label: {
+                        Text("Precio Mayor")
+                    }
+                    Button(){
+                        setPrimaryOrder(order: .PriceAsc)
+                    } label: {
+                        Text("Precio Menor")
+                    }
+                }label: {
+                    Button(action: { }) {
+                        Image(systemName: "slider.horizontal.3")
+                            .foregroundColor(Color("color_primary"))
+                            .padding(.horizontal,8)
+                            .padding(.vertical,10)
+                            .background(Color("color_background"))
+                            .cornerRadius(15.0)
+                    }
+                    .font(.title)
                 }
-                .font(.title)
             }
             .padding(.horizontal,30)
         }
         .padding(.bottom,10)
         .background(Color("color_primary"))
     }
-    func filtrarProductos(word: String){
-        productsCoreDataViewModel.filterProducts(word: word)
+    func filtrarProductos(){
+        productsCoreDataViewModel.filterProducts(word: seach)
+    }
+    func setPrimaryOrder(order: PrimaryOrder){
+        productsCoreDataViewModel.setPrimaryFilter(filter: order, word: seach)
     }
 }
 

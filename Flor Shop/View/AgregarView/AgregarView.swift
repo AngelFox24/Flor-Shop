@@ -171,7 +171,7 @@ struct CamposProductoAgregar: View {
             HStack {
                 HStack {
                     Button(action: {
-                        productsCoreDataViewModel.getTemporalProduct()
+                        productsCoreDataViewModel.setDefaultProduct()
                     }, label:{
                         Text("Limpiar")
                             .font(.headline)

@@ -13,10 +13,10 @@ import CoreData
 protocol ProductRepository {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
-    func getTemporalProduct() -> Product
     func reduceStock() -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
     func filterProducts(word: String) -> [Product]
+    func setPrimaryFilter(filter: PrimaryOrder)
 }
 //clas
 public class ProductRepositoryImpl: ProductRepository {
@@ -48,11 +48,11 @@ public class ProductRepositoryImpl: ProductRepository {
         return manager.deleteProduct(indexSet: indexSet)
     }
     
-    func getTemporalProduct() -> Product {
-        return manager.getTemporalProduct()
-    }
-    
     func filterProducts(word: String) -> [Product] {
         return manager.filterProducts(word: word)
+    }
+    
+    func setPrimaryFilter(filter: PrimaryOrder) {
+        return manager.setPrimaryFilter(filter: filter)
     }
 }

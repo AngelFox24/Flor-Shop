@@ -19,17 +19,17 @@ enum TipoMedicion: CustomStringConvertible {
     case Kg
     case Uni
     var description: String {
-            switch self {
-            case .Kg:
-                return "Kilos"
-            case .Uni:
-                return "Unidades"
-            }
+        switch self {
+        case .Kg:
+            return "Kilos"
+        case .Uni:
+            return "Unidades"
         }
+    }
     
     static var allValues: [TipoMedicion] {
-            return [.Kg, .Uni]
-        }
+        return [.Kg, .Uni]
+    }
     
     static func from(description: String) -> TipoMedicion? {
         for case let tipo in TipoMedicion.allValues {
@@ -40,7 +40,6 @@ enum TipoMedicion: CustomStringConvertible {
         return nil
     }
 }
-
 
 struct Product: Identifiable{
     var id: UUID
@@ -66,6 +65,19 @@ struct Product: Identifiable{
         self.url = url
         self.totalCost = 0
         self.profitMargin = 0
+        self.keyWords = "Producto"
+    }
+    init () {
+        self.id = UUID()
+        self.name = ""
+        self.qty = 0.0
+        self.unitCost = 0.0
+        self.unitPrice = 0.0
+        self.expirationDate = Date()
+        self.type = .Uni
+        self.url = ""
+        self.totalCost = 0.0
+        self.profitMargin = 0.0
         self.keyWords = "Producto"
     }
     
