@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BuscarTopBar: View {
+    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     @State private var seach:String = ""
     var body: some View {
         
@@ -19,8 +20,10 @@ struct BuscarTopBar: View {
                         .font(.system(size: 25))
                     TextField("Buscar Producto",text: $seach)
                         .foregroundColor(Color("color_primary"))
+                        .onSubmit {
+                            filtrarProductos(word: seach)
+                        }
                         .disableAutocorrection(true)
-                    
                 }
                 .padding(.all,10)
                 .background(Color("color_background"))
@@ -36,20 +39,22 @@ struct BuscarTopBar: View {
                         .cornerRadius(15.0)
                 }
                 .font(.title)
-                //.foregroundColor(Color("color_background"))
             }
             .padding(.horizontal,30)
         }
         .padding(.bottom,10)
         .background(Color("color_primary"))
-        
-        //.overlay(Color.gray.opacity(0.9))
-        //.border(Color.red)
+    }
+    func filtrarProductos(word: String){
+        productsCoreDataViewModel.filterProducts(word: word)
     }
 }
 
 struct BuscarTopBar_Previews: PreviewProvider {
     static var previews: some View {
+        let productManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let productRepository = ProductRepositoryImpl(manager: productManager)
         BuscarTopBar()
+            .environmentObject(ProductCoreDataViewModel(productRepository: productRepository))
     }
 }

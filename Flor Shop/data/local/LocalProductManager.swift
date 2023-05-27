@@ -15,6 +15,7 @@ protocol ProductManager {
     func getTemporalProduct() -> Product
     func reduceStock() -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
+    func filterProducts(word: String) -> [Product]
 }
 
 class LocalProductManager: ProductManager {
@@ -146,5 +147,21 @@ class LocalProductManager: ProductManager {
     
     func getTemporalProduct() -> Product {
         return Product(id: UUID(), name: "", qty: 0.0, unitCost: 0.0, unitPrice: 0.0, expirationDate: Date(), type: .Uni, url: "https://falabella.scene7.com/is/image/FalabellaPE/19316385_1?wid=180")
+    }
+    
+    func filterProducts(word: String) -> [Product] {
+        var productos:[Product] = []
+        let fetchRequest: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
+        let predicado = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
+        fetchRequest.predicate = predicado
+        do {
+            // Ejecutar la consulta y obtener los resultados
+            let productosBD = try self.productsContainer.viewContext.fetch(fetchRequest)
+            productos = productosBD.mapToListProduct()
+            return productos
+        } catch {
+            print("Error al ejecutar la consulta: \(error.localizedDescription)")
+            return productos
+        }
     }
 }

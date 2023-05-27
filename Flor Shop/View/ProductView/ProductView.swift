@@ -72,10 +72,8 @@ struct ListaControler: View {
                             .tint(.red)
                         }
                 }
-                
             }
             .listStyle(PlainListStyle())
-            
         }
     }
     func editarProducto(producto: Product){

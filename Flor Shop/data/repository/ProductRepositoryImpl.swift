@@ -16,6 +16,7 @@ protocol ProductRepository {
     func getTemporalProduct() -> Product
     func reduceStock() -> Bool
     func deleteProduct(indexSet: IndexSet) -> Bool
+    func filterProducts(word: String) -> [Product]
 }
 //clas
 public class ProductRepositoryImpl: ProductRepository {
@@ -49,5 +50,9 @@ public class ProductRepositoryImpl: ProductRepository {
     
     func getTemporalProduct() -> Product {
         return manager.getTemporalProduct()
+    }
+    
+    func filterProducts(word: String) -> [Product] {
+        return manager.filterProducts(word: word)
     }
 }

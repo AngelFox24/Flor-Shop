@@ -47,4 +47,12 @@ class ProductCoreDataViewModel: ObservableObject {
     func editProduct (product: Product) {
         self.temporalProduct = product
     }
+    
+    func filterProducts(word: String){
+        if word == "" {
+            fetchProducts()
+        }else {
+            productsCoreData = self.productRepository.filterProducts(word: word)
+        }
+    }
 }
