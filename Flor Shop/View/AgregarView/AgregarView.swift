@@ -40,7 +40,7 @@ struct CampoIndividual:View {
                 .multilineTextAlignment(.center)
                 .overlay(
                         RoundedRectangle(cornerRadius: 15)
-                            .stroke(.blue, lineWidth: 2)
+                            .stroke(Color("color_hint"), lineWidth: 2)
                     )
             .foregroundColor(Color("color_primary"))
         }
@@ -57,7 +57,7 @@ struct CampoIndividualDouble:View {
                 .keyboardType(.decimalPad)
                 .overlay(
                         RoundedRectangle(cornerRadius: 15)
-                            .stroke(.blue, lineWidth: 2)
+                            .stroke(Color("color_hint"), lineWidth: 2)
                     )
             .foregroundColor(Color("color_primary"))
         }
@@ -122,13 +122,16 @@ struct CamposProductoAgregar: View {
                     }label: {
                         Text(productsCoreDataViewModel.temporalProduct.type.description)
                     }
-                    .buttonStyle(.bordered)
+                    //.buttonStyle(.bordered)
+                    .padding(.horizontal,10)
+                    .padding(.vertical,2)
+                    .background(Color("color_hint"))
                     .cornerRadius(10)
                 }
                 .frame(width: sizeCampo)
             }
             HStack {
-                Text("URL")
+                Text("Imagen URL")
                     .font(.headline)
                 Spacer()
                 CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url)
@@ -178,7 +181,7 @@ struct CamposProductoAgregar: View {
                             .foregroundColor(.white)
                             .frame(height: 55)
                             .frame(maxWidth: .infinity)
-                            .background(Color("color_secondary"))
+                            .background(Color("color_hint"))
                             .cornerRadius(20)
                     })
                 }
