@@ -37,14 +37,17 @@ struct CampoIndividual:View {
     var body: some View {
         HStack {
             TextField("", text: $contenido)
+                .font(.system(size: 20))
                 .multilineTextAlignment(.center)
-                .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(Color("color_hint"), lineWidth: 2)
-                    )
-            .foregroundColor(Color("color_primary"))
+                .foregroundColor(Color("color_primary"))
         }
-        .padding(.horizontal,1)
+        .padding(.all,5)
+        .background(Color("color_background"))
+        .cornerRadius(15)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color("color_hint"), lineWidth: 2)
+        )
     }
 }
 
@@ -53,28 +56,31 @@ struct CampoIndividualDouble:View {
     var body: some View {
         HStack {
             TextField("", value: $contenido, format: .number)
+                .font(.system(size: 20))
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
-                .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(Color("color_hint"), lineWidth: 2)
-                    )
-            .foregroundColor(Color("color_primary"))
+                .foregroundColor(Color("color_primary"))
         }
-        .padding(.horizontal,1)
+        .padding(.all,5)
+        .background(Color("color_background"))
+        .cornerRadius(15)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color("color_hint"), lineWidth: 2)
+        )
     }
 }
 
 struct CampoIndividualDate:View {
     @Binding var contenido:Date
     var body: some View {
-        HStack {
+        VStack {
             DatePicker("", selection: $contenido, displayedComponents: .date)
-                            .datePickerStyle(.compact)
-            .foregroundColor(Color("color_primary"))
-            .frame(maxWidth: .infinity, alignment: .center)
+                .background(Color("color_hint"))
+                .datePickerStyle(.compact)
+                .labelsHidden()
+                .clipShape(RoundedRectangle(cornerRadius: 15))
         }
-        .padding(.horizontal,1)
     }
 }
 
@@ -84,9 +90,14 @@ struct CamposProductoAgregar: View {
     var body: some View{
         VStack{
             HStack {
-                Image(systemName: "hourglass")
+                Spacer()
+                Image("ProductoSinNombre")
                     .resizable()
-                    .frame(width: 100,height: 100)
+                    .frame(width: 150,height: 150)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(Color("color_hint"), lineWidth: 2)
+                    )
                 Spacer()
                 VStack{
                     Text("Nombre del Producto")
@@ -122,9 +133,8 @@ struct CamposProductoAgregar: View {
                     }label: {
                         Text(productsCoreDataViewModel.temporalProduct.type.description)
                     }
-                    //.buttonStyle(.bordered)
                     .padding(.horizontal,10)
-                    .padding(.vertical,2)
+                    .padding(.vertical,8)
                     .background(Color("color_hint"))
                     .cornerRadius(10)
                 }
@@ -151,25 +161,35 @@ struct CamposProductoAgregar: View {
                 CampoIndividualDate(contenido: $productsCoreDataViewModel.temporalProduct.expirationDate)
                     .frame(width: sizeCampo)
             }
-            HStack {
-                VStack{
+            VStack {
+                HStack{
+                    Spacer()
                     Text("Costo Unitario")
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
                         .font(.headline)
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost)
-                }
-                .padding(.vertical,10)
-                VStack{
+                        .padding(.horizontal,5)
+                    Spacer()
                     Text("Margen de Ganancia")
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
                         .font(.headline)
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin)
-                }
-                .padding(.vertical,10)
-                VStack{
+                        .padding(.horizontal,5)
+                    Spacer()
                     Text("Precio Unitario")
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
                         .font(.headline)
+                        .padding(.horizontal,5)
+                    Spacer()
+                }
+                .padding(.top,15)
+                HStack{
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin)
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice)
                 }
-                .padding(.vertical,10)
+                .padding(.bottom,10)
             }
             HStack {
                 HStack {
