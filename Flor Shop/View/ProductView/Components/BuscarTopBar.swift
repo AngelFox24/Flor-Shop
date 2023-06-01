@@ -20,6 +20,7 @@ struct BuscarTopBar: View {
                         .font(.system(size: 25))
                     TextField("Buscar Producto",text: $seach)
                         .foregroundColor(Color("color_primary"))
+                        .submitLabel(.search)
                         .onSubmit {
                             filtrarProductos()
                         }

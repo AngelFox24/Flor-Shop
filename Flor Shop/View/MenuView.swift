@@ -9,34 +9,27 @@ import SwiftUI
 import CoreData
 
 struct MenuView: View {
-    @State private var tabSelected: Tab = .magnifyingglass
+    @State private var tabSelected: Tab = .plus
     var body: some View {
-        ZStack {
-            VStack {
-                TabView(selection: $tabSelected) {
-                    AgregarView()
-                        .tag(Tab.plus)
-                    
-                    ProductView()
-                        .tag(Tab.magnifyingglass)
-                    
-                    CarritoView()
-                        .tag(Tab.cart)
-                }
+        VStack {
+            TabView(selection: $tabSelected) {
+                AgregarView()
+                    .tag(Tab.plus)
+                
+                ProductView()
+                    .tag(Tab.magnifyingglass)
+                
+                CarritoView()
+                    .tag(Tab.cart)
             }
-            VStack {
-                Spacer()
-                CustomTabBar(selectedTab: $tabSelected)
-            }
+            CustomTabBar(selectedTab: $tabSelected)
+                .ignoresSafeArea(.keyboard)
         }
     }
 }
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
-        let repository = ProductRepositoryImpl(manager: prdManager)
         MenuView()
-            .environmentObject(ProductCoreDataViewModel(productRepository: repository))
     }
 }

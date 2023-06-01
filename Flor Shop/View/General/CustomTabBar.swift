@@ -32,9 +32,8 @@ struct CustomTabBar: View {
         }
     }
     var body: some View {
-        
         VStack {
-            HStack {
+            HStack() {
                 ForEach(Tab.allCases, id: \.rawValue) { tab in
                     VStack {
                         HStack {
@@ -42,12 +41,12 @@ struct CustomTabBar: View {
                             VStack {
                                 Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
                                     .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
-                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : .gray)
+                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : Color("color_background"))
                                     .font(.system(size: 20))
                                 
                                 Text(getTabText(for: tab))
                                     .fontWeight(.regular)
-                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : .gray)
+                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : Color("color_background"))
                             }
                             Spacer()
                         }
@@ -63,9 +62,7 @@ struct CustomTabBar: View {
             }
             .frame(width: nil, height: 60)
             .background(Color("color_primary"))
-            //.cornerRadius(20)
-            //.padding()
-            }
+        }
     }
 }
 struct CustomTabBar_Previews: PreviewProvider {

@@ -11,14 +11,10 @@ import CoreData
 struct AgregarView: View {
     let viewName = "AgregarView"
     var body: some View {
-        ZStack{
-            Color("color_background")
-                .ignoresSafeArea()
+        VStack{
+            DefaultTopBar(titleBar: "Agregar Producto")
             CamposProductoAgregar()
-            VStack {
-                DefaultTopBar(titleBar: "Agregar Producto")
-                Spacer()
-            }
+            Spacer()
         }
     }
 }
@@ -54,12 +50,24 @@ struct CampoIndividual:View {
 struct CampoIndividualDouble:View {
     @Binding var contenido:Double
     var body: some View {
-        HStack {
+        VStack {
             TextField("", value: $contenido, format: .number)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
                 .foregroundColor(Color("color_primary"))
+                /*.toolbar {
+                    ToolbarItem(placement: .keyboard) {
+                        HStack {
+                            Button("Finish") {
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                // do something
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        .padding(.horizontal, 30)
+                    }
+                }*/
         }
         .padding(.all,5)
         .background(Color("color_background"))
@@ -226,7 +234,6 @@ struct CamposProductoAgregar: View {
                 .padding(.trailing,20)
                 .padding(.leading,10)
             }
-            .padding(.vertical,50)
         }
         .padding(.horizontal,10)
     }
