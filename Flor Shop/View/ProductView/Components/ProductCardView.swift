@@ -19,7 +19,6 @@ struct ProductCardView: View {
     
     
     let size: CGFloat
-    //@EnvironmentObject var muebles: MueblesViewModel
     @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     
     static let dateFormatter: DateFormatter = {
@@ -38,7 +37,6 @@ struct ProductCardView: View {
                 VStack {
                     HStack {
                         Text(nombreProducto)
-                            //.lineLimit(2)
                             .font(.headline)
                             .fontWeight(.bold)
                             .padding(.horizontal,5)
@@ -47,28 +45,22 @@ struct ProductCardView: View {
                     Spacer()
                     HStack {
                         Text("\(Self.dateFormatter.string(from: fechaVencimiento))")
-                        //.frame(width: 55, height: 20)
                             .padding(.vertical,10)
                             .padding(.horizontal,10)
-                            //.fontWeight(.bold)
                             .foregroundColor(Color("color_background"))
                             .background(Color("color_secondary"))
                             .cornerRadius(20)
                         Spacer()
                         Text(String(cantidadProducto))
-                        //.frame(width: 55, height: 20)
                             .padding(.vertical,10)
                             .padding(.horizontal,10)
-                            //.fontWeight(.bold)
                             .foregroundColor(Color("color_background"))
                             .background(Color("color_secondary"))
                             .cornerRadius(20)
                         Spacer()
                         Text(String("S/. \(precioUnitarioProducto)"))
-                        //.frame(width: 55, height: 20)
                             .padding(.vertical,10)
                             .padding(.horizontal,10)
-                            //.fontWeight(.bold)
                             .foregroundColor(Color("color_background"))
                             .background(Color("color_secondary"))
                             .cornerRadius(20)
@@ -76,15 +68,10 @@ struct ProductCardView: View {
                 }
                 .padding(.vertical,10)
                 .padding(.trailing,10)
-                //.multilineTextAlignment(.leading)
-                //.frame(maxWidth: .infinity)
-                
             }
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(Color("color_primary"))
             .cornerRadius(20.0)
-            //.padding(.horizontal,15)
-            
         }
         .onAppear{
             imageProductNetwork.getImage(url: (URL(string: urlProducto )!))

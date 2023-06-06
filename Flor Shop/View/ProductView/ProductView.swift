@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 struct ProductView: View {
+    @Binding var selectedTab: Tab
     var body: some View {
         NavigationView () {
             ZStack{
@@ -16,7 +17,7 @@ struct ProductView: View {
                     .ignoresSafeArea()
                 VStack(spacing: 0){
                     BuscarTopBar()
-                    ListaControler()
+                    ListaControler(selectedTab: $selectedTab)
                 }
             }
         }
@@ -32,7 +33,7 @@ struct HomeView_Previews: PreviewProvider {
         
         let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
-        ProductView()
+        ProductView(selectedTab: .constant(.magnifyingglass))
             .environmentObject(ProductCoreDataViewModel(productRepository: productRepository))
             .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
     }
@@ -41,11 +42,11 @@ struct HomeView_Previews: PreviewProvider {
 struct ListaControler: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
+    @Binding var selectedTab: Tab
     var body: some View {
         
         VStack {
             List(){
-                //id: \.self
                 ForEach(productsCoreDataViewModel.productsCoreData){ producto in
                     ProductCardView(
                         nombreProducto: producto.name,
@@ -66,6 +67,7 @@ struct ListaControler: View {
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(action: {
                                 editarProducto(producto: producto)
+                                selectedTab = .plus
                             }) {
                                 Image(systemName: "pencil")
                             }

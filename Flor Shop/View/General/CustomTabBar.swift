@@ -12,6 +12,7 @@ enum Tab: String, CaseIterable {
     case magnifyingglass
     case cart
 }
+
 struct CustomTabBar: View {
     @Binding var selectedTab: Tab
     private var fillImage: String {
