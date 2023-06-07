@@ -166,8 +166,8 @@
 		274CE2A929E6D81E007C703D /* View */ = {
 			isa = PBXGroup;
 			children = (
-				27C241F92A0089B50045B2A0 /* AgregarView */,
 				27C241F52A0088A70045B2A0 /* General */,
+				27C241F92A0089B50045B2A0 /* AgregarView */,
 				27C241F62A0088DE0045B2A0 /* ProductView */,
 				27C241F72A0088E90045B2A0 /* CarritoView */,
 				27B3936D29F74E4B0085D4EC /* MenuView.swift */,
