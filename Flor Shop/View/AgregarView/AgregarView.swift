@@ -11,7 +11,7 @@ import CoreData
 struct AgregarView: View {
     var body: some View {
         VStack(spacing: 0){
-            DefaultTopBar(titleBar: "Agregar Producto")
+            AgregarTopBar()
             CamposProductoAgregar()
         }
     }
@@ -29,7 +29,7 @@ struct AgregarView_Previews: PreviewProvider {
 struct CampoIndividual:View {
     @Binding var contenido:String
     var body: some View {
-        HStack {
+        VStack {
             TextField("", text: $contenido)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
@@ -70,11 +70,32 @@ struct CampoIndividualDate:View {
     var body: some View {
         VStack {
             DatePicker("", selection: $contenido, displayedComponents: .date)
-                .background(Color("color_hint"))
                 .datePickerStyle(.compact)
                 .labelsHidden()
-                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .frame(maxWidth: .infinity)
+                .accentColor(Color("color_primary"))
+                //.background(Color("color_primary"))
         }
+    }
+}
+
+struct CampoIndividualDate2:View {
+    @Binding var contenido:Date
+    var body: some View {
+        VStack {
+            DatePicker("", selection: $contenido, displayedComponents: .date)
+                .font(.system(size: 60))
+                .accentColor(Color("color_primary"))
+                .datePickerStyle(.compact)
+                .labelsHidden()
+                .blendMode(/*@START_MENU_TOKEN@*/.hardLight/*@END_MENU_TOKEN@*/)
+                .frame(maxWidth: .infinity)
+                .foregroundColor(/*@START_MENU_TOKEN@*/.purple/*@END_MENU_TOKEN@*/)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color("color_hint"), lineWidth: 2)
+        )
     }
 }
 
@@ -126,9 +147,9 @@ struct CamposProductoAgregar: View {
                         }
                     }label: {
                         Text(productsCoreDataViewModel.temporalProduct.type.description)
+                            .padding(.vertical,7)
                     }
                     .padding(.horizontal,10)
-                    .padding(.vertical,8)
                     .background(Color("color_hint"))
                     .cornerRadius(10)
                 }
@@ -188,42 +209,6 @@ struct CamposProductoAgregar: View {
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice)
                 }
                 .padding(.bottom,10)
-            }
-            .listRowSeparator(.hidden)
-            HStack {
-                HStack {
-                    Button(action: {
-                        productsCoreDataViewModel.setDefaultProduct()
-                    }, label:{
-                        Text("Limpiar")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(height: 55)
-                            .frame(maxWidth: .infinity)
-                            .background(Color("color_hint"))
-                            .cornerRadius(20)
-                    })
-                }
-                .padding(.leading,20)
-                .padding(.trailing,10)
-                HStack {
-                    Button(action: {
-                        if productsCoreDataViewModel.addProduct()
-                        {
-                            print ("Se agrego un producto exitosamente")
-                        }
-                    }, label:{
-                        Text("Guardar")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(height: 55)
-                            .frame(maxWidth: .infinity)
-                            .background(Color("color_secondary"))
-                            .cornerRadius(20)
-                    })
-                }
-                .padding(.trailing,20)
-                .padding(.leading,10)
             }
             .listRowSeparator(.hidden)
         }

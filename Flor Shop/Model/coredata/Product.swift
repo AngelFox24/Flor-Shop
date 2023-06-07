@@ -83,6 +83,7 @@ struct Product: Identifiable{
     
     //MARK: Validacion Crear Producto
     func isProductNameValid() -> Bool {
+        print ("El nombre en Product es name: \(self.name)")
         return !name.trimmingCharacters(in: .whitespaces).isEmpty
     }
     

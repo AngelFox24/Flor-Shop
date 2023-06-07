@@ -82,6 +82,7 @@ class LocalProductManager: ProductManager {
     
     func saveProduct(product: Product) -> String {
         var message = ""
+        print ("Se va a validar los inputs")
         if product.isProductNameValid(),
            product.isCantidadValid(),
            product.isCostoUnitarioValid(),

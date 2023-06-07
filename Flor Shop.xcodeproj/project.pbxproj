@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */; };
 		271A7E1129F0DF1300BBAEA3 /* ProductoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */; };
 		271A7E1329F0E27700BBAEA3 /* ProductoListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1229F0E27700BBAEA3 /* ProductoListViewModel.swift */; };
 		271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarTopBar.swift; sourceTree = "<group>"; };
 		271A7E1029F0DF1300BBAEA3 /* ProductoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductoModel.swift; sourceTree = "<group>"; };
 		271A7E1229F0E27700BBAEA3 /* ProductoListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductoListViewModel.swift; sourceTree = "<group>"; };
 		271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProductNetworkViewModel.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 		27C241FA2A0089BC0045B2A0 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -383,6 +386,7 @@
 				27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */,
 				27B3937029F7575C0085D4EC /* BuscarTopBar.swift in Sources */,
 				2728EAAE2A1B0BC2002B534A /* SaleRepositoryImpl.swift in Sources */,
+				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				274CE29C29E6D792007C703D /* ProductView.swift in Sources */,
 				27F54F3429FDE6180083B616 /* CarritoTopBar.swift in Sources */,
 				2728EAB02A1B0BD5002B534A /* CarRepositoryImpl.swift in Sources */,

@@ -28,13 +28,19 @@ class ProductCoreDataViewModel: ObservableObject {
     }
     
     func addProduct() -> Bool {
+        print ("Se presiono addProduct")
+        print ("El nombre del producto a agregar es \(temporalProduct.name)")
         let result = productRepository.saveProduct(product: temporalProduct)
         
         if(result == "Success"){
+            print ("Se añadio correctamente")
             setDefaultProduct()
             fetchProducts()
             return true
-        }else{ return false }
+        }else{
+            print (result)
+            return false
+        }
     }
     
     func reducirStock() -> Bool {
@@ -44,6 +50,7 @@ class ProductCoreDataViewModel: ObservableObject {
     }
     
     func editProduct (product: Product) {
+        print ("Se presiono edit product con nombre: \(product.name)")
         self.temporalProduct = product
     }
     
