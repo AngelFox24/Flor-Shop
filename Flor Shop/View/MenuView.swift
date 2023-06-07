@@ -14,13 +14,10 @@ struct MenuView: View {
         VStack(spacing: 0){
             if tabSelected == .plus {
                 AgregarView(isKeyboardVisible: $isKeyboardVisible)
-                    .tag(Tab.plus)
             }else if tabSelected == .magnifyingglass {
                 ProductView(selectedTab: $tabSelected)
-                    .tag(Tab.magnifyingglass)
             }else if tabSelected == .cart {
                 CarritoView()
-                    .tag(Tab.cart)
             }
             if isKeyboardVisible{
                 CustomHideKeyboard()
