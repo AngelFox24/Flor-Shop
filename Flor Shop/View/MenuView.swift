@@ -9,11 +9,12 @@ import SwiftUI
 import CoreData
 
 struct MenuView: View {
-    @State private var tabSelected: Tab = .magnifyingglass
+    @State private var tabSelected: Tab = .plus
+    @State private var isKeyboardVisible: Bool = false
     var body: some View {
         VStack {
             TabView(selection: $tabSelected) {
-                AgregarView()
+                AgregarView(isKeyboardVisible: $isKeyboardVisible)
                     .tag(Tab.plus)
                 
                 ProductView(selectedTab: $tabSelected)
@@ -23,7 +24,11 @@ struct MenuView: View {
                     .tag(Tab.cart)
             }
             Spacer()
-            CustomTabBar(selectedTab: $tabSelected)
+            if isKeyboardVisible{
+                CustomHideKeyboard()
+            }else{
+                CustomTabBar(selectedTab: $tabSelected)
+            }
         }
     }
 }

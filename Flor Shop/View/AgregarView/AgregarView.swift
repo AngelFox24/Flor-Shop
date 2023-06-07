@@ -10,10 +10,11 @@ import CoreData
 
 struct AgregarView: View {
     let viewName = "AgregarView"
+    @Binding var isKeyboardVisible: Bool
     var body: some View {
         VStack{
             DefaultTopBar(titleBar: "Agregar Producto")
-            CamposProductoAgregar()
+            CamposProductoAgregar(isKeyboardVisible: $isKeyboardVisible)
             Spacer()
         }
     }
@@ -23,7 +24,7 @@ struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let repository = ProductRepositoryImpl(manager: prdManager)
-        AgregarView()
+        AgregarView(isKeyboardVisible: .constant(true))
             .environmentObject(ProductCoreDataViewModel(productRepository: repository))
     }
 }
@@ -56,18 +57,6 @@ struct CampoIndividualDouble:View {
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
                 .foregroundColor(Color("color_primary"))
-                /*.toolbar {
-                    ToolbarItem(placement: .keyboard) {
-                        HStack {
-                            Button("Finish") {
-                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                // do something
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                        .padding(.horizontal, 30)
-                    }
-                }*/
         }
         .padding(.all,5)
         .background(Color("color_background"))
@@ -94,6 +83,7 @@ struct CampoIndividualDate:View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
+    @Binding var isKeyboardVisible: Bool
     var sizeCampo:CGFloat = 200
     var body: some View{
         VStack{
@@ -236,5 +226,14 @@ struct CamposProductoAgregar: View {
             }
         }
         .padding(.horizontal,10)
+        .onAppear {
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = true
+            }
+            
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = false
+            }
+        }
     }
 }

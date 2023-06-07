@@ -17,6 +17,7 @@
 		2728EAB02A1B0BD5002B534A /* CarRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */; };
 		2728EAB22A1B0E02002B534A /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB12A1B0E02002B534A /* Car.swift */; };
 		2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB32A1B0E0D002B534A /* Sale.swift */; };
+		2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */; };
 		274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* Flor_ShopApp.swift */; };
 		274CE29C29E6D792007C703D /* ProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* ProductView.swift */; };
 		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
@@ -53,6 +54,7 @@
 		2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarRepositoryImpl.swift; sourceTree = "<group>"; };
 		2728EAB12A1B0E02002B534A /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		2728EAB32A1B0E0D002B534A /* Sale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sale.swift; sourceTree = "<group>"; };
+		2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHideKeyboard.swift; sourceTree = "<group>"; };
 		274CE29629E6D792007C703D /* Flor Shop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flor Shop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		274CE29929E6D792007C703D /* Flor_ShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flor_ShopApp.swift; sourceTree = "<group>"; };
 		274CE29B29E6D792007C703D /* ProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductView.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 			children = (
 				27C318E129F34498004CC146 /* DefaultTopBar.swift */,
 				27B3936B29F73B510085D4EC /* CustomTabBar.swift */,
+				2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -401,6 +404,7 @@
 				27C241FF2A00A89C0045B2A0 /* CarritoCoreDataViewModel.swift in Sources */,
 				272066802A094D6A00E0CCA8 /* VentasCoreDataViewModel.swift in Sources */,
 				2728EAB22A1B0E02002B534A /* Car.swift in Sources */,
+				2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */,
 				27F54F3229FDE5210083B616 /* CarritoView.swift in Sources */,
 				27C318D429F2FA45004CC146 /* BDFlor.xcdatamodeld in Sources */,
 				271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */,
