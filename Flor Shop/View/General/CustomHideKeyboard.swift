@@ -9,21 +9,20 @@ import SwiftUI
 
 struct CustomHideKeyboard: View {
     var body: some View {
-        HStack{
-            
-            Spacer()
-            
-            Button(action: {
-                print("Se presiono el boton de desaparecer")
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-            }) {
-                Image(systemName: "keyboard.chevron.compact.down")
-                    .font(.system(size: 30))
-                    .foregroundColor(Color("color_secondary"))
+        VStack {
+            HStack{
+                Spacer()
+                Button(action: {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }) {
+                    Image(systemName: "keyboard.chevron.compact.down")
+                        .font(.system(size: 30))
+                        .foregroundColor(Color("color_secondary"))
+                        .padding(.trailing,50)
+                        .padding(.vertical,10)
+                }
             }
-            .padding(.trailing,50)
         }
-        .frame(width: nil, height: 60)
         .background(Color("color_primary"))
     }
 }

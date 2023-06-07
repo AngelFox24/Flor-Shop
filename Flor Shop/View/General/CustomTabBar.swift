@@ -61,8 +61,8 @@ struct CustomTabBar: View {
                     }
                 }
             }
-            .frame(width: nil, height: 60)
             .background(Color("color_primary"))
+            .frame(width: nil, height: 60)
         }
     }
 }

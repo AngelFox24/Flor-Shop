@@ -11,18 +11,10 @@ import CoreData
 struct ProductView: View {
     @Binding var selectedTab: Tab
     var body: some View {
-        NavigationView () {
-            ZStack{
-                Color("color_background")
-                    .ignoresSafeArea()
-                VStack(spacing: 0){
-                    BuscarTopBar()
-                    ListaControler(selectedTab: $selectedTab)
-                }
-            }
+        VStack(spacing: 0){
+            BuscarTopBar()
+            ListaControler(selectedTab: $selectedTab)
         }
-        .navigationBarHidden(true)
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -44,8 +36,7 @@ struct ListaControler: View {
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
     @Binding var selectedTab: Tab
     var body: some View {
-        
-        VStack {
+        VStack(spacing: 0) {
             List(){
                 ForEach(productsCoreDataViewModel.productsCoreData){ producto in
                     ProductCardView(
@@ -55,24 +46,24 @@ struct ListaControler: View {
                         precioUnitarioProducto: producto.unitPrice,
                         urlProducto: producto.url ,
                         size: 120.0)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button(action: {
-                                agregarProductoACarrito(producto: producto)
-                            }) {
-                                Image(systemName: "cart")
-                            }
-                            .tint(.red)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            agregarProductoACarrito(producto: producto)
+                        }) {
+                            Image(systemName: "cart")
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(action: {
-                                editarProducto(producto: producto)
-                                selectedTab = .plus
-                            }) {
-                                Image(systemName: "pencil")
-                            }
-                            .tint(.red)
+                        .tint(.red)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(action: {
+                            editarProducto(producto: producto)
+                            selectedTab = .plus
+                        }) {
+                            Image(systemName: "pencil")
                         }
+                        .tint(.red)
+                    }
                 }
             }
             .listStyle(PlainListStyle())

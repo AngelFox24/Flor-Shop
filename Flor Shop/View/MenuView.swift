@@ -6,24 +6,22 @@
 //
 
 import SwiftUI
-import CoreData
 
 struct MenuView: View {
-    @State private var tabSelected: Tab = .plus
+    @State private var tabSelected: Tab = .magnifyingglass
     @State private var isKeyboardVisible: Bool = false
     var body: some View {
-        VStack {
-            TabView(selection: $tabSelected) {
+        VStack(spacing: 0){
+            if tabSelected == .plus {
                 AgregarView(isKeyboardVisible: $isKeyboardVisible)
                     .tag(Tab.plus)
-                
+            }else if tabSelected == .magnifyingglass {
                 ProductView(selectedTab: $tabSelected)
                     .tag(Tab.magnifyingglass)
-                
+            }else if tabSelected == .cart {
                 CarritoView()
                     .tag(Tab.cart)
             }
-            Spacer()
             if isKeyboardVisible{
                 CustomHideKeyboard()
             }else{
