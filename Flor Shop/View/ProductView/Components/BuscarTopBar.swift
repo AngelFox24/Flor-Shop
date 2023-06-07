@@ -11,7 +11,6 @@ struct BuscarTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     @State private var seach:String = ""
     var body: some View {
-        
         VStack {
             HStack{
                 HStack {

@@ -9,13 +9,10 @@ import SwiftUI
 import CoreData
 
 struct AgregarView: View {
-    let viewName = "AgregarView"
-    @Binding var isKeyboardVisible: Bool
     var body: some View {
-        VStack{
+        VStack(spacing: 0){
             DefaultTopBar(titleBar: "Agregar Producto")
-            CamposProductoAgregar(isKeyboardVisible: $isKeyboardVisible)
-            Spacer()
+            CamposProductoAgregar()
         }
     }
 }
@@ -24,7 +21,7 @@ struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let repository = ProductRepositoryImpl(manager: prdManager)
-        AgregarView(isKeyboardVisible: .constant(true))
+        AgregarView()
             .environmentObject(ProductCoreDataViewModel(productRepository: repository))
     }
 }
@@ -83,15 +80,12 @@ struct CampoIndividualDate:View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
-    @Binding var isKeyboardVisible: Bool
     var sizeCampo:CGFloat = 200
     var body: some View{
-        VStack{
+        List{
             HStack {
                 Spacer()
                 Image("ProductoSinNombre")
-                    .resizable()
-                    .frame(width: 150,height: 150)
                     .overlay(
                         RoundedRectangle(cornerRadius: 15)
                             .stroke(Color("color_hint"), lineWidth: 2)
@@ -104,6 +98,7 @@ struct CamposProductoAgregar: View {
                 }
                 .frame(width: sizeCampo)
             }
+            .listRowSeparator(.hidden)
             HStack {
                 Text("Costo Total")
                     .font(.headline)
@@ -111,6 +106,7 @@ struct CamposProductoAgregar: View {
                 CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.totalCost)
                     .frame(width: sizeCampo)
             }
+            .listRowSeparator(.hidden)
             HStack {
                 Text("Cantidad")
                     .font(.headline)
@@ -138,6 +134,7 @@ struct CamposProductoAgregar: View {
                 }
                 .frame(width: sizeCampo)
             }
+            .listRowSeparator(.hidden)
             HStack {
                 Text("Imagen URL")
                     .font(.headline)
@@ -145,6 +142,7 @@ struct CamposProductoAgregar: View {
                 CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url)
                     .frame(width: sizeCampo)
             }
+            .listRowSeparator(.hidden)
             HStack {
                 Text("Palabras Clave")
                     .font(.headline)
@@ -152,6 +150,7 @@ struct CamposProductoAgregar: View {
                 CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.keyWords)
                     .frame(width: sizeCampo)
             }
+            .listRowSeparator(.hidden)
             HStack {
                 Text("Fecha Vencimiento")
                     .font(.headline)
@@ -159,6 +158,7 @@ struct CamposProductoAgregar: View {
                 CampoIndividualDate(contenido: $productsCoreDataViewModel.temporalProduct.expirationDate)
                     .frame(width: sizeCampo)
             }
+            .listRowSeparator(.hidden)
             VStack {
                 HStack{
                     Spacer()
@@ -189,6 +189,7 @@ struct CamposProductoAgregar: View {
                 }
                 .padding(.bottom,10)
             }
+            .listRowSeparator(.hidden)
             HStack {
                 HStack {
                     Button(action: {
@@ -224,16 +225,8 @@ struct CamposProductoAgregar: View {
                 .padding(.trailing,20)
                 .padding(.leading,10)
             }
+            .listRowSeparator(.hidden)
         }
-        .padding(.horizontal,10)
-        .onAppear {
-            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
-                isKeyboardVisible = true
-            }
-            
-            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-                isKeyboardVisible = false
-            }
-        }
+        .listStyle(PlainListStyle())
     }
 }

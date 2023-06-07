@@ -46,6 +46,7 @@ struct ListaControler: View {
                         precioUnitarioProducto: producto.unitPrice,
                         urlProducto: producto.url ,
                         size: 120.0)
+                    .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                         Button(action: {

@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct MenuView: View {
-    @State private var tabSelected: Tab = .magnifyingglass
+    @State private var tabSelected: Tab = .plus
     @State private var isKeyboardVisible: Bool = false
     var body: some View {
         VStack(spacing: 0){
             if tabSelected == .plus {
-                AgregarView(isKeyboardVisible: $isKeyboardVisible)
+                AgregarView()
             }else if tabSelected == .magnifyingglass {
                 ProductView(selectedTab: $tabSelected)
             }else if tabSelected == .cart {
@@ -23,6 +23,15 @@ struct MenuView: View {
                 CustomHideKeyboard()
             }else{
                 CustomTabBar(selectedTab: $tabSelected)
+            }
+        }
+        .onAppear {
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = true
+            }
+            
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = false
             }
         }
     }
