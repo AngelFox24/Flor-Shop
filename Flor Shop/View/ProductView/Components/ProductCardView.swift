@@ -16,8 +16,6 @@ struct ProductCardView: View {
     let cantidadProducto:Double
     let precioUnitarioProducto:Double
     let urlProducto: String
-    
-    
     let size: CGFloat
     @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     
@@ -30,10 +28,35 @@ struct ProductCardView: View {
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                imageProductNetwork.imageProduct
+                /*imageProductNetwork.imageProduct
                     .resizable()
                     .frame(width: size,height: size)
                     .cornerRadius(20.0)
+                 */
+                AsyncImage(url: URL(string: urlProducto )!){ phase in
+                    switch phase {
+                    case .empty:
+                        Image("ProductoSinNombre")
+                            .resizable()
+                            .frame(width: size,height: size)
+                            .cornerRadius(20.0)
+                    case .success(let returnetImage):
+                        returnetImage
+                            .resizable()
+                            .frame(width: size,height: size)
+                            .cornerRadius(20.0)
+                    case .failure:
+                        Image("ProductoSinNombre")
+                            .resizable()
+                            .frame(width: size,height: size)
+                            .cornerRadius(20.0)
+                    default:
+                        Image("ProductoSinNombre")
+                            .resizable()
+                            .frame(width: size,height: size)
+                            .cornerRadius(20.0)
+                    }
+                }
                 VStack {
                     HStack {
                         Text(nombreProducto)
@@ -74,7 +97,7 @@ struct ProductCardView: View {
             .cornerRadius(20.0)
         }
         .onAppear{
-            imageProductNetwork.getImage(url: (URL(string: urlProducto )!))
+            //imageProductNetwork.getImage(url: (URL(string: urlProducto )!))
         }
     }
 }

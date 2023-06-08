@@ -106,11 +106,36 @@ struct CamposProductoAgregar: View {
         List{
             HStack {
                 Spacer()
-                Image("ProductoSinNombre")
+                /*Image("ProductoSinNombre")
                     .overlay(
                         RoundedRectangle(cornerRadius: 15)
                             .stroke(Color("color_hint"), lineWidth: 2)
                     )
+                 */
+                AsyncImage(url: URL(string: productsCoreDataViewModel.temporalProduct.url )){ phase in
+                    switch phase {
+                    case .empty:
+                        Image("ProductoSinNombre")
+                            .resizable()
+                            .frame(width: sizeCampo,height: sizeCampo)
+                            .cornerRadius(20.0)
+                    case .success(let returnetImage):
+                        returnetImage
+                            .resizable()
+                            .frame(width: sizeCampo,height: sizeCampo)
+                            .cornerRadius(20.0)
+                    case .failure:
+                        Image("ProductoSinNombre")
+                            .resizable()
+                            .frame(width: sizeCampo,height: sizeCampo)
+                            .cornerRadius(20.0)
+                    default:
+                        Image("ProductoSinNombre")
+                            .resizable()
+                            .frame(width: sizeCampo,height: sizeCampo)
+                            .cornerRadius(20.0)
+                    }
+                }
                 Spacer()
                 VStack{
                     Text("Nombre del Producto")
