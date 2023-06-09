@@ -41,26 +41,28 @@ struct ListaCarritoControler: View {
             List(){
                 let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
                 ForEach(detallesCarrito) { cartDetail in
-                    CarritoProductCardView(cartDetail: cartDetail, size: 120.0)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                    CarritoProductCardView(cartDetail: cartDetail, size: 100.0)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                        .listRowBackground(Color("color_background"))
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive, action: {
+                                deleteProduct(product: cartDetail.product)
+                            }) {
+                                Image(systemName: "trash")
+                            }
+                            .tint(Color("color_accent"))
+                        }
                 }
-                .onDelete(perform: deleteProducto)
                 .listRowSeparator(.hidden)
             }
             .listStyle(PlainListStyle())
         }
+        .padding(.horizontal, 10)
+        .background(Color("color_background"))
     }
-    func deleteProducto(at offsets: IndexSet) {
+    func deleteProduct(product: Product) {
         // Convertir los índices a un array
-        let indexArray = Array(offsets)
-        
-        // Eliminar los productos correspondientes de la colección
-        for index in indexArray {
-            let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
-            let productDetail = detallesCarrito[index]
-            
-            // Eliminar el producto de la colección
-            carritoCoreDataViewModel.deleteProduct(product: productDetail.product)
-        }
+        carritoCoreDataViewModel.deleteProduct(product: product)
+        print("Se elimino un producto del carrito \(product.name)")
     }
 }

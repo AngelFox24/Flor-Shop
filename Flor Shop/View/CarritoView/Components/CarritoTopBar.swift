@@ -14,8 +14,12 @@ struct CarritoTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     var body: some View {
         HStack{
-            Text("S/.  " + String(carritoCoreDataViewModel.carritoCoreData!.total))
-                .font(.title2)
+            HStack {
+                Text(String("S/. "))
+                    .font(.custom("text_font_1", size: 15))
+                Text(String(carritoCoreDataViewModel.carritoCoreData!.total))
+                    .font(.custom("text_font_1", size: 25))
+            }
             Spacer()
             Button(action: {
                 //Reducimos stock
@@ -32,21 +36,14 @@ struct CarritoTopBar: View {
                 }else{
                     print("No hay sufiente stock")
                 }
-            }) {
-                Text("Vender")
-                    .font(.title)
-                    .foregroundColor(Color("color_background"))
-                    .multilineTextAlignment(.center)
+            })
+            {
+                CustomButton1(text: "Vender")
             }
-            .padding(.horizontal,15)
-            .padding(.vertical,10)
-            .background(Color("color_secondary"))
-            .cornerRadius(15.0)
-            .font(.title)
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom,8)
-        .padding(.horizontal,20)
+        .padding(.horizontal,40)
         .background(Color("color_primary"))
     }
 }

@@ -16,16 +16,9 @@ struct AgregarTopBar: View {
                 let _ = print("Se va a presionar Limpiar con nombre")
                 productsCoreDataViewModel.setDefaultProduct()
             }) {
-                Text("Limpiar")
-                    .font(.title)
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
+                
+                CustomButton2(text: "Limpiar")
             }
-            .padding(.horizontal,15)
-            .padding(.vertical,10)
-            .background(Color("color_hint"))
-            .cornerRadius(15.0)
-            .font(.title)
             Spacer()
             Button(action: {
                 let _ = print("Se va a presionar Guardar con nombre \(productsCoreDataViewModel.temporalProduct.name)")
@@ -36,20 +29,12 @@ struct AgregarTopBar: View {
                     print ("No se pudo agregar correctamente")
                 }
             }) {
-                Text("Guardar")
-                    .font(.title)
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
+                CustomButton1(text: "Guardar")
             }
-            .padding(.horizontal,15)
-            .padding(.vertical,10)
-            .background(Color("color_secondary"))
-            .cornerRadius(15.0)
-            .font(.title)
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom,8)
-        .padding(.horizontal,20)
+        .padding(.horizontal,40)
         .background(Color("color_primary"))
     }
 }

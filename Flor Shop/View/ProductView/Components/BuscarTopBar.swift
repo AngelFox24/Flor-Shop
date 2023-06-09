@@ -15,9 +15,14 @@ struct BuscarTopBar: View {
             HStack{
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("color_primary"))
-                        .font(.system(size: 25))
+                        .foregroundColor(Color("color_accent"))
+                        .font(.custom("text_font_1", size: 16))
+                        .padding(.vertical,10)
+                        .padding(.leading,10)
+                    //TODO: Implementar el focus, al pulsar no siempre se abre el teclado
                     TextField("Buscar Producto",text: $seach)
+                        .padding(.vertical,10)
+                        .font(.custom("text_font_1", size: 16))
                         .foregroundColor(Color("color_primary"))
                         .submitLabel(.search)
                         .onSubmit {
@@ -25,9 +30,8 @@ struct BuscarTopBar: View {
                         }
                         .disableAutocorrection(true)
                 }
-                .padding(.all,10)
-                .background(Color("color_background"))
-                .cornerRadius(35.0)
+                .background(.white)
+                .cornerRadius(20.0)
                 .padding(.trailing,8)
                 Menu {
                     Button(){
@@ -58,18 +62,18 @@ struct BuscarTopBar: View {
                 }label: {
                     Button(action: { }) {
                         Image(systemName: "slider.horizontal.3")
-                            .foregroundColor(Color("color_primary"))
-                            .padding(.horizontal,8)
-                            .padding(.vertical,10)
-                            .background(Color("color_background"))
-                            .cornerRadius(15.0)
+                            .font(.custom("text_font_1", size: 22))
+                            .foregroundColor(Color("color_accent"))
                     }
-                    .font(.title)
+                    .padding(.horizontal,8)
+                    .padding(.vertical,10)
+                    .background(.white)
+                    .cornerRadius(15.0)
                 }
             }
             .padding(.horizontal,30)
         }
-        .padding(.bottom,10)
+        .padding(.bottom,9)
         .background(Color("color_primary"))
     }
     func filtrarProductos(){

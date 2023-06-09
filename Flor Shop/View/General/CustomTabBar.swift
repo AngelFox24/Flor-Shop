@@ -42,13 +42,14 @@ struct CustomTabBar: View {
                             VStack {
                                 Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
                                     .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
-                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : Color("color_background"))
+                                    .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
                                     .font(.system(size: 20))
                                 
                                 Text(getTabText(for: tab))
                                     .fontWeight(.regular)
-                                    .foregroundColor(tab == selectedTab ? Color("color_secondary") : Color("color_background"))
+                                    .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
                             }
+                            .padding(.top,8)
                             Spacer()
                         }
                         .frame(maxHeight: .infinity)
@@ -62,7 +63,7 @@ struct CustomTabBar: View {
                 }
             }
             .background(Color("color_primary"))
-            .frame(width: nil, height: 60)
+            .frame(width: nil, height: 50)
         }
     }
 }

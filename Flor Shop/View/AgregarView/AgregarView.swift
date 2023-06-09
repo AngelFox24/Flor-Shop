@@ -14,6 +14,7 @@ struct AgregarView: View {
             AgregarTopBar()
             CamposProductoAgregar()
         }
+        .background(Color("color_background"))
     }
 }
 
@@ -33,10 +34,10 @@ struct CampoIndividual:View {
             TextField("", text: $contenido)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
-                .foregroundColor(Color("color_primary"))
+                //.foregroundColor(Color("color_primary"))
         }
         .padding(.all,5)
-        .background(Color("color_background"))
+        .background(.white)
         .cornerRadius(15)
         .overlay(
             RoundedRectangle(cornerRadius: 15)
@@ -53,10 +54,10 @@ struct CampoIndividualDouble:View {
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
-                .foregroundColor(Color("color_primary"))
+                //.foregroundColor(Color("color_primary"))
         }
         .padding(.all,5)
-        .background(Color("color_background"))
+        .background(.white)
         .cornerRadius(15)
         .overlay(
             RoundedRectangle(cornerRadius: 15)
@@ -79,26 +80,6 @@ struct CampoIndividualDate:View {
     }
 }
 
-struct CampoIndividualDate2:View {
-    @Binding var contenido:Date
-    var body: some View {
-        VStack {
-            DatePicker("", selection: $contenido, displayedComponents: .date)
-                .font(.system(size: 60))
-                .accentColor(Color("color_primary"))
-                .datePickerStyle(.compact)
-                .labelsHidden()
-                .blendMode(/*@START_MENU_TOKEN@*/.hardLight/*@END_MENU_TOKEN@*/)
-                .frame(maxWidth: .infinity)
-                .foregroundColor(/*@START_MENU_TOKEN@*/.purple/*@END_MENU_TOKEN@*/)
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color("color_hint"), lineWidth: 2)
-        )
-    }
-}
-
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
     var sizeCampo:CGFloat = 200
@@ -106,12 +87,6 @@ struct CamposProductoAgregar: View {
         List{
             HStack {
                 Spacer()
-                /*Image("ProductoSinNombre")
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(Color("color_hint"), lineWidth: 2)
-                    )
-                 */
                 AsyncImage(url: URL(string: productsCoreDataViewModel.temporalProduct.url )){ phase in
                     switch phase {
                     case .empty:
@@ -145,6 +120,7 @@ struct CamposProductoAgregar: View {
                 .frame(width: sizeCampo)
             }
             .listRowSeparator(.hidden)
+            .listRowBackground(Color("color_background"))
             HStack {
                 Text("Costo Total")
                     .font(.headline)
@@ -152,6 +128,7 @@ struct CamposProductoAgregar: View {
                 CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.totalCost)
                     .frame(width: sizeCampo)
             }
+            .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
             HStack {
                 Text("Cantidad")
@@ -173,13 +150,15 @@ struct CamposProductoAgregar: View {
                     }label: {
                         Text(productsCoreDataViewModel.temporalProduct.type.description)
                             .padding(.vertical,7)
+                            .foregroundColor(.black)
                     }
                     .padding(.horizontal,10)
-                    .background(Color("color_hint"))
+                    .background(Color("color_secondary"))
                     .cornerRadius(10)
                 }
                 .frame(width: sizeCampo)
             }
+            .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
             HStack {
                 Text("Imagen URL")
@@ -188,6 +167,7 @@ struct CamposProductoAgregar: View {
                 CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url)
                     .frame(width: sizeCampo)
             }
+            .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
             HStack {
                 Text("Palabras Clave")
@@ -196,7 +176,9 @@ struct CamposProductoAgregar: View {
                 CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.keyWords)
                     .frame(width: sizeCampo)
             }
+            .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
+            /*
             HStack {
                 Text("Fecha Vencimiento")
                     .font(.headline)
@@ -204,10 +186,11 @@ struct CamposProductoAgregar: View {
                 CampoIndividualDate(contenido: $productsCoreDataViewModel.temporalProduct.expirationDate)
                     .frame(width: sizeCampo)
             }
+            .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
+             */
             VStack {
                 HStack{
-                    Spacer()
                     Text("Costo Unitario")
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
@@ -225,16 +208,18 @@ struct CamposProductoAgregar: View {
                         .multilineTextAlignment(.center)
                         .font(.headline)
                         .padding(.horizontal,5)
-                    Spacer()
                 }
                 .padding(.top,15)
-                HStack{
+                HStack(spacing: 0){
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost)
+                    Spacer()
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin)
+                    Spacer()
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice)
                 }
                 .padding(.bottom,10)
             }
+            .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
         }
         .listStyle(PlainListStyle())

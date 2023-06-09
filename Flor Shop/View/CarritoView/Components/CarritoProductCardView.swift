@@ -9,18 +9,12 @@ import SwiftUI
 import CoreData
 
 struct CarritoProductCardView: View {
-    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
     let cartDetail: CartDetail
     let size: CGFloat
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                /*imageProductNetwork.imageProduct
-                    .resizable()
-                    .frame(width: size,height: size)
-                    .cornerRadius(20.0)
-                 */
                 AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
                     switch phase {
                     case .empty:
@@ -49,19 +43,19 @@ struct CarritoProductCardView: View {
                     HStack {
                         Text(cartDetail.product.name)
                             .font(.headline)
-                            .fontWeight(.bold)
-                            .padding(.horizontal,5)
-                        Spacer()
+                            .fontWeight(.bold) // Alinea el texto a la izquierda
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    Spacer()
                     HStack {
                         Button(action: {}) {
                             Image(systemName: "minus")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 15, height: 15)
+                                .frame(width: 10, height: 10)
                                 .padding(12)
-                                .foregroundColor(Color("color_background"))
+                                .foregroundColor(Color("color_accent"))
                                 .background(Color("color_secondary"))
                                 .clipShape(Circle())
                         }
@@ -70,59 +64,62 @@ struct CarritoProductCardView: View {
                         })
                         
                         HStack {
-                            Text(String(cartDetail.quantity))
+                            Text(String("\(cartDetail.quantity) u"))
+                                .font(.custom("text_font_1", size: 18))
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical,10)
+                        .padding(.vertical,5)
                         .padding(.horizontal,10)
-                        .foregroundColor(Color("color_background"))
                         .background(Color("color_secondary"))
                         .cornerRadius(20)
-                        
                         
                         Button(action: {}) {
                             Image(systemName: "plus")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 15, height: 15)
+                                .frame(width: 10, height: 10)
                                 .padding(12)
-                                .foregroundColor(Color("color_background"))
+                                .foregroundColor(Color("color_accent"))
                                 .background(Color("color_secondary"))
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
                             carritoCoreDataViewModel.increaceProductAmount(product: cartDetail.product)
                         })
-                        
-                        HStack {
-                            Text("S/. "+String(carritoCoreDataViewModel.carritoCoreData?.total ?? 0))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical,10)
-                        .padding(.horizontal,10)
-                        .foregroundColor(Color("color_background"))
-                        .background(Color("color_secondary"))
-                        .cornerRadius(20)
+                        Spacer()
                     }
                 }
-                .padding(.vertical,10)
+                .padding(.all,5)
+                .padding(.trailing,10)
+                VStack {
+                    HStack {
+                        Text(String("S/. "))
+                            .font(.custom("text_font_1", size: 15))
+                        Text(String(carritoCoreDataViewModel.carritoCoreData?.total ?? 0))
+                            .font(.custom("text_font_1", size: 18))
+                    }
+                    .padding(.vertical,8)
+                    .padding(.horizontal,10)
+                    .foregroundColor(.white)
+                    .background(Color("color_accent"))
+                    .cornerRadius(20)
+                }
                 .padding(.trailing,10)
             }
             .frame(maxWidth: .infinity, maxHeight: size)
-            .background(Color("color_primary"))
-            .cornerRadius(20.0)
+            .background(.white)
         }
+        .cornerRadius(15)
         .onAppear{
             //imageProductNetwork.getImage(url: (URL(string: cartDetail.product.url )!))
         }
     }
 }
-/*
- struct CarritoProductCardView_Previews: PreviewProvider {
- static var previews: some View {
- let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
- CarritoProductCardView(detalleCarritoEntity: Tb_DetalleCarrito(context: context), size: 120)
- .environmentObject(CarritoCoreDataViewModel())
- }
- }
- */
+
+struct CarritoProductCardView_Previews: PreviewProvider {
+    static var previews: some View {
+        let cartManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let cartRepository = CarRepositoryImpl(manager: cartManager)
+        CarritoProductCardView(cartDetail: CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=180")), size: 100)
+            .environmentObject(CarritoCoreDataViewModel(carRepository: cartRepository))
+    }
+}

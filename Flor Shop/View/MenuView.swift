@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MenuView: View {
-    @State private var tabSelected: Tab = .plus
+    @State private var tabSelected: Tab = .magnifyingglass
     @State private var isKeyboardVisible: Bool = false
     var body: some View {
         VStack(spacing: 0){

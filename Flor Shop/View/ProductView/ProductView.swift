@@ -45,16 +45,17 @@ struct ListaControler: View {
                         cantidadProducto: producto.qty,
                         precioUnitarioProducto: producto.unitPrice,
                         urlProducto: producto.url ,
-                        size: 120.0)
+                        size: 100.0)
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                    .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                    .listRowBackground(Color("color_background"))
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                         Button(action: {
                             agregarProductoACarrito(producto: producto)
                         }) {
                             Image(systemName: "cart")
                         }
-                        .tint(.red)
+                        .tint(Color("color_accent"))
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(action: {
@@ -63,12 +64,14 @@ struct ListaControler: View {
                         }) {
                             Image(systemName: "pencil")
                         }
-                        .tint(.red)
+                        .tint(Color("color_accent"))
                     }
                 }
             }
             .listStyle(PlainListStyle())
         }
+        .padding(.horizontal, 10)
+        .background(Color("color_background"))
     }
     func editarProducto(producto: Product){
         productsCoreDataViewModel.editProduct(product: producto)
