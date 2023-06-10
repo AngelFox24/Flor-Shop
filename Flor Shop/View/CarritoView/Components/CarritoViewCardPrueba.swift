@@ -14,10 +14,17 @@ struct CarritoViewCardPrueba: View {
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                imageProductNetwork.imageProduct
-                    .resizable()
-                    .frame(width: size,height: size)
-                    .cornerRadius(20.0)
+                if let imageC = imageProductNetwork.imageProduct {
+                    imageC
+                        .resizable()
+                        .frame(width: size,height: size)
+                        .cornerRadius(20.0)
+                }else {
+                    Image("ProductoSinNombre")
+                        .resizable()
+                        .frame(width: size,height: size)
+                        .cornerRadius(20.0)
+                }
                 VStack {
                     HStack {
                         Text("Sin nombre")

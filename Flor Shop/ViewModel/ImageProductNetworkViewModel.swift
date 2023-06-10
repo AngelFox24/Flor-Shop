@@ -11,7 +11,8 @@ import Combine
 
 class ImageProductNetworkViewModel: ObservableObject {
     
-    @Published var imageProduct: Image = Image("ProductoSinNombre")
+    @Published var imageProduct: Image?
+    //Image("ProductoSinNombre")
     var suscriber = Set<AnyCancellable>()
     
     func getImage(id: UUID , url: URL){
@@ -84,6 +85,7 @@ class ImageProductNetworkViewModel: ObservableObject {
             do {
                 try data.write(to: fileURL)
                 print ("Se guardo en el dispositivo local \(id.uuidString)")
+                print("Ruta de la imagen guardada: \(fileURL.path)")
             } catch {
                 print("Error al guardar la imagen: \(error)")
             }
@@ -100,6 +102,7 @@ class ImageProductNetworkViewModel: ObservableObject {
         
         if let imageData = try? Data(contentsOf: fileURL) {
             print ("Se obtuvo la imgen desde el dispositivo \(id.uuidString)")
+            print("Ruta de la imagen guardada: \(fileURL.path)")
             return UIImage(data: imageData)
         }
         

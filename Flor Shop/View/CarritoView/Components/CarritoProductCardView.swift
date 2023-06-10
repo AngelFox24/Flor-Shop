@@ -16,10 +16,21 @@ struct CarritoProductCardView: View {
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                imageProductNetwork.imageProduct
-                    .resizable()
-                    .frame(width: size,height: size)
-                    .cornerRadius(20.0)
+                if let imageC = imageProductNetwork.imageProduct {
+                    let _ = print ("Cargado")
+                    imageC
+                        .resizable()
+                        .frame(width: size,height: size)
+                        .cornerRadius(20.0)
+                }else {
+                    let _ = print ("holder")
+                    let _ =
+                    imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
+                    Image("ProductoSinNombre")
+                        .resizable()
+                        .frame(width: size,height: size)
+                        .cornerRadius(20.0)
+                }
                 /*AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
                     switch phase {
                     case .empty:
@@ -117,6 +128,7 @@ struct CarritoProductCardView: View {
         .onAppear{
             imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
         }
+        
     }
 }
 
@@ -124,7 +136,7 @@ struct CarritoProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         let cartManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
-        CarritoProductCardView(cartDetail: CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=180")), size: 100)
+        CarritoProductCardView(cartDetail: CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180")), size: 100)
             .environmentObject(CarritoCoreDataViewModel(carRepository: cartRepository))
     }
 }

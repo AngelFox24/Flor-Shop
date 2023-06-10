@@ -28,34 +28,44 @@ struct ProductCardView: View {
     var body: some View {
         VStack{
             HStack{
-                imageProductNetwork.imageProduct
-                    .resizable()
-                    .frame(width: size,height: size)
-                    .cornerRadius(20.0)
+                if let imageC = imageProductNetwork.imageProduct {
+                    let _ = print ("Cargado")
+                    imageC
+                        .resizable()
+                        .frame(width: size,height: size)
+                        .cornerRadius(20.0)
+                }else {
+                    let _ = print ("Holder a cargar")
+                    let _ = imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
+                    Image("ProductoSinNombre")
+                        .resizable()
+                        .frame(width: size,height: size)
+                        .cornerRadius(20.0)
+                }
                 /*AsyncImage(url: URL(string: urlProducto)){ phase in //Imagen Producto
-                    switch phase {
-                    case .empty:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(15)
-                    case .success(let returnetImage):
-                        returnetImage
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(15)
-                    case .failure:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(15)
-                    default:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(15)
-                    }
-                }*/
+                 switch phase {
+                 case .empty:
+                 Image("ProductoSinNombre")
+                 .resizable()
+                 .frame(width: size,height: size)
+                 .cornerRadius(15)
+                 case .success(let returnetImage):
+                 returnetImage
+                 .resizable()
+                 .frame(width: size,height: size)
+                 .cornerRadius(15)
+                 case .failure:
+                 Image("ProductoSinNombre")
+                 .resizable()
+                 .frame(width: size,height: size)
+                 .cornerRadius(15)
+                 default:
+                 Image("ProductoSinNombre")
+                 .resizable()
+                 .frame(width: size,height: size)
+                 .cornerRadius(15)
+                 }
+                 }*/
                 VStack {
                     HStack { //Nombre Producto
                         Text(nombreProducto)
@@ -104,6 +114,6 @@ struct ProductCardView: View {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(id:UUID(), nombreProducto: "Bombones de chocolate Bon O Bon corazón 105", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=180", size: 100)
+        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), nombreProducto: "Bombones de chocolate Bon O Bon corazón 105", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=1800", size: 100)
     }
 }
