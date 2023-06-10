@@ -36,11 +36,13 @@ struct ProductCardView: View {
                         .cornerRadius(20.0)
                 }else {
                     let _ = print ("Holder a cargar")
-                    let _ = imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
                     Image("ProductoSinNombre")
                         .resizable()
                         .frame(width: size,height: size)
                         .cornerRadius(20.0)
+                        .onAppear{
+                            imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
+                        }
                 }
                 /*AsyncImage(url: URL(string: urlProducto)){ phase in //Imagen Producto
                  switch phase {
@@ -105,9 +107,6 @@ struct ProductCardView: View {
             .background(.white)
         }
         .cornerRadius(15)
-        .onAppear{
-            imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
-        }
     }
 }
 

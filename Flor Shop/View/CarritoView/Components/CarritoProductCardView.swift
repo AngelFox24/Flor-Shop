@@ -24,12 +24,14 @@ struct CarritoProductCardView: View {
                         .cornerRadius(20.0)
                 }else {
                     let _ = print ("holder")
-                    let _ =
-                    imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
                     Image("ProductoSinNombre")
                         .resizable()
                         .frame(width: size,height: size)
                         .cornerRadius(20.0)
+                        .onAppear{
+                            let _ = print ("Aparecio")
+                            imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
+                        }
                 }
                 /*AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
                     switch phase {
@@ -125,9 +127,6 @@ struct CarritoProductCardView: View {
             .background(.white)
         }
         .cornerRadius(15)
-        .onAppear{
-            imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
-        }
         
     }
 }

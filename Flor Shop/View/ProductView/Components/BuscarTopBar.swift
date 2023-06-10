@@ -75,6 +75,9 @@ struct BuscarTopBar: View {
         }
         .padding(.bottom,9)
         .background(Color("color_primary"))
+        .onAppear{
+            let _ = print ("Aparecio")
+        }
     }
     func filtrarProductos(){
         productsCoreDataViewModel.filterProducts(word: seach)

@@ -32,6 +32,9 @@ struct CustomButton2: View {
             .padding(.vertical,10)
             .background(.white)
             .cornerRadius(15.0)
+            .onAppear{
+                let _ = print ("Aparecio")
+            }
     }
 }
 
