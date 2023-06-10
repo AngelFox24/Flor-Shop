@@ -28,22 +28,7 @@ struct ProductCardView: View {
     var body: some View {
         VStack{
             HStack{
-                if let imageC = imageProductNetwork.imageProduct {
-                    let _ = print ("Cargado")
-                    imageC
-                        .resizable()
-                        .frame(width: size,height: size)
-                        .cornerRadius(20.0)
-                }else {
-                    let _ = print ("Holder a cargar")
-                    Image("ProductoSinNombre")
-                        .resizable()
-                        .frame(width: size,height: size)
-                        .cornerRadius(20.0)
-                        .onAppear{
-                            imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
-                        }
-                }
+                CustomAsyncImageView(id: id, urlProducto: urlProducto, size: size)
                 /*AsyncImage(url: URL(string: urlProducto)){ phase in //Imagen Producto
                  switch phase {
                  case .empty:

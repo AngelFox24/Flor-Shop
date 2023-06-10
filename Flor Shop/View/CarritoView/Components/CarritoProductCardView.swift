@@ -16,23 +16,7 @@ struct CarritoProductCardView: View {
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                if let imageC = imageProductNetwork.imageProduct {
-                    let _ = print ("Cargado")
-                    imageC
-                        .resizable()
-                        .frame(width: size,height: size)
-                        .cornerRadius(20.0)
-                }else {
-                    let _ = print ("holder")
-                    Image("ProductoSinNombre")
-                        .resizable()
-                        .frame(width: size,height: size)
-                        .cornerRadius(20.0)
-                        .onAppear{
-                            let _ = print ("Aparecio")
-                            imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
-                        }
-                }
+                CustomAsyncImageView(id: cartDetail.product.id, urlProducto: cartDetail.product.url , size: size)
                 /*AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
                     switch phase {
                     case .empty:
@@ -127,7 +111,6 @@ struct CarritoProductCardView: View {
             .background(.white)
         }
         .cornerRadius(15)
-        
     }
 }
 

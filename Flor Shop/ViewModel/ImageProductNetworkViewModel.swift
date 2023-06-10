@@ -16,52 +16,58 @@ class ImageProductNetworkViewModel: ObservableObject {
     var suscriber = Set<AnyCancellable>()
     
     func getImage(id: UUID , url: URL){
-        if let savedImage = loadSavedImage(id: id) {
-            imageProduct = Image(uiImage: savedImage)
+        if imageProduct != nil {
+            print ("Imagen ya esta cargada para que quieres cargarlo pz")
+            return
         }else {
-            /*URLSession.shared.dataTaskPublisher(for: url)
-             .map(\.data)
-             .compactMap{UIImage(data: $0)}
-             .map{Image(uiImage: $0)}
-             .replaceEmpty(with: Image("ProductoSinNombre"))
-             .replaceError(with: Image("ProductoSinNombre"))
-             .receive(on: DispatchQueue.main) //Regresamos al hilo principal, es una buena practica de Swift
-             .sink(receiveCompletion: { completion in
-             switch completion {
-             case .finished:
-             break
-             case .failure(let error):
-             print("Error al descargar la imagen: \(error)")
-             }
-             }, receiveValue: { image in
-             self.imageProduct = image
-             saveImage(id: id, image: image)
-             })
-             .assign(to: \.imageProduct,on: self) //Aqui asignamos luego de validar
-             .store(in: &suscriber)
-             */
-            URLSession.shared.dataTaskPublisher(for: url)
-                .tryMap { data, response in
-                    guard let image = UIImage(data: data) else {
-                        throw URLError(.badServerResponse)
+            if let savedImage = loadSavedImage(id: id) {
+                imageProduct = Image(uiImage: savedImage)
+            }else {
+                /*URLSession.shared.dataTaskPublisher(for: url)
+                 .map(\.data)
+                 .compactMap{UIImage(data: $0)}
+                 .map{Image(uiImage: $0)}
+                 .replaceEmpty(with: Image("ProductoSinNombre"))
+                 .replaceError(with: Image("ProductoSinNombre"))
+                 .receive(on: DispatchQueue.main) //Regresamos al hilo principal, es una buena practica de Swift
+                 .sink(receiveCompletion: { completion in
+                 switch completion {
+                 case .finished:
+                 break
+                 case .failure(let error):
+                 print("Error al descargar la imagen: \(error)")
+                 }
+                 }, receiveValue: { image in
+                 self.imageProduct = image
+                 saveImage(id: id, image: image)
+                 })
+                 .assign(to: \.imageProduct,on: self) //Aqui asignamos luego de validar
+                 .store(in: &suscriber)
+                 */
+                URLSession.shared.dataTaskPublisher(for: url)
+                    .tryMap { data, response in
+                        guard let image = UIImage(data: data) else {
+                            throw URLError(.badServerResponse)
+                        }
+                        return image
                     }
-                    return image
-                }
-                .receive(on: DispatchQueue.main)
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        print("Error al descargar la imagen: \(error)")
-                    }
-                }, receiveValue: { image in
-                    self.imageProduct = Image(uiImage: image)
-                    if self.shouldSaveImage(image: image){
-                        self.saveImage(id: id, image: image)
-                    }
-                })
-                .store(in: &suscriber)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveCompletion: { completion in
+                        switch completion {
+                        case .finished:
+                            break
+                        case .failure(let error):
+                            print("Error al descargar la imagen: \(error)")
+                        }
+                    }, receiveValue: { image in
+                        self.imageProduct = Image(uiImage: image)
+                        print ("Se recibio la imagen")
+                        if self.shouldSaveImage(image: image){
+                            self.saveImage(id: id, image: image)
+                        }
+                    })
+                    .store(in: &suscriber)
+            }
         }
     }
     
