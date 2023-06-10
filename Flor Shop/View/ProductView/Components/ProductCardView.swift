@@ -10,12 +10,14 @@
 import SwiftUI
 
 struct ProductCardView: View {
-    let nombreProducto:String
-    let fechaVencimiento:Date
-    let cantidadProducto:Double
-    let precioUnitarioProducto:Double
+    let id: UUID
+    let nombreProducto: String
+    let fechaVencimiento: Date
+    let cantidadProducto: Double
+    let precioUnitarioProducto: Double
     let urlProducto: String
     let size: CGFloat
+    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -26,7 +28,11 @@ struct ProductCardView: View {
     var body: some View {
         VStack{
             HStack{
-                AsyncImage(url: URL(string: urlProducto)){ phase in //Imagen Producto
+                imageProductNetwork.imageProduct
+                    .resizable()
+                    .frame(width: size,height: size)
+                    .cornerRadius(20.0)
+                /*AsyncImage(url: URL(string: urlProducto)){ phase in //Imagen Producto
                     switch phase {
                     case .empty:
                         Image("ProductoSinNombre")
@@ -49,7 +55,7 @@ struct ProductCardView: View {
                             .frame(width: size,height: size)
                             .cornerRadius(15)
                     }
-                }
+                }*/
                 VStack {
                     HStack { //Nombre Producto
                         Text(nombreProducto)
@@ -90,7 +96,7 @@ struct ProductCardView: View {
         }
         .cornerRadius(15)
         .onAppear{
-            //imageProductNetwork.getImage(url: (URL(string: urlProducto )!))
+            imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
         }
     }
 }
@@ -98,6 +104,6 @@ struct ProductCardView: View {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(nombreProducto: "Bombones de chocolate Bon O Bon corazón 105", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=180", size: 100)
+        ProductCardView(id:UUID(), nombreProducto: "Bombones de chocolate Bon O Bon corazón 105", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=180", size: 100)
     }
 }

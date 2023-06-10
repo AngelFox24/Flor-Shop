@@ -40,6 +40,7 @@ struct ListaControler: View {
             List(){
                 ForEach(productsCoreDataViewModel.productsCoreData){ producto in
                     ProductCardView(
+                        id: producto.id,
                         nombreProducto: producto.name,
                         fechaVencimiento: producto.expirationDate ,
                         cantidadProducto: producto.qty,

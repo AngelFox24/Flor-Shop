@@ -85,7 +85,7 @@ struct CarritoViewCardPrueba: View {
             .cornerRadius(20.0)
         }
         .onAppear{
-            imageProductNetwork.getImage(url: (URL(string: "https://falabella.scene7.com/is/image/FalabellaPE/19038679_1?wid=180")!))
+            imageProductNetwork.getImage(id: UUID(), url: (URL(string: "https://falabella.scene7.com/is/image/FalabellaPE/19038679_1?wid=180")!))
         }
     }
 }

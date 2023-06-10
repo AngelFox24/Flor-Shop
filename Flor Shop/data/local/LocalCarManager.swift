@@ -87,23 +87,25 @@ class LocalCarManager: CarManager {
     
     func addProductoToCarrito(product: Product) {
         let context = self.carContainer.viewContext
-        guard let carrito = getCarEntity(),let producto = product.toProductEntity(context: context) else {
+        guard let carrito = getCarEntity(),let producto = product.toProductEntity(context: context), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
-        print ("El IdProducto en addProductoToCarrito \(product.id)")
-        // Obtener el objeto productoEntity del mismo contexto que el carrito
-        let productoInContext = context.object(with: producto.objectID) as! Tb_Producto
-        
-        // Crear el objeto detalleCarrito y establecer sus propiedades
-        let detalleCarrito = Tb_DetalleCarrito(context: context)
-        detalleCarrito.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
-        //detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
-        detalleCarrito.cantidad = 1
-        detalleCarrito.subtotal = productoInContext.precioUnitario * detalleCarrito.cantidad
-        // Agregar el objeto producto al detalle carrito
-        detalleCarrito.detalleCarrito_to_producto = productoInContext
-        // Agregar el objeto detalleCarrito al carrito
-        detalleCarrito.detalleCarrito_to_carrito = carrito
+        // Buscamos si existe este producto en el carrito
+        let matchingDetails = detalleCarrito.filter { $0.detalleCarrito_to_producto?.idProducto == producto.idProducto }
+        if let detalle = matchingDetails.first {
+            increaceProductAmount(product: product)
+        }else {
+            // Crear el objeto detalleCarrito y establecer sus propiedades
+            let newCarDetail = Tb_DetalleCarrito(context: context)
+            newCarDetail.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
+            //detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
+            newCarDetail.cantidad = 1
+            newCarDetail.subtotal = producto.precioUnitario * newCarDetail.cantidad
+            // Agregar el objeto producto al detalle carrito
+            newCarDetail.detalleCarrito_to_producto = producto
+            // Agregar el objeto detalleCarrito al carrito
+            newCarDetail.detalleCarrito_to_carrito = carrito
+        }
         
         updateTotalCart()
         saveData()

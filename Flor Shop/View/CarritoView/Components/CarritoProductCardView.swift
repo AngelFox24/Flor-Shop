@@ -10,12 +10,17 @@ import CoreData
 
 struct CarritoProductCardView: View {
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
+    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     let cartDetail: CartDetail
     let size: CGFloat
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
+                imageProductNetwork.imageProduct
+                    .resizable()
+                    .frame(width: size,height: size)
+                    .cornerRadius(20.0)
+                /*AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
                     switch phase {
                     case .empty:
                         Image("ProductoSinNombre")
@@ -38,7 +43,7 @@ struct CarritoProductCardView: View {
                             .frame(width: size,height: size)
                             .cornerRadius(20.0)
                     }
-                }
+                }*/
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)
@@ -94,7 +99,7 @@ struct CarritoProductCardView: View {
                     HStack {
                         Text(String("S/. "))
                             .font(.custom("text_font_1", size: 15))
-                        Text(String(carritoCoreDataViewModel.carritoCoreData?.total ?? 0))
+                        Text(String(cartDetail.product.unitPrice))
                             .font(.custom("text_font_1", size: 18))
                     }
                     .padding(.vertical,8)
@@ -110,7 +115,7 @@ struct CarritoProductCardView: View {
         }
         .cornerRadius(15)
         .onAppear{
-            //imageProductNetwork.getImage(url: (URL(string: cartDetail.product.url )!))
+            imageProductNetwork.getImage(id: cartDetail.product.id, url: (URL(string: cartDetail.product.url )!))
         }
     }
 }
