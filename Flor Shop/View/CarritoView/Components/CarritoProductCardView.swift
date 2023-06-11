@@ -9,38 +9,16 @@ import SwiftUI
 import CoreData
 
 struct CarritoProductCardView: View {
-    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
-    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
+    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel //Provoca carga inecesaria de los elementos
     let cartDetail: CartDetail
     let size: CGFloat
+    var decreceProductAmount: (Product) -> Void
+    var increaceProductAmount: (Product) -> Void
     var body: some View {
         VStack(alignment: .leading){
             HStack{
+                let _ = print ("Producto xd")
                 CustomAsyncImageView(id: cartDetail.product.id, urlProducto: cartDetail.product.url , size: size)
-                /*AsyncImage(url: URL(string: cartDetail.product.url )!){ phase in
-                    switch phase {
-                    case .empty:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(20.0)
-                    case .success(let returnetImage):
-                        returnetImage
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(20.0)
-                    case .failure:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(20.0)
-                    default:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: size,height: size)
-                            .cornerRadius(20.0)
-                    }
-                }*/
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)
@@ -62,7 +40,8 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.decreceProductAmount(product: cartDetail.product)
+                            //carritoCoreDataViewModel.decreceProductAmount(product: cartDetail.product)
+                            decreceProductAmount(cartDetail.product)
                         })
                         
                         HStack {
@@ -85,7 +64,8 @@ struct CarritoProductCardView: View {
                                 .clipShape(Circle())
                         }
                         .highPriorityGesture(TapGesture().onEnded {
-                            carritoCoreDataViewModel.increaceProductAmount(product: cartDetail.product)
+                            //carritoCoreDataViewModel.increaceProductAmount(product: cartDetail.product)
+                            increaceProductAmount(cartDetail.product)
                         })
                         Spacer()
                     }
@@ -118,7 +98,8 @@ struct CarritoProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         let cartManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
-        CarritoProductCardView(cartDetail: CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180")), size: 100)
+        let carrito = CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180"))
+        CarritoProductCardView(cartDetail: carrito, size: 100, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
             .environmentObject(CarritoCoreDataViewModel(carRepository: cartRepository))
     }
 }

@@ -17,7 +17,7 @@ struct ProductCardView: View {
     let precioUnitarioProducto: Double
     let urlProducto: String
     let size: CGFloat
-    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
+    //@ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -28,31 +28,8 @@ struct ProductCardView: View {
     var body: some View {
         VStack{
             HStack{
+                let _ = print ("Producto gg")
                 CustomAsyncImageView(id: id, urlProducto: urlProducto, size: size)
-                /*AsyncImage(url: URL(string: urlProducto)){ phase in //Imagen Producto
-                 switch phase {
-                 case .empty:
-                 Image("ProductoSinNombre")
-                 .resizable()
-                 .frame(width: size,height: size)
-                 .cornerRadius(15)
-                 case .success(let returnetImage):
-                 returnetImage
-                 .resizable()
-                 .frame(width: size,height: size)
-                 .cornerRadius(15)
-                 case .failure:
-                 Image("ProductoSinNombre")
-                 .resizable()
-                 .frame(width: size,height: size)
-                 .cornerRadius(15)
-                 default:
-                 Image("ProductoSinNombre")
-                 .resizable()
-                 .frame(width: size,height: size)
-                 .cornerRadius(15)
-                 }
-                 }*/
                 VStack {
                     HStack { //Nombre Producto
                         Text(nombreProducto)

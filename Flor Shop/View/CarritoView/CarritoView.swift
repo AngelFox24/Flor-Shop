@@ -20,8 +20,6 @@ struct CarritoView: View {
                 }
             }
         }
-        .navigationBarHidden(true)
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -39,9 +37,8 @@ struct ListaCarritoControler: View {
     var body: some View {
         VStack {
             List(){
-                let detallesCarrito = carritoCoreDataViewModel.getListProductInCart()
-                ForEach(detallesCarrito) { cartDetail in
-                    CarritoProductCardView(cartDetail: cartDetail, size: 100.0)
+                ForEach(carritoCoreDataViewModel.getListProductInCart()) { cartDetail in
+                    CarritoProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -61,8 +58,13 @@ struct ListaCarritoControler: View {
         .background(Color("color_background"))
     }
     func deleteProduct(product: Product) {
-        // Convertir los índices a un array
         carritoCoreDataViewModel.deleteProduct(product: product)
         print("Se elimino un producto del carrito \(product.name)")
+    }
+    func decreceProductAmount(product: Product){
+        carritoCoreDataViewModel.decreceProductAmount(product: product)
+    }
+    func increaceProductAmount(product: Product){
+        carritoCoreDataViewModel.increaceProductAmount(product: product)
     }
 }
