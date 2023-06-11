@@ -174,14 +174,12 @@ class LocalCarManager: CarManager {
         guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return cartDetails
         }
-        
         for product in detalleCarrito {
             if let productInCar = product.detalleCarrito_to_producto?.toProduct() {
                 let productDetail = CartDetail(id: product.idDetalleCarrito ?? UUID(), quantity: product.cantidad, subtotal: product.subtotal, product: productInCar)
                 cartDetails.append(productDetail)
             }
         }
-        
         return cartDetails
     }
 }
