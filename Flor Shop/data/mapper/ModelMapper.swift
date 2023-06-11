@@ -74,6 +74,17 @@ extension Tb_Carrito {
     }
 }
 
+extension Tb_DetalleCarrito {
+    func mapToCarDetail() -> CartDetail {
+        return CartDetail(
+            id: idDetalleCarrito ?? UUID(),
+            quantity: cantidad,
+            subtotal: subtotal,
+            product: detalleCarrito_to_producto?.toProduct() ?? Product())
+    }
+}
+
+//MARK: Array Extencions
 extension Array where Element == Tb_Producto {
     func mapToListProduct() -> [Product] {
         return self.map { prd in
@@ -86,6 +97,14 @@ extension Array where Element == Product {
     func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Producto] {
         return self.compactMap { prd in
             prd.toProductEntity(context: context)
+        }
+    }
+}
+
+extension Array where Element == Tb_DetalleCarrito {
+    func mapToListCartDetail() -> [CartDetail] {
+        return self.map { prd in
+            prd.mapToCarDetail()
         }
     }
 }

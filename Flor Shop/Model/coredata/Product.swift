@@ -79,6 +79,7 @@ struct Product: Identifiable{
         self.totalCost = 0.0
         self.profitMargin = 0.0
         self.keyWords = "Producto"
+        print ("Se creo un producto vacio")
     }
     
     //MARK: Validacion Crear Producto

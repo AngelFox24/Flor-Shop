@@ -10,6 +10,7 @@ import Foundation
 
 class CarritoCoreDataViewModel: ObservableObject {
     @Published var carritoCoreData: Car?
+    @Published var carritoCoreDataDetails: [CartDetail] = []
     let cartRepository: CarRepository
     
     init(carRepository: CarRepository){
@@ -18,6 +19,7 @@ class CarritoCoreDataViewModel: ObservableObject {
     }
     //MARK: CRUD Core Data
     func fetchCart() {
+        carritoCoreDataDetails = cartRepository.getListProductInCart()
         carritoCoreData = cartRepository.getCar()
     }
     
@@ -50,9 +52,5 @@ class CarritoCoreDataViewModel: ObservableObject {
     func decreceProductAmount (product: Product){
         self.cartRepository.decreceProductAmount(product: product)
         fetchCart()
-    }
-    
-    func getListProductInCart () -> [CartDetail]{
-        return self.cartRepository.getListProductInCart()
     }
 }

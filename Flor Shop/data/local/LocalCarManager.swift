@@ -170,16 +170,14 @@ class LocalCarManager: CarManager {
     }
     
     func getListProductInCart () -> [CartDetail] {
-        var cartDetails: [CartDetail] = []
-        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
-            return cartDetails
+        print ("Se esta obteniendo la lista producto carro new")
+        var cartDetails: [Tb_DetalleCarrito] = []
+        guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito?.compactMap({ $0 as? Tb_DetalleCarrito }) else {
+            return cartDetails.mapToListCartDetail()
         }
-        for product in detalleCarrito {
-            if let productInCar = product.detalleCarrito_to_producto?.toProduct() {
-                let productDetail = CartDetail(id: product.idDetalleCarrito ?? UUID(), quantity: product.cantidad, subtotal: product.subtotal, product: productInCar)
-                cartDetails.append(productDetail)
-            }
-        }
-        return cartDetails
+        
+        return detalleCarrito.mapToListCartDetail()
+        
+        
     }
 }

@@ -37,7 +37,7 @@ struct ListaCarritoControler: View {
     var body: some View {
         VStack {
             List(){
-                ForEach(carritoCoreDataViewModel.getListProductInCart()) { cartDetail in
+                ForEach(carritoCoreDataViewModel.carritoCoreDataDetails) { cartDetail in
                     CarritoProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
