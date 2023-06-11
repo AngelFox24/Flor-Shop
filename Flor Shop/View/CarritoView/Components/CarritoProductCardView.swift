@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 
 struct CarritoProductCardView: View {
-    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel //Provoca carga inecesaria de los elementos
+    //@EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel //Provoca carga inecesaria de los elementos
     let cartDetail: CartDetail
     let size: CGFloat
     var decreceProductAmount: (Product) -> Void
