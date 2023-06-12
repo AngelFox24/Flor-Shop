@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22E261" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F66" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tb_Carrito" representedClassName=".Tb_Carrito" syncable="YES" codeGenerationType="class">
         <attribute name="fechaCarrito" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idCarrito" attributeType="UUID" usesScalarValueType="NO"/>
@@ -27,6 +27,7 @@
         <attribute name="idProducto" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="nombreProducto" attributeType="String"/>
         <attribute name="precioUnitario" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="replaceImage" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="tipoMedicion" attributeType="String"/>
         <attribute name="url" attributeType="String"/>
         <relationship name="producto_to_detalleCarrito" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_DetalleCarrito" inverseName="detalleCarrito_to_producto" inverseEntity="Tb_DetalleCarrito"/>

@@ -171,7 +171,7 @@ class LocalCarManager: CarManager {
     
     func getListProductInCart () -> [CartDetail] {
         print ("Se esta obteniendo la lista producto carro new")
-        var cartDetails: [Tb_DetalleCarrito] = []
+        let cartDetails: [Tb_DetalleCarrito] = []
         guard let carrito = getCarEntity(), let detalleCarrito = carrito.carrito_to_detalleCarrito?.compactMap({ $0 as? Tb_DetalleCarrito }) else {
             return cartDetails.mapToListCartDetail()
         }

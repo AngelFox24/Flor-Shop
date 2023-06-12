@@ -53,8 +53,9 @@ struct Product: Identifiable{
     var totalCost: Double
     var profitMargin: Double
     var keyWords: String
+    var replaceImage: Bool
     
-    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: TipoMedicion, url: String) {
+    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: TipoMedicion, url: String, replaceImage: Bool) {
         self.id = id
         self.name = name
         self.qty = qty
@@ -66,6 +67,7 @@ struct Product: Identifiable{
         self.totalCost = 0
         self.profitMargin = 0
         self.keyWords = "Producto"
+        self.replaceImage = replaceImage
     }
     init () {
         self.id = UUID()
@@ -79,6 +81,7 @@ struct Product: Identifiable{
         self.totalCost = 0.0
         self.profitMargin = 0.0
         self.keyWords = "Producto"
+        self.replaceImage = false
         print ("Se creo un producto vacio")
     }
     

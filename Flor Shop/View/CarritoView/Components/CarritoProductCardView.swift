@@ -98,7 +98,7 @@ struct CarritoProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         let cartManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
-        let carrito = CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180"))
+        let carrito = CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", replaceImage: false))
         CarritoProductCardView(cartDetail: carrito, size: 100, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
             .environmentObject(CarritoCoreDataViewModel(carRepository: cartRepository))
     }

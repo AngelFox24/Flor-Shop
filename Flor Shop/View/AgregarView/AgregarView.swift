@@ -34,38 +34,60 @@ struct CampoIndividual:View {
             TextField("", text: $contenido)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
+                .onTapGesture {
+                    withAnimation {
+                        contenido.removeAll()
+                    }
+                }
                 //.foregroundColor(Color("color_primary"))
         }
         .padding(.all,5)
         .background(.white)
         .cornerRadius(15)
-        .overlay(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color("color_hint"), lineWidth: 2)
-        )
     }
 }
 
 struct CampoIndividualDouble:View {
     @Binding var contenido:Double
+    @State var value: String = "0"
+    @State private var oldValue: String = ""
+    @FocusState var focus: Bool
     var body: some View {
         VStack {
-            TextField("", value: $contenido, format: .number)
+            TextField("", text: $value)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
-                //.foregroundColor(Color("color_primary"))
+                .focused($focus)
+                .onChange(of: focus, perform: { editing in
+                    if editing {
+                        if !value.isEmpty {
+                            oldValue = value
+                            value = ""
+                        }
+                    } else {
+                        if value.isEmpty {
+                            value = oldValue
+                        } else {
+                            if let valueDouble: Double = Double(value) {
+                                contenido = valueDouble
+                            } else {
+                                value = oldValue
+                            }
+                        }
+                    }
+                })
+                .onChange(of: value, perform: { _ in
+                    if let valueDouble: Double = Double(value) {
+                        contenido = valueDouble
+                    }
+                })
         }
         .padding(.all,5)
         .background(.white)
         .cornerRadius(15)
-        .overlay(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color("color_hint"), lineWidth: 2)
-        )
     }
 }
-
 struct CampoIndividualDate:View {
     @Binding var contenido:Date
     var body: some View {
@@ -75,7 +97,6 @@ struct CampoIndividualDate:View {
                 .labelsHidden()
                 .frame(maxWidth: .infinity)
                 .accentColor(Color("color_primary"))
-                //.background(Color("color_primary"))
         }
     }
 }

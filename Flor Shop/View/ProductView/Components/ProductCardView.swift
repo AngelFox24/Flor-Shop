@@ -75,6 +75,6 @@ struct ProductCardView: View {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), nombreProducto: "Bombones de chocolate Bon O Bon corazón 105", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/19348069_1?wid=1800", size: 100)
+        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), nombreProducto: "Bombones de chocolate Bon O Bon corazón 105", fechaVencimiento: Date(), cantidadProducto: 34.4, precioUnitarioProducto: 23.2, urlProducto: "https://s7d2.scene7.com/is/image/TottusPE/42762662_0?wid=136&hei=136&qlt=70", size: 100)
     }
 }
