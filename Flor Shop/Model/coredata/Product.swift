@@ -16,7 +16,7 @@ extension Double {
     }
 }
 
-enum TipoMedicion: CustomStringConvertible {
+enum MeasurementType: CustomStringConvertible {
     case Kg
     case Uni
     var description: String {
@@ -28,14 +28,14 @@ enum TipoMedicion: CustomStringConvertible {
         }
     }
     
-    static var allValues: [TipoMedicion] {
+    static var allValues: [MeasurementType] {
         return [.Kg, .Uni]
     }
     
-    static func from(description: String) -> TipoMedicion? {
-        for case let tipo in TipoMedicion.allValues {
-            if tipo.description == description {
-                return tipo
+    static func from(description: String) -> MeasurementType? {
+        for case let type in MeasurementType.allValues {
+            if type.description == description {
+                return type
             }
         }
         return nil
@@ -49,14 +49,14 @@ struct Product: Identifiable{
     var unitCost: Double
     var unitPrice: Double
     var expirationDate: Date
-    var type: TipoMedicion
+    var type: MeasurementType
     var url: String
     var totalCost: Double
     var profitMargin: Double
     var keyWords: String
     var replaceImage: Bool
     
-    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: TipoMedicion, url: String, replaceImage: Bool) {
+    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: MeasurementType, url: String, replaceImage: Bool) {
         self.id = id
         self.name = name
         self.qty = qty
@@ -83,16 +83,14 @@ struct Product: Identifiable{
         self.profitMargin = 0.0
         self.keyWords = "Producto"
         self.replaceImage = false
-        print ("Se creo un producto vacio")
     }
     
     //MARK: Validacion Crear Producto
     func isProductNameValid() -> Bool {
-        print ("El nombre en Product es name: \(self.name)")
         return !name.trimmingCharacters(in: .whitespaces).isEmpty
     }
     
-    func isCantidadValid() -> Bool {
+    func isQuantityValid() -> Bool {
         if type == .Uni{
             if Int(qty) > 0 {
                 return true
@@ -110,7 +108,7 @@ struct Product: Identifiable{
         }
     }
     
-    func isCostoUnitarioValid() -> Bool {
+    func isUnitCostValid() -> Bool {
         if  unitCost > 0.0 {
             return true
         } else {
@@ -118,7 +116,7 @@ struct Product: Identifiable{
         }
     }
     
-    func isPrecioUnitarioValid() -> Bool {
+    func isUnitPriceValid() -> Bool {
         if unitPrice > 0.0 {
             return true
         } else {
@@ -126,7 +124,7 @@ struct Product: Identifiable{
         }
     }
     
-    func isFechaVencimientoValid() -> Bool {
+    func isExpirationDateValid() -> Bool {
         return true
     }
     

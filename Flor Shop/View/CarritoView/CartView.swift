@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 
-struct CarritoView: View {
+struct CartView: View {
     var body: some View {
         NavigationView () {
             ZStack{
@@ -16,28 +16,27 @@ struct CarritoView: View {
                     .ignoresSafeArea()
                 VStack(spacing: 0){
                 CartTopBar()
-                ListaCarritoControler()
+                ListCartController()
                 }
             }
         }
     }
 }
 
-struct CarritoView_Previews: PreviewProvider {
+struct CartView_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
-        CarritoView()
-            .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
+        CartView()
+            .environmentObject(CartViewModel(carRepository: carRepository))
     }
 }
-
-struct ListaCarritoControler: View {
-    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
+struct ListCartController: View {
+    @EnvironmentObject var cartViewModel: CartViewModel
     var body: some View {
         VStack {
             List(){
-                ForEach(carritoCoreDataViewModel.carritoCoreDataDetails) { cartDetail in
+                ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
                     CartProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
@@ -58,13 +57,12 @@ struct ListaCarritoControler: View {
         .background(Color("color_background"))
     }
     func deleteProduct(product: Product) {
-        carritoCoreDataViewModel.deleteProduct(product: product)
-        print("Se elimino un producto del carrito \(product.name)")
+        cartViewModel.deleteProduct(product: product)
     }
     func decreceProductAmount(product: Product){
-        carritoCoreDataViewModel.decreceProductAmount(product: product)
+        cartViewModel.decreceProductAmount(product: product)
     }
     func increaceProductAmount(product: Product){
-        carritoCoreDataViewModel.increaceProductAmount(product: product)
+        cartViewModel.increaceProductAmount(product: product)
     }
 }

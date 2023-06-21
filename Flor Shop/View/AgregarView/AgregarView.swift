@@ -20,10 +20,10 @@ struct AgregarView: View {
 
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
-        let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let prdManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let repository = ProductRepositoryImpl(manager: prdManager)
         AgregarView()
-            .environmentObject(ProductCoreDataViewModel(productRepository: repository))
+            .environmentObject(ProductViewModel(productRepository: repository))
     }
 }
 
@@ -112,7 +112,7 @@ struct ErrorMessageText: View {
 }
 
 struct CamposProductoAgregar: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     
     
     @State var productEdited:Bool = false

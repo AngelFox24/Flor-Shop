@@ -8,7 +8,7 @@
 import CoreData
 import Foundation
 
-class ProductCoreDataViewModel: ObservableObject {
+class ProductViewModel: ObservableObject {
     @Published var productsCoreData: [Product] = []
     @Published var temporalProduct: Product = Product()
     let productRepository:  ProductRepository
@@ -28,8 +28,6 @@ class ProductCoreDataViewModel: ObservableObject {
     }
     
     func addProduct() -> Bool {
-        print ("Se presiono addProduct")
-        print ("El nombre del producto a agregar es \(temporalProduct.name)")
         let result = productRepository.saveProduct(product: temporalProduct)
         
         if(result == "Success"){
@@ -43,14 +41,13 @@ class ProductCoreDataViewModel: ObservableObject {
         }
     }
     
-    func reducirStock() -> Bool {
+    func reduceStock() -> Bool {
         let success = productRepository.reduceStock()
         fetchProducts()
         return success
     }
     
     func editProduct (product: Product) {
-        print ("Se presiono edit product con nombre: \(product.name)")
         self.temporalProduct = product
     }
     

@@ -51,7 +51,6 @@ protocol ProductManager {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
-    func deleteProduct(indexSet: IndexSet) -> Bool
     func filterProducts(word: String) -> [Product]
     func setPrimaryFilter(filter: PrimaryOrder)
 }
@@ -61,14 +60,13 @@ class LocalProductManager: ProductManager {
     let productsContainer: NSPersistentContainer
     var primaryOrder: PrimaryOrder = .NameAsc
     
-    init(contenedorBDFlor: NSPersistentContainer){
-        self.productsContainer = contenedorBDFlor
+    init(containerBDFlor: NSPersistentContainer){
+        self.productsContainer = containerBDFlor
     }
     
     func getListProducts() -> [Product] {
         var productList: [Tb_Producto] = []
         let request: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
-        print ("El orden es en getListProducts: \(primaryOrder.description)")
         let sortDescriptor = setOrderFilter()
         request.sortDescriptors = [sortDescriptor]
         do{
@@ -76,18 +74,16 @@ class LocalProductManager: ProductManager {
         } catch let error {
             print("Error fetching. \(error)")
         }
-        
         return productList.mapToListProduct()
     }
     
     func saveProduct(product: Product) -> String {
         var message = ""
-        print ("Se va a validar los inputs")
         if product.isProductNameValid(),
-           product.isCantidadValid(),
-           product.isCostoUnitarioValid(),
-           product.isPrecioUnitarioValid(),
-           product.isFechaVencimientoValid(),
+           product.isQuantityValid(),
+           product.isUnitCostValid(),
+           product.isUnitPriceValid(),
+           product.isExpirationDateValid(),
            product.isURLValid() {
             
             if let productInContext = product.toProductEntity(context: productsContainer.viewContext) {
@@ -98,10 +94,8 @@ class LocalProductManager: ProductManager {
                 productInContext.precioUnitario = product.unitPrice
                 productInContext.tipoMedicion = product.type.description
                 productInContext.url = product.url
-                print ("Se edito producto en LocalProductManager")
             }else {
                 _ = product.toNewProductEntity(context: productsContainer.viewContext)
-                print ("Se creo nuevo producto en LocalProductManager")
             }
             saveData()
             message = "Success"
@@ -110,16 +104,16 @@ class LocalProductManager: ProductManager {
             if !product.isProductNameValid(){
                 message = "El nombre del producto esta mal \(product.name)"
             }
-            else if !product.isCantidadValid(){
+            else if !product.isQuantityValid(){
                 message = "La cantidad y el tipo esta mal \(product.qty) \(product.type)"
             }
-            else if !product.isCostoUnitarioValid(){
+            else if !product.isUnitCostValid(){
                 message = "El costo unitario esta mal \(product.unitCost)"
             }
-            else if !product.isPrecioUnitarioValid(){
+            else if !product.isUnitPriceValid(){
                 message = "El precio unitario esta mal \(product.unitPrice)"
             }
-            else if !product.isFechaVencimientoValid(){
+            else if !product.isExpirationDateValid(){
                 message = "La fecha de vencimiento esta mal \(product.expirationDate)"
             }
             else if !product.isURLValid(){
@@ -141,43 +135,29 @@ class LocalProductManager: ProductManager {
     }
     
     func reduceStock() -> Bool {
-        var guardarCambios:Bool = true
-        if let listaCarrito = getListCart()?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
-            for detalleCarrito in listaCarrito {
-                let cantidadReducida:Double = detalleCarrito.cantidad
-                let productosFiltrados = getListProducts().mapToListProductEntity(context: productsContainer.viewContext).filter { $0.idProducto == detalleCarrito.detalleCarrito_to_producto?.idProducto }
-                if let productoEncontrado = productosFiltrados.first {
-                    print ("Contexto del producto filtrado \(String(describing: productoEncontrado.managedObjectContext))")
-                    print("El nombre: \(String(describing: productoEncontrado.nombreProducto)) Cantidad Stock Antes: \(productoEncontrado.cantidadStock)")
-                    if productoEncontrado.cantidadStock >= cantidadReducida {
-                        productoEncontrado.cantidadStock -= cantidadReducida
-                        print("Se ha disminuido el producto, Cantidad Despues: \(productoEncontrado.cantidadStock)")
+        var saveChanges:Bool = true
+        if let cartList = getListCart()?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+            for cartDetail in cartList {
+                let reducedQuantity:Double = cartDetail.cantidad
+                let filteredProducts = getListProducts().mapToListProductEntity(context: productsContainer.viewContext).filter { $0.idProducto == cartDetail.detalleCarrito_to_producto?.idProducto }
+                if let productFound = filteredProducts.first {
+                    if productFound.cantidadStock >= reducedQuantity {
+                        productFound.cantidadStock -= reducedQuantity
                     }else{
-                        guardarCambios = false
+                        saveChanges = false
                     }
                 }else {
-                    guardarCambios = false
+                    saveChanges = false
                 }
             }
         }
-        if guardarCambios {
+        if saveChanges {
             saveData()
         }else{
             print ("Eliminamos los cambios")
             self.productsContainer.viewContext.rollback()
         }
-        return guardarCambios
-    }
-    
-    func deleteProduct(indexSet: IndexSet) -> Bool {
-        
-        do{
-            try self.productsContainer.viewContext.save()
-            return true
-        }catch let error {
-            print("Error saving. \(error)")
-            return false
-        }
+        return saveChanges
     }
     
     func saveData () {
@@ -189,31 +169,28 @@ class LocalProductManager: ProductManager {
     }
     
     func filterProducts(word: String) -> [Product] {
-        var productos:[Product] = []
+        var products:[Product] = []
         let fetchRequest: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
-        let predicado = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
-        fetchRequest.predicate = predicado
+        let predicate = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
+        fetchRequest.predicate = predicate
         
         // Agregar el sort descriptor para ordenar por nombre ascendente
-        print ("El orden en filterProducts: \(primaryOrder.description)")
         let sortDescriptor = setOrderFilter()
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         do {
             // Ejecutar la consulta y obtener los resultados
             let productosBD = try self.productsContainer.viewContext.fetch(fetchRequest)
-            productos = productosBD.mapToListProduct()
-            return productos
+            products = productosBD.mapToListProduct()
+            return products
         } catch {
             print("Error al ejecutar la consulta: \(error.localizedDescription)")
-            return productos
+            return products
         }
     }
     
     func setPrimaryFilter(filter: PrimaryOrder) {
-        print ("Se cambia en setPrimaryFilter el primaryOrder: \(filter.description)")
         self.primaryOrder = filter
-        print ("Luego del cambio en setPrimaryFilter el primaryOrder: \(filter.description)")
     }
     
     func setOrderFilter() -> NSSortDescriptor {

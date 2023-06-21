@@ -17,7 +17,7 @@ struct MenuView: View {
             }else if tabSelected == .magnifyingglass {
                 ProductView(selectedTab: $tabSelected)
             }else if tabSelected == .cart {
-                CarritoView()
+                CartView()
             }
             if isKeyboardVisible{
                 CustomHideKeyboard()
@@ -29,7 +29,6 @@ struct MenuView: View {
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                 isKeyboardVisible = true
             }
-            
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
                 isKeyboardVisible = false
             }
@@ -39,9 +38,9 @@ struct MenuView: View {
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        let prdManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let prdManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let repository = ProductRepositoryImpl(manager: prdManager)
         MenuView()
-            .environmentObject(ProductCoreDataViewModel(productRepository: repository))
+            .environmentObject(ProductViewModel(productRepository: repository))
     }
 }

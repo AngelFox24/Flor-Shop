@@ -53,7 +53,7 @@ extension Tb_Producto {
                        unitCost: costoUnitario,
                        unitPrice: precioUnitario,
                        expirationDate: fechaVencimiento ?? Date(),
-                       type: TipoMedicion.from(description: tipoMedicion ?? "Kilos") ?? .Kg,
+                       type: MeasurementType.from(description: tipoMedicion ?? "Kilos") ?? .Kg,
                        url: url ?? "", replaceImage: replaceImage)
     }
 }

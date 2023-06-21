@@ -8,9 +8,9 @@ import CoreData
 import Foundation
 
 
-class CarritoCoreDataViewModel: ObservableObject {
-    @Published var carritoCoreData: Car?
-    @Published var carritoCoreDataDetails: [CartDetail] = []
+class CartViewModel: ObservableObject {
+    @Published var cartCoreData: Car?
+    @Published var cartDetailCoreData: [CartDetail] = []
     let cartRepository: CarRepository
     
     init(carRepository: CarRepository){
@@ -19,8 +19,8 @@ class CarritoCoreDataViewModel: ObservableObject {
     }
     //MARK: CRUD Core Data
     func fetchCart() {
-        carritoCoreDataDetails = cartRepository.getListProductInCart()
-        carritoCoreData = cartRepository.getCar()
+        cartDetailCoreData = cartRepository.getListProductInCart()
+        cartCoreData = cartRepository.getCar()
     }
     
     //Elimina un producto del carrito de compras
@@ -34,13 +34,13 @@ class CarritoCoreDataViewModel: ObservableObject {
         fetchCart()
     }
     
-    func vaciarCarrito (){
+    func emptyCart (){
         self.cartRepository.emptyCart()
         fetchCart()
     }
     
-    func updateTotalCarrito(){
-        self.cartRepository.updateTotalCart()
+    func updateCartTotal(){
+        self.cartRepository.updateCartTotal()
         fetchCart()
     }
     

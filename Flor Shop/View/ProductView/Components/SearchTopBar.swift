@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct BuscarTopBar: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
+struct SearchTopBar: View {
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @State private var seach:String = ""
     var body: some View {
         VStack {
@@ -87,11 +87,11 @@ struct BuscarTopBar: View {
     }
 }
 
-struct BuscarTopBar_Previews: PreviewProvider {
+struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let productManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let productRepository = ProductRepositoryImpl(manager: productManager)
-        BuscarTopBar()
-            .environmentObject(ProductCoreDataViewModel(productRepository: productRepository))
+        SearchTopBar()
+            .environmentObject(ProductViewModel(productRepository: productRepository))
     }
 }

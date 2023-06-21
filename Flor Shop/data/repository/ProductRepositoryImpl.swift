@@ -14,7 +14,6 @@ protocol ProductRepository {
     func saveProduct(product:Product)-> String
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
-    func deleteProduct(indexSet: IndexSet) -> Bool
     func filterProducts(word: String) -> [Product]
     func setPrimaryFilter(filter: PrimaryOrder)
 }
@@ -41,11 +40,6 @@ public class ProductRepositoryImpl: ProductRepository {
     func reduceStock() -> Bool {
         //add to remote logic
         return manager.reduceStock()
-    }
-    
-    func deleteProduct(indexSet: IndexSet) -> Bool {
-        //add to remote logic
-        return manager.deleteProduct(indexSet: indexSet)
     }
     
     func filterProducts(word: String) -> [Product] {

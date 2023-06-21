@@ -15,22 +15,22 @@ struct Flor_ShopApp: App {
         
         WindowGroup {
             
-            let productManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+            let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
             let productRepository = ProductRepositoryImpl(manager: productManager)
-            let productsCoreData = ProductCoreDataViewModel(productRepository: productRepository)
+            let productsCoreData = ProductViewModel(productRepository: productRepository)
             
-            let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
-            let carRepository = CarRepositoryImpl(manager: carManager)
-            let carritoCoreData = CarritoCoreDataViewModel(carRepository: carRepository)
+            let cartManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+            let cartRepository = CarRepositoryImpl(manager: cartManager)
+            let cartCoreData = CartViewModel(carRepository: cartRepository)
             
-            let saleManager = LocalSaleManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+            let saleManager = LocalSaleManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
             let salesRepository = SaleRepositoryImpl(manager: saleManager)
-            let ventasCoreData = VentasCoreDataViewModel(saleRepository: salesRepository)
+            let salesCoreData = SalesViewModel(saleRepository: salesRepository)
             
             MenuView()
                 .environmentObject(productsCoreData)
-                .environmentObject(carritoCoreData)
-                .environmentObject(ventasCoreData)
+                .environmentObject(cartCoreData)
+                .environmentObject(salesCoreData)
         }
     }
 }

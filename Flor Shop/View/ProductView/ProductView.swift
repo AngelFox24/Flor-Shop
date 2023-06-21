@@ -12,7 +12,7 @@ struct ProductView: View {
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0){
-            BuscarTopBar()
+            SearchTopBar()
             ListaControler(selectedTab: $selectedTab)
         }
     }
@@ -20,20 +20,20 @@ struct ProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let productManager = LocalProductManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let productRepository = ProductRepositoryImpl(manager: productManager)
         
-        let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
         ProductView(selectedTab: .constant(.magnifyingglass))
-            .environmentObject(ProductCoreDataViewModel(productRepository: productRepository))
-            .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
+            .environmentObject(ProductViewModel(productRepository: productRepository))
+            .environmentObject(CartViewModel(carRepository: carRepository))
     }
 }
 
 struct ListaControler: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
-    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
@@ -41,11 +41,11 @@ struct ListaControler: View {
                 ForEach(productsCoreDataViewModel.productsCoreData){ producto in
                     ProductCardView(
                         id: producto.id,
-                        nombreProducto: producto.name,
-                        fechaVencimiento: producto.expirationDate ,
-                        cantidadProducto: producto.qty,
-                        precioUnitarioProducto: producto.unitPrice,
-                        urlProducto: producto.url ,
+                        name: producto.name,
+                        expirationDate: producto.expirationDate ,
+                        quantity: producto.qty,
+                        unitPrice: producto.unitPrice,
+                        url: producto.url ,
                         size: 100.0)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))

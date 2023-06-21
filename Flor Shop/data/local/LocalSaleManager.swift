@@ -17,8 +17,8 @@ class LocalSaleManager: SaleManager {
     
     let salesContainer: NSPersistentContainer
     
-    init(contenedorBDFlor: NSPersistentContainer){
-        self.salesContainer = contenedorBDFlor
+    init(containerBDFlor: NSPersistentContainer){
+        self.salesContainer = containerBDFlor
     }
     
     func registerSale() -> Bool {
@@ -30,26 +30,25 @@ class LocalSaleManager: SaleManager {
             return false
         }
         print ("Se procede a hacer los calculos para registrar venta")
-        if let listaCarrito = getListCart().first!.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+        if let cartList = getListCart().first!.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
             
             //Creamos un nuevo objeto venta
-            let newVenta = Tb_Venta(context: salesContainer.viewContext)
-            newVenta.idVenta = UUID()
-            newVenta.fechaVenta = Date()
-            newVenta.totalVenta = getListCart().first!.totalCarrito //Asignamos el mismo total del carrito a la venta
+            let newSale = Tb_Venta(context: salesContainer.viewContext)
+            newSale.idVenta = UUID()
+            newSale.fechaVenta = Date()
+            newSale.totalVenta = getListCart().first!.totalCarrito //Asignamos el mismo total del carrito a la venta
             
-            for detalleCarrito in listaCarrito {
-                if let productoInContext = salesContainer.viewContext.object(with: detalleCarrito.detalleCarrito_to_producto!.objectID) as? Tb_Producto{
+            for cartDetail in cartList {
+                if let productInContext = salesContainer.viewContext.object(with: cartDetail.detalleCarrito_to_producto!.objectID) as? Tb_Producto{
                     // Crear el objeto detalleCarrito y establecer sus propiedades
-                    let detalleVenta = Tb_DetalleVenta(context: salesContainer.viewContext)
-                    detalleVenta.idDetalleVenta = UUID() // Genera un nuevo UUID para el detalle de la venta
-                    detalleVenta.cantidad = detalleCarrito.cantidad //Asignamos la misma cantidad del producto del carrito
-                    detalleVenta.subtotal = detalleCarrito.subtotal //Asignamos el mismo subtotal del producto del carrito
+                    let saleDetail = Tb_DetalleVenta(context: salesContainer.viewContext)
+                    saleDetail.idDetalleVenta = UUID() // Genera un nuevo UUID para el detalle de la venta
+                    saleDetail.cantidad = cartDetail.cantidad //Asignamos la misma cantidad del producto del carrito
+                    saleDetail.subtotal = cartDetail.subtotal //Asignamos el mismo subtotal del producto del carrito
                     // Agregar el objeto del producto a detalle de venta
-                    detalleVenta.detalleVenta_to_producto = productoInContext
+                    saleDetail.detalleVenta_to_producto = productInContext
                     // Agregar el objeto detalleVenta a la venta
-                    detalleVenta.detalleVenta_to_venta = newVenta
-                    print ("Se creo una nueva venta")
+                    saleDetail.detalleVenta_to_venta = newSale
                 }
             }
             print ("Se guarda los cambios")

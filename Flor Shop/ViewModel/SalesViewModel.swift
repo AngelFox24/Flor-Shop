@@ -8,8 +8,8 @@ import CoreData
 import Foundation
 
 
-class VentasCoreDataViewModel: ObservableObject {
-    @Published var ventasCoreData: [Sale] = []
+class SalesViewModel: ObservableObject {
+    @Published var salesCoreData: [Sale] = []
     let saleRepository: SaleRepository
     
     init(saleRepository: SaleRepository){
@@ -18,10 +18,10 @@ class VentasCoreDataViewModel: ObservableObject {
     }
     //MARK: CRUD Core Data
     func fetchVentas () {
-        ventasCoreData = self.saleRepository.getListSales()
+        salesCoreData = self.saleRepository.getListSales()
     }
     
-    func registrarVenta() -> Bool {
+    func registerSale() -> Bool {
         return saleRepository.registerSale()
     }
 }

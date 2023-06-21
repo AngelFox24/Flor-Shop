@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 
 struct AgregarTopBar: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     var body: some View {
         HStack{
             Button(action: {

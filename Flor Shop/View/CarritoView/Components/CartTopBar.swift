@@ -9,27 +9,27 @@ import SwiftUI
 import CoreData
 
 struct CartTopBar: View {
-    @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
-    @EnvironmentObject var ventasCoreDataViewModel: VentasCoreDataViewModel
-    @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
+    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     var body: some View {
         HStack{
             HStack {
                 Text(String("S/. "))
                     .font(.custom("text_font_1", size: 15))
-                Text(String(carritoCoreDataViewModel.carritoCoreData!.total))
+                Text(String(carritoCoreDataViewModel.cartCoreData!.total))
                     .font(.custom("text_font_1", size: 25))
             }
             Spacer()
             Button(action: {
                 //Reducimos stock
                 print ("Se se va a proceder a reducir el stock en CarritoTopBar")
-                if productsCoreDataViewModel.reducirStock(){
+                if productsCoreDataViewModel.reduceStock(){
                     print ("Se ha reducido el stock en CarritoTopBar exitosamente")
                     //Luego de haber reducido el stock de forma exitosa vendemos
-                    if ventasCoreDataViewModel.registrarVenta(){
+                    if ventasCoreDataViewModel.registerSale(){
                         print ("Se procede a vaciar el carrito")
-                        carritoCoreDataViewModel.vaciarCarrito()
+                        carritoCoreDataViewModel.emptyCart()
                     }else{
                         print("Todo esta mal renuncia xd")
                     }
@@ -48,14 +48,14 @@ struct CartTopBar: View {
     }
 }
 
-struct CarritoTopBar_Previews: PreviewProvider {
+struct CartTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCarManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
-        let saleManager = LocalSaleManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
+        let saleManager = LocalSaleManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let salesRepository = SaleRepositoryImpl(manager: saleManager)
         CartTopBar()
-            .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
-            .environmentObject(VentasCoreDataViewModel(saleRepository: salesRepository))
+            .environmentObject(CartViewModel(carRepository: carRepository))
+            .environmentObject(SalesViewModel(saleRepository: salesRepository))
     }
 }
