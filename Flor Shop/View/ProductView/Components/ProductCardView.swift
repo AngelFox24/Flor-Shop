@@ -17,7 +17,6 @@ struct ProductCardView: View {
     let unitPrice: Double
     let url: String
     let size: CGFloat
-    //@ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
     
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -33,10 +32,8 @@ struct ProductCardView: View {
                 VStack {
                     HStack { //Nombre Producto
                         Text(name)
-                            .font(.headline)
-                            .fontWeight(.bold) // Alinea el texto a la izquierda
+                            .font(.custom("text_font_1", size: 16))
                             .lineLimit(2)
-                            .multilineTextAlignment(.leading)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     HStack { //Cantidad Producto
@@ -48,10 +45,10 @@ struct ProductCardView: View {
                             .cornerRadius(20)
                         Spacer()
                     }
-                    .padding(.all, 5)
                 }
+                .padding(.bottom,6)
                 VStack {
-                    HStack {
+                    HStack(spacing: 0) {
                         Text(String("S/. "))
                             .font(.custom("text_font_1", size: 15))
                         Text(String(unitPrice))
@@ -63,7 +60,7 @@ struct ProductCardView: View {
                     .background(Color("color_accent"))
                     .cornerRadius(20)
                 }
-                .padding(.trailing,10)
+                .padding(.horizontal,10)
             }
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(.white)
@@ -75,6 +72,6 @@ struct ProductCardView: View {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", expirationDate: Date(), quantity: 34.4, unitPrice: 23.2, url: "https://s7d2.scene7.com/is/image/TottusPE/42762662_0?wid=136&hei=136&qlt=70", size: 100)
+        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", expirationDate: Date(), quantity: 34.4, unitPrice: 23.2, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", size: 100)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  CarritoProductCardView.swift
+//  CartProductCardView.swift
 //  Flor Shop
 //
 //  Created by Angel Curi Laurente on 29/04/23.
@@ -20,19 +20,18 @@ struct CartProductCardView: View {
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)
-                            .font(.headline)
-                            .fontWeight(.bold) // Alinea el texto a la izquierda
+                            .font(.custom("text_font_1", size: 16))
                             .lineLimit(2)
-                            .multilineTextAlignment(.leading)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     HStack {
                         Button(action: {}) {
                             Image(systemName: "minus")
                                 .resizable()
+                                .font(.headline)
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 10, height: 10)
-                                .padding(12)
+                                .frame(width: 12, height: 12)
+                                .padding(10)
                                 .foregroundColor(Color("color_accent"))
                                 .background(Color("color_secondary"))
                                 .clipShape(Circle())
@@ -53,9 +52,10 @@ struct CartProductCardView: View {
                         Button(action: {}) {
                             Image(systemName: "plus")
                                 .resizable()
+                                .font(.headline)
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 10, height: 10)
-                                .padding(12)
+                                .frame(width: 12, height: 12)
+                                .padding(10)
                                 .foregroundColor(Color("color_accent"))
                                 .background(Color("color_secondary"))
                                 .clipShape(Circle())
@@ -66,10 +66,9 @@ struct CartProductCardView: View {
                         Spacer()
                     }
                 }
-                .padding(.all,5)
-                .padding(.trailing,10)
+                .padding(.bottom,6)
                 VStack {
-                    HStack {
+                    HStack(spacing: 0) {
                         Text(String("S/. "))
                             .font(.custom("text_font_1", size: 15))
                         Text(String(cartDetail.product.unitPrice))
@@ -81,7 +80,7 @@ struct CartProductCardView: View {
                     .background(Color("color_accent"))
                     .cornerRadius(20)
                 }
-                .padding(.trailing,10)
+                .padding(.horizontal,10)
             }
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(.white)
@@ -90,7 +89,7 @@ struct CartProductCardView: View {
     }
 }
 
-struct CarritoProductCardView_Previews: PreviewProvider {
+struct CartProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         let cartManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let cartRepository = CarRepositoryImpl(manager: cartManager)

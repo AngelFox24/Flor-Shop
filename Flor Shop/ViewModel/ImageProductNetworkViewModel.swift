@@ -78,11 +78,11 @@ class ImageProductNetworkViewModel: ObservableObject {
             print("Error al obtener las propiedades de la imagen")
             return false
         }
-        
+        /*
         print("Propiedades de la imagen:")
         for (key, value) in imageProperties {
             print("\(key): \(value)")
-        }
+        }*/
         
         guard let tiffProperties = imageProperties[kCGImagePropertyTIFFDictionary as String] as? [String: Any] else {
             print("Error al obtener las propiedades TIFF de la imagen")
