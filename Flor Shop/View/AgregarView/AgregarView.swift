@@ -29,6 +29,7 @@ struct AgregarView_Previews: PreviewProvider {
 
 struct CampoIndividual:View {
     @Binding var contenido:String
+    @Binding var edited:Bool
     var body: some View {
         VStack {
             TextField("", text: $contenido)
@@ -37,9 +38,9 @@ struct CampoIndividual:View {
                 .onTapGesture {
                     withAnimation {
                         contenido.removeAll()
+                        edited = true
                     }
                 }
-                //.foregroundColor(Color("color_primary"))
         }
         .padding(.all,5)
         .background(.white)
@@ -88,6 +89,7 @@ struct CampoIndividualDouble:View {
         .cornerRadius(15)
     }
 }
+
 struct CampoIndividualDate:View {
     @Binding var contenido:Date
     var body: some View {
@@ -101,8 +103,27 @@ struct CampoIndividualDate:View {
     }
 }
 
+struct ErrorMessageText: View {
+    let message: String
+    var body: some View {
+        Text(message)
+            .foregroundColor(.red)
+    }
+}
+
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
+    
+    
+    @State var productEdited:Bool = false
+    @State var totalCostEdited:Bool = false
+    @State var quantityEdited:Bool = false
+    @State var imageURLEdited:Bool = false
+    @State var imageURLError:String = ""
+    @State var unitCostEdited:Bool = false
+    @State var profitMarginEdited:Bool = false
+    @State var unitPriceEdited:Bool = false
+    
     var sizeCampo:CGFloat = 200
     var body: some View{
         List{
@@ -136,7 +157,10 @@ struct CamposProductoAgregar: View {
                 VStack{
                     Text("Nombre del Producto")
                         .font(.headline)
-                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name)
+                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $productEdited)
+                    if (!productsCoreDataViewModel.temporalProduct.isProductNameValid() && productEdited){
+                        ErrorMessageText(message: "Nombre no válido")
+                    }
                 }
                 .frame(width: sizeCampo)
             }
@@ -181,12 +205,17 @@ struct CamposProductoAgregar: View {
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
-            HStack {
-                Text("Imagen URL")
-                    .font(.headline)
-                Spacer()
-                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url)
-                    .frame(width: sizeCampo)
+            VStack {
+                HStack {
+                    Text("Imagen URL")
+                        .font(.headline)
+                    Spacer()
+                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $imageURLEdited)
+                        .frame(width: sizeCampo)
+                }
+                if (!productsCoreDataViewModel.temporalProduct.isURLValid() && imageURLEdited){
+                    ErrorMessageText(message: "URL no valido")
+                }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
@@ -194,7 +223,7 @@ struct CamposProductoAgregar: View {
                 Text("Palabras Clave")
                     .font(.headline)
                 Spacer()
-                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.keyWords)
+                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.keyWords, edited: .constant(false))
                     .frame(width: sizeCampo)
             }
             .listRowBackground(Color("color_background"))

@@ -15,7 +15,7 @@ struct CarritoView: View {
                 Color("color_background")
                     .ignoresSafeArea()
                 VStack(spacing: 0){
-                CarritoTopBar()
+                CartTopBar()
                 ListaCarritoControler()
                 }
             }
@@ -38,7 +38,7 @@ struct ListaCarritoControler: View {
         VStack {
             List(){
                 ForEach(carritoCoreDataViewModel.carritoCoreDataDetails) { cartDetail in
-                    CarritoProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                    CartProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {

@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 
-struct CarritoTopBar: View {
+struct CartTopBar: View {
     @EnvironmentObject var carritoCoreDataViewModel: CarritoCoreDataViewModel
     @EnvironmentObject var ventasCoreDataViewModel: VentasCoreDataViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductCoreDataViewModel
@@ -54,7 +54,7 @@ struct CarritoTopBar_Previews: PreviewProvider {
         let carRepository = CarRepositoryImpl(manager: carManager)
         let saleManager = LocalSaleManager(contenedorBDFlor: CoreDataProvider.shared.persistContainer)
         let salesRepository = SaleRepositoryImpl(manager: saleManager)
-        CarritoTopBar()
+        CartTopBar()
             .environmentObject(CarritoCoreDataViewModel(carRepository: carRepository))
             .environmentObject(VentasCoreDataViewModel(saleRepository: salesRepository))
     }
