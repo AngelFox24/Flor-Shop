@@ -146,7 +146,9 @@ class LocalCarManager: CarManager {
         
         let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detail = detailToAdd.first {
-            detail.cantidad -= 1.0
+            if detail.cantidad > 0 {
+                detail.cantidad -= 1.0
+            }
         }
         updateCartTotal()
         saveData()

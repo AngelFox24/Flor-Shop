@@ -26,6 +26,7 @@ struct MenuView: View {
             }
         }
         .onAppear {
+            checkForPermission()
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                 isKeyboardVisible = true
             }

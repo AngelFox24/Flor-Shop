@@ -17,6 +17,7 @@
 		2728EAB22A1B0E02002B534A /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB12A1B0E02002B534A /* Car.swift */; };
 		2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB32A1B0E0D002B534A /* Sale.swift */; };
 		2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */; };
+		273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BD5DE2A4B4493001C1C03 /* Notification.swift */; };
 		274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* Flor_ShopApp.swift */; };
 		274CE29C29E6D792007C703D /* ProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* ProductView.swift */; };
 		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
@@ -54,6 +55,7 @@
 		2728EAB12A1B0E02002B534A /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		2728EAB32A1B0E0D002B534A /* Sale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sale.swift; sourceTree = "<group>"; };
 		2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHideKeyboard.swift; sourceTree = "<group>"; };
+		273BD5DE2A4B4493001C1C03 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		274CE29629E6D792007C703D /* Flor Shop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flor Shop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		274CE29929E6D792007C703D /* Flor_ShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flor_ShopApp.swift; sourceTree = "<group>"; };
 		274CE29B29E6D792007C703D /* ProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductView.swift; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 				68A4B10F2A197BFB00FC8D9D /* ProductRepositoryImpl.swift */,
 				2728EAAD2A1B0BC2002B534A /* SaleRepositoryImpl.swift */,
 				2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */,
+				273BD5DE2A4B4493001C1C03 /* Notification.swift */,
 			);
 			path = repository;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				274CE29C29E6D792007C703D /* ProductView.swift in Sources */,
 				27F54F3429FDE6180083B616 /* CartTopBar.swift in Sources */,
+				273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */,
 				2728EAB02A1B0BD5002B534A /* CarRepositoryImpl.swift in Sources */,
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
@@ -526,9 +530,9 @@
 				DEVELOPMENT_TEAM = 9TAXVQDQJU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Flor-Shop-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -560,9 +564,9 @@
 				DEVELOPMENT_TEAM = 9TAXVQDQJU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Flor-Shop-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";

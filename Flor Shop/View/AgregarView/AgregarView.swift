@@ -182,11 +182,13 @@ struct CamposProductoAgregar: View {
                 HStack {
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.qty)
                     Menu {
+                        /*
                         Button(){
                             productsCoreDataViewModel.temporalProduct.type = .Kg
                         } label: {
                             Text("Kilos")
                         }
+                         */
                         Button(){
                             productsCoreDataViewModel.temporalProduct.type = .Uni
                         } label: {
@@ -275,3 +277,4 @@ struct CamposProductoAgregar: View {
         .listStyle(PlainListStyle())
     }
 }
+

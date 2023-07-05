@@ -17,6 +17,7 @@ struct ProductCardView: View {
     let unitPrice: Double
     let url: String
     let size: CGFloat
+    @State var sizeX: CGSize = .zero
     
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -27,18 +28,18 @@ struct ProductCardView: View {
     var body: some View {
         VStack{
             HStack{
-                let _ = print ("Producto gg")
                 CustomAsyncImageView(id: id, urlProducto: url, size: size)
                 VStack {
                     HStack { //Nombre Producto
                         Text(name)
                             .font(.custom("text_font_1", size: 16))
-                            .lineLimit(2)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .lineLimit(3)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
+                    .padding(.top, 6)
                     HStack { //Cantidad Producto
                         Text(String("\(quantity) u"))
-                            .font(.custom("text_font_1", size: 18))
+                            .font(.custom("text_font_1", size: 16))
                             .padding(.vertical,5)
                             .padding(.horizontal,10)
                             .background(Color("color_secondary"))
@@ -72,6 +73,6 @@ struct ProductCardView: View {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "Bombones de chocolate Bon O Bon corazón 105", expirationDate: Date(), quantity: 34.4, unitPrice: 23.2, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", size: 100)
+        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", expirationDate: Date(), quantity: 34.4, unitPrice: 23.2, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", size: 100)
     }
 }
