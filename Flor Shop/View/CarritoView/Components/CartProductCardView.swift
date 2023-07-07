@@ -42,7 +42,7 @@ struct CartProductCardView: View {
                             decreceProductAmount(cartDetail.product)
                         })
                         HStack { //Cantidad Producto
-                            Text(String("\(cartDetail.quantity) u"))
+                            Text(String(format: "%.0f",cartDetail.quantity)+" u")
                                 .font(.custom("text_font_1", size: 16))
                                 .padding(.vertical,5)
                                 .padding(.horizontal,10)
@@ -94,7 +94,7 @@ struct CartProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         let cartManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
-        let cartDetail = CartDetail(id: UUID(), quantity: 0.4, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", replaceImage: false))
+        let cartDetail = CartDetail(id: UUID(), quantity: 24.9, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .Kg, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", replaceImage: false))
         CartProductCardView(cartDetail: cartDetail, size: 100, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
             .environmentObject(CartViewModel(carRepository: cartRepository))
     }

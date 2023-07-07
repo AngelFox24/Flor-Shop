@@ -38,7 +38,8 @@ struct ProductCardView: View {
                     }
                     .padding(.top, 6)
                     HStack { //Cantidad Producto
-                        Text(String("\(quantity) u"))
+                        //format: "%.0f",
+                        Text(String(format: "%.0f",quantity)+" u")
                             .font(.custom("text_font_1", size: 16))
                             .padding(.vertical,5)
                             .padding(.horizontal,10)

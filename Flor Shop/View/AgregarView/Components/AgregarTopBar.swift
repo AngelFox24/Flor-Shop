@@ -10,18 +10,20 @@ import CoreData
 
 struct AgregarTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @Binding var editedFields: AgregarViewModel
     var body: some View {
         HStack{
+            //El boton de Limpiar tiene un bug por lo que no pasa a prod
+            /*
             Button(action: {
-                let _ = print("Se va a presionar Limpiar con nombre")
+                editedFields.resetValuesFields()
                 productsCoreDataViewModel.setDefaultProduct()
             }) {
-                
                 CustomButton2(text: "Limpiar")
             }
+            */
             Spacer()
             Button(action: {
-                let _ = print("Se va a presionar Guardar con nombre \(productsCoreDataViewModel.temporalProduct.name)")
                 if productsCoreDataViewModel.addProduct()
                 {
                     print ("Se agrego un producto exitosamente")
@@ -41,6 +43,6 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        AgregarTopBar()
+        AgregarTopBar(editedFields: .constant(AgregarViewModel()))
     }
 }

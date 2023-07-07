@@ -9,10 +9,11 @@ import SwiftUI
 import CoreData
 
 struct AgregarView: View {
+    @State var editedFields = AgregarViewModel()
     var body: some View {
         VStack(spacing: 0){
-            AgregarTopBar()
-            CamposProductoAgregar()
+            AgregarTopBar(editedFields: $editedFields)
+            CamposProductoAgregar(editedFields: $editedFields.editedFields)
         }
         .background(Color("color_background"))
     }
@@ -48,18 +49,44 @@ struct CampoIndividual:View {
     }
 }
 
+struct CampoIndividualDoubleLocked:View {
+    var contenido:Double
+    var body: some View {
+        VStack {
+            Text(String(format: "%.0f", (contenido * 100).rounded())+" %")
+                .font(.system(size: 20))
+                .multilineTextAlignment(.center)
+                .disabled(true)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(.all,5)
+        .background(Color(hue: 1.0, saturation: 0.0, brightness: 0.884))
+        .cornerRadius(15)
+    }
+}
+
 struct CampoIndividualDouble:View {
     @Binding var contenido:Double
     @State var value: String = "0"
     @State private var oldValue: String = ""
     @FocusState var focus: Bool
+    @Binding var edited:Bool
+    var action: () -> Void
+    var disableInput:Bool = false
     var body: some View {
         VStack {
             TextField("", text: $value)
                 .font(.system(size: 20))
+                .disabled(disableInput)
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
                 .focused($focus)
+                .onTapGesture {
+                    withAnimation {
+                        contenido = 0.0
+                        edited = true
+                    }
+                }
                 .onChange(of: focus, perform: { editing in
                     if editing {
                         if !value.isEmpty {
@@ -72,16 +99,86 @@ struct CampoIndividualDouble:View {
                         } else {
                             if let valueDouble: Double = Double(value) {
                                 contenido = valueDouble
+                                let _ = print("Contedido \(contenido) Old: \(oldValue) Value: \(value)")
                             } else {
+                                let _ = print("old")
                                 value = oldValue
                             }
                         }
                     }
+                    action()
                 })
                 .onChange(of: value, perform: { _ in
+                    action()
                     if let valueDouble: Double = Double(value) {
                         contenido = valueDouble
+                    }else{
+                        let _ = print ("no se imp")
                     }
+                })
+                .onAppear(perform: {
+                    value = String(contenido)
+                })
+        }
+        .padding(.all,5)
+        .background(.white)
+        .cornerRadius(15)
+    }
+}
+
+struct CampoIndividualInt:View {
+    @Binding var contenido:Double
+    @State var value: String = "0"
+    @State private var oldValue: String = ""
+    @FocusState var focus: Bool
+    @Binding var edited:Bool
+    var action: () -> Void
+    var disableInput:Bool = false
+    var body: some View {
+        VStack {
+            TextField("", text: $value)
+                .font(.system(size: 20))
+                .disabled(disableInput)
+                .multilineTextAlignment(.center)
+                .keyboardType(.numberPad)
+                .focused($focus)
+                .onTapGesture {
+                    withAnimation {
+                        contenido = 0
+                        edited = true
+                    }
+                }
+                .onChange(of: focus, perform: { editing in
+                    if editing {
+                        if !value.isEmpty {
+                            oldValue = value
+                            value = ""
+                        }
+                    } else {
+                        if value.isEmpty {
+                            value = oldValue
+                        } else {
+                            if let valueDouble: Int = Int(value) {
+                                contenido = Double(valueDouble)
+                                let _ = print("Contedido \(contenido) Old: \(oldValue) Value: \(value)")
+                            } else {
+                                let _ = print("old")
+                                value = oldValue
+                            }
+                        }
+                    }
+                    action()
+                })
+                .onChange(of: value, perform: { _ in
+                    action()
+                    if let valueDouble: Int = Int(value) {
+                        contenido = Double(valueDouble)
+                    }else{
+                        let _ = print ("no se imp")
+                    }
+                })
+                .onAppear(perform: {
+                    value = String(contenido)
                 })
         }
         .padding(.all,5)
@@ -113,8 +210,8 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    
-    
+    @Binding var editedFields: FieldEditTemporal
+    /*
     @State var productEdited:Bool = false
     @State var totalCostEdited:Bool = false
     @State var quantityEdited:Bool = false
@@ -123,7 +220,7 @@ struct CamposProductoAgregar: View {
     @State var unitCostEdited:Bool = false
     @State var profitMarginEdited:Bool = false
     @State var unitPriceEdited:Bool = false
-    
+    */
     var sizeCampo:CGFloat = 200
     var body: some View{
         List{
@@ -157,8 +254,8 @@ struct CamposProductoAgregar: View {
                 VStack{
                     Text("Nombre del Producto")
                         .font(.headline)
-                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $productEdited)
-                    if (!productsCoreDataViewModel.temporalProduct.isProductNameValid() && productEdited){
+                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.productEdited)
+                    if (!productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.productEdited){
                         ErrorMessageText(message: "Nombre no válido")
                     }
                 }
@@ -166,6 +263,8 @@ struct CamposProductoAgregar: View {
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color("color_background"))
+            //El costo total se ultizara en el futuro
+            /*
             HStack {
                 Text("Costo Total")
                     .font(.headline)
@@ -175,12 +274,13 @@ struct CamposProductoAgregar: View {
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
+            */
             HStack {
                 Text("Cantidad")
                     .font(.headline)
                 Spacer()
                 HStack {
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.qty)
+                    CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited, action: doNothing)
                     Menu {
                         /*
                         Button(){
@@ -212,15 +312,17 @@ struct CamposProductoAgregar: View {
                     Text("Imagen URL")
                         .font(.headline)
                     Spacer()
-                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $imageURLEdited)
+                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.imageURLEdited)
                         .frame(width: sizeCampo)
                 }
-                if (!productsCoreDataViewModel.temporalProduct.isURLValid() && imageURLEdited){
+                if (!productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.imageURLEdited){
                     ErrorMessageText(message: "URL no valido")
                 }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
+            //Las palabras Clave se utilizaran el el futuro
+            /*
             HStack {
                 Text("Palabras Clave")
                     .font(.headline)
@@ -230,6 +332,7 @@ struct CamposProductoAgregar: View {
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
+            */
             /*
             HStack {
                 Text("Fecha Vencimiento")
@@ -263,11 +366,12 @@ struct CamposProductoAgregar: View {
                 }
                 .padding(.top,15)
                 HStack(spacing: 0){
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost, edited: $editedFields.unitCostEdited, action: productsCoreDataViewModel.calcProfitMargin)
                     Spacer()
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin)
+                    //CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin, disableInput: true)
+                    CampoIndividualDoubleLocked(contenido: productsCoreDataViewModel.temporalProduct.profitMargin)
                     Spacer()
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice)
+                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice, edited: $editedFields.unitPriceEdited, action: productsCoreDataViewModel.calcProfitMargin)
                 }
                 .padding(.bottom,10)
             }
@@ -275,6 +379,9 @@ struct CamposProductoAgregar: View {
             .listRowSeparator(.hidden)
         }
         .listStyle(PlainListStyle())
+    }
+    func doNothing() {
+        // No hace nada
     }
 }
 

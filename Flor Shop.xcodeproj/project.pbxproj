@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */; };
 		271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */; };
+		271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271BA1542A58799800572674 /* AgregarViewModel.swift */; };
 		272066802A094D6A00E0CCA8 /* SalesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2720667F2A094D6A00E0CCA8 /* SalesViewModel.swift */; };
 		2728EAAA2A1B0B89002B534A /* LocalCarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAA92A1B0B89002B534A /* LocalCarManager.swift */; };
 		2728EAAC2A1B0BA4002B534A /* LocalSaleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAAB2A1B0BA4002B534A /* LocalSaleManager.swift */; };
@@ -59,6 +60,7 @@
 /* Begin PBXFileReference section */
 		2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarTopBar.swift; sourceTree = "<group>"; };
 		271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProductNetworkViewModel.swift; sourceTree = "<group>"; };
+		271BA1542A58799800572674 /* AgregarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarViewModel.swift; sourceTree = "<group>"; };
 		2720667F2A094D6A00E0CCA8 /* SalesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesViewModel.swift; sourceTree = "<group>"; };
 		2728EAA92A1B0B89002B534A /* LocalCarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalCarManager.swift; sourceTree = "<group>"; };
 		2728EAAB2A1B0BA4002B534A /* LocalSaleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSaleManager.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				27C241FB2A008CB50045B2A0 /* ProductViewModel.swift */,
 				27C241FE2A00A89C0045B2A0 /* CartViewModel.swift */,
 				2720667F2A094D6A00E0CCA8 /* SalesViewModel.swift */,
+				271BA1542A58799800572674 /* AgregarViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -434,6 +437,7 @@
 				27F54F3429FDE6180083B616 /* CartTopBar.swift in Sources */,
 				273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */,
 				2728EAB02A1B0BD5002B534A /* CarRepositoryImpl.swift in Sources */,
+				271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */,
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
 				274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */,

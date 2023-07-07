@@ -92,13 +92,17 @@ struct Product: Identifiable{
     
     func isQuantityValid() -> Bool {
         if type == .Uni{
-            if Int(qty) > 0 {
-                return true
-            } else {
+            print ("Tipo Unidades")
+            if qty.truncatingRemainder(dividingBy: 1) != 0{
+                //Tiene Decimales
+                print ("WTF \(qty)")
                 return false
+            } else {
+                return true
             }
         }else if type == .Kg{
             if qty > 0.0 {
+                print ("Tipo Kilos")
                 return true
             } else {
                 return false

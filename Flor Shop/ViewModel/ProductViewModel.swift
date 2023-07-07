@@ -49,6 +49,7 @@ class ProductViewModel: ObservableObject {
     
     func editProduct (product: Product) {
         self.temporalProduct = product
+        calcProfitMargin()
     }
     
     func filterProducts(word: String){
@@ -62,5 +63,15 @@ class ProductViewModel: ObservableObject {
     func setPrimaryFilter(filter: PrimaryOrder, word: String) {
         productRepository.setPrimaryFilter(filter: filter)
         filterProducts(word: word)
+    }
+    
+    func calcProfitMargin(){
+        print ("Se llamo a la funcion calcular profit")
+        if ((temporalProduct.unitPrice - temporalProduct.unitCost) > 0.0) && (temporalProduct.unitPrice > 0) && (temporalProduct.unitCost > 0){
+            temporalProduct.profitMargin = (temporalProduct.unitPrice - temporalProduct.unitCost) / temporalProduct.unitCost
+            print ("Se calculo profit: \(temporalProduct.profitMargin)")
+        }else{
+            temporalProduct.profitMargin = 0.0
+        }
     }
 }
