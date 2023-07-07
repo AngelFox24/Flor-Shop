@@ -10,14 +10,10 @@ import CoreData
 
 struct CartView: View {
     var body: some View {
-        NavigationView () {
-            ZStack{
-                Color("color_background")
-                    .ignoresSafeArea()
-                VStack(spacing: 0){
+        NavigationView {
+            VStack(spacing: 0){
                 CartTopBar()
                 ListCartController()
-                }
             }
         }
     }
@@ -34,7 +30,7 @@ struct CartView_Previews: PreviewProvider {
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             List(){
                 ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
                     CartProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)

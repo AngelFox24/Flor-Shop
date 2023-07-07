@@ -11,9 +11,11 @@ import CoreData
 struct ProductView: View {
     @Binding var selectedTab: Tab
     var body: some View {
-        VStack(spacing: 0){
-            SearchTopBar()
-            ListaControler(selectedTab: $selectedTab)
+        NavigationView {
+            VStack(spacing: 0){
+                SearchTopBar()
+                ListaControler(selectedTab: $selectedTab)
+            }
         }
     }
 }

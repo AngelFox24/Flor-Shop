@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @State private var selectedItem: PrimaryOrder? = nil
+    let menuItems: [PrimaryOrder] = [.NameAsc, .QuantityAsc, .QuantityDesc, .PriceAsc, .PriceDesc]
     @State private var seach:String = ""
     var body: some View {
         VStack {
@@ -33,6 +35,7 @@ struct SearchTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 .padding(.trailing,8)
+                /*
                 Menu {
                     Button(){
                         setPrimaryOrder(order: .NameAsc)
@@ -70,14 +73,34 @@ struct SearchTopBar: View {
                     .background(.white)
                     .cornerRadius(15.0)
                 }
+                */
+                Menu {
+                    ForEach(menuItems, id: \.self) { item in
+                        Button(action: {
+                            selectedItem = item
+                            setPrimaryOrder(order: item)
+                        }) {
+                            HStack {
+                                Text(item.description)
+                            }
+                        }
+                    }
+                } label: {
+                    Button(action: { }) {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.custom("text_font_1", size: 22))
+                            .foregroundColor(Color("color_accent"))
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 10)
+                    .background(Color.white)
+                    .cornerRadius(15.0)
+                }
             }
             .padding(.horizontal,30)
         }
         .padding(.bottom,9)
         .background(Color("color_primary"))
-        .onAppear{
-            let _ = print ("Aparecio")
-        }
     }
     func filtrarProductos(){
         productsCoreDataViewModel.filterProducts(word: seach)

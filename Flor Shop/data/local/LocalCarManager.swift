@@ -133,7 +133,11 @@ class LocalCarManager: CarManager {
         
         let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detail = detailToAdd.first {
-            detail.cantidad += 1.0
+            if let cantidadStock = detail.detalleCarrito_to_producto?.cantidadStock  {
+                if cantidadStock > detail.cantidad {
+                    detail.cantidad += 1.0
+                }
+            }
         }
         updateCartTotal()
         saveData()
@@ -146,7 +150,7 @@ class LocalCarManager: CarManager {
         
         let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detail = detailToAdd.first {
-            if detail.cantidad > 0 {
+            if detail.cantidad > 1 {
                 detail.cantidad -= 1.0
             }
         }
