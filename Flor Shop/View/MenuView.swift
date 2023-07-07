@@ -10,22 +10,35 @@ import SwiftUI
 struct MenuView: View {
     @State private var tabSelected: Tab = .magnifyingglass
     @State private var isKeyboardVisible: Bool = false
+    @EnvironmentObject var versionCheck: VersionCheck
+    
     var body: some View {
         VStack(spacing: 0){
-            if tabSelected == .plus {
-                AgregarView()
-            }else if tabSelected == .magnifyingglass {
-                ProductView(selectedTab: $tabSelected)
-            }else if tabSelected == .cart {
-                CartView()
-            }
-            if isKeyboardVisible{
-                CustomHideKeyboard()
-            }else{
-                CustomTabBar(selectedTab: $tabSelected)
+            switch versionCheck.versionIsOk {
+            case .Loading:
+                VersionLockView(textito: "Cargando")
+            case .LockVersion:
+                VersionLockView(textito: "Debes descargar la Ultima Version")
+            case .VersionOk:
+                let _ = print("Se valido Version")
+                if tabSelected == .plus {
+                    AgregarView()
+                }else if tabSelected == .magnifyingglass {
+                    ProductView(selectedTab: $tabSelected)
+                }else if tabSelected == .cart {
+                    CartView()
+                }
+                if isKeyboardVisible{
+                    CustomHideKeyboard()
+                }else{
+                    CustomTabBar(selectedTab: $tabSelected)
+                }
+            case .Unowned:
+                VersionLockView(textito: "Error Critico")
             }
         }
         .onAppear {
+            versionCheck.checkAppVersion()
             checkForPermission()
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                 isKeyboardVisible = true
@@ -43,5 +56,6 @@ struct MenuView_Previews: PreviewProvider {
         let repository = ProductRepositoryImpl(manager: prdManager)
         MenuView()
             .environmentObject(ProductViewModel(productRepository: repository))
+            .environmentObject(VersionCheck())
     }
 }

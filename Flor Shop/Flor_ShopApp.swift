@@ -7,12 +7,14 @@
 
 import SwiftUI
 import CoreData
+import Firebase
 
 @main
 struct Flor_ShopApp: App {
-    
+    init() {
+            FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
+        }
     var body: some Scene {
-        
         WindowGroup {
             
             let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
@@ -27,10 +29,13 @@ struct Flor_ShopApp: App {
             let salesRepository = SaleRepositoryImpl(manager: saleManager)
             let salesCoreData = SalesViewModel(saleRepository: salesRepository)
             
+            let versionCheck = VersionCheck()
+            
             MenuView()
                 .environmentObject(productsCoreData)
                 .environmentObject(cartCoreData)
                 .environmentObject(salesCoreData)
+                .environmentObject(versionCheck)
         }
     }
 }
