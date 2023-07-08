@@ -13,8 +13,8 @@ Flor Shop es una App gratuita para **[iOS]** que se ha desarrollado para ayudar 
 ### ¿Que Características tiene la Aplicación?
 * Maneja una Base de Datos con Core Data.
 * Diseñado bajo el patrón MVVM.
-* Basado en los principio SOLID.
-* Esta escrito integramente con Swift y SwiftUI.
+* Basado en los principios SOLID.
+* Esta escrito íntegramente con Swift y SwiftUI.
 * Implementa la funcionalidad de Bloqueo por Versíon desde Firebase.
 * Esta optimizado para guardar imágenes una vez que se descarga para no consumir muchos datos.
 * Un diseño simple y fresco.
