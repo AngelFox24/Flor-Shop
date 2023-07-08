@@ -39,6 +39,22 @@ struct ListaControler: View {
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
+            if productsCoreDataViewModel.productsCoreData.count == 0 {
+                VStack {
+                    Image("groundhog_finding")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 300, height: 300)
+                    Text("Agreguemos productos a nuestra tienda.")
+                        .padding(.horizontal,20)
+                    Button(action: {
+                        selectedTab = .plus
+                    }) {
+                        CustomButton1(text: "Agregar")
+                    }
+                }
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
+            }else{
             List(){
                 ForEach(productsCoreDataViewModel.productsCoreData){ producto in
                     ProductCardView(
@@ -72,6 +88,7 @@ struct ListaControler: View {
                 }
             }
             .listStyle(PlainListStyle())
+            }
         }
         .padding(.horizontal, 10)
         .background(Color("color_background"))

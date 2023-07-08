@@ -46,6 +46,8 @@
 		27E9FD332A5838430070216B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 27E9FD322A5838430070216B /* FirebaseDatabase */; };
 		27E9FD352A5838430070216B /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 27E9FD342A5838430070216B /* FirebaseDatabaseSwift */; };
 		27E9FD372A583AB30070216B /* VersionLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E9FD362A583AB30070216B /* VersionLockView.swift */; };
+		27EBAFE62A59A2CB006E5CAD /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EBAFE52A59A2CB006E5CAD /* LaunchScreenView.swift */; };
+		27EBAFE82A59B52E006E5CAD /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EBAFE72A59B52E006E5CAD /* LockScreenView.swift */; };
 		27EE72F029F8A104007C3B5F /* ProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EE72EF29F8A104007C3B5F /* ProductCardView.swift */; };
 		27F54F3029FDDC810083B616 /* CartProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F2F29FDDC810083B616 /* CartProductCardView.swift */; };
 		27F54F3229FDE5210083B616 /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F3129FDE5210083B616 /* CartView.swift */; };
@@ -89,6 +91,8 @@
 		27E9FD1D2A582C710070216B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		27E9FD2F2A5835CA0070216B /* FirebaseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseApp.swift; sourceTree = "<group>"; };
 		27E9FD362A583AB30070216B /* VersionLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionLockView.swift; sourceTree = "<group>"; };
+		27EBAFE52A59A2CB006E5CAD /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
+		27EBAFE72A59B52E006E5CAD /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		27EE72EF29F8A104007C3B5F /* ProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardView.swift; sourceTree = "<group>"; };
 		27F54F2F29FDDC810083B616 /* CartProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartProductCardView.swift; sourceTree = "<group>"; };
 		27F54F3129FDE5210083B616 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
@@ -185,6 +189,7 @@
 		274CE2A929E6D81E007C703D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
 				27C241F52A0088A70045B2A0 /* General */,
 				27C241F92A0089B50045B2A0 /* AgregarView */,
 				27C241F62A0088DE0045B2A0 /* ProductView */,
@@ -273,6 +278,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		27EBAFE42A59A2AE006E5CAD /* LauchScreen */ = {
+			isa = PBXGroup;
+			children = (
+				27EBAFE52A59A2CB006E5CAD /* LaunchScreenView.swift */,
+				27EBAFE72A59B52E006E5CAD /* LockScreenView.swift */,
+			);
+			path = LauchScreen;
 			sourceTree = "<group>";
 		};
 		68A4B1072A196B6400FC8D9D /* manager */ = {
@@ -428,6 +442,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */,
+				27EBAFE62A59A2CB006E5CAD /* LaunchScreenView.swift in Sources */,
 				27C318E029F34062004CC146 /* AgregarView.swift in Sources */,
 				27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */,
 				27B3937029F7575C0085D4EC /* SearchTopBar.swift in Sources */,
@@ -445,6 +460,7 @@
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCarManager.swift in Sources */,
 				27C241FC2A008CB50045B2A0 /* ProductViewModel.swift in Sources */,
+				27EBAFE82A59B52E006E5CAD /* LockScreenView.swift in Sources */,
 				27E7A51C2A1D18570042983D /* CartDetail.swift in Sources */,
 				27B3936E29F74E4B0085D4EC /* MenuView.swift in Sources */,
 				68D990C22A1ADEA700A3A393 /* LocalProductManager.swift in Sources */,

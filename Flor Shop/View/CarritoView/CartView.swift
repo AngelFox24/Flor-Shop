@@ -9,11 +9,12 @@ import SwiftUI
 import CoreData
 
 struct CartView: View {
+    @Binding var selectedTab: Tab
     var body: some View {
         NavigationView {
             VStack(spacing: 0){
                 CartTopBar()
-                ListCartController()
+                ListCartController(selectedTab: $selectedTab)
             }
         }
     }
@@ -23,14 +24,31 @@ struct CartView_Previews: PreviewProvider {
     static var previews: some View {
         let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
-        CartView()
+        CartView(selectedTab: .constant(.cart))
             .environmentObject(CartViewModel(carRepository: carRepository))
     }
 }
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
+    @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
+            if cartViewModel.cartDetailCoreData.count == 0 {
+                VStack {
+                    Image("groundhog-money")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 300, height: 300)
+                    Text("Deslizemos productos al carrito de ventas.")
+                        .padding(.horizontal,20)
+                    Button(action: {
+                        selectedTab = .magnifyingglass
+                    }) {
+                        CustomButton1(text: "Ir a Productos")
+                    }
+                }
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
+            }else{
             List(){
                 ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
                     CartProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
@@ -48,6 +66,7 @@ struct ListCartController: View {
                 .listRowSeparator(.hidden)
             }
             .listStyle(PlainListStyle())
+            }
         }
         .padding(.horizontal, 10)
         .background(Color("color_background"))

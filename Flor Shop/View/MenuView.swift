@@ -16,9 +16,9 @@ struct MenuView: View {
         VStack(spacing: 0){
             switch versionCheck.versionIsOk {
             case .Loading:
-                VersionLockView(textito: "Cargando")
+                LaunchScreenView()
             case .LockVersion:
-                VersionLockView(textito: "Debes descargar la Ultima Version")
+                LockScreenView()
             case .VersionOk:
                 let _ = print("Se valido Version")
                 if tabSelected == .plus {
@@ -26,7 +26,7 @@ struct MenuView: View {
                 }else if tabSelected == .magnifyingglass {
                     ProductView(selectedTab: $tabSelected)
                 }else if tabSelected == .cart {
-                    CartView()
+                    CartView(selectedTab: $tabSelected)
                 }
                 if isKeyboardVisible{
                     CustomHideKeyboard()
@@ -34,12 +34,12 @@ struct MenuView: View {
                     CustomTabBar(selectedTab: $tabSelected)
                 }
             case .Unowned:
-                VersionLockView(textito: "Error Critico")
+                LockScreenView()
             }
         }
         .onAppear {
             versionCheck.checkAppVersion()
-            checkForPermission()
+            //checkForPermission()
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                 isKeyboardVisible = true
             }
