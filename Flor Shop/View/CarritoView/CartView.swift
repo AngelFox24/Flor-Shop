@@ -43,9 +43,9 @@ struct ListCartController: View {
                         .padding(.horizontal, 20)
                     Button(action: {
                         selectedTab = .magnifyingglass
-                    }) {
+                    }, label: {
                         CustomButton1(text: "Ir a Productos")
-                    }
+                    })
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
