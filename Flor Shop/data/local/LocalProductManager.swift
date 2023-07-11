@@ -35,10 +35,8 @@ enum PrimaryOrder: CustomStringConvertible {
         return [.nameAsc, .nameDesc, .priceAsc, .priceDesc, .quantityAsc, .quantityDesc]
     }
     static func from(description: String) -> PrimaryOrder? {
-        for case let tipo in PrimaryOrder.allValues {
-            if tipo.description == description {
+        for case let tipo in PrimaryOrder.allValues where tipo.description == description {
                 return tipo
-            }
         }
         return nil
     }

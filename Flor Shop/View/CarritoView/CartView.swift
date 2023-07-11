@@ -57,9 +57,9 @@ struct ListCartController: View {
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive, action: {
                                 deleteProduct(product: cartDetail.product)
-                            }) {
+                            }, label: {
                                 Image(systemName: "trash")
-                            }
+                            })
                             .tint(Color("color_accent"))
                         }
                 }

@@ -48,9 +48,9 @@ struct ListaControler: View {
                         .padding(.horizontal, 20)
                     Button(action: {
                         selectedTab = .plus
-                    }) {
+                    }, label: {
                         CustomButton1(text: "Agregar")
-                    }
+                    })
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -70,18 +70,18 @@ struct ListaControler: View {
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                         Button(action: {
                             agregarProductoACarrito(producto: producto)
-                        }) {
+                        }, label: {
                             Image(systemName: "cart")
-                        }
+                        })
                         .tint(Color("color_accent"))
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(action: {
                             editarProducto(producto: producto)
                             selectedTab = .plus
-                        }) {
+                        }, label: {
                             Image(systemName: "pencil")
-                        }
+                        })
                         .tint(Color("color_accent"))
                     }
                 }

@@ -76,7 +76,7 @@ class LocalCarManager: CarManager {
         }
         // Buscamos si existe este producto en el carrito
         let matchingDetails = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.idProducto }
-        if let _ = matchingDetails.first {
+        if matchingDetails.first != nil {
             increaceProductAmount(product: productIn)
         } else {
             // Crear el objeto detalleCarrito y establecer sus propiedades

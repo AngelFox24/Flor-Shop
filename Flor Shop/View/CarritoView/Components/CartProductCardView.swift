@@ -55,7 +55,7 @@ struct CartProductCardView: View {
                                 .background(Color("color_secondary"))
                                 .cornerRadius(20)
                         }
-                        Button(action: {}) {
+                        Button(action: {}, label: {
                             Image(systemName: "plus")
                                 .resizable()
                                 .font(.headline)
@@ -65,7 +65,7 @@ struct CartProductCardView: View {
                                 .foregroundColor(Color("color_accent"))
                                 .background(Color("color_secondary"))
                                 .clipShape(Circle())
-                        }
+                        })
                         .highPriorityGesture(TapGesture().onEnded {
                             increaceProductAmount(product)
                         })

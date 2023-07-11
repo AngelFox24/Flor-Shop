@@ -79,18 +79,18 @@ struct SearchTopBar: View {
                         Button(action: {
                             selectedItem = item
                             setPrimaryOrder(order: item)
-                        }) {
+                        }, label: {
                             HStack {
                                 Text(item.description)
                             }
-                        }
+                        })
                     }
                 } label: {
-                    Button(action: { }) {
+                    Button(action: {}, label: {
                         Image(systemName: "slider.horizontal.3")
                             .font(.custom("text_font_1", size: 22))
                             .foregroundColor(Color("color_accent"))
-                    }
+                    })
                     .padding(.horizontal, 8)
                     .padding(.vertical, 10)
                     .background(Color.white)

@@ -31,13 +31,21 @@ enum MeasurementType: CustomStringConvertible {
         return [.kilo, .uni]
     }
     static func from(description: String) -> MeasurementType? {
-        for case let type in MeasurementType.allValues {
-            if type.description == description {
-                return type
-            }
+        for case let type in MeasurementType.allValues where type.description == description {
+            return type
         }
         return nil
     }
+    /*
+     static func from(description: String) -> MeasurementType? {
+         for case let type in MeasurementType.allValues {
+             if type.description == description {
+                 return type
+             }
+         }
+         return nil
+     }
+     */
 }
 
 struct Product: Identifiable {

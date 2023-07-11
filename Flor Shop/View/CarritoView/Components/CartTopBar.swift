@@ -37,9 +37,9 @@ struct CartTopBar: View {
                 } else {
                     print("No hay sufiente stock")
                 }
-            }) {
+            }, label: {
                 CustomButton1(text: "Vender")
-            }
+            })
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)

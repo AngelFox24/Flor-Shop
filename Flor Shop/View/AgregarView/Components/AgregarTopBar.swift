@@ -31,8 +31,7 @@ struct AgregarTopBar: View {
                 }
             }, label: {
                 CustomButton1(text: "Guardar")
-            }
-            )
+            })
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
