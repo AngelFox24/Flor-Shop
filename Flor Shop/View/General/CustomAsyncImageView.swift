@@ -26,12 +26,12 @@ struct CustomAsyncImageView: View {
                 imageC
                     .resizable()
                     .frame(width: size, height: size)
-                    .cornerRadius(20.0)
+                    .cornerRadius(15.0)
             } else {
                 Image("ProductoSinNombre")
                     .resizable()
                     .frame(width: size, height: size)
-                    .cornerRadius(20.0)
+                    .cornerRadius(15.0)
             }
         }
     }
