@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 struct CartTopBar: View {
+    // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel

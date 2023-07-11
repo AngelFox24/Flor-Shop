@@ -10,6 +10,7 @@ import CoreData
 
 struct CartProductCardView: View {
     // let cartDetail: CartDetail
+    // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     let productId: UUID
     let productUrl: String
     let productName: String
