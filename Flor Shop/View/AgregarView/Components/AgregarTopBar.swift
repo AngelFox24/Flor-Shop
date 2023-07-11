@@ -29,10 +29,10 @@ struct AgregarTopBar: View {
                 } else {
                     print("No se pudo agregar correctamente")
                 }
-            }
-            ) {
+            }, label: {
                 CustomButton1(text: "Guardar")
             }
+            )
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)

@@ -33,7 +33,7 @@ struct CartProductCardView: View {
                     }
                     .padding(.top, 6)
                     HStack {
-                        Button(action: {}) {
+                        Button(action: {}, label: {
                             Image(systemName: "minus")
                                 .resizable()
                                 .font(.headline)
@@ -43,7 +43,7 @@ struct CartProductCardView: View {
                                 .foregroundColor(Color("color_accent"))
                                 .background(Color("color_secondary"))
                                 .clipShape(Circle())
-                        }
+                        })
                         .highPriorityGesture(TapGesture().onEnded {
                             decreceProductAmount(product)
                         })
