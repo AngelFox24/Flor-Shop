@@ -17,38 +17,34 @@ struct ProductCardView: View {
     let unitPrice: Double
     let url: String
     let size: CGFloat
-    @State var sizeX: CGSize = .zero
-    
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yyyy"
         return formatter
     }()
-    
     var body: some View {
-        VStack{
-            HStack{
+        VStack {
+            HStack {
                 CustomAsyncImageView(id: id, urlProducto: url, size: size)
                 VStack {
-                    HStack { //Nombre Producto
+                    HStack { // Nombre Producto
                         Text(name)
                             .font(.custom("text_font_1", size: 16))
                             .lineLimit(3)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
                     .padding(.top, 6)
-                    HStack { //Cantidad Producto
-                        //format: "%.0f",
-                        Text(String(format: "%.0f",quantity)+" u")
+                    HStack { // Cantidad Producto
+                        Text(String(format: "%.0f", quantity)+" u")
                             .font(.custom("text_font_1", size: 16))
-                            .padding(.vertical,5)
-                            .padding(.horizontal,10)
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 10)
                             .background(Color("color_secondary"))
                             .cornerRadius(20)
                         Spacer()
                     }
                 }
-                .padding(.bottom,6)
+                .padding(.bottom, 6)
                 VStack {
                     HStack(spacing: 0) {
                         Text(String("S/. "))
@@ -56,13 +52,13 @@ struct ProductCardView: View {
                         Text(String(unitPrice))
                             .font(.custom("text_font_1", size: 18))
                     }
-                    .padding(.vertical,8)
-                    .padding(.horizontal,10)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
                     .foregroundColor(.white)
                     .background(Color("color_accent"))
                     .cornerRadius(20)
                 }
-                .padding(.horizontal,10)
+                .padding(.horizontal, 10)
             }
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(.white)
@@ -70,7 +66,6 @@ struct ProductCardView: View {
         .cornerRadius(15)
     }
 }
-
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {

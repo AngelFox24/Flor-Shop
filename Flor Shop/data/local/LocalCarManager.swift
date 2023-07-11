@@ -21,57 +21,47 @@ protocol CarManager {
 
 class LocalCarManager: CarManager {
     let cartContainer: NSPersistentContainer
-    
-    init(containerBDFlor: NSPersistentContainer){
+    init(containerBDFlor: NSPersistentContainer) {
         self.cartContainer = containerBDFlor
     }
-    
     func saveData() {
-        do{
+        do {
             try self.cartContainer.viewContext.save()
-        }catch {
-            print ("Error al guardar en ProductRepositoryImpl \(error)")
+        } catch {
+            print("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
-    
     func getCar() -> Car {
-        var cart: Tb_Carrito? = nil
+        var cart: Tb_Carrito?
         let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
-        do{
+        do {
             cart = try self.cartContainer.viewContext.fetch(request).first
             if cart == nil {
-                
                 cart = Tb_Carrito(context: self.cartContainer.viewContext)
                 cart!.idCarrito = UUID()
                 cart!.fechaCarrito = Date()
                 cart!.totalCarrito = 0.0
-                
                 saveData()
             }
-        }catch let error{
+        } catch let error {
             print("Error al recuperar el carrito de productos \(error)")
         }
-        //TODO: Este codigo puede dar error xd
         return cart!.mapToCar()
     }
-    
     private func getCartEntity() -> Tb_Carrito? {
-        var cart: Tb_Carrito? = nil
+        var cart: Tb_Carrito?
         let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
-        do{
+        do {
             cart = try self.cartContainer.viewContext.fetch(request).first
-        }catch let error{
+        } catch let error {
             print("Error al recuperar el carrito de productos \(error)")
         }
-        //TODO: Este codigo puede dar error xd
         return cart
     }
-    
     func deleteProduct(product: Product) {
         guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
-        
         let detailToDelete = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detail = detailToDelete.first {
             cart.removeFromCarrito_to_detalleCarrito(detail)
@@ -79,21 +69,20 @@ class LocalCarManager: CarManager {
         updateCartTotal()
         saveData()
     }
-    
     func addProductToCart(productIn: Product) {
         let context = self.cartContainer.viewContext
-        guard let cart = getCartEntity(),let product = productIn.toProductEntity(context: context), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: context), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
         // Buscamos si existe este producto en el carrito
         let matchingDetails = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.idProducto }
         if let _ = matchingDetails.first {
             increaceProductAmount(product: productIn)
-        }else {
+        } else {
             // Crear el objeto detalleCarrito y establecer sus propiedades
             let newCarDetail = Tb_DetalleCarrito(context: context)
             newCarDetail.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
-            //detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
+            // detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
             newCarDetail.cantidad = 1
             newCarDetail.subtotal = product.precioUnitario * newCarDetail.cantidad
             // Agregar el objeto producto al detalle carrito
@@ -104,36 +93,31 @@ class LocalCarManager: CarManager {
         updateCartTotal()
         saveData()
     }
-    
     func emptyCart() {
         guard let cart = getCartEntity() else {
             return
         }
         cart.carrito_to_detalleCarrito = nil
-        
         updateCartTotal()
         saveData()
     }
-    
     func updateCartTotal() {
         guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
-        var total:Double = 0.0
+        var total: Double = 0.0
         for product in cartDetail {
             total += product.cantidad * (product.detalleCarrito_to_producto?.precioUnitario ?? 0.0)
         }
         cart.totalCarrito = total
     }
-    
-    func increaceProductAmount (product: Product){
+    func increaceProductAmount (product: Product) {
         guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
-        
         let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detail = detailToAdd.first {
-            if let cantidadStock = detail.detalleCarrito_to_producto?.cantidadStock  {
+            if let cantidadStock = detail.detalleCarrito_to_producto?.cantidadStock {
                 if cantidadStock > detail.cantidad {
                     detail.cantidad += 1.0
                 }
@@ -142,12 +126,10 @@ class LocalCarManager: CarManager {
         updateCartTotal()
         saveData()
     }
-    
-    func decreceProductAmount(product: Product){
+    func decreceProductAmount(product: Product) {
         guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
             return
         }
-        
         let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
         if let detail = detailToAdd.first {
             if detail.cantidad > 1 {
@@ -157,7 +139,6 @@ class LocalCarManager: CarManager {
         updateCartTotal()
         saveData()
     }
-    
     func getListProductInCart () -> [CartDetail] {
         let cartDetails: [Tb_DetalleCarrito] = []
         guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito?.compactMap({ $0 as? Tb_DetalleCarrito }) else {

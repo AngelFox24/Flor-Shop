@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct VersionLockView: View {
-    var textito:String
+    var textito: String
     var body: some View {
         Text(textito)
     }

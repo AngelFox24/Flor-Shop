@@ -15,7 +15,7 @@ struct LockScreenView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 300, height: 300)
             Text("Versión desactualizada, vamos a la tienda a descargar la ultima versión")
-                .padding(.horizontal,20)
+                .padding(.horizontal, 20)
             /*
             Button(action: {
                 //selectedTab = .magnifyingglass
@@ -24,7 +24,7 @@ struct LockScreenView: View {
             }
             */
         }
-        .frame(maxWidth: .infinity,maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color("color_background"))
         .ignoresSafeArea(.all)
     }

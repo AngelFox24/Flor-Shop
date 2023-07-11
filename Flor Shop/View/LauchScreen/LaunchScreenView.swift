@@ -8,23 +8,20 @@
 import SwiftUI
 
 struct LaunchScreenView: View {
-    
     @State private var firstPhaseIsAnimating: Bool = false
     @State private var rotationAngle: Angle = .zero
-    
     private let timer = Timer.publish(every: 0.65, on: .main, in: .common).autoconnect()
-    
     var body: some View {
-        ZStack{
+        ZStack {
             Color("colorlaunchbackground")
                 .edgesIgnoringSafeArea(.all)
             Image("logo")
                 .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)
                 .rotationEffect(rotationAngle)
         }
-        .onReceive(timer) { input in
-            //FIrst pahse with continuos scaling
-            withAnimation(.spring()){
+        .onReceive(timer) { _ in
+            // First phase with continuos scaling
+            withAnimation(.spring()) {
                 firstPhaseIsAnimating.toggle()
             }
         }

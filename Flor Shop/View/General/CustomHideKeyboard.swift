@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomHideKeyboard: View {
     var body: some View {
         VStack {
-            HStack{
+            HStack {
                 Spacer()
                 Button(action: {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -18,8 +18,8 @@ struct CustomHideKeyboard: View {
                     Image(systemName: "keyboard.chevron.compact.down")
                         .font(.system(size: 30))
                         .foregroundColor(Color("color_accent"))
-                        .padding(.trailing,50)
-                        .padding(.vertical,10)
+                        .padding(.trailing, 50)
+                        .padding(.vertical, 10)
                 }
             }
         }

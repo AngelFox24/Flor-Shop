@@ -11,7 +11,7 @@ import CoreData
 struct AgregarView: View {
     @State var editedFields = AgregarViewModel()
     var body: some View {
-        VStack(spacing: 0){
+        VStack(spacing: 0) {
             AgregarTopBar(editedFields: $editedFields)
             CamposProductoAgregar(editedFields: $editedFields.editedFields)
         }
@@ -28,9 +28,9 @@ struct AgregarView_Previews: PreviewProvider {
     }
 }
 
-struct CampoIndividual:View {
-    @Binding var contenido:String
-    @Binding var edited:Bool
+struct CampoIndividual: View {
+    @Binding var contenido: String
+    @Binding var edited: Bool
     var body: some View {
         VStack {
             TextField("", text: $contenido)
@@ -43,14 +43,14 @@ struct CampoIndividual:View {
                     }
                 }
         }
-        .padding(.all,5)
+        .padding(.all, 5)
         .background(.white)
         .cornerRadius(15)
     }
 }
 
-struct CampoIndividualDoubleLocked:View {
-    var contenido:Double
+struct CampoIndividualDoubleLocked: View {
+    var contenido: Double
     var body: some View {
         VStack {
             Text(String(format: "%.0f", (contenido * 100).rounded())+" %")
@@ -59,20 +59,20 @@ struct CampoIndividualDoubleLocked:View {
                 .disabled(true)
                 .frame(maxWidth: .infinity)
         }
-        .padding(.all,5)
+        .padding(.all, 5)
         .background(Color(hue: 1.0, saturation: 0.0, brightness: 0.884))
         .cornerRadius(15)
     }
 }
 
-struct CampoIndividualDouble:View {
-    @Binding var contenido:Double
+struct CampoIndividualDouble: View {
+    @Binding var contenido: Double
     @State var value: String = "0"
     @State private var oldValue: String = ""
     @FocusState var focus: Bool
-    @Binding var edited:Bool
+    @Binding var edited: Bool
     var action: () -> Void
-    var disableInput:Bool = false
+    var disableInput: Bool = false
     var body: some View {
         VStack {
             TextField("", text: $value)
@@ -99,9 +99,7 @@ struct CampoIndividualDouble:View {
                         } else {
                             if let valueDouble: Double = Double(value) {
                                 contenido = valueDouble
-                                let _ = print("Contedido \(contenido) Old: \(oldValue) Value: \(value)")
                             } else {
-                                let _ = print("old")
                                 value = oldValue
                             }
                         }
@@ -112,28 +110,26 @@ struct CampoIndividualDouble:View {
                     action()
                     if let valueDouble: Double = Double(value) {
                         contenido = valueDouble
-                    }else{
-                        let _ = print ("no se imp")
                     }
                 })
                 .onAppear(perform: {
                     value = String(contenido)
                 })
         }
-        .padding(.all,5)
+        .padding(.all, 5)
         .background(.white)
         .cornerRadius(15)
     }
 }
 
-struct CampoIndividualInt:View {
-    @Binding var contenido:Double
+struct CampoIndividualInt: View {
+    @Binding var contenido: Double
     @State var value: String = "0"
     @State private var oldValue: String = ""
     @FocusState var focus: Bool
-    @Binding var edited:Bool
+    @Binding var edited: Bool
     var action: () -> Void
-    var disableInput:Bool = false
+    var disableInput: Bool = false
     var body: some View {
         VStack {
             TextField("", text: $value)
@@ -160,9 +156,7 @@ struct CampoIndividualInt:View {
                         } else {
                             if let valueDouble: Int = Int(value) {
                                 contenido = Double(valueDouble)
-                                let _ = print("Contedido \(contenido) Old: \(oldValue) Value: \(value)")
                             } else {
-                                let _ = print("old")
                                 value = oldValue
                             }
                         }
@@ -173,22 +167,20 @@ struct CampoIndividualInt:View {
                     action()
                     if let valueDouble: Int = Int(value) {
                         contenido = Double(valueDouble)
-                    }else{
-                        let _ = print ("no se imp")
                     }
                 })
                 .onAppear(perform: {
                     value = String(contenido)
                 })
         }
-        .padding(.all,5)
+        .padding(.all, 5)
         .background(.white)
         .cornerRadius(15)
     }
 }
 
-struct CampoIndividualDate:View {
-    @Binding var contenido:Date
+struct CampoIndividualDate: View {
+    @Binding var contenido: Date
     var body: some View {
         VStack {
             DatePicker("", selection: $contenido, displayedComponents: .date)
@@ -221,41 +213,41 @@ struct CamposProductoAgregar: View {
     @State var profitMarginEdited:Bool = false
     @State var unitPriceEdited:Bool = false
     */
-    var sizeCampo:CGFloat = 200
-    var body: some View{
-        List{
+    var sizeCampo: CGFloat = 200
+    var body: some View {
+        List {
             HStack {
                 Spacer()
-                AsyncImage(url: URL(string: productsCoreDataViewModel.temporalProduct.url )){ phase in
+                AsyncImage(url: URL(string: productsCoreDataViewModel.temporalProduct.url )) { phase in
                     switch phase {
                     case .empty:
                         Image("ProductoSinNombre")
                             .resizable()
-                            .frame(width: sizeCampo,height: sizeCampo)
+                            .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
                     case .success(let returnetImage):
                         returnetImage
                             .resizable()
-                            .frame(width: sizeCampo,height: sizeCampo)
+                            .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
                     case .failure:
                         Image("ProductoSinNombre")
                             .resizable()
-                            .frame(width: sizeCampo,height: sizeCampo)
+                            .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
                     default:
                         Image("ProductoSinNombre")
                             .resizable()
-                            .frame(width: sizeCampo,height: sizeCampo)
+                            .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
                     }
                 }
                 Spacer()
-                VStack{
+                VStack {
                     Text("Nombre del Producto")
                         .font(.headline)
                     CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.productEdited)
-                    if (!productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.productEdited){
+                    if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.productEdited {
                         ErrorMessageText(message: "Nombre no válido")
                     }
                 }
@@ -263,7 +255,7 @@ struct CamposProductoAgregar: View {
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color("color_background"))
-            //El costo total se ultizara en el futuro
+            // El costo total se ultizara en el futuro
             /*
             HStack {
                 Text("Costo Total")
@@ -289,17 +281,17 @@ struct CamposProductoAgregar: View {
                             Text("Kilos")
                         }
                          */
-                        Button(){
-                            productsCoreDataViewModel.temporalProduct.type = .Uni
+                        Button {
+                            productsCoreDataViewModel.temporalProduct.type = .uni
                         } label: {
                             Text("Unidades")
                         }
                     }label: {
                         Text(productsCoreDataViewModel.temporalProduct.type.description)
-                            .padding(.vertical,7)
+                            .padding(.vertical, 7)
                             .foregroundColor(.black)
                     }
-                    .padding(.horizontal,10)
+                    .padding(.horizontal, 10)
                     .background(Color("color_secondary"))
                     .cornerRadius(10)
                 }
@@ -315,13 +307,13 @@ struct CamposProductoAgregar: View {
                     CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.imageURLEdited)
                         .frame(width: sizeCampo)
                 }
-                if (!productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.imageURLEdited){
+                if !productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.imageURLEdited {
                     ErrorMessageText(message: "URL no valido")
                 }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
-            //Las palabras Clave se utilizaran el el futuro
+            // Las palabras Clave se utilizaran el el futuro
             /*
             HStack {
                 Text("Palabras Clave")
@@ -345,35 +337,35 @@ struct CamposProductoAgregar: View {
             .listRowSeparator(.hidden)
              */
             VStack {
-                HStack{
+                HStack {
                     Text("Costo Unitario")
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                         .font(.headline)
-                        .padding(.horizontal,5)
+                        .padding(.horizontal, 5)
                     Spacer()
                     Text("Margen de Ganancia")
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                         .font(.headline)
-                        .padding(.horizontal,5)
+                        .padding(.horizontal, 5)
                     Spacer()
                     Text("Precio Unitario")
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                         .font(.headline)
-                        .padding(.horizontal,5)
+                        .padding(.horizontal, 5)
                 }
-                .padding(.top,15)
-                HStack(spacing: 0){
+                .padding(.top, 15)
+                HStack(spacing: 0) {
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost, edited: $editedFields.unitCostEdited, action: productsCoreDataViewModel.calcProfitMargin)
                     Spacer()
-                    //CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin, disableInput: true)
+                    // CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin, disableInput: true)
                     CampoIndividualDoubleLocked(contenido: productsCoreDataViewModel.temporalProduct.profitMargin)
                     Spacer()
                     CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice, edited: $editedFields.unitPriceEdited, action: productsCoreDataViewModel.calcProfitMargin)
                 }
-                .padding(.bottom,10)
+                .padding(.bottom, 10)
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
@@ -384,4 +376,3 @@ struct CamposProductoAgregar: View {
         // No hace nada
     }
 }
-

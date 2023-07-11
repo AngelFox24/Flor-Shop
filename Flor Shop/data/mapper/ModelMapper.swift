@@ -8,12 +8,8 @@
 import Foundation
 import CoreData
 
-
-
 extension Product {
-    
     func toNewProductEntity(context: NSManagedObjectContext) -> Tb_Producto {
-        
         let newProduct = Tb_Producto(context: context)
         newProduct.idProducto = id
         newProduct.nombreProducto = name
@@ -25,11 +21,10 @@ extension Product {
         newProduct.url = url
         return newProduct
     }
-    
     func toProductEntity(context: NSManagedObjectContext) -> Tb_Producto? {
         let fetchRequest: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
         var productList: [Tb_Producto] = []
-        do{
+        do {
             productList = try context.fetch(fetchRequest)
         } catch let error {
             print("Error fetching. \(error)")
@@ -53,7 +48,7 @@ extension Tb_Producto {
                        unitCost: costoUnitario,
                        unitPrice: precioUnitario,
                        expirationDate: fechaVencimiento ?? Date(),
-                       type: MeasurementType.from(description: tipoMedicion ?? "Kilos") ?? .Kg,
+                       type: MeasurementType.from(description: tipoMedicion ?? "Kilos") ?? .kilo,
                        url: url ?? "", replaceImage: replaceImage)
     }
 }
@@ -84,7 +79,7 @@ extension Tb_DetalleCarrito {
     }
 }
 
-//MARK: Array Extencions
+// MARK: Array Extencions
 extension Array where Element == Tb_Producto {
     func mapToListProduct() -> [Product] {
         return self.map { prd in
@@ -116,8 +111,3 @@ extension Array where Element == Tb_Venta {
         }
     }
 }
-
-
-
-
-

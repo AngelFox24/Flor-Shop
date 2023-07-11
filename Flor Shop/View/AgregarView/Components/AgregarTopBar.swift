@@ -12,31 +12,31 @@ struct AgregarTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @Binding var editedFields: AgregarViewModel
     var body: some View {
-        HStack{
-            //El boton de Limpiar tiene un bug por lo que no pasa a prod
+        HStack {
+            // El boton de Limpiar tiene un bug por lo que no pasa a prod
             /*
-            Button(action: {
-                editedFields.resetValuesFields()
-                productsCoreDataViewModel.setDefaultProduct()
-            }) {
-                CustomButton2(text: "Limpiar")
-            }
-            */
+             Button(action: {
+             editedFields.resetValuesFields()
+             productsCoreDataViewModel.setDefaultProduct()
+             }) {
+             CustomButton2(text: "Limpiar")
+             }
+             */
             Spacer()
             Button(action: {
-                if productsCoreDataViewModel.addProduct()
-                {
-                    print ("Se agrego un producto exitosamente")
-                }else{
-                    print ("No se pudo agregar correctamente")
+                if productsCoreDataViewModel.addProduct() {
+                    print("Se agrego un producto exitosamente")
+                } else {
+                    print("No se pudo agregar correctamente")
                 }
-            }) {
+            }
+            ) {
                 CustomButton1(text: "Guardar")
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.bottom,8)
-        .padding(.horizontal,40)
+        .padding(.bottom, 8)
+        .padding(.horizontal, 40)
         .background(Color("color_primary"))
     }
 }

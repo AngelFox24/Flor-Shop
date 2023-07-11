@@ -12,7 +12,7 @@ struct ProductView: View {
     @Binding var selectedTab: Tab
     var body: some View {
         NavigationView {
-            VStack(spacing: 0){
+            VStack(spacing: 0) {
                 SearchTopBar()
                 ListaControler(selectedTab: $selectedTab)
             }
@@ -24,7 +24,6 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let productRepository = ProductRepositoryImpl(manager: productManager)
-        
         let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
         ProductView(selectedTab: .constant(.magnifyingglass))
@@ -46,24 +45,24 @@ struct ListaControler: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 300, height: 300)
                     Text("Agreguemos productos a nuestra tienda.")
-                        .padding(.horizontal,20)
+                        .padding(.horizontal, 20)
                     Button(action: {
                         selectedTab = .plus
                     }) {
                         CustomButton1(text: "Agregar")
                     }
                 }
-                .frame(maxWidth: .infinity,maxHeight: .infinity)
-            }else{
-            List(){
-                ForEach(productsCoreDataViewModel.productsCoreData){ producto in
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+            List {
+                ForEach(productsCoreDataViewModel.productsCoreData) { producto in
                     ProductCardView(
                         id: producto.id,
                         name: producto.name,
-                        expirationDate: producto.expirationDate ,
+                        expirationDate: producto.expirationDate,
                         quantity: producto.qty,
                         unitPrice: producto.unitPrice,
-                        url: producto.url ,
+                        url: producto.url,
                         size: 100.0)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
@@ -93,11 +92,11 @@ struct ListaControler: View {
         .padding(.horizontal, 10)
         .background(Color("color_background"))
     }
-    func editarProducto(producto: Product){
+    func editarProducto(producto: Product) {
         productsCoreDataViewModel.editProduct(product: producto)
         print("Se esta editando el producto \(producto.name)")
     }
-    func agregarProductoACarrito(producto: Product){
+    func agregarProductoACarrito(producto: Product) {
         carritoCoreDataViewModel.addProductoToCarrito(product: producto)
         print("Se agrego el producto al carrito \(producto.name)")
     }

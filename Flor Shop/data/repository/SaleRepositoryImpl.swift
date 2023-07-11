@@ -14,20 +14,16 @@ protocol SaleRepository {
 }
 
 class SaleRepositoryImpl: SaleRepository {
-    
-    let manager : SaleManager
-    //let remote:  remoto, se puede implementar el remoto aqui
-    
+    let manager: SaleManager
+    // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: SaleManager) {
         self.manager = manager
     }
-    
     func registerSale() -> Bool {
         return self.manager.registerSale()
     }
-    
     func getListSales() -> [Sale] {
-        //add to remote logic
+        // add to remote logic
         return self.manager.getListSales()
     }
 }

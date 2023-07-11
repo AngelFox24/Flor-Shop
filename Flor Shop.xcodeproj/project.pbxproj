@@ -19,7 +19,7 @@
 		2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB32A1B0E0D002B534A /* Sale.swift */; };
 		2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */; };
 		273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BD5DE2A4B4493001C1C03 /* Notification.swift */; };
-		274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* Flor_ShopApp.swift */; };
+		274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* FlorShopApp.swift */; };
 		274CE29C29E6D792007C703D /* ProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* ProductView.swift */; };
 		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
 		274CE2A129E6D793007C703D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE2A029E6D793007C703D /* Preview Assets.xcassets */; };
@@ -73,7 +73,7 @@
 		2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHideKeyboard.swift; sourceTree = "<group>"; };
 		273BD5DE2A4B4493001C1C03 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		274CE29629E6D792007C703D /* Flor Shop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flor Shop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		274CE29929E6D792007C703D /* Flor_ShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flor_ShopApp.swift; sourceTree = "<group>"; };
+		274CE29929E6D792007C703D /* FlorShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlorShopApp.swift; sourceTree = "<group>"; };
 		274CE29B29E6D792007C703D /* ProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductView.swift; sourceTree = "<group>"; };
 		274CE29D29E6D793007C703D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		274CE2A029E6D793007C703D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 				274CE2A729E6D811007C703D /* Model */,
 				274CE2A829E6D817007C703D /* ViewModel */,
 				274CE2A929E6D81E007C703D /* View */,
-				274CE29929E6D792007C703D /* Flor_ShopApp.swift */,
+				274CE29929E6D792007C703D /* FlorShopApp.swift */,
 				274CE29D29E6D793007C703D /* Assets.xcassets */,
 				27E9FD1D2A582C710070216B /* GoogleService-Info.plist */,
 				274CE29F29E6D793007C703D /* Preview Content */,
@@ -366,6 +366,7 @@
 				274CE29229E6D792007C703D /* Sources */,
 				274CE29329E6D792007C703D /* Frameworks */,
 				274CE29429E6D792007C703D /* Resources */,
+				2704B2F72A5CC95B00030D49 /* Run SwiftLint Script */,
 			);
 			buildRules = (
 			);
@@ -436,6 +437,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2704B2F72A5CC95B00030D49 /* Run SwiftLint Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run SwiftLint Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		274CE29229E6D792007C703D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -455,7 +477,7 @@
 				271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */,
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
-				274CE29A29E6D792007C703D /* Flor_ShopApp.swift in Sources */,
+				274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */,
 				68D990C52A1AE98A00A3A393 /* ModelMapper.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCarManager.swift in Sources */,

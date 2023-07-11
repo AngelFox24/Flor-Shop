@@ -20,43 +20,33 @@ protocol CarRepository {
 }
 
 class CarRepositoryImpl: CarRepository {
-    let manager : CarManager
-    //let remote:  remoto
-    
+    let manager: CarManager
+    // let remote:  remoto
     init(manager: CarManager) {
         self.manager = manager
     }
-    
-    func getCar() -> Car{
+    func getCar() -> Car {
         return self.manager.getCar()
     }
-    
     func deleteProduct(product: Product) {
         self.manager.deleteProduct(product: product)
     }
-    
     func addProductoToCarrito(product: Product) {
         self.manager.addProductToCart(productIn: product)
     }
-    
     func emptyCart() {
         self.manager.emptyCart()
     }
-    
-    func updateCartTotal(){
+    func updateCartTotal() {
         self.manager.updateCartTotal()
     }
-    
-    func increaceProductAmount (product: Product){
+    func increaceProductAmount (product: Product) {
         self.manager.increaceProductAmount(product: product)
     }
-    
-    func decreceProductAmount(product: Product){
+    func decreceProductAmount(product: Product) {
         self.manager.decreceProductAmount(product: product)
     }
-    
     func getListProductInCart () -> [CartDetail] {
         self.manager.getListProductInCart()
     }
-    
 }

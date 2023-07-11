@@ -12,7 +12,7 @@ struct CartView: View {
     @Binding var selectedTab: Tab
     var body: some View {
         NavigationView {
-            VStack(spacing: 0){
+            VStack(spacing: 0) {
                 CartTopBar()
                 ListCartController(selectedTab: $selectedTab)
             }
@@ -40,18 +40,18 @@ struct ListCartController: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 300, height: 300)
                     Text("Deslizemos productos al carrito de ventas.")
-                        .padding(.horizontal,20)
+                        .padding(.horizontal, 20)
                     Button(action: {
                         selectedTab = .magnifyingglass
                     }) {
                         CustomButton1(text: "Ir a Productos")
                     }
                 }
-                .frame(maxWidth: .infinity,maxHeight: .infinity)
-            }else{
-            List(){
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+            List {
                 ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
-                    CartProductCardView(cartDetail: cartDetail, size: 100.0, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                    CartProductCardView(productId: cartDetail.product.id, productUrl: cartDetail.product.url, productName: cartDetail.product.name, product: cartDetail.product, productUnitPrice: cartDetail.product.unitPrice, carQuantity: cartDetail.quantity, size: 100, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -74,10 +74,10 @@ struct ListCartController: View {
     func deleteProduct(product: Product) {
         cartViewModel.deleteProduct(product: product)
     }
-    func decreceProductAmount(product: Product){
+    func decreceProductAmount(product: Product) {
         cartViewModel.decreceProductAmount(product: product)
     }
-    func increaceProductAmount(product: Product){
+    func increaceProductAmount(product: Product) {
         cartViewModel.increaceProductAmount(product: product)
     }
 }

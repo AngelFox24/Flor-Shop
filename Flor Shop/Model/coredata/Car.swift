@@ -11,10 +11,4 @@ struct Car: Identifiable {
     let id: UUID
     let dateCar: Date
     let total: Double
-    
-    init(id: UUID, dateCar: Date, total: Double) {
-        self.id = id
-        self.dateCar = dateCar
-        self.total = total
-    }
 }

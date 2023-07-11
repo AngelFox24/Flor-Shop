@@ -16,9 +16,9 @@ enum Tab: String, CaseIterable {
 struct CustomTabBar: View {
     @Binding var selectedTab: Tab
     private var fillImage: String {
-        if (selectedTab==Tab.cart){
+        if selectedTab==Tab.cart {
             return selectedTab.rawValue + ".fill"
-        }else{
+        } else {
             return selectedTab.rawValue
         }
     }
@@ -34,7 +34,7 @@ struct CustomTabBar: View {
     }
     var body: some View {
         VStack {
-            HStack() {
+            HStack {
                 ForEach(Tab.allCases, id: \.rawValue) { tab in
                     VStack {
                         HStack {
@@ -44,12 +44,11 @@ struct CustomTabBar: View {
                                     .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
                                     .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
                                     .font(.system(size: 20))
-                                
                                 Text(getTabText(for: tab))
                                     .fontWeight(.regular)
                                     .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
                             }
-                            .padding(.top,8)
+                            .padding(.top, 8)
                             Spacer()
                         }
                         .frame(maxHeight: .infinity)

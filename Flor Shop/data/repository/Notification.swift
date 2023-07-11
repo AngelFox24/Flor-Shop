@@ -8,21 +8,21 @@
 import UserNotifications
 
 func checkForPermission() {
-    print ("Se llamo a la fucion check Notification")
+    print("Se llamo a la fucion check Notification")
     let notificationCenter = UNUserNotificationCenter.current()
-    notificationCenter.getNotificationSettings{ settings in
+    notificationCenter.getNotificationSettings { settings in
         switch settings.authorizationStatus {
         case .authorized:
-            print ("Tenemos autorizacion")
+            print("Tenemos autorizacion")
             dispatchNotification()
         case .denied:
-            print ("Esta denegado")
+            print("Esta denegado")
             return
         case .notDetermined:
-            print ("Vamos a pedir permiso")
-            notificationCenter.requestAuthorization(options: [.alert,.sound]){ didAllow, error in
+            print("Vamos a pedir permiso")
+            notificationCenter.requestAuthorization(options: [.alert, .sound]) { didAllow, _ in
                 if didAllow {
-                    print ("Se obtuvo permiso y se manda a notificar")
+                    print("Se obtuvo permiso y se manda a notificar")
                     dispatchNotification()
                 }
             }
@@ -34,7 +34,7 @@ func checkForPermission() {
 
 func dispatchNotification() {
     // Crear contenido de la notificación
-    print ("Estamos creando la notificacion")
+    print("Estamos creando la notificacion")
     let content = UNMutableNotificationContent()
     content.title = "Mi Notificación"
     content.body = "¡Hola! Esta es una notificación de ejemplo."
@@ -49,9 +49,9 @@ func dispatchNotification() {
     // Agregar la solicitud de notificación al centro de notificaciones
     UNUserNotificationCenter.current().add(request) { error in
         if let error = error {
-            print ("Error al agregar la solicitud de notificación:", error)
+            print("Error al agregar la solicitud de notificación:", error)
         } else {
-            print ("Notificación enviada exitosamente")
+            print("Notificación enviada exitosamente")
         }
     }
 }

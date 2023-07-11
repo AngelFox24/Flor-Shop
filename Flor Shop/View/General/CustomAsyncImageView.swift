@@ -17,23 +17,20 @@ struct CustomAsyncImageView: View {
         self.urlProducto = urlProducto
         self.size = size
         self.imageProductNetwork = imageProductNetwork
-        imageProductNetwork.getImage(id: id,url: (URL(string: urlProducto )!))
+        imageProductNetwork.getImage(id: id, url: (URL(string: urlProducto )!))
         print("Se cargo la imagen en Init")
     }
-    
     var body: some View {
-        HStack{
+        HStack {
             if let imageC = imageProductNetwork.imageProduct {
-                let _ = print ("Cargado")
                 imageC
                     .resizable()
-                    .frame(width: size,height: size)
+                    .frame(width: size, height: size)
                     .cornerRadius(20.0)
-            }else {
-                let _ = print ("Holder a cargar")
+            } else {
                 Image("ProductoSinNombre")
                     .resizable()
-                    .frame(width: size,height: size)
+                    .frame(width: size, height: size)
                     .cornerRadius(20.0)
             }
         }
@@ -42,6 +39,6 @@ struct CustomAsyncImageView: View {
 
 struct CustomAsyncImageView_Previews: PreviewProvider {
     static var previews: some View {
-        CustomAsyncImageView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(),urlProducto: "https://s7d2.scene7.com/is/image/TottusPE/42762662_0?wid=136&hei=136&qlt=70", size: 100)
+        CustomAsyncImageView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), urlProducto: "https://s7d2.scene7.com/is/image/TottusPE/42762662_0?wid=136&hei=136&qlt=70", size: 100)
     }
 }

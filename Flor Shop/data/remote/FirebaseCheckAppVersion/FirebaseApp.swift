@@ -9,12 +9,12 @@ import Foundation
 import Firebase
 import FirebaseDatabase
 class VersionCheck: ObservableObject {
-    @Published var versionIsOk: VersionResult = .Loading
+    @Published var versionIsOk: VersionResult = .loading
     enum VersionResult {
-        case Loading
-        case LockVersion
-        case VersionOk
-        case Unowned
+        case loading
+        case lockVersion
+        case versionOk
+        case unowned
     }
     func checkAppVersion() {
         var minimumVersionApp: String = ""
@@ -23,36 +23,29 @@ class VersionCheck: ObservableObject {
               let plistData = FileManager.default.contents(atPath: plistPath),
               let plist = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
               let currentVersion = plist["CFBundleShortVersionString"] as? String else {
-            print ("VersionLocal1: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
-            self.versionIsOk = .LockVersion
+            print("VersionLocal1: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
+            self.versionIsOk = .lockVersion
             return
         }
-        
         currentVersionApp = currentVersion
-        
         let database = Database.database().reference()
         let versionRef = database
-        
         versionRef.observeSingleEvent(of: .value) { snapshot in
-            print ("Murio 1")
+            print("Murio 1")
             if let versionData = snapshot.value as? [String: Any],
                let minimumVersion = versionData["MinimalVersion"] as? String {
-                print ("Murio 2")
+                print("Murio 2")
                 minimumVersionApp = minimumVersion
-                print ("VersionLocal2: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
+                print("VersionLocal2: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
                 if currentVersionApp >= minimumVersionApp {
-                    self.versionIsOk = .VersionOk
+                    self.versionIsOk = .versionOk
+                } else {
+                    self.versionIsOk = .lockVersion
                 }
-                else{
-                    self.versionIsOk = .LockVersion
-                }
-            }
-            else {
-                self.versionIsOk = .LockVersion
+            } else {
+                self.versionIsOk = .lockVersion
             }
         }
-        print ("VersionLocal3: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
+        print("VersionLocal3: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
     }
 }
-
-

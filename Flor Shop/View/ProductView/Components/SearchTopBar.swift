@@ -9,21 +9,21 @@ import SwiftUI
 
 struct SearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @State private var selectedItem: PrimaryOrder? = nil
-    let menuItems: [PrimaryOrder] = [.NameAsc, .QuantityAsc, .QuantityDesc, .PriceAsc, .PriceDesc]
-    @State private var seach:String = ""
+    @State private var selectedItem: PrimaryOrder?
+    let menuItems: [PrimaryOrder] = [.nameAsc, .quantityAsc, .quantityDesc, .priceAsc, .priceDesc]
+    @State private var seach: String = ""
     var body: some View {
         VStack {
-            HStack{
+            HStack {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color("color_accent"))
                         .font(.custom("text_font_1", size: 16))
-                        .padding(.vertical,10)
-                        .padding(.leading,10)
-                    //TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Producto",text: $seach)
-                        .padding(.vertical,10)
+                        .padding(.vertical, 10)
+                        .padding(.leading, 10)
+                    // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
+                    TextField("Buscar Producto", text: $seach)
+                        .padding(.vertical, 10)
                         .font(.custom("text_font_1", size: 16))
                         .foregroundColor(Color("color_primary"))
                         .submitLabel(.search)
@@ -34,7 +34,7 @@ struct SearchTopBar: View {
                 }
                 .background(.white)
                 .cornerRadius(20.0)
-                .padding(.trailing,8)
+                .padding(.trailing, 8)
                 /*
                 Menu {
                     Button(){
@@ -97,15 +97,15 @@ struct SearchTopBar: View {
                     .cornerRadius(15.0)
                 }
             }
-            .padding(.horizontal,30)
+            .padding(.horizontal, 30)
         }
-        .padding(.bottom,9)
+        .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
-    func filtrarProductos(){
+    func filtrarProductos() {
         productsCoreDataViewModel.filterProducts(word: seach)
     }
-    func setPrimaryOrder(order: PrimaryOrder){
+    func setPrimaryOrder(order: PrimaryOrder) {
         productsCoreDataViewModel.setPrimaryFilter(filter: order, word: seach)
     }
 }

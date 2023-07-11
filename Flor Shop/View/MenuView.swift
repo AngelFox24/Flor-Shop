@@ -11,35 +11,33 @@ struct MenuView: View {
     @State private var tabSelected: Tab = .magnifyingglass
     @State private var isKeyboardVisible: Bool = false
     @EnvironmentObject var versionCheck: VersionCheck
-    
     var body: some View {
-        VStack(spacing: 0){
+        VStack(spacing: 0) {
             switch versionCheck.versionIsOk {
-            case .Loading:
+            case .loading:
                 LaunchScreenView()
-            case .LockVersion:
+            case .lockVersion:
                 LockScreenView()
-            case .VersionOk:
-                let _ = print("Se valido Version")
+            case .versionOk:
                 if tabSelected == .plus {
                     AgregarView()
-                }else if tabSelected == .magnifyingglass {
+                } else if tabSelected == .magnifyingglass {
                     ProductView(selectedTab: $tabSelected)
-                }else if tabSelected == .cart {
+                } else if tabSelected == .cart {
                     CartView(selectedTab: $tabSelected)
                 }
-                if isKeyboardVisible{
+                if isKeyboardVisible {
                     CustomHideKeyboard()
-                }else{
+                } else {
                     CustomTabBar(selectedTab: $tabSelected)
                 }
-            case .Unowned:
+            case .unowned:
                 LockScreenView()
             }
         }
         .onAppear {
             versionCheck.checkAppVersion()
-            //checkForPermission()
+            // checkForPermission()
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                 isKeyboardVisible = true
             }

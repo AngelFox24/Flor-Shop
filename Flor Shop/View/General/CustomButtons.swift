@@ -14,8 +14,8 @@ struct CustomButton1: View {
             .font(.custom("text_font_1", size: 20))
             .foregroundColor(.white)
             .multilineTextAlignment(.center)
-            .padding(.horizontal,15)
-            .padding(.vertical,10)
+            .padding(.horizontal, 15)
+            .padding(.vertical, 10)
             .background(Color("color_accent"))
             .cornerRadius(15.0)
     }
@@ -28,13 +28,10 @@ struct CustomButton2: View {
             .font(.custom("text_font_1", size: 20))
             .foregroundColor(Color("color_accent"))
             .multilineTextAlignment(.center)
-            .padding(.horizontal,15)
-            .padding(.vertical,10)
+            .padding(.horizontal, 15)
+            .padding(.vertical, 10)
             .background(.white)
             .cornerRadius(15.0)
-            .onAppear{
-                let _ = print ("Aparecio")
-            }
     }
 }
 

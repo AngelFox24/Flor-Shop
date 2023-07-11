@@ -7,20 +7,17 @@
 import CoreData
 import Foundation
 
-
 class SalesViewModel: ObservableObject {
     @Published var salesCoreData: [Sale] = []
     let saleRepository: SaleRepository
-    
-    init(saleRepository: SaleRepository){
+    init(saleRepository: SaleRepository) {
         self.saleRepository = saleRepository
         fetchVentas()
     }
-    //MARK: CRUD Core Data
+    // MARK: CRUD Core Data
     func fetchVentas () {
         salesCoreData = self.saleRepository.getListSales()
     }
-    
     func registerSale() -> Bool {
         return saleRepository.registerSale()
     }
