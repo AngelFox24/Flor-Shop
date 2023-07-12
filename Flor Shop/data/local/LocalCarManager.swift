@@ -79,16 +79,21 @@ class LocalCarManager: CarManager {
         if matchingDetails.first != nil {
             increaceProductAmount(product: productIn)
         } else {
-            // Crear el objeto detalleCarrito y establecer sus propiedades
-            let newCarDetail = Tb_DetalleCarrito(context: context)
-            newCarDetail.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
-            // detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
-            newCarDetail.cantidad = 1
-            newCarDetail.subtotal = product.precioUnitario * newCarDetail.cantidad
-            // Agregar el objeto producto al detalle carrito
-            newCarDetail.detalleCarrito_to_producto = product
-            // Agregar el objeto detalleCarrito al carrito
-            newCarDetail.detalleCarrito_to_carrito = cart
+            // Validamos si tiene sificiente Stock
+            if product.cantidadStock >= 1 {
+                // Crear el objeto detalleCarrito y establecer sus propiedades
+                let newCarDetail = Tb_DetalleCarrito(context: context)
+                newCarDetail.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
+                // detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
+                newCarDetail.cantidad = 1
+                newCarDetail.subtotal = product.precioUnitario * newCarDetail.cantidad
+                // Agregar el objeto producto al detalle carrito
+                newCarDetail.detalleCarrito_to_producto = product
+                // Agregar el objeto detalleCarrito al carrito
+                newCarDetail.detalleCarrito_to_carrito = cart
+            } else {
+                print("No hay stock suficiente: \(product.cantidadStock)")
+            }
         }
         updateCartTotal()
         saveData()
