@@ -10,6 +10,7 @@ import CoreData
 
 struct AgregarTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @Binding var editedFields: AgregarViewModel
     var body: some View {
         HStack {
@@ -26,6 +27,7 @@ struct AgregarTopBar: View {
             Button(action: {
                 if productsCoreDataViewModel.addProduct() {
                     print("Se agrego un producto exitosamente")
+                    carritoCoreDataViewModel.fetchCart()
                 } else {
                     print("No se pudo agregar correctamente")
                 }

@@ -16,6 +16,9 @@ struct CartView: View {
                 CartTopBar()
                 ListCartController(selectedTab: $selectedTab)
             }
+            .onAppear {
+                let _ = print("View Cart")
+            }
         }
     }
 }

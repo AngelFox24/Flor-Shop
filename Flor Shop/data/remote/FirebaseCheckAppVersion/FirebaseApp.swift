@@ -38,6 +38,7 @@ class VersionCheck: ObservableObject {
                 minimumVersionApp = minimumVersion
                 print("VersionLocal2: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
                 if currentVersionApp >= minimumVersionApp {
+                    // 1.0.10.345
                     self.versionIsOk = .versionOk
                 } else {
                     self.versionIsOk = .lockVersion
