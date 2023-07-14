@@ -27,7 +27,7 @@ struct AgregarTopBar: View {
             Button(action: {
                 if productsCoreDataViewModel.addProduct() {
                     print("Se agrego un producto exitosamente")
-                    carritoCoreDataViewModel.fetchCart()
+                    carritoCoreDataViewModel.updateCartTotal()
                 } else {
                     print("No se pudo agregar correctamente")
                 }

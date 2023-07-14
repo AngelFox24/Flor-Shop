@@ -11,28 +11,35 @@ struct MenuView: View {
     @State private var tabSelected: Tab = .magnifyingglass
     @State private var isKeyboardVisible: Bool = false
     @EnvironmentObject var versionCheck: VersionCheck
+    @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     var body: some View {
         VStack(spacing: 0) {
-            switch versionCheck.versionIsOk {
-            case .loading:
-                LaunchScreenView()
-            case .lockVersion:
-                LockScreenView()
-            case .versionOk:
-                if tabSelected == .plus {
-                    AgregarView()
-                } else if tabSelected == .magnifyingglass {
-                    ProductView(selectedTab: $tabSelected)
-                } else if tabSelected == .cart {
-                    CartView(selectedTab: $tabSelected)
+            if !hasShownOnboarding {
+                OnboardingView(onAction: {
+                    hasShownOnboarding = true
+                })
+            } else {
+                switch versionCheck.versionIsOk {
+                case .loading:
+                    LaunchScreenView()
+                case .lockVersion:
+                    LockScreenView()
+                case .versionOk:
+                    if tabSelected == .plus {
+                        AgregarView()
+                    } else if tabSelected == .magnifyingglass {
+                        ProductView(selectedTab: $tabSelected)
+                    } else if tabSelected == .cart {
+                        CartView(selectedTab: $tabSelected)
+                    }
+                    if isKeyboardVisible {
+                        CustomHideKeyboard()
+                    } else {
+                        CustomTabBar(selectedTab: $tabSelected)
+                    }
+                case .unowned:
+                    LockScreenView()
                 }
-                if isKeyboardVisible {
-                    CustomHideKeyboard()
-                } else {
-                    CustomTabBar(selectedTab: $tabSelected)
-                }
-            case .unowned:
-                LockScreenView()
             }
         }
         .onAppear {
