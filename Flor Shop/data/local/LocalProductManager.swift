@@ -31,6 +31,22 @@ enum PrimaryOrder: CustomStringConvertible {
             return "Cantidad Descendente"
         }
     }
+    var shortDescription: String {
+        switch self {
+        case .nameAsc:
+            return "Nombre A-Z"
+        case .nameDesc:
+            return "Nombre Z-A"
+        case .priceAsc:
+            return "Precio de menor a mayor"
+        case .priceDesc:
+            return "Precio de mayor a menor"
+        case .quantityAsc:
+            return "Cantidad de menor a mayor"
+        case .quantityDesc:
+            return "Cantidad de mayor a menor"
+        }
+    }
     static var allValues: [PrimaryOrder] {
         return [.nameAsc, .nameDesc, .priceAsc, .priceDesc, .quantityAsc, .quantityDesc]
     }

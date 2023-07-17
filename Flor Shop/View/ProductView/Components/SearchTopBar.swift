@@ -10,7 +10,7 @@ import SwiftUI
 struct SearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @State private var selectedItem: PrimaryOrder?
-    let menuItems: [PrimaryOrder] = [.nameAsc, .quantityAsc, .quantityDesc, .priceAsc, .priceDesc]
+    let menuItems: [PrimaryOrder] = PrimaryOrder.allValues
     @State private var seach: String = ""
     var body: some View {
         VStack {
@@ -31,6 +31,17 @@ struct SearchTopBar: View {
                             filtrarProductos()
                         }
                         .disableAutocorrection(true)
+                    Button(action: {
+                        seach = ""
+                        setPrimaryOrder(order: .nameAsc)
+                        filtrarProductos()
+                    }, label: {
+                        Image(systemName: "x.circle")
+                            .foregroundColor(Color("color_accent"))
+                            .font(.custom("text_font_1", size: 16))
+                            .padding(.vertical, 10)
+                            .padding(.trailing, 10)
+                    })
                 }
                 .background(.white)
                 .cornerRadius(20.0)
@@ -81,7 +92,7 @@ struct SearchTopBar: View {
                             setPrimaryOrder(order: item)
                         }, label: {
                             HStack {
-                                Text(item.description)
+                                Text(item.shortDescription)
                             }
                         })
                     }
