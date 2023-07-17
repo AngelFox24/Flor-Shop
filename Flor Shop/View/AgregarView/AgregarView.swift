@@ -203,16 +203,6 @@ struct ErrorMessageText: View {
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @Binding var editedFields: FieldEditTemporal
-    /*
-    @State var productEdited:Bool = false
-    @State var totalCostEdited:Bool = false
-    @State var quantityEdited:Bool = false
-    @State var imageURLEdited:Bool = false
-    @State var imageURLError:String = ""
-    @State var unitCostEdited:Bool = false
-    @State var profitMarginEdited:Bool = false
-    @State var unitPriceEdited:Bool = false
-    */
     var sizeCampo: CGFloat = 200
     var body: some View {
         List {
@@ -243,15 +233,6 @@ struct CamposProductoAgregar: View {
                     }
                 }
                 Spacer()
-                VStack {
-                    Text("Nombre del Producto")
-                        .font(.headline)
-                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.productEdited)
-                    if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.productEdited {
-                        ErrorMessageText(message: "Nombre no válido")
-                    }
-                }
-                .frame(width: sizeCampo)
             }
             .listRowSeparator(.hidden)
             .listRowBackground(Color("color_background"))
@@ -267,45 +248,77 @@ struct CamposProductoAgregar: View {
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
             */
-            HStack {
-                Text("Cantidad")
-                    .font(.headline)
-                Spacer()
+            VStack {
                 HStack {
-                    CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited, action: doNothing)
-                    Menu {
-                        /*
-                        Button(){
-                            productsCoreDataViewModel.temporalProduct.type = .Kg
-                        } label: {
-                            Text("Kilos")
+                    // El texto hace que tenga una separacion mayor del elemento
+                    GeometryReader { geometry in
+                        HStack {
+                            Text("Nombre")
+                                .font(.headline)
+                                .frame(width: geometry.size.width / 3)
+                            Spacer()
+                            HStack {
+                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.productEdited)
+                            }
                         }
-                         */
-                        Button {
-                            productsCoreDataViewModel.temporalProduct.type = .uni
-                        } label: {
-                            Text("Unidades")
-                        }
-                    }label: {
-                        Text(productsCoreDataViewModel.temporalProduct.type.description)
-                            .padding(.vertical, 7)
-                            .foregroundColor(.black)
                     }
-                    .padding(.horizontal, 10)
-                    .background(Color("color_secondary"))
-                    .cornerRadius(10)
                 }
-                .frame(width: sizeCampo)
+                if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.productEdited {
+                    ErrorMessageText(message: "Nombre no válido")
+                        .padding(.top, 6)
+                }
+            }
+            .listRowBackground(Color("color_background"))
+            .listRowSeparator(.hidden)
+            HStack {
+                GeometryReader { geometry in
+                    HStack {
+                        Text("Cantidad")
+                            .font(.headline)
+                            .frame(width: geometry.size.width / 3)
+                        Spacer()
+                        HStack {
+                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited, action: doNothing)
+                            Menu {
+                                /*
+                                Button(){
+                                    productsCoreDataViewModel.temporalProduct.type = .Kg
+                                } label: {
+                                    Text("Kilos")
+                                }
+                                 */
+                                Button {
+                                    productsCoreDataViewModel.temporalProduct.type = .uni
+                                } label: {
+                                    Text("Unidades")
+                                }
+                            }label: {
+                                Text(productsCoreDataViewModel.temporalProduct.type.description)
+                                    .padding(.vertical, 7)
+                                    .foregroundColor(.black)
+                            }
+                            .padding(.horizontal, 10)
+                            .background(Color("color_secondary"))
+                            .cornerRadius(10)
+                        }
+                    }
+                }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
             VStack {
                 HStack {
-                    Text("Imagen URL")
-                        .font(.headline)
-                    Spacer()
-                    CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.imageURLEdited)
-                        .frame(width: sizeCampo)
+                    GeometryReader { geometry in
+                        HStack {
+                            Text("Imagen URL")
+                                .font(.headline)
+                                .frame(width: geometry.size.width / 3)
+                            Spacer()
+                            HStack {
+                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.imageURLEdited)
+                            }
+                        }
+                    }
                 }
                 if !productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.imageURLEdited {
                     ErrorMessageText(message: "URL no valido")
