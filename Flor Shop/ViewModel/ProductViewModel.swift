@@ -22,6 +22,7 @@ class ProductViewModel: ObservableObject {
     }
     func setDefaultProduct() {
         temporalProduct = Product()
+        // print("cant: \(temporalProduct.qty) tipe: \()")
     }
     func addProduct() -> Bool {
         let result = productRepository.saveProduct(product: temporalProduct)

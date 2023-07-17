@@ -31,7 +31,7 @@ enum PrimaryOrder: CustomStringConvertible {
             return "Cantidad Descendente"
         }
     }
-    var shortDescription: String {
+    var longDescription: String {
         switch self {
         case .nameAsc:
             return "Nombre A-Z"

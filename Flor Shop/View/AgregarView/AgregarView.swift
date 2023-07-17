@@ -86,7 +86,7 @@ struct CampoIndividualDouble: View {
                 .focused($focus)
                 .onTapGesture {
                     withAnimation {
-                        contenido = 0.0
+                        contenido = 0
                         edited = true
                     }
                 }
@@ -115,8 +115,10 @@ struct CampoIndividualDouble: View {
                         contenido = valueDouble
                     }
                 })
-                .onAppear(perform: {
-                    value = String(contenido)
+                .onChange(of: contenido, perform: { _ in
+                    if edited == false {
+                        value = String(contenido)
+                    }
                 })
         }
         .padding(.all, 5)
@@ -131,14 +133,11 @@ struct CampoIndividualInt: View {
     @State private var oldValue: String = ""
     @FocusState var focus: Bool
     @Binding var edited: Bool
-    var action: () -> Void
-    var disableInput: Bool = false
     var body: some View {
         VStack {
             TextField("", text: $value)
                 .foregroundColor(.black)
                 .font(.system(size: 20))
-                .disabled(disableInput)
                 .multilineTextAlignment(.center)
                 .keyboardType(.numberPad)
                 .focused($focus)
@@ -165,16 +164,16 @@ struct CampoIndividualInt: View {
                             }
                         }
                     }
-                    action()
                 })
                 .onChange(of: value, perform: { _ in
-                    action()
                     if let valueDouble: Int = Int(value) {
                         contenido = Double(valueDouble)
                     }
                 })
-                .onAppear(perform: {
-                    value = String(contenido)
+                .onChange(of: contenido, perform: { _ in
+                    if edited == false {
+                        value = String(contenido)
+                    }
                 })
         }
         .padding(.all, 5)
@@ -284,7 +283,7 @@ struct CamposProductoAgregar: View {
                             .foregroundColor(.black)
                         Spacer()
                         HStack {
-                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited, action: doNothing)
+                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited)
                             Menu {
                                 /*
                                 Button(){

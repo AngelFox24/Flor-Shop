@@ -78,7 +78,7 @@ struct Product: Identifiable {
     init () {
         self.id = UUID()
         self.name = ""
-        self.qty = 0.0
+        self.qty = 0
         self.unitCost = 0.0
         self.unitPrice = 0.0
         self.expirationDate = Date()

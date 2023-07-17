@@ -92,7 +92,7 @@ struct SearchTopBar: View {
                             setPrimaryOrder(order: item)
                         }, label: {
                             HStack {
-                                Text(item.shortDescription)
+                                Text(item.longDescription)
                             }
                         })
                     }
