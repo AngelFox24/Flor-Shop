@@ -17,8 +17,10 @@ struct CartTopBar: View {
         HStack {
             HStack {
                 Text(String("S/. "))
+                    .foregroundColor(.black)
                     .font(.custom("text_font_1", size: 15))
                 Text(String(carritoCoreDataViewModel.cartCoreData!.total))
+                    .foregroundColor(.black)
                     .font(.custom("text_font_1", size: 25))
             }
             Spacer()

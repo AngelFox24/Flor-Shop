@@ -28,6 +28,7 @@ struct AgregarTopBar: View {
                 if productsCoreDataViewModel.addProduct() {
                     print("Se agrego un producto exitosamente")
                     carritoCoreDataViewModel.updateCartTotal()
+                    editedFields.resetValuesFields()
                 } else {
                     print("No se pudo agregar correctamente")
                 }

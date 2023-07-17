@@ -45,6 +45,7 @@ struct ListaControler: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 300, height: 300)
                     Text("Agreguemos productos a nuestra tienda.")
+                        .foregroundColor(.black)
                         .padding(.horizontal, 20)
                     Button(action: {
                         selectedTab = .plus

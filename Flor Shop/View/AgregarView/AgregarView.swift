@@ -34,6 +34,7 @@ struct CampoIndividual: View {
     var body: some View {
         VStack {
             TextField("", text: $contenido)
+                .foregroundColor(.black)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
                 .onTapGesture {
@@ -55,6 +56,7 @@ struct CampoIndividualDoubleLocked: View {
         VStack {
             Text(String(format: "%.0f", (contenido * 100).rounded())+" %")
                 .font(.system(size: 20))
+                .foregroundColor(.black)
                 .multilineTextAlignment(.center)
                 .disabled(true)
                 .frame(maxWidth: .infinity)
@@ -76,6 +78,7 @@ struct CampoIndividualDouble: View {
     var body: some View {
         VStack {
             TextField("", text: $value)
+                .foregroundColor(.black)
                 .font(.system(size: 20))
                 .disabled(disableInput)
                 .multilineTextAlignment(.center)
@@ -133,6 +136,7 @@ struct CampoIndividualInt: View {
     var body: some View {
         VStack {
             TextField("", text: $value)
+                .foregroundColor(.black)
                 .font(.system(size: 20))
                 .disabled(disableInput)
                 .multilineTextAlignment(.center)
@@ -256,6 +260,7 @@ struct CamposProductoAgregar: View {
                             Text("Nombre")
                                 .font(.headline)
                                 .frame(width: geometry.size.width / 3)
+                                .foregroundColor(.black)
                             Spacer()
                             HStack {
                                 CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.productEdited)
@@ -276,6 +281,7 @@ struct CamposProductoAgregar: View {
                         Text("Cantidad")
                             .font(.headline)
                             .frame(width: geometry.size.width / 3)
+                            .foregroundColor(.black)
                         Spacer()
                         HStack {
                             CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited, action: doNothing)
@@ -311,6 +317,7 @@ struct CamposProductoAgregar: View {
                     GeometryReader { geometry in
                         HStack {
                             Text("Imagen URL")
+                                .foregroundColor(.black)
                                 .font(.headline)
                                 .frame(width: geometry.size.width / 3)
                             Spacer()
@@ -322,6 +329,7 @@ struct CamposProductoAgregar: View {
                 }
                 if !productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.imageURLEdited {
                     ErrorMessageText(message: "URL no valido")
+                        .padding(.top, 6)
                 }
             }
             .listRowBackground(Color("color_background"))
@@ -352,18 +360,21 @@ struct CamposProductoAgregar: View {
             VStack {
                 HStack {
                     Text("Costo Unitario")
+                        .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                         .font(.headline)
                         .padding(.horizontal, 5)
                     Spacer()
                     Text("Margen de Ganancia")
+                        .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                         .font(.headline)
                         .padding(.horizontal, 5)
                     Spacer()
                     Text("Precio Unitario")
+                        .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                         .font(.headline)

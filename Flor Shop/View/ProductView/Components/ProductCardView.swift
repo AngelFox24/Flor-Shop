@@ -29,6 +29,7 @@ struct ProductCardView: View {
                 VStack {
                     HStack { // Nombre Producto
                         Text(name)
+                            .foregroundColor(.black)
                             .font(.custom("text_font_1", size: 16))
                             .lineLimit(3)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -36,6 +37,7 @@ struct ProductCardView: View {
                     .padding(.top, 6)
                     HStack { // Cantidad Producto
                         Text(String(format: "%.0f", quantity)+" u")
+                            .foregroundColor(.black)
                             .font(.custom("text_font_1", size: 16))
                             .padding(.vertical, 5)
                             .padding(.horizontal, 10)
