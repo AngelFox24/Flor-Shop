@@ -335,11 +335,7 @@ struct CamposProductoAgregar: View {
                         Spacer()
                         Button(action: {
                             if productsCoreDataViewModel.temporalProduct.name != "" {
-                                if pasteFromClipboard() == "" {
-                                    editedFields.editedFields.imageURLEdited = true
-                                    print(editedFields.editedFields.imageURLEdited)
-                                } else {
-                                }
+                                productsCoreDataViewModel.temporalProduct.url = pasteFromClipboard()
                             } else {
                                 editedFields.urlEdited()
                             }
