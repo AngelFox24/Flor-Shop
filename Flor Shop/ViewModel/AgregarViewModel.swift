@@ -12,6 +12,21 @@ class AgregarViewModel: ObservableObject {
     func resetValuesFields() {
         editedFields = FieldEditTemporal()
     }
+    func fieldsTrue() {
+        print("All value true")
+        editedFields.productEdited = true
+        editedFields.totalCostEdited = true
+        editedFields.quantityEdited = true
+        editedFields.imageURLEdited = true
+        editedFields.imageURLError = ""
+        editedFields.unitCostEdited = true
+        editedFields.profitMarginEdited = true
+        editedFields.unitPriceEdited = true
+    }
+    func urlEdited() {
+        print("New work")
+        editedFields.imageURLEdited = true
+    }
 }
 class FieldEditTemporal {
     var productEdited: Bool = false

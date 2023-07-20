@@ -94,11 +94,14 @@ struct Product: Identifiable {
         return !name.trimmingCharacters(in: .whitespaces).isEmpty
     }
     func isQuantityValid() -> Bool {
+        print("Validando Cantidad")
         if type == .uni {
             print("Tipo Unidades")
             if qty.truncatingRemainder(dividingBy: 1) != 0 {
                 // Tiene Decimales
                 print("WTF \(qty)")
+                return false
+            } else if qty == 0.0 {
                 return false
             } else {
                 return true

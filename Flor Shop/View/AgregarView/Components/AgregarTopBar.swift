@@ -12,6 +12,7 @@ struct AgregarTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @Binding var editedFields: AgregarViewModel
+    @Binding var buttonPress: Bool
     var body: some View {
         HStack {
             // El boton de Limpiar tiene un bug por lo que no pasa a prod
@@ -30,6 +31,9 @@ struct AgregarTopBar: View {
                     carritoCoreDataViewModel.updateCartTotal()
                     editedFields.resetValuesFields()
                 } else {
+                    buttonPress = true
+                    editedFields.editedFields.imageURLError = "lol"
+                    editedFields.fieldsTrue()
                     print("No se pudo agregar correctamente")
                 }
             }, label: {
@@ -45,6 +49,6 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        AgregarTopBar(editedFields: .constant(AgregarViewModel()))
+        AgregarTopBar(editedFields: .constant(AgregarViewModel()), buttonPress: .constant(false))
     }
 }

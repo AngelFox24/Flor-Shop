@@ -7,13 +7,15 @@
 
 import SwiftUI
 import CoreData
+import UniformTypeIdentifiers
 
 struct AgregarView: View {
     @State var editedFields = AgregarViewModel()
+    @State var buttonPress = false
     var body: some View {
         VStack(spacing: 0) {
-            AgregarTopBar(editedFields: $editedFields)
-            CamposProductoAgregar(editedFields: $editedFields.editedFields)
+            AgregarTopBar(editedFields: $editedFields, buttonPress: $buttonPress)
+            CamposProductoAgregar(editedFields: $editedFields, buttonPress: $buttonPress)
         }
         .background(Color("color_background"))
     }
@@ -33,7 +35,35 @@ struct CampoIndividual: View {
     @Binding var edited: Bool
     var body: some View {
         VStack {
-            TextField("", text: $contenido)
+            TextField("Nombre del Producto", text: $contenido)
+                .foregroundColor(.black)
+                .font(.system(size: 20))
+                .multilineTextAlignment(.center)
+                .submitLabel(.search)
+                .onTapGesture {
+                    withAnimation {
+                        contenido.removeAll()
+                        edited = true
+                    }
+                }
+                .onSubmit({
+                    if contenido != "" {
+                        openGoogleImageSearch(nombre: contenido)
+                    }
+                })
+        }
+        .padding(.all, 5)
+        .background(.white)
+        .cornerRadius(15)
+    }
+}
+
+struct CampoIndividualURL: View {
+    @Binding var contenido: String
+    @Binding var edited: Bool
+    var body: some View {
+        VStack {
+            TextField("Pega la imagen", text: $contenido)
                 .foregroundColor(.black)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
@@ -120,6 +150,9 @@ struct CampoIndividualDouble: View {
                         value = String(contenido)
                     }
                 })
+                .onAppear(perform: {
+                    value = String(contenido)
+                })
         }
         .padding(.all, 5)
         .background(.white)
@@ -175,6 +208,9 @@ struct CampoIndividualInt: View {
                         value = String(contenido)
                     }
                 })
+                .onAppear(perform: {
+                    value = String(contenido)
+                })
         }
         .padding(.all, 5)
         .background(.white)
@@ -205,7 +241,8 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @Binding var editedFields: FieldEditTemporal
+    @Binding var editedFields: AgregarViewModel
+    @Binding var buttonPress: Bool
     var sizeCampo: CGFloat = 200
     var body: some View {
         List {
@@ -221,15 +258,17 @@ struct CamposProductoAgregar: View {
                     case .success(let returnetImage):
                         returnetImage
                             .resizable()
+                            .aspectRatio(contentMode: .fit)
                             .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
                     case .failure:
-                        Image("ProductoSinNombre")
+                        Image("groundhog-cry")
                             .resizable()
+                            .aspectRatio(contentMode: .fit)
                             .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
                     default:
-                        Image("ProductoSinNombre")
+                        Image("groundhog-cry")
                             .resizable()
                             .frame(width: sizeCampo, height: sizeCampo)
                             .cornerRadius(20.0)
@@ -254,27 +293,78 @@ struct CamposProductoAgregar: View {
             VStack {
                 HStack {
                     // El texto hace que tenga una separacion mayor del elemento
-                    GeometryReader { geometry in
                         HStack {
+                            /*
                             Text("Nombre")
                                 .font(.headline)
-                                .frame(width: geometry.size.width / 3)
+                                .frame(width: geometry.size.width / 5)
                                 .foregroundColor(.black)
                             Spacer()
+                            */
                             HStack {
-                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.productEdited)
+                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.editedFields.productEdited)
                             }
+                            Button(action: {
+                                if productsCoreDataViewModel.temporalProduct.name != "" {
+                                    openGoogleImageSearch(nombre: productsCoreDataViewModel.temporalProduct.name)
+                                }
+                            }, label: {
+                                Text("Buscar Imagen")
+                                    .foregroundColor(.black)
+                                    .font(.headline)
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 5)
+                                    .background(Color("color_secondary"))
+                                    .cornerRadius(10)
+                            })
                         }
-                    }
                 }
-                if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.productEdited {
+                if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.editedFields.productEdited {
                     ErrorMessageText(message: "Nombre no válido")
                         .padding(.top, 6)
                 }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
-            HStack {
+            VStack {
+                HStack {
+                    HStack {
+                        HStack {
+                            CampoIndividualURL(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.editedFields.imageURLEdited)
+                        }
+                        Spacer()
+                        Button(action: {
+                            if productsCoreDataViewModel.temporalProduct.name != "" {
+                                if pasteFromClipboard() == "" {
+                                    editedFields.editedFields.imageURLEdited = true
+                                    print(editedFields.editedFields.imageURLEdited)
+                                } else {
+                                }
+                            } else {
+                                editedFields.urlEdited()
+                            }
+                        }, label: {
+                            Text("Pegar Imagen")
+                                .foregroundColor(.black)
+                                .font(.headline)
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 5)
+                                .background(Color("color_secondary"))
+                                .cornerRadius(10)
+                        })
+                    }
+                }
+                if !productsCoreDataViewModel.temporalProduct.isURLValid() && productsCoreDataViewModel.temporalProduct.name != "" && editedFields.editedFields.imageURLEdited {
+                    ErrorMessageText(message: "Pega la imagen copiada")
+                        .padding(.top, 6)
+                } else if !productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.editedFields.imageURLEdited {
+                    ErrorMessageText(message: "Ingresa un nombre de producto")
+                        .padding(.top, 6)
+                }
+            }
+            .listRowBackground(Color("color_background"))
+            .listRowSeparator(.hidden)
+            VStack {
                 GeometryReader { geometry in
                     HStack {
                         Text("Cantidad")
@@ -283,7 +373,8 @@ struct CamposProductoAgregar: View {
                             .foregroundColor(.black)
                         Spacer()
                         HStack {
-                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.quantityEdited)
+                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.editedFields.quantityEdited)
+                            /*
                             Menu {
                                 /*
                                 Button(){
@@ -305,34 +396,18 @@ struct CamposProductoAgregar: View {
                             .padding(.horizontal, 10)
                             .background(Color("color_secondary"))
                             .cornerRadius(10)
+                            */
                         }
                     }
+                }
+                if !productsCoreDataViewModel.temporalProduct.isQuantityValid() && editedFields.editedFields.quantityEdited {
+                    ErrorMessageText(message: "Cantidad Incorrecta")
+                        .padding(.top, 18)
                 }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
-            VStack {
-                HStack {
-                    GeometryReader { geometry in
-                        HStack {
-                            Text("Imagen URL")
-                                .foregroundColor(.black)
-                                .font(.headline)
-                                .frame(width: geometry.size.width / 3)
-                            Spacer()
-                            HStack {
-                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.imageURLEdited)
-                            }
-                        }
-                    }
-                }
-                if !productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.imageURLEdited {
-                    ErrorMessageText(message: "URL no valido")
-                        .padding(.top, 6)
-                }
-            }
-            .listRowBackground(Color("color_background"))
-            .listRowSeparator(.hidden)
+            .padding(.top, 4)
             // Las palabras Clave se utilizaran el el futuro
             /*
             HStack {
@@ -381,14 +456,28 @@ struct CamposProductoAgregar: View {
                 }
                 .padding(.top, 15)
                 HStack(spacing: 0) {
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost, edited: $editedFields.unitCostEdited, action: productsCoreDataViewModel.calcProfitMargin)
+                    VStack {
+                        CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost, edited: $editedFields.editedFields.unitCostEdited, action: productsCoreDataViewModel.calcProfitMargin)
+                        if !productsCoreDataViewModel.temporalProduct.isUnitCostValid() && editedFields.editedFields.unitCostEdited {
+                            ErrorMessageText(message: "Costo Unitario Incorrecto")
+                                .padding(.top, 6)
+                        }
+                    }
                     Spacer()
-                    // CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.profitMargin, disableInput: true)
-                    CampoIndividualDoubleLocked(contenido: productsCoreDataViewModel.temporalProduct.profitMargin)
+                    VStack {
+                        CampoIndividualDoubleLocked(contenido: productsCoreDataViewModel.temporalProduct.profitMargin)
+                    }
                     Spacer()
-                    CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice, edited: $editedFields.unitPriceEdited, action: productsCoreDataViewModel.calcProfitMargin)
+                    VStack {
+                        CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice, edited: $editedFields.editedFields.unitPriceEdited, action: productsCoreDataViewModel.calcProfitMargin)
+                        if !productsCoreDataViewModel.temporalProduct.isUnitPriceValid() && editedFields.editedFields.unitPriceEdited {
+                            ErrorMessageText(message: "Precio Unitario Incorrecto")
+                                .padding(.top, 6)
+                        }
+                    }
                 }
-                .padding(.bottom, 10)
+                if buttonPress {
+                }
             }
             .listRowBackground(Color("color_background"))
             .listRowSeparator(.hidden)
@@ -397,5 +486,24 @@ struct CamposProductoAgregar: View {
     }
     func doNothing() {
         // No hace nada
+    }
+}
+private func openGoogleImageSearch(nombre: String) {
+    // Limpia la cadena de búsqueda para que sea válida en una URL
+    guard let cleanedSearchQuery = nombre.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+          let googleImageSearchURL = URL(string: "https://www.google.com/search?tbm=isch&q=\(cleanedSearchQuery)") else {
+        return
+    }
+    // Abre Safari con la URL de búsqueda en Google Imágenes
+    if UIApplication.shared.canOpenURL(googleImageSearchURL) {
+        UIApplication.shared.open(googleImageSearchURL)
+    }
+}
+
+private func pasteFromClipboard() -> String {
+    if let clipboardContent = UIPasteboard.general.string {
+        return clipboardContent
+    } else {
+        return ""
     }
 }
