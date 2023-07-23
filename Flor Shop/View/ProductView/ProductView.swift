@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import AVFoundation
 
 struct ProductView: View {
     @Binding var selectedTab: Tab
@@ -35,6 +36,7 @@ struct HomeView_Previews: PreviewProvider {
 struct ListaControler: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @State private var audioPlayer: AVAudioPlayer?
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
@@ -70,7 +72,11 @@ struct ListaControler: View {
                     .listRowBackground(Color("color_background"))
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                         Button(action: {
-                            agregarProductoACarrito(producto: producto)
+                            if agregarProductoACarrito(producto: producto) {
+                                playSound(named: "Success1")
+                            } else {
+                                playSound(named: "Fail1")
+                            }
                         }, label: {
                             Image(systemName: "cart")
                         })
@@ -97,8 +103,22 @@ struct ListaControler: View {
         productsCoreDataViewModel.editProduct(product: producto)
         print("Se esta editando el producto \(producto.name)")
     }
-    func agregarProductoACarrito(producto: Product) {
-        carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+    func agregarProductoACarrito(producto: Product) -> Bool {
         print("Se agrego el producto al carrito \(producto.name)")
+        return carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+    }
+    private func playSound(named fileName: String) {
+        var soundURL: URL?
+        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
+        guard let url = soundURL else {
+            print("No se pudo encontrar el archivo de sonido.")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
+        }
     }
 }

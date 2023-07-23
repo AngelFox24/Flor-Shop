@@ -7,12 +7,14 @@
 
 import SwiftUI
 import CoreData
+import AVFoundation
 
 struct CartTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
             HStack {
@@ -33,6 +35,7 @@ struct CartTopBar: View {
                     if ventasCoreDataViewModel.registerSale() {
                         print("Se procede a vaciar el carrito")
                         carritoCoreDataViewModel.emptyCart()
+                        playSound(named: "Success1")
                     } else {
                         print("Todo esta mal renuncia xd")
                     }
@@ -47,6 +50,20 @@ struct CartTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 40)
         .background(Color("color_primary"))
+    }
+    private func playSound(named fileName: String) {
+        var soundURL: URL?
+        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
+        guard let url = soundURL else {
+            print("No se pudo encontrar el archivo de sonido.")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
+        }
     }
 }
 struct CartTopBar_Previews: PreviewProvider {

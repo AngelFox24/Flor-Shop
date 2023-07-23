@@ -25,9 +25,11 @@ class CartViewModel: ObservableObject {
         self.cartRepository.deleteProduct(product: product)
         fetchCart()
     }
-    func addProductoToCarrito(product: Product) {
-        self.cartRepository.addProductoToCarrito(product: product)
+    func addProductoToCarrito(product: Product) -> Bool {
+        var value: Bool = false
+        value = self.cartRepository.addProductoToCarrito(product: product)
         fetchCart()
+        return value
     }
     func emptyCart () {
         self.cartRepository.emptyCart()

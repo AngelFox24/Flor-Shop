@@ -11,7 +11,7 @@ import CoreData
 protocol CarRepository {
     func getCar() -> Car
     func deleteProduct(product: Product)
-    func addProductoToCarrito(product: Product)
+    func addProductoToCarrito(product: Product) -> Bool
     func emptyCart()
     func updateCartTotal()
     func increaceProductAmount (product: Product)
@@ -31,8 +31,8 @@ class CarRepositoryImpl: CarRepository {
     func deleteProduct(product: Product) {
         self.manager.deleteProduct(product: product)
     }
-    func addProductoToCarrito(product: Product) {
-        self.manager.addProductToCart(productIn: product)
+    func addProductoToCarrito(product: Product) -> Bool {
+        return self.manager.addProductToCart(productIn: product)
     }
     func emptyCart() {
         self.manager.emptyCart()

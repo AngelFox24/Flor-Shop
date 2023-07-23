@@ -11,7 +11,7 @@ import CoreData
 protocol CarManager {
     func getCar() -> Car
     func deleteProduct(product: Product)
-    func addProductToCart(productIn: Product)
+    func addProductToCart(productIn: Product) -> Bool
     func emptyCart()
     func updateCartTotal()
     func increaceProductAmount(product: Product)
@@ -69,15 +69,16 @@ class LocalCarManager: CarManager {
         updateCartTotal()
         saveData()
     }
-    func addProductToCart(productIn: Product) {
+    func addProductToCart(productIn: Product) -> Bool {
         let context = self.cartContainer.viewContext
         guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: context), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
-            return
+            return false
         }
         // Buscamos si existe este producto en el carrito
         let matchingDetails = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.idProducto }
         if matchingDetails.first != nil {
             increaceProductAmount(product: productIn)
+            return true
         } else {
             // Validamos si tiene sificiente Stock
             if product.cantidadStock >= 1 {
@@ -91,8 +92,10 @@ class LocalCarManager: CarManager {
                 newCarDetail.detalleCarrito_to_producto = product
                 // Agregar el objeto detalleCarrito al carrito
                 newCarDetail.detalleCarrito_to_carrito = cart
+                return true
             } else {
                 print("No hay stock suficiente: \(product.cantidadStock)")
+                return false
             }
         }
         updateCartTotal()
