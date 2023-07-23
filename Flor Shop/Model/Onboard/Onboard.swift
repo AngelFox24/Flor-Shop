@@ -16,10 +16,11 @@ struct Onboard: Identifiable {
 }
 
 var onboardItems: [Onboard] = [
-    Onboard(id: UUID(), title: "Buscamos una imagen en el Safari", subtitle: "y mantenemos pulsado la imagen", imageText: "view1"),
-    Onboard(id: UUID(), title: "Copiamos la imagen", subtitle: "luego vamos a Flor Shop", imageText: "view2"),
-    Onboard(id: UUID(), title: "Pegamos en el campo Imagen URL", subtitle: "Si la imagen esta bien aparecerá inmediatamente", imageText: "view3"),
-    Onboard(id: UUID(), title: "Luego completamos los demás datos", subtitle: "y pulsamos Guardar", imageText: "view5"),
-    Onboard(id: UUID(), title: "Podemos deslizar hacia la derecha para agregar un producto al carrito", subtitle: "o a la izquierda para editarlo", imageText: "view6"),
-    Onboard(id: UUID(), title: "En el carrito podemos aumentar la cantidad con el botón +", subtitle: "presionamos en Vender y se reducirá el stock", imageText: "view7")
+    Onboard(id: UUID(), title: "Para agregar un Producto", subtitle: "Rellenamos el nombre del producto y luego pulsamos en Buscar Imagen", imageText: "View1"),
+    Onboard(id: UUID(), title: "Elegimos una imagen", subtitle: "mantenemos pulsado en la imagen y copiamos", imageText: "View2"),
+    Onboard(id: UUID(), title: "Volvemos a Flor Shop", subtitle: "y pulsamos en Pegar Imagen", imageText: "View3"),
+    Onboard(id: UUID(), title: "Damos permiso para pegar", subtitle: "pulsamos en 'Permitir pegar'", imageText: "View4"),
+    Onboard(id: UUID(), title: "Completamos los demas datos", subtitle: "Luego pulsamos en Guardar", imageText: "View5"),
+    Onboard(id: UUID(), title: "Podemos deslizar hacia la derecha para agregar un producto al carrito", subtitle: "o a la izquierda para editarlo", imageText: "View6"),
+    Onboard(id: UUID(), title: "En el carrito podemos aumentar la cantidad con el botón +", subtitle: "presionamos en Vender y se reducirá el stock!!!", imageText: "View7")
 ]
