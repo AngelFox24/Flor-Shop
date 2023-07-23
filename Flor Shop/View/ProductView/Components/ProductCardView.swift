@@ -17,11 +17,6 @@ struct ProductCardView: View {
     let unitPrice: Double
     let url: String
     let size: CGFloat
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yyyy"
-        return formatter
-    }()
     var body: some View {
         VStack {
             HStack {
