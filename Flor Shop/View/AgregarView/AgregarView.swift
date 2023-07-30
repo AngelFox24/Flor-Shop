@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreData
 import UniformTypeIdentifiers
+import SafariServices
 
 struct AgregarView: View {
     @State var editedFields = AgregarViewModel()
@@ -490,9 +491,12 @@ private func openGoogleImageSearch(nombre: String) {
           let googleImageSearchURL = URL(string: "https://www.google.com/search?tbm=isch&q=\(cleanedSearchQuery)") else {
         return
     }
-    // Abre Safari con la URL de búsqueda en Google Imágenes
-    if UIApplication.shared.canOpenURL(googleImageSearchURL) {
-        UIApplication.shared.open(googleImageSearchURL)
+    
+    // Abre la URL en Safari mediante SFSafariViewController
+    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+       let topViewController = windowScene.windows.first?.rootViewController {
+        let safariViewController = SFSafariViewController(url: googleImageSearchURL)
+        topViewController.present(safariViewController, animated: true, completion: nil)
     }
 }
 
