@@ -11,7 +11,7 @@ struct CustomButton1: View {
     let text: String
     var body: some View {
         Text(text)
-            .font(.custom("text_font_1", size: 20))
+            .font(.custom("Artifika-Regular", size: 20))
             .foregroundColor(.white)
             .multilineTextAlignment(.center)
             .padding(.horizontal, 15)
@@ -25,7 +25,7 @@ struct CustomButton2: View {
     let text: String
     var body: some View {
         Text(text)
-            .font(.custom("text_font_1", size: 20))
+            .font(.custom("Artifika-Regular", size: 20))
             .foregroundColor(Color("color_accent"))
             .multilineTextAlignment(.center)
             .padding(.horizontal, 15)

@@ -40,6 +40,7 @@ struct ListCartController: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 300, height: 300)
                     Text("Deslizemos productos al carrito de ventas.")
+                        .font(.custom("Artifika-Regular", size: 18))
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
                     Button(action: {

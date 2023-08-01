@@ -18,11 +18,11 @@ struct OnboardingView: View {
                 ForEach(0 ..< indexFin) { index in
                     VStack(spacing: 0) {
                         Text(onboardItems[index].title)
-                            .font(.title)
+                            .font(.custom("Artifika-Regular", size: 28))
                             .foregroundColor(Color("color_accent"))
                             .multilineTextAlignment(.center)
                         Text(onboardItems[index].subtitle)
-                            .font(.title2)
+                            .font(.custom("Artifika-Regular", size: 20))
                             .multilineTextAlignment(.center)
                             .padding(.top, 8)
                             .foregroundColor(Color("color_accent"))

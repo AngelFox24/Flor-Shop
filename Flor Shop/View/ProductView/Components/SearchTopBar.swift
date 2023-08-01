@@ -18,13 +18,13 @@ struct SearchTopBar: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color("color_accent"))
-                        .font(.custom("text_font_1", size: 16))
+                        .font(.custom("Artifika-Regular", size: 16))
                         .padding(.vertical, 10)
                         .padding(.leading, 10)
                     // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
                     TextField("Buscar Producto", text: $seach)
                         .padding(.vertical, 10)
-                        .font(.custom("text_font_1", size: 16))
+                        .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color("color_primary"))
                         .submitLabel(.search)
                         .onSubmit {
@@ -38,7 +38,7 @@ struct SearchTopBar: View {
                     }, label: {
                         Image(systemName: "x.circle")
                             .foregroundColor(Color("color_accent"))
-                            .font(.custom("text_font_1", size: 16))
+                            .font(.custom("Artifika-Regular", size: 16))
                             .padding(.vertical, 10)
                             .padding(.trailing, 10)
                     })
@@ -46,45 +46,6 @@ struct SearchTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 .padding(.trailing, 8)
-                /*
-                Menu {
-                    Button(){
-                        setPrimaryOrder(order: .NameAsc)
-                    } label: {
-                        Text("Nombre")
-                    }
-                    Button(){
-                        setPrimaryOrder(order: .QuantityAsc)
-                    } label: {
-                        Text("Sin Stock")
-                    }
-                    Button(){
-                        setPrimaryOrder(order: .QuantityDesc)
-                    } label: {
-                        Text("Cantidad Mayor")
-                    }
-                    Button(){
-                        setPrimaryOrder(order: .PriceDesc)
-                    } label: {
-                        Text("Precio Mayor")
-                    }
-                    Button(){
-                        setPrimaryOrder(order: .PriceAsc)
-                    } label: {
-                        Text("Precio Menor")
-                    }
-                }label: {
-                    Button(action: { }) {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.custom("text_font_1", size: 22))
-                            .foregroundColor(Color("color_accent"))
-                    }
-                    .padding(.horizontal,8)
-                    .padding(.vertical,10)
-                    .background(.white)
-                    .cornerRadius(15.0)
-                }
-                */
                 Menu {
                     ForEach(menuItems, id: \.self) { item in
                         Button(action: {

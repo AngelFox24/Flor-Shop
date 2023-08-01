@@ -28,7 +28,7 @@ struct CartProductCardView: View {
                     HStack {
                         Text(productName)
                             .foregroundColor(.black)
-                            .font(.custom("text_font_1", size: 16))
+                            .font(.custom("Artifika-Regular", size: 16))
                             .lineLimit(3)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
@@ -51,7 +51,7 @@ struct CartProductCardView: View {
                         HStack { // Cantidad Producto
                             Text(String(format: "%.0f", carQuantity)+" u")
                                 .foregroundColor(.black)
-                                .font(.custom("text_font_1", size: 16))
+                                .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.vertical, 5)
                                 .padding(.horizontal, 10)
                                 .background(Color("color_secondary"))
@@ -78,9 +78,9 @@ struct CartProductCardView: View {
                 VStack {
                     HStack(spacing: 0) {
                         Text(String("S/. "))
-                            .font(.custom("text_font_1", size: 15))
+                            .font(.custom("Artifika-Regular", size: 15))
                         Text(String(productUnitPrice))
-                            .font(.custom("text_font_1", size: 18))
+                            .font(.custom("Artifika-Regular", size: 18))
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)

@@ -38,7 +38,7 @@ struct CampoIndividual: View {
         VStack {
             TextField("Nombre del Producto", text: $contenido)
                 .foregroundColor(.black)
-                .font(.system(size: 20))
+                .font(.custom("Artifika-Regular", size: 18))
                 .multilineTextAlignment(.center)
                 .submitLabel(.search)
                 .onTapGesture {
@@ -66,7 +66,7 @@ struct CampoIndividualURL: View {
         VStack {
             TextField("Pega la imagen", text: $contenido)
                 .foregroundColor(.black)
-                .font(.system(size: 20))
+                .font(.custom("Artifika-Regular", size: 18))
                 .multilineTextAlignment(.center)
                 .onTapGesture {
                     withAnimation {
@@ -86,7 +86,7 @@ struct CampoIndividualDoubleLocked: View {
     var body: some View {
         VStack {
             Text(String(format: "%.0f", (contenido * 100).rounded())+" %")
-                .font(.system(size: 20))
+                .font(.custom("Artifika-Regular", size: 18))
                 .foregroundColor(.black)
                 .multilineTextAlignment(.center)
                 .disabled(true)
@@ -110,7 +110,7 @@ struct CampoIndividualDouble: View {
         VStack {
             TextField("", text: $value)
                 .foregroundColor(.black)
-                .font(.system(size: 20))
+                .font(.custom("Artifika-Regular", size: 18))
                 .disabled(disableInput)
                 .multilineTextAlignment(.center)
                 .keyboardType(.decimalPad)
@@ -171,7 +171,7 @@ struct CampoIndividualInt: View {
         VStack {
             TextField("", text: $value)
                 .foregroundColor(.black)
-                .font(.system(size: 20))
+                .font(.custom("Artifika-Regular", size: 18))
                 .multilineTextAlignment(.center)
                 .keyboardType(.numberPad)
                 .focused($focus)
@@ -312,7 +312,7 @@ struct CamposProductoAgregar: View {
                             }, label: {
                                 Text("Buscar Imagen")
                                     .foregroundColor(.black)
-                                    .font(.headline)
+                                    .font(.custom("Artifika-Regular", size: 16))
                                     .padding(.vertical, 6)
                                     .padding(.horizontal, 5)
                                     .background(Color("color_secondary"))
@@ -343,7 +343,7 @@ struct CamposProductoAgregar: View {
                         }, label: {
                             Text("Pegar Imagen")
                                 .foregroundColor(.black)
-                                .font(.headline)
+                                .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.vertical, 6)
                                 .padding(.horizontal, 5)
                                 .background(Color("color_secondary"))
@@ -365,7 +365,7 @@ struct CamposProductoAgregar: View {
                 GeometryReader { geometry in
                     HStack {
                         Text("Cantidad")
-                            .font(.headline)
+                            .font(.custom("Artifika-Regular", size: 18))
                             .frame(width: geometry.size.width / 3)
                             .foregroundColor(.black)
                         Spacer()
@@ -434,21 +434,21 @@ struct CamposProductoAgregar: View {
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
-                        .font(.headline)
+                        .font(.custom("Artifika-Regular", size: 18))
                         .padding(.horizontal, 5)
                     Spacer()
                     Text("Margen de Ganancia")
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
-                        .font(.headline)
+                        .font(.custom("Artifika-Regular", size: 18))
                         .padding(.horizontal, 5)
                     Spacer()
-                    Text("Precio Unitario")
+                    Text("Precio de Venta")
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
-                        .font(.headline)
+                        .font(.custom("Artifika-Regular", size: 18))
                         .padding(.horizontal, 5)
                 }
                 .padding(.top, 15)

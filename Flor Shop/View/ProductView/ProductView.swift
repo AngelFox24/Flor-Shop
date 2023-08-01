@@ -49,6 +49,7 @@ struct ListaControler: View {
                     Text("Agreguemos productos a nuestra tienda.")
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
+                        .font(.custom("Artifika-Regular", size: 18))
                     Button(action: {
                         selectedTab = .plus
                     }, label: {

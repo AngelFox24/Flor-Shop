@@ -29,6 +29,7 @@
 		27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936B29F73B510085D4EC /* CustomTabBar.swift */; };
 		27B3936E29F74E4B0085D4EC /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936D29F74E4B0085D4EC /* MenuView.swift */; };
 		27B3937029F7575C0085D4EC /* SearchTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936F29F7575C0085D4EC /* SearchTopBar.swift */; };
+		27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 27BA28182A79BF46008F3F08 /* Artifika-Regular.ttf */; };
 		27C241FC2A008CB50045B2A0 /* ProductViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C241FB2A008CB50045B2A0 /* ProductViewModel.swift */; };
 		27C241FF2A00A89C0045B2A0 /* CartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C241FE2A00A89C0045B2A0 /* CartViewModel.swift */; };
 		27C318D429F2FA45004CC146 /* BDFlor.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */; };
@@ -88,6 +89,7 @@
 		27B3936B29F73B510085D4EC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		27B3936D29F74E4B0085D4EC /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		27B3936F29F7575C0085D4EC /* SearchTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTopBar.swift; sourceTree = "<group>"; };
+		27BA28182A79BF46008F3F08 /* Artifika-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Artifika-Regular.ttf"; sourceTree = "<group>"; };
 		27C241FB2A008CB50045B2A0 /* ProductViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewModel.swift; sourceTree = "<group>"; };
 		27C241FE2A00A89C0045B2A0 /* CartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewModel.swift; sourceTree = "<group>"; };
 		27C318D329F2FA45004CC146 /* BDFlor.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BDFlor.xcdatamodel; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 		274CE29829E6D792007C703D /* Flor Shop */ = {
 			isa = PBXGroup;
 			children = (
+				27BA28172A79BF3B008F3F08 /* Fonts */,
 				270C3E242A617FDC0086557A /* Flor Shop.entitlements */,
 				2786CA182A6D44CC00A80585 /* Alerts */,
 				68A4B10A2A196BD800FC8D9D /* data */,
@@ -219,6 +222,14 @@
 				2786CA1A2A6D44CC00A80585 /* Success1.mp3 */,
 			);
 			path = Alerts;
+			sourceTree = "<group>";
+		};
+		27BA28172A79BF3B008F3F08 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				27BA28182A79BF46008F3F08 /* Artifika-Regular.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		27C241F52A0088A70045B2A0 /* General */ = {
@@ -471,6 +482,7 @@
 				274CE2A129E6D793007C703D /* Preview Assets.xcassets in Resources */,
 				2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */,
 				274CE29E29E6D793007C703D /* Assets.xcassets in Resources */,
+				27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */,
 				27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

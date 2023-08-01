@@ -15,7 +15,8 @@ struct LockScreenView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 300, height: 300)
             Text("Versión desactualizada, vamos a la tienda a descargar la ultima versión")
-                .padding(.horizontal, 20)
+                .font(.custom("Artifika-Regular", size: 18))
+                .padding(.horizontal, 25)
             /*
             Button(action: {
                 //selectedTab = .magnifyingglass

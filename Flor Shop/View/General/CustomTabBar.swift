@@ -43,9 +43,9 @@ struct CustomTabBar: View {
                                 Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
                                     .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
                                     .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
-                                    .font(.system(size: 20))
+                                    .font(.custom("Artifika-Regular", size: 24))
                                 Text(getTabText(for: tab))
-                                    .fontWeight(.regular)
+                                    .font(.custom("Artifika-Regular", size: 16))
                                     .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
                             }
                             .padding(.top, 8)
