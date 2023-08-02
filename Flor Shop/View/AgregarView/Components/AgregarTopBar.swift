@@ -26,6 +26,7 @@ struct AgregarTopBar: View {
              CustomButton2(text: "Limpiar")
              }
              */
+            AgregarViewPopoverHelp()
             Spacer()
             Button(action: {
                 if productsCoreDataViewModel.addProduct() {
