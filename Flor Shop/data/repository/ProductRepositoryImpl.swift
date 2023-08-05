@@ -13,7 +13,8 @@ protocol ProductRepository {
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
     func filterProducts(word: String) -> [Product]
-    func setPrimaryFilter(filter: PrimaryOrder)
+    func setOrder(order: PrimaryOrder)
+    func setFilter(filter: ProductsFilterAttributes)
 }
 
 public class ProductRepositoryImpl: ProductRepository {
@@ -37,7 +38,10 @@ public class ProductRepositoryImpl: ProductRepository {
     func filterProducts(word: String) -> [Product] {
         return manager.filterProducts(word: word)
     }
-    func setPrimaryFilter(filter: PrimaryOrder) {
-        return manager.setPrimaryFilter(filter: filter)
+    func setOrder(order: PrimaryOrder) {
+        return manager.setOrder(order: order)
+    }
+    func setFilter(filter: ProductsFilterAttributes) {
+        return manager.setFilter(filter: filter)
     }
 }

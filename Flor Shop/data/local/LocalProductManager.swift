@@ -8,6 +8,27 @@
 import Foundation
 import CoreData
 
+enum ProductsFilterAttributes: CustomStringConvertible, Equatable {
+    case allProducts
+    case outOfStock
+    case productWithdrawn
+    var description: String {
+        switch self {
+        case .allProducts:
+            return "Todos"
+        case .outOfStock:
+            return "Solo sin Stock"
+        case .productWithdrawn:
+            return "Productos Retirados"
+        }
+    }
+    static var allValues: [ProductsFilterAttributes] {
+        return [.allProducts, .outOfStock, .productWithdrawn]
+    }
+    static func == (lhs: ProductsFilterAttributes, rhs: ProductsFilterAttributes) -> Bool {
+        return lhs.description == rhs.description
+    }
+}
 enum PrimaryOrder: CustomStringConvertible, Equatable {
     case nameAsc
     case nameDesc
@@ -66,19 +87,23 @@ protocol ProductManager {
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
     func filterProducts(word: String) -> [Product]
-    func setPrimaryFilter(filter: PrimaryOrder)
+    func setOrder(order: PrimaryOrder)
+    func setFilter(filter: ProductsFilterAttributes)
 }
 
 class LocalProductManager: ProductManager {
     let productsContainer: NSPersistentContainer
     var primaryOrder: PrimaryOrder = .nameAsc
+    var filterAttribute: ProductsFilterAttributes = .allProducts
     init(containerBDFlor: NSPersistentContainer) {
         self.productsContainer = containerBDFlor
     }
     func getListProducts() -> [Product] {
         var productList: [Tb_Producto] = []
         let request: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
-        let sortDescriptor = setOrderFilter()
+        let predicate = getFilterAtribute()
+        request.predicate = predicate
+        let sortDescriptor = getOrderFilter()
         request.sortDescriptors = [sortDescriptor]
         do {
             productList = try self.productsContainer.viewContext.fetch(request)
@@ -170,10 +195,12 @@ class LocalProductManager: ProductManager {
     func filterProducts(word: String) -> [Product] {
         var products: [Product] = []
         let fetchRequest: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
-        let predicate = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
-        fetchRequest.predicate = predicate
+        let predicate1 = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
+        let predicate2 = getFilterAtribute()
+        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
+        fetchRequest.predicate = compoundPredicate
         // Agregar el sort descriptor para ordenar por nombre ascendente
-        let sortDescriptor = setOrderFilter()
+        let sortDescriptor = getOrderFilter()
         fetchRequest.sortDescriptors = [sortDescriptor]
         do {
             // Ejecutar la consulta y obtener los resultados
@@ -185,22 +212,40 @@ class LocalProductManager: ProductManager {
             return products
         }
     }
-    func setPrimaryFilter(filter: PrimaryOrder) {
-        self.primaryOrder = filter
+    func setOrder(order: PrimaryOrder) {
+        self.primaryOrder = order
     }
-    func setOrderFilter() -> NSSortDescriptor {
+    func setFilter(filter: ProductsFilterAttributes) {
+        self.filterAttribute = filter
+    }
+    func getOrderFilter() -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "nombreProducto", ascending: true)
-        if primaryOrder == .nameDesc {
+        switch primaryOrder {
+        case .nameAsc:
+            sortDescriptor = NSSortDescriptor(key: "nombreProducto", ascending: true)
+        case .nameDesc:
             sortDescriptor = NSSortDescriptor(key: "nombreProducto", ascending: false)
-        } else if primaryOrder == .priceAsc {
+        case .priceAsc:
             sortDescriptor = NSSortDescriptor(key: "precioUnitario", ascending: true)
-        } else if primaryOrder == .priceDesc {
+        case .priceDesc:
             sortDescriptor = NSSortDescriptor(key: "precioUnitario", ascending: false)
-        } else if primaryOrder == .quantityAsc {
+        case .quantityAsc:
             sortDescriptor = NSSortDescriptor(key: "cantidadStock", ascending: true)
-        } else if primaryOrder == .quantityDesc {
+        case .quantityDesc:
             sortDescriptor = NSSortDescriptor(key: "cantidadStock", ascending: false)
         }
         return sortDescriptor
+    }
+    func getFilterAtribute() -> NSPredicate {
+        var filterAtt = NSPredicate(format: "cantidadStock != 0")
+        switch filterAttribute {
+        case .allProducts:
+            filterAtt = NSPredicate(format: "cantidadStock != 0")
+        case .outOfStock:
+            filterAtt = NSPredicate(format: "cantidadStock == 0")
+        case .productWithdrawn:
+            filterAtt = NSPredicate(format: "cantidadStock == 0")
+        }
+        return filterAtt
     }
 }

@@ -9,8 +9,10 @@ import SwiftUI
 
 struct SearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @State private var selectedItem: PrimaryOrder = PrimaryOrder.nameAsc
-    let menuItems: [PrimaryOrder] = PrimaryOrder.allValues
+    @State private var selectedOrder: PrimaryOrder = PrimaryOrder.nameAsc
+    @State private var selectedFilter: ProductsFilterAttributes = ProductsFilterAttributes.allProducts
+    let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
+    let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     @State private var seach: String = ""
     var body: some View {
         VStack {
@@ -28,14 +30,16 @@ struct SearchTopBar: View {
                         .foregroundColor(Color("color_primary"))
                         .submitLabel(.search)
                         .onSubmit {
-                            filtrarProductos()
+                            filtrarProductos(filterWord: seach)
                         }
                         .disableAutocorrection(true)
                     Button(action: {
                         seach = ""
-                        setPrimaryOrder(order: .nameAsc)
-                        selectedItem = .nameAsc
-                        filtrarProductos()
+                        selectedOrder = .nameAsc
+                        selectedFilter = .allProducts
+                        setOrder(order: selectedOrder)
+                        setFilter(filter: selectedFilter)
+                        filtrarProductos(filterWord: seach)
                     }, label: {
                         Image(systemName: "x.circle")
                             .foregroundColor(Color("color_accent"))
@@ -48,9 +52,15 @@ struct SearchTopBar: View {
                 .cornerRadius(20.0)
                 .padding(.trailing, 8)
                 Menu {
-                    Picker("Sort", selection: $selectedItem) {
-                        ForEach(menuItems, id: \.self) {
+                    Picker("", selection: $selectedOrder) {
+                        ForEach(menuOrders, id: \.self) {
                             Text($0.longDescription)
+                        }
+                    }
+                    Divider()
+                    Picker("", selection: $selectedFilter) {
+                        ForEach(menuFilters, id: \.self) {
+                            Text($0.description)
                         }
                     }
                 } label: {
@@ -64,8 +74,13 @@ struct SearchTopBar: View {
                     .background(Color.white)
                     .cornerRadius(15.0)
                 }
-                .onChange(of: selectedItem, perform: { item in
-                    setPrimaryOrder(order: item)
+                .onChange(of: selectedOrder, perform: { item in
+                    setOrder(order: item)
+                    filtrarProductos(filterWord: seach)
+                })
+                .onChange(of: selectedFilter, perform: { item in
+                    setFilter(filter: item)
+                    filtrarProductos(filterWord: seach)
                 })
             }
             .padding(.horizontal, 30)
@@ -73,11 +88,16 @@ struct SearchTopBar: View {
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
-    func filtrarProductos() {
-        productsCoreDataViewModel.filterProducts(word: seach)
+    func setOrder(order: PrimaryOrder) {
+        productsCoreDataViewModel.setOrder(order: order)
     }
-    func setPrimaryOrder(order: PrimaryOrder) {
-        productsCoreDataViewModel.setPrimaryFilter(filter: order, word: seach)
+    func setFilter(filter: ProductsFilterAttributes) {
+        productsCoreDataViewModel.setFilter(filter: filter)
+        print("Se presiono setFilter")
+    }
+    func filtrarProductos(filterWord: String) {
+        print("Se presiono buscarProductos")
+        productsCoreDataViewModel.filterProducts(word: filterWord)
     }
 }
 

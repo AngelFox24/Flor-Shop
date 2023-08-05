@@ -52,9 +52,11 @@ class ProductViewModel: ObservableObject {
             productsCoreData = self.productRepository.filterProducts(word: word)
         }
     }
-    func setPrimaryFilter(filter: PrimaryOrder, word: String) {
-        productRepository.setPrimaryFilter(filter: filter)
-        filterProducts(word: word)
+    func setOrder(order: PrimaryOrder) {
+        productRepository.setOrder(order: order)
+    }
+    func setFilter(filter: ProductsFilterAttributes) {
+        productRepository.setFilter(filter: filter)
     }
     func calcProfitMargin() {
         print("Se llamo a la funcion calcular profit")
