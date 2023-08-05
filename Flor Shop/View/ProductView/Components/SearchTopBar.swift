@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @State private var selectedItem: PrimaryOrder?
+    @State private var selectedItem: PrimaryOrder = PrimaryOrder.nameAsc
     let menuItems: [PrimaryOrder] = PrimaryOrder.allValues
     @State private var seach: String = ""
     var body: some View {
@@ -34,6 +34,7 @@ struct SearchTopBar: View {
                     Button(action: {
                         seach = ""
                         setPrimaryOrder(order: .nameAsc)
+                        selectedItem = .nameAsc
                         filtrarProductos()
                     }, label: {
                         Image(systemName: "x.circle")
@@ -47,20 +48,15 @@ struct SearchTopBar: View {
                 .cornerRadius(20.0)
                 .padding(.trailing, 8)
                 Menu {
-                    ForEach(menuItems, id: \.self) { item in
-                        Button(action: {
-                            selectedItem = item
-                            setPrimaryOrder(order: item)
-                        }, label: {
-                            HStack {
-                                Text(item.longDescription)
-                            }
-                        })
+                    Picker("Sort", selection: $selectedItem) {
+                        ForEach(menuItems, id: \.self) {
+                            Text($0.longDescription)
+                        }
                     }
                 } label: {
                     Button(action: {}, label: {
                         Image(systemName: "slider.horizontal.3")
-                            .font(.custom("text_font_1", size: 22))
+                            .font(.system(size: 22))
                             .foregroundColor(Color("color_accent"))
                     })
                     .padding(.horizontal, 8)
@@ -68,6 +64,9 @@ struct SearchTopBar: View {
                     .background(Color.white)
                     .cornerRadius(15.0)
                 }
+                .onChange(of: selectedItem, perform: { item in
+                    setPrimaryOrder(order: item)
+                })
             }
             .padding(.horizontal, 30)
         }

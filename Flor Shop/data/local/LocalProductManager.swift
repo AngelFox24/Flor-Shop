@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-enum PrimaryOrder: CustomStringConvertible {
+enum PrimaryOrder: CustomStringConvertible, Equatable {
     case nameAsc
     case nameDesc
     case priceAsc
@@ -56,6 +56,9 @@ enum PrimaryOrder: CustomStringConvertible {
         }
         return nil
     }
+    static func == (lhs: PrimaryOrder, rhs: PrimaryOrder) -> Bool {
+            return lhs.description == rhs.description
+        }
 }
 
 protocol ProductManager {
