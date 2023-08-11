@@ -37,7 +37,7 @@ struct CustomTextField: View {
                                 .padding(.horizontal, 2)
                                 .padding(.vertical, 8)
                                 .opacity(isTextFieldFocused ? 1 : 0)
-                                .animation(.easeInOut(duration: 0.4))
+                                .animation(.easeInOut(duration: 0.4), value: isTextFieldFocused)
                         })
                 }
                 .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
@@ -62,7 +62,7 @@ struct CustomTextField_Previews: PreviewProvider {
     static var previews: some View {
         HStack(spacing: 6) {
             CustomTextField(title: "Nombre del producto" ,edited: .constant(false))
-            CustomTextField(edited: .constant(false), disable: true)
+            CustomTextField(edited: .constant(false), disable: false)
             //CustomTextField(edited: .constant(false))
         }
         .frame(maxHeight: .infinity)

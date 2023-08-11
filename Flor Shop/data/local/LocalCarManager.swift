@@ -70,15 +70,16 @@ class LocalCarManager: CarManager {
         saveData()
     }
     func addProductToCart(productIn: Product) -> Bool {
+        var success: Bool = false
         let context = self.cartContainer.viewContext
         guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: context), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
-            return false
+            return success
         }
         // Buscamos si existe este producto en el carrito
         let matchingDetails = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.idProducto }
         if matchingDetails.first != nil {
             increaceProductAmount(product: productIn)
-            return true
+            success = true
         } else {
             // Validamos si tiene sificiente Stock
             if product.cantidadStock >= 1 {
@@ -92,14 +93,17 @@ class LocalCarManager: CarManager {
                 newCarDetail.detalleCarrito_to_producto = product
                 // Agregar el objeto detalleCarrito al carrito
                 newCarDetail.detalleCarrito_to_carrito = cart
-                return true
+                success = true
             } else {
                 print("No hay stock suficiente: \(product.cantidadStock)")
-                return false
+                success = false
             }
         }
-        updateCartTotal()
-        saveData()
+        if success {
+            updateCartTotal()
+            saveData()
+        }
+        return success
     }
     func emptyCart() {
         guard let cart = getCartEntity() else {
