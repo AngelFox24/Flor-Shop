@@ -162,7 +162,7 @@ struct CampoIndividualDouble: View {
 }
 
 struct CampoIndividualInt: View {
-    @Binding var contenido: Double
+    @Binding var contenido: Int64
     @State var value: String = "0"
     @State private var oldValue: String = ""
     @FocusState var focus: Bool
@@ -192,7 +192,7 @@ struct CampoIndividualInt: View {
                             value = oldValue
                         } else {
                             if let valueDouble: Int = Int(value) {
-                                contenido = Double(valueDouble)
+                                contenido = Int64(valueDouble)
                             } else {
                                 value = oldValue
                             }
@@ -201,7 +201,7 @@ struct CampoIndividualInt: View {
                 })
                 .onChange(of: value, perform: { _ in
                     if let valueDouble: Int = Int(value) {
-                        contenido = Double(valueDouble)
+                        contenido = Int64(valueDouble)
                     }
                 })
                 .onChange(of: contenido, perform: { _ in

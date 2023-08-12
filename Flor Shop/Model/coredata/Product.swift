@@ -16,64 +16,28 @@ extension Double {
     }
 }
 
-enum MeasurementType: CustomStringConvertible {
-    case kilo
-    case uni
-    var description: String {
-        switch self {
-        case .kilo:
-            return "Kilos"
-        case .uni:
-            return "Unidades"
-        }
-    }
-    static var allValues: [MeasurementType] {
-        return [.kilo, .uni]
-    }
-    static func from(description: String) -> MeasurementType? {
-        for case let type in MeasurementType.allValues where type.description == description {
-            return type
-        }
-        return nil
-    }
-    /*
-     static func from(description: String) -> MeasurementType? {
-         for case let type in MeasurementType.allValues {
-             if type.description == description {
-                 return type
-             }
-         }
-         return nil
-     }
-     */
-}
-
 struct Product: Identifiable {
     var id: UUID
     var name: String
-    var qty: Double
+    var qty: Int64
     var unitCost: Double
     var unitPrice: Double
     var expirationDate: Date
-    var type: MeasurementType
     var url: String
     var totalCost: Double
     var profitMargin: Double
     var keyWords: String
-    var replaceImage: Bool
-    init(id: UUID, name: String, qty: Double, unitCost: Double, unitPrice: Double, expirationDate: Date, type: MeasurementType, url: String, replaceImage: Bool) {
+    init(id: UUID, name: String, qty: Int64, unitCost: Double, unitPrice: Double, expirationDate: Date, url: String) {
         self.id = id
         self.name = name
         self.qty = qty
         self.unitCost = unitCost
         self.unitPrice = unitPrice
         self.expirationDate = expirationDate
-        self.type = type
         self.url = url
         self.totalCost = 0
         self.profitMargin = 0
         self.keyWords = "Producto"
-        self.replaceImage = replaceImage
     }
     init () {
         self.id = UUID()
@@ -82,39 +46,21 @@ struct Product: Identifiable {
         self.unitCost = 0.0
         self.unitPrice = 0.0
         self.expirationDate = Date()
-        self.type = .uni
         self.url = ""
         self.totalCost = 0.0
         self.profitMargin = 0.0
         self.keyWords = "Producto"
-        self.replaceImage = false
     }
     // MARK: Validacion Crear Producto
     func isProductNameValid() -> Bool {
         return !name.trimmingCharacters(in: .whitespaces).isEmpty
     }
     func isQuantityValid() -> Bool {
-        print("Validando Cantidad")
-        if type == .uni {
-            print("Tipo Unidades")
-            if qty.truncatingRemainder(dividingBy: 1) != 0 {
-                // Tiene Decimales
-                print("WTF \(qty)")
-                return false
-            } else if qty == 0.0 {
-                return false
-            } else {
-                return true
-            }
-        } else if type == .kilo {
-            if qty > 0.0 {
-                print("Tipo Kilos")
-                return true
-            } else {
-                return false
-            }
-        } else {
+        print("Tipo Unidades")
+        if qty == Int64(0.0) {
             return false
+        } else {
+            return true
         }
     }
     func isUnitCostValid() -> Bool {

@@ -25,8 +25,8 @@ class LocalProductManager: ProductManager {
         self.productsContainer = containerBDFlor
     }
     func getListProducts() -> [Product] {
-        var productList: [Tb_Producto] = []
-        let request: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
+        var productList: [Tb_Product] = []
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         let predicate = getFilterAtribute()
         request.predicate = predicate
         let sortDescriptor = getOrderFilter()
@@ -47,13 +47,13 @@ class LocalProductManager: ProductManager {
            product.isExpirationDateValid(),
            product.isURLValid() {
             if let productInContext = product.toProductEntity(context: productsContainer.viewContext) {
-                productInContext.nombreProducto = product.name
-                productInContext.cantidadStock = product.qty
-                productInContext.costoUnitario = product.unitCost
-                productInContext.fechaVencimiento = product.expirationDate
-                productInContext.precioUnitario = product.unitPrice
-                productInContext.tipoMedicion = product.type.description
-                productInContext.url = product.url
+                productInContext.productName = product.name
+                productInContext.quantityStock = product.qty
+                productInContext.unitCost = product.unitCost
+                productInContext.expirationDate = product.expirationDate
+                productInContext.unitPrice = product.unitPrice
+                // TODO: asignar imagen correctamente
+                //productInContext.toImageUrl = product.url
             } else {
                 _ = product.toNewProductEntity(context: productsContainer.viewContext)
             }
@@ -62,8 +62,6 @@ class LocalProductManager: ProductManager {
         } else {
             if !product.isProductNameValid() {
                 message = "El nombre del producto esta mal \(product.name)"
-            } else if !product.isQuantityValid() {
-                message = "La cantidad y el tipo esta mal \(product.qty) \(product.type)"
             } else if !product.isUnitCostValid() {
                 message = "El costo unitario esta mal \(product.unitCost)"
             } else if !product.isUnitPriceValid() {
@@ -76,9 +74,9 @@ class LocalProductManager: ProductManager {
         }
         return message
     }
-    func getListCart() -> Tb_Carrito? {
-        var cart: Tb_Carrito?
-        let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
+    func getListCart() -> Tb_Cart? {
+        var cart: Tb_Cart?
+        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
             cart = try self.productsContainer.viewContext.fetch(request).first
         } catch let error {
@@ -88,10 +86,12 @@ class LocalProductManager: ProductManager {
     }
     func reduceStock() -> Bool {
         var saveChanges: Bool = true
-        if let cartList = getListCart()?.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> {
+        //TODO: Arreglar esta funcion
+        /*
+        if let cartList = getListCart()?.toCartDetail as? Set<Tb_CartDetail> {
             for cartDetail in cartList {
-                let reducedQuantity: Double = cartDetail.cantidad
-                let filteredProducts = getListProducts().mapToListProductEntity(context: productsContainer.viewContext).filter { $0.idProducto == cartDetail.detalleCarrito_to_producto?.idProducto }
+                let reducedQuantity: Int64 = cartDetail.quantityAdded
+                let filteredProducts = getListProducts().mapToListProductEntity(context: productsContainer.viewContext).filter { $0.idProduct == cartDetail.toProduct?.idProduct }
                 if let productFound = filteredProducts.first {
                     if productFound.cantidadStock >= reducedQuantity {
                         productFound.cantidadStock -= reducedQuantity
@@ -109,6 +109,7 @@ class LocalProductManager: ProductManager {
             print("Eliminamos los cambios")
             self.productsContainer.viewContext.rollback()
         }
+         */
         return saveChanges
     }
     func saveData () {
@@ -120,7 +121,7 @@ class LocalProductManager: ProductManager {
     }
     func filterProducts(word: String) -> [Product] {
         var products: [Product] = []
-        let fetchRequest: NSFetchRequest<Tb_Producto> = Tb_Producto.fetchRequest()
+        let fetchRequest: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         let predicate1 = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
         let predicate2 = getFilterAtribute()
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])

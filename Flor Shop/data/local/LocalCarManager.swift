@@ -32,15 +32,14 @@ class LocalCarManager: CarManager {
         }
     }
     func getCar() -> Car {
-        var cart: Tb_Carrito?
-        let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
+        var cart: Tb_Cart?
+        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
             cart = try self.cartContainer.viewContext.fetch(request).first
             if cart == nil {
-                cart = Tb_Carrito(context: self.cartContainer.viewContext)
-                cart!.idCarrito = UUID()
-                cart!.fechaCarrito = Date()
-                cart!.totalCarrito = 0.0
+                cart = Tb_Cart(context: self.cartContainer.viewContext)
+                cart!.idCart = UUID()
+                cart!.total = 0.0
                 saveData()
             }
         } catch let error {
@@ -48,9 +47,9 @@ class LocalCarManager: CarManager {
         }
         return cart!.mapToCar()
     }
-    private func getCartEntity() -> Tb_Carrito? {
-        var cart: Tb_Carrito?
-        let request: NSFetchRequest<Tb_Carrito> = Tb_Carrito.fetchRequest()
+    private func getCartEntity() -> Tb_Cart? {
+        var cart: Tb_Cart?
+        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
             cart = try self.cartContainer.viewContext.fetch(request).first
         } catch let error {
@@ -59,12 +58,12 @@ class LocalCarManager: CarManager {
         return cart
     }
     func deleteProduct(product: Product) {
-        guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
             return
         }
-        let detailToDelete = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
+        let detailToDelete = cartDetail.filter { $0.toProduct?.idProduct == product.id }
         if let detail = detailToDelete.first {
-            cart.removeFromCarrito_to_detalleCarrito(detail)
+            cart.removeFromToCartDetail(detail)
         }
         updateCartTotal()
         saveData()
@@ -72,30 +71,30 @@ class LocalCarManager: CarManager {
     func addProductToCart(productIn: Product) -> Bool {
         var success: Bool = false
         let context = self.cartContainer.viewContext
-        guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: context), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: context), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
             return success
         }
         // Buscamos si existe este producto en el carrito
-        let matchingDetails = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.idProducto }
+        let matchingDetails = cartDetail.filter { $0.toProduct?.idProduct == product.idProduct }
         if matchingDetails.first != nil {
             increaceProductAmount(product: productIn)
             success = true
         } else {
             // Validamos si tiene sificiente Stock
-            if product.cantidadStock >= 1 {
+            if product.quantityStock >= 1 {
                 // Crear el objeto detalleCarrito y establecer sus propiedades
-                let newCarDetail = Tb_DetalleCarrito(context: context)
-                newCarDetail.idDetalleCarrito = UUID() // Genera un nuevo UUID para el detalle del carrito
+                let newCarDetail = Tb_CartDetail(context: context)
+                newCarDetail.idCartDetail = UUID() // Genera un nuevo UUID para el detalle del carrito
                 // detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
-                newCarDetail.cantidad = 1
-                newCarDetail.subtotal = product.precioUnitario * newCarDetail.cantidad
+                newCarDetail.quantityAdded = 1
+                newCarDetail.subtotal = product.unitPrice * Double(newCarDetail.quantityAdded)
                 // Agregar el objeto producto al detalle carrito
-                newCarDetail.detalleCarrito_to_producto = product
+                newCarDetail.toProduct = product
                 // Agregar el objeto detalleCarrito al carrito
-                newCarDetail.detalleCarrito_to_carrito = cart
+                newCarDetail.toCart = cart
                 success = true
             } else {
-                print("No hay stock suficiente: \(product.cantidadStock)")
+                print("No hay stock suficiente: \(product.quantityStock)")
                 success = false
             }
         }
@@ -109,29 +108,29 @@ class LocalCarManager: CarManager {
         guard let cart = getCartEntity() else {
             return
         }
-        cart.carrito_to_detalleCarrito = nil
+        cart.toCartDetail = nil
         updateCartTotal()
         saveData()
     }
     func updateCartTotal() {
-        guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
             return
         }
         var total: Double = 0.0
         for product in cartDetail {
-            total += product.cantidad * (product.detalleCarrito_to_producto?.precioUnitario ?? 0.0)
+            total += Double(product.quantityAdded) * (product.toProduct?.unitPrice ?? 0.0)
         }
-        cart.totalCarrito = total
+        cart.total = total
     }
     func increaceProductAmount (product: Product) {
-        guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
             return
         }
-        let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
+        let detailToAdd = cartDetail.filter { $0.toProduct?.idProduct == product.id }
         if let detail = detailToAdd.first {
-            if let cantidadStock = detail.detalleCarrito_to_producto?.cantidadStock {
-                if cantidadStock > detail.cantidad {
-                    detail.cantidad += 1.0
+            if let cantidadStock = detail.toProduct?.quantityStock {
+                if cantidadStock > detail.quantityAdded {
+                    detail.quantityAdded += 1
                 }
             }
         }
@@ -139,21 +138,21 @@ class LocalCarManager: CarManager {
         saveData()
     }
     func decreceProductAmount(product: Product) {
-        guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito as? Set<Tb_DetalleCarrito> else {
+        guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
             return
         }
-        let detailToAdd = cartDetail.filter { $0.detalleCarrito_to_producto?.idProducto == product.id }
+        let detailToAdd = cartDetail.filter { $0.toProduct?.idProduct == product.id }
         if let detail = detailToAdd.first {
-            if detail.cantidad > 1 {
-                detail.cantidad -= 1.0
+            if detail.quantityAdded > 1 {
+                detail.quantityAdded -= 1
             }
         }
         updateCartTotal()
         saveData()
     }
     func getListProductInCart () -> [CartDetail] {
-        let cartDetails: [Tb_DetalleCarrito] = []
-        guard let cart = getCartEntity(), let cartDetail = cart.carrito_to_detalleCarrito?.compactMap({ $0 as? Tb_DetalleCarrito }) else {
+        let cartDetails: [Tb_CartDetail] = []
+        guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail?.compactMap({ $0 as? Tb_CartDetail }) else {
             return cartDetails.mapToListCartDetail()
         }
         return cartDetail.mapToListCartDetail()

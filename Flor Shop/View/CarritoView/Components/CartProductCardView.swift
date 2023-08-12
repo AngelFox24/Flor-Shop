@@ -16,7 +16,7 @@ struct CartProductCardView: View {
     let productName: String
     let product: Product
     let productUnitPrice: Double
-    let carQuantity: Double
+    let carQuantity: Int64
     let size: CGFloat
     var decreceProductAmount: (Product) -> Void
     var increaceProductAmount: (Product) -> Void
@@ -49,7 +49,7 @@ struct CartProductCardView: View {
                             decreceProductAmount(product)
                         })
                         HStack { // Cantidad Producto
-                            Text(String(format: "%.0f", carQuantity)+" u")
+                            Text(String(carQuantity)+" u")
                                 .foregroundColor(.black)
                                 .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.vertical, 5)
@@ -101,7 +101,7 @@ struct CartProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         let cartManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
-        let cartDetail = CartDetail(id: UUID(), quantity: 24.9, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), type: .kilo, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU", replaceImage: false))
+        let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU"))
         CartProductCardView(productId: cartDetail.product.id, productUrl: cartDetail.product.url, productName: cartDetail.product.name, product: cartDetail.product, productUnitPrice: cartDetail.product.unitPrice, carQuantity: cartDetail.quantity, size: 100, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
             .environmentObject(CartViewModel(carRepository: cartRepository))
     }
