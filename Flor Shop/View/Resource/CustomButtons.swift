@@ -23,14 +23,16 @@ struct CustomButton1: View {
 
 struct CustomButton2: View {
     let text: String
+    var backgroudColor: Color = Color("color_accent")
+    var minWidthC: CGFloat = 200
     var body: some View {
         Text(text)
             .font(.custom("Artifika-Regular", size: 20))
-            .foregroundColor(Color("color_accent"))
+            .frame(minWidth: minWidthC)
             .multilineTextAlignment(.center)
             .padding(.horizontal, 15)
             .padding(.vertical, 10)
-            .background(.white)
+            .background(backgroudColor)
             .cornerRadius(15.0)
     }
 }

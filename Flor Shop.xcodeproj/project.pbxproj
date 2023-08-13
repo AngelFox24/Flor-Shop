@@ -41,6 +41,12 @@
 		27C7B9D32A60CEC600CA2818 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C7B9D22A60CEC600CA2818 /* OnboardingView.swift */; };
 		27C7B9D62A60F99400CA2818 /* Onboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C7B9D52A60F99400CA2818 /* Onboard.swift */; };
 		27CB99C52A3354F60083CAB7 /* CustomButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CB99C42A3354F60083CAB7 /* CustomButtons.swift */; };
+		27CC2DFD2A881B93000EDB64 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2DFC2A881B93000EDB64 /* WelcomeView.swift */; };
+		27CC2DFF2A881BA1000EDB64 /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2DFE2A881BA1000EDB64 /* LogInView.swift */; };
+		27CC2E012A881BB8000EDB64 /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E002A881BB8000EDB64 /* CreateAccountView.swift */; };
+		27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E082A883C1B000EDB64 /* SideMenuView.swift */; };
+		27CC2E0B2A8844EA000EDB64 /* TabButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E0A2A8844EA000EDB64 /* TabButton.swift */; };
+		27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */; };
 		27E7A51C2A1D18570042983D /* CartDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E7A51B2A1D18570042983D /* CartDetail.swift */; };
 		27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27E9FD1D2A582C710070216B /* GoogleService-Info.plist */; };
 		27E9FD212A582DDB0070216B /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 27E9FD202A582DDB0070216B /* FirebaseAnalytics */; };
@@ -104,6 +110,12 @@
 		27C7B9D22A60CEC600CA2818 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		27C7B9D52A60F99400CA2818 /* Onboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboard.swift; sourceTree = "<group>"; };
 		27CB99C42A3354F60083CAB7 /* CustomButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtons.swift; sourceTree = "<group>"; };
+		27CC2DFC2A881B93000EDB64 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		27CC2DFE2A881BA1000EDB64 /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
+		27CC2E002A881BB8000EDB64 /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
+		27CC2E082A883C1B000EDB64 /* SideMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuView.swift; sourceTree = "<group>"; };
+		27CC2E0A2A8844EA000EDB64 /* TabButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabButton.swift; sourceTree = "<group>"; };
+		27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCorners.swift; sourceTree = "<group>"; };
 		27E7A51B2A1D18570042983D /* CartDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartDetail.swift; sourceTree = "<group>"; };
 		27E9FD1D2A582C710070216B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		27E9FD2F2A5835CA0070216B /* FirebaseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseApp.swift; sourceTree = "<group>"; };
@@ -210,12 +222,11 @@
 		274CE2A929E6D81E007C703D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				27CC2E032A883B98000EDB64 /* SideMenu */,
+				27CC2DFB2A881B4B000EDB64 /* StartingView */,
 				27C7B9D12A60CEB400CA2818 /* Onboarding */,
 				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
-				27C241F52A0088A70045B2A0 /* General */,
-				27C241F92A0089B50045B2A0 /* AgregarView */,
-				27C241F62A0088DE0045B2A0 /* ProductView */,
-				27C241F72A0088E90045B2A0 /* CarritoView */,
+				27C241F52A0088A70045B2A0 /* Resource */,
 				27B3936D29F74E4B0085D4EC /* MenuView.swift */,
 			);
 			path = View;
@@ -246,7 +257,7 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
-		27C241F52A0088A70045B2A0 /* General */ = {
+		27C241F52A0088A70045B2A0 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
 				27C318E129F34498004CC146 /* DefaultTopBar.swift */,
@@ -257,8 +268,10 @@
 				27E9FD362A583AB30070216B /* VersionLockView.swift */,
 				27BA281A2A79CA67008F3F08 /* PopoverHelp.swift */,
 				27395ABF2A8463F100A91420 /* CustomTextField.swift */,
+				27CC2E0A2A8844EA000EDB64 /* TabButton.swift */,
+				27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */,
 			);
-			path = General;
+			path = Resource;
 			sourceTree = "<group>";
 		};
 		27C241F62A0088DE0045B2A0 /* ProductView */ = {
@@ -328,6 +341,67 @@
 				27C7B9D52A60F99400CA2818 /* Onboard.swift */,
 			);
 			path = Onboard;
+			sourceTree = "<group>";
+		};
+		27CC2DFB2A881B4B000EDB64 /* StartingView */ = {
+			isa = PBXGroup;
+			children = (
+				27CC2DFC2A881B93000EDB64 /* WelcomeView.swift */,
+				27CC2DFE2A881BA1000EDB64 /* LogInView.swift */,
+				27CC2E002A881BB8000EDB64 /* CreateAccountView.swift */,
+			);
+			path = StartingView;
+			sourceTree = "<group>";
+		};
+		27CC2E022A881BC1000EDB64 /* PointOfSaleView */ = {
+			isa = PBXGroup;
+			children = (
+				27C241F72A0088E90045B2A0 /* CarritoView */,
+				27C241F62A0088DE0045B2A0 /* ProductView */,
+				27C241F92A0089B50045B2A0 /* AgregarView */,
+			);
+			path = PointOfSaleView;
+			sourceTree = "<group>";
+		};
+		27CC2E032A883B98000EDB64 /* SideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				27CC2E082A883C1B000EDB64 /* SideMenuView.swift */,
+				27CC2E022A881BC1000EDB64 /* PointOfSaleView */,
+				27CC2E042A883BA1000EDB64 /* Sales */,
+				27CC2E052A883BA8000EDB64 /* Customers */,
+				27CC2E062A883BB0000EDB64 /* Employees */,
+				27CC2E072A883BCA000EDB64 /* Settings */,
+			);
+			path = SideMenu;
+			sourceTree = "<group>";
+		};
+		27CC2E042A883BA1000EDB64 /* Sales */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Sales;
+			sourceTree = "<group>";
+		};
+		27CC2E052A883BA8000EDB64 /* Customers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Customers;
+			sourceTree = "<group>";
+		};
+		27CC2E062A883BB0000EDB64 /* Employees */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Employees;
+			sourceTree = "<group>";
+		};
+		27CC2E072A883BCA000EDB64 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		27E9FD2E2A58356C0070216B /* FirebaseCheckAppVersion */ = {
@@ -515,6 +589,7 @@
 				27C318E029F34062004CC146 /* AgregarView.swift in Sources */,
 				27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */,
 				27B3937029F7575C0085D4EC /* SearchTopBar.swift in Sources */,
+				27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */,
 				2728EAAE2A1B0BC2002B534A /* SaleRepositoryImpl.swift in Sources */,
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				274CE29C29E6D792007C703D /* ProductView.swift in Sources */,
@@ -525,10 +600,12 @@
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
 				27C7B9D62A60F99400CA2818 /* Onboard.swift in Sources */,
 				27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */,
+				27CC2DFF2A881BA1000EDB64 /* LogInView.swift in Sources */,
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
 				274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */,
 				68D990C52A1AE98A00A3A393 /* ModelMapper.swift in Sources */,
 				2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */,
+				27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCarManager.swift in Sources */,
 				27C241FC2A008CB50045B2A0 /* ProductViewModel.swift in Sources */,
@@ -541,6 +618,7 @@
 				27EE72F029F8A104007C3B5F /* ProductCardView.swift in Sources */,
 				27E9FD372A583AB30070216B /* VersionLockView.swift in Sources */,
 				27CB99C52A3354F60083CAB7 /* CustomButtons.swift in Sources */,
+				27CC2E012A881BB8000EDB64 /* CreateAccountView.swift in Sources */,
 				27BA281B2A79CA67008F3F08 /* PopoverHelp.swift in Sources */,
 				2728EAAC2A1B0BA4002B534A /* LocalSaleManager.swift in Sources */,
 				27C241FF2A00A89C0045B2A0 /* CartViewModel.swift in Sources */,
@@ -549,8 +627,10 @@
 				2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */,
 				27F54F3229FDE5210083B616 /* CartView.swift in Sources */,
 				27C318D429F2FA45004CC146 /* BDFlor.xcdatamodeld in Sources */,
+				27CC2DFD2A881B93000EDB64 /* WelcomeView.swift in Sources */,
 				271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */,
 				27F54F3029FDDC810083B616 /* CartProductCardView.swift in Sources */,
+				27CC2E0B2A8844EA000EDB64 /* TabButton.swift in Sources */,
 				2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */,
 				68A4B1092A196B7500FC8D9D /* CoreDataProvider.swift in Sources */,
 			);
