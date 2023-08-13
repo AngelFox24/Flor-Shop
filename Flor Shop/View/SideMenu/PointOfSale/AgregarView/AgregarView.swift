@@ -14,11 +14,13 @@ struct AgregarView: View {
     @State var editedFields = AgregarViewModel()
     @State var buttonPress = false
     var body: some View {
-        VStack(spacing: 0) {
-            AgregarTopBar(editedFields: $editedFields, buttonPress: $buttonPress)
-            CamposProductoAgregar(editedFields: $editedFields, buttonPress: $buttonPress)
+        NavigationView {
+            VStack(spacing: 0) {
+                AgregarTopBar(editedFields: $editedFields, buttonPress: $buttonPress)
+                CamposProductoAgregar(editedFields: $editedFields, buttonPress: $buttonPress)
+            }
+            .background(Color("color_background"))
         }
-        .background(Color("color_background"))
     }
 }
 
@@ -28,6 +30,7 @@ struct AgregarView_Previews: PreviewProvider {
         let repository = ProductRepositoryImpl(manager: prdManager)
         AgregarView()
             .environmentObject(ProductViewModel(productRepository: repository))
+            .ignoresSafeArea()
     }
 }
 

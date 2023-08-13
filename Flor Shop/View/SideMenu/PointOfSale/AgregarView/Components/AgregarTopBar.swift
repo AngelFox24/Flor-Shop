@@ -17,15 +17,6 @@ struct AgregarTopBar: View {
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
-            // El boton de Limpiar tiene un bug por lo que no pasa a prod
-            /*
-             Button(action: {
-             editedFields.resetValuesFields()
-             productsCoreDataViewModel.setDefaultProduct()
-             }) {
-             CustomButton2(text: "Limpiar")
-             }
-             */
             AgregarViewPopoverHelp()
             Spacer()
             Button(action: {

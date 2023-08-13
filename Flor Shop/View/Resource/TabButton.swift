@@ -10,10 +10,15 @@ import SwiftUI
 struct TabButton: View {
     var tab: MenuTab
     @Binding var selectedTab: MenuTab
-    var animation: Namespace.ID
+    @Binding var showMenu: Bool
+    //var animation: Namespace.ID
     var body: some View {
         Button(action: {
             selectedTab = tab
+            withAnimation(.spring()){
+                showMenu.toggle()
+            }
+            print("Se presiono tab: \(selectedTab.rawValue) y se asigno: \(tab.rawValue)")
         }, label: {
             HStack(spacing: 10, content: {
                 Image(systemName: selectedTab == tab ? tab.iconFill : tab.icon)
@@ -24,6 +29,7 @@ struct TabButton: View {
             .foregroundColor(selectedTab == tab ? Color("color_accent") : Color(.white))
             .padding(.vertical, 12)
             .padding(.horizontal, 10)
+            .frame(maxWidth: getRect().width - 170, alignment: .leading)
             .background(
                 ZStack {
                     if selectedTab == tab {
@@ -40,9 +46,13 @@ struct TabButton: View {
 
 struct TabButton_Previews: PreviewProvider {
     static var previews: some View {
-        @Namespace var animation
-        HStack {
-            TabButton(tab: MenuTab.customersTab, selectedTab: .constant(MenuTab.customersTab), animation: animation)
+        //@Namespace var animation
+        @State var selectedTab: MenuTab = .salesTab
+        @State var showMenu: Bool = false
+        VStack {
+            TabButton(tab: MenuTab.employeesTab, selectedTab: $selectedTab, showMenu: $showMenu)
+            TabButton(tab: MenuTab.pointOfSaleTab, selectedTab: $selectedTab, showMenu: $showMenu)
+            TabButton(tab: MenuTab.settingsTab, selectedTab: $selectedTab, showMenu: $showMenu)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray)

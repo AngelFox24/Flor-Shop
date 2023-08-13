@@ -146,32 +146,32 @@ class LocalProductManager: ProductManager {
         self.filterAttribute = filter
     }
     func getOrderFilter() -> NSSortDescriptor {
-        var sortDescriptor = NSSortDescriptor(key: "nombreProducto", ascending: true)
+        var sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
         switch primaryOrder {
         case .nameAsc:
-            sortDescriptor = NSSortDescriptor(key: "nombreProducto", ascending: true)
+            sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
         case .nameDesc:
-            sortDescriptor = NSSortDescriptor(key: "nombreProducto", ascending: false)
+            sortDescriptor = NSSortDescriptor(key: "productName", ascending: false)
         case .priceAsc:
-            sortDescriptor = NSSortDescriptor(key: "precioUnitario", ascending: true)
+            sortDescriptor = NSSortDescriptor(key: "unitPrice", ascending: true)
         case .priceDesc:
-            sortDescriptor = NSSortDescriptor(key: "precioUnitario", ascending: false)
+            sortDescriptor = NSSortDescriptor(key: "unitPrice", ascending: false)
         case .quantityAsc:
-            sortDescriptor = NSSortDescriptor(key: "cantidadStock", ascending: true)
+            sortDescriptor = NSSortDescriptor(key: "quantityStock", ascending: true)
         case .quantityDesc:
-            sortDescriptor = NSSortDescriptor(key: "cantidadStock", ascending: false)
+            sortDescriptor = NSSortDescriptor(key: "quantityStock", ascending: false)
         }
         return sortDescriptor
     }
     func getFilterAtribute() -> NSPredicate {
-        var filterAtt = NSPredicate(format: "cantidadStock != 0")
+        var filterAtt = NSPredicate(format: "quantityStock != 0")
         switch filterAttribute {
         case .allProducts:
-            filterAtt = NSPredicate(format: "cantidadStock != 0")
+            filterAtt = NSPredicate(format: "quantityStock != 0")
         case .outOfStock:
-            filterAtt = NSPredicate(format: "cantidadStock == 0")
+            filterAtt = NSPredicate(format: "quantityStock == 0")
         case .productWithdrawn:
-            filterAtt = NSPredicate(format: "cantidadStock == 0")
+            filterAtt = NSPredicate(format: "quantityStock == 0")
         }
         return filterAtt
     }

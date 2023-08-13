@@ -11,10 +11,11 @@ import AVFoundation
 
 struct ProductView: View {
     @Binding var selectedTab: Tab
+    @Binding var showMenu: Bool
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                SearchTopBar()
+                SearchTopBar(showMenu: $showMenu)
                 ListaControler(selectedTab: $selectedTab)
             }
         }
@@ -27,7 +28,8 @@ struct HomeView_Previews: PreviewProvider {
         let productRepository = ProductRepositoryImpl(manager: productManager)
         let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let carRepository = CarRepositoryImpl(manager: carManager)
-        ProductView(selectedTab: .constant(.magnifyingglass))
+        @State var showMenu: Bool = false
+        ProductView(selectedTab: .constant(.magnifyingglass), showMenu: $showMenu)
             .environmentObject(ProductViewModel(productRepository: productRepository))
             .environmentObject(CartViewModel(carRepository: carRepository))
     }
@@ -67,7 +69,7 @@ struct ListaControler: View {
                         quantity: producto.qty,
                         unitPrice: producto.unitPrice,
                         url: producto.url,
-                        size: 100.0)
+                        size: 80.0)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                     .listRowBackground(Color("color_background"))

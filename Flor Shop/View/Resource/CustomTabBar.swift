@@ -49,6 +49,7 @@ struct CustomTabBar: View {
                                     .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
                             }
                             .padding(.top, 8)
+                            .padding(.bottom, 60)
                             Spacer()
                         }
                         .frame(maxHeight: .infinity)

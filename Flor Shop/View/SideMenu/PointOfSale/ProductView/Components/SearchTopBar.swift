@@ -14,9 +14,24 @@ struct SearchTopBar: View {
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     @State private var seach: String = ""
+    @Binding var showMenu: Bool
     var body: some View {
         VStack {
             HStack {
+                Button(action: {
+                    withAnimation(.spring()){
+                        showMenu.toggle()
+                    }
+                }, label: {
+                    HStack {
+                        Image("logo")
+                            .resizable()
+                            .scaledToFit()
+                    }
+                    .background(Color("colorlaunchbackground"))
+                    .cornerRadius(10)
+                    .frame(width: 40, height: 40)
+                })
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color("color_accent"))
@@ -105,7 +120,8 @@ struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
         let productRepository = ProductRepositoryImpl(manager: productManager)
-        SearchTopBar()
+        @State var showMenu: Bool = false
+        SearchTopBar(showMenu: $showMenu)
             .environmentObject(ProductViewModel(productRepository: productRepository))
     }
 }
