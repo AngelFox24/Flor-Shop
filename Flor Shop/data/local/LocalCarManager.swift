@@ -21,6 +21,9 @@ protocol CarManager {
 
 class LocalCarManager: CarManager {
     let mainContext: NSManagedObjectContext
+    init(mainContext: NSManagedObjectContext) {
+        self.mainContext = mainContext
+    }
     func saveData() {
         do {
             try self.mainContext.save()

@@ -118,7 +118,7 @@ struct SearchTopBar: View {
 
 struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
         let productRepository = ProductRepositoryImpl(manager: productManager)
         @State var showMenu: Bool = false
         SearchTopBar(showMenu: $showMenu)

@@ -17,6 +17,9 @@ protocol SubsidiaryManager {
 
 class LocalSubsidiaryManager: SubsidiaryManager {
     let mainContext: NSManagedObjectContext
+    init(mainContext: NSManagedObjectContext) {
+        self.mainContext = mainContext
+    }
     func saveData() {
         do {
             try self.mainContext.save()
@@ -25,11 +28,7 @@ class LocalSubsidiaryManager: SubsidiaryManager {
         }
     }
     func rollback() {
-        do {
-            try self.mainContext.rollback()
-        } catch {
-            print("Error al hacer rollback en LocalEmployeeManager: \(error)")
-        }
+        self.mainContext.rollback()
     }
     //C - Create
     func addSubsidiary(subsidiary: Subsidiary) {
@@ -37,7 +36,7 @@ class LocalSubsidiaryManager: SubsidiaryManager {
     }
     //R - Read
     func getSubsidiary(id: UUID) -> Subsidiary {
-        return Subsidiary(idSubsidiary: id, name: "Tienda de Flor", image: ImageUrl(idImageUrl: id, mageUrl: "https://www.ceupe.com/images/easyblog_articles/3625/b2ap3_large_que-es-un-tienda-online.png"))
+        return Subsidiary(id: id, name: "Tienda de Flor", image: ImageUrl(id: id, mageUrl: "https://www.ceupe.com/images/easyblog_articles/3625/b2ap3_large_que-es-un-tienda-online.png"))
     }
     //U - Update
     func updateSubsidiary(subsidiary: Subsidiary) {

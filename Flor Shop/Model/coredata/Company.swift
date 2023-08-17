@@ -7,7 +7,7 @@
 
 import Foundation
 struct Company: Identifiable {
-    var idCompany: UUID
+    var id: UUID
     var companyName: String
     var ruc: String
 }

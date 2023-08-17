@@ -8,7 +8,7 @@
 import Foundation
 
 struct SaleDetail: Identifiable {
-    var idSaleDetail: UUID
+    var id: UUID
     var image: ImageUrl
     var productName: String
     var unitCost: Double

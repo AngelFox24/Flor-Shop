@@ -41,6 +41,14 @@ extension Product {
     }
 }
 
+extension Tb_Manager {
+    func toManager() -> Manager {
+        return Manager(id: idManager ?? UUID(),
+                       name: name ?? "",
+                       lastName: lastName ?? "")
+    }
+}
+
 extension Tb_Product {
     func toProduct() -> Product {
         return Product(id: idProduct ?? UUID(),

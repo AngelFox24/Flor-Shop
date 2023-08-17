@@ -7,8 +7,8 @@
 
 import Foundation
 
-class FirebaseSesionManagement ObservableObject {
-    @Published sesionState = false
+class FirebaseSesionManagement: ObservableObject {
+    @Published var sesionState = false
     
     func logIn(user: String, password: String) {
         if user != "" && password != "" {

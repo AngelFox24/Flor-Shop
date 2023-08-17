@@ -15,6 +15,9 @@ protocol SaleManager {
 
 class LocalSaleManager: SaleManager {
     let mainContext: NSManagedObjectContext
+    init(mainContext: NSManagedObjectContext) {
+        self.mainContext = mainContext
+    }
     func registerSale() -> Bool {
         // Recorremos la lista de detalles del carrito para agregarlo a la venta
         if getListCart().count == 1 {

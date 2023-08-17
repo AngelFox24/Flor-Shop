@@ -65,6 +65,7 @@
         <attribute name="unitPrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toProduct" inverseEntity="Tb_CartDetail"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toProduct" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toSubsidiary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toProduct" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_Sale" representedClassName=".Tb_Sale" syncable="YES" codeGenerationType="class">
         <attribute name="idSale" attributeType="UUID" usesScalarValueType="NO"/>
@@ -93,6 +94,7 @@
         <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toSubsidiary" inverseEntity="Tb_Company"/>
         <relationship name="toEmployee" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toSubsidiary" inverseEntity="Tb_Employee"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toSubsidiary" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toProduct" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toSubsidiary" inverseEntity="Tb_Product"/>
         <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toSubsidiary" inverseEntity="Tb_Sale"/>
     </entity>
 </model>

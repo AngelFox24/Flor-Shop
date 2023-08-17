@@ -8,6 +8,6 @@
 import Foundation
 
 struct ImageUrl: Identifiable {
-    var idImageUrl: UUID
+    var id: UUID
     var mageUrl: String
 }

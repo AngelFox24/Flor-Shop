@@ -69,7 +69,7 @@ struct MenuView: View {
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        let prdManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+        let prdManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
         let repository = ProductRepositoryImpl(manager: prdManager)
         MenuView()
             .environmentObject(ProductViewModel(productRepository: repository))

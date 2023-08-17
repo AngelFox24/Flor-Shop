@@ -21,6 +21,9 @@ class LocalProductManager: ProductManager {
     var primaryOrder: PrimaryOrder = .nameAsc
     var filterAttribute: ProductsFilterAttributes = .allProducts
     let mainContext: NSManagedObjectContext
+    init(mainContext: NSManagedObjectContext) {
+        self.mainContext = mainContext
+    }
     func getListProducts() -> [Product] {
         var productList: [Tb_Product] = []
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()

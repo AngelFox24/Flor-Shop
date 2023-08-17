@@ -8,7 +8,7 @@
 import Foundation
 
 struct Customer: Identifiable {
-    var idCustomer: UUID
+    var id: UUID
     var name: String
     var lastName: String
     var image: ImageUrl

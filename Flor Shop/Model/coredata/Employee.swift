@@ -8,7 +8,7 @@
 import Foundation
 
 struct Employee: Identifiable {
-    var idEmployee: UUID
+    var id: UUID
     var name: String
     var lastName: String
     var role: String

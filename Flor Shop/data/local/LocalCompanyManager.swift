@@ -17,6 +17,9 @@ protocol CompanyManager {
 
 class LocalCompanyManager: CompanyManager {
     let mainContext: NSManagedObjectContext
+    init(mainContext: NSManagedObjectContext) {
+        self.mainContext = mainContext
+    }
     func saveData() {
         do {
             try self.mainContext.save()
@@ -25,11 +28,7 @@ class LocalCompanyManager: CompanyManager {
         }
     }
     func rollback() {
-        do {
-            try self.mainContext.rollback()
-        } catch {
-            print("Error al hacer rollback en LocalEmployeeManager: \(error)")
-        }
+        self.mainContext.rollback()
     }
     //C - Create
     func addCompany(company: Company) {
@@ -37,7 +36,7 @@ class LocalCompanyManager: CompanyManager {
     }
     //R - Read
     func getCompany(id: UUID) -> Company {
-        return Company(idCompany: id, companyName: "MrProCompany", ruc: "2512115125")
+        return Company(id: id, companyName: "MrProCompany", ruc: "2512115125")
     }
     //U - Update
     func updateCompany(company: Company) {

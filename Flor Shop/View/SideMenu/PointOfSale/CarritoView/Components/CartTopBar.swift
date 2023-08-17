@@ -69,9 +69,9 @@ struct CartTopBar: View {
 }
 struct CartTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+        let carManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
         let carRepository = CarRepositoryImpl(manager: carManager)
-        let saleManager = LocalSaleManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+        let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
         let salesRepository = SaleRepositoryImpl(manager: saleManager)
         CartTopBar()
             .environmentObject(CartViewModel(carRepository: carRepository))

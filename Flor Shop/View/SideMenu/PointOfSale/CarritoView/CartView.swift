@@ -22,7 +22,7 @@ struct CartView: View {
 
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+        let carManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
         let carRepository = CarRepositoryImpl(manager: carManager)
         CartView(selectedTab: .constant(.cart))
             .environmentObject(CartViewModel(carRepository: carRepository))

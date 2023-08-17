@@ -8,7 +8,7 @@
 import Foundation
 
 struct Subsidiary: Identifiable {
-    var idSubsidiary: UUID
+    var id: UUID
     var name: String
     var image: ImageUrl
 }

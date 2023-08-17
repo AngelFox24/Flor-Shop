@@ -7,7 +7,7 @@
 
 import Foundation
 struct Manager: Identifiable {
-    var idManager: UUID
+    var id: UUID
     var name: String
     var lastName: String
 }
