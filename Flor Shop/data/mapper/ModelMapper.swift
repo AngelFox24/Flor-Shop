@@ -10,6 +10,7 @@ import CoreData
 
 extension Product {
     func toNewProductEntity(context: NSManagedObjectContext) -> Tb_Product {
+        //Esta mal, no cumple con mi estandar
         let newProduct = Tb_Product(context: context)
         newProduct.idProduct = id
         newProduct.productName = name

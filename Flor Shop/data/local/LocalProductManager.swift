@@ -18,12 +18,9 @@ protocol ProductManager {
 }
 
 class LocalProductManager: ProductManager {
-    let productsContainer: NSPersistentContainer
     var primaryOrder: PrimaryOrder = .nameAsc
     var filterAttribute: ProductsFilterAttributes = .allProducts
-    init(containerBDFlor: NSPersistentContainer) {
-        self.productsContainer = containerBDFlor
-    }
+    let mainContext: NSManagedObjectContext
     func getListProducts() -> [Product] {
         var productList: [Tb_Product] = []
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
@@ -32,7 +29,7 @@ class LocalProductManager: ProductManager {
         let sortDescriptor = getOrderFilter()
         request.sortDescriptors = [sortDescriptor]
         do {
-            productList = try self.productsContainer.viewContext.fetch(request)
+            productList = try self.mainContext.fetch(request)
         } catch let error {
             print("Error fetching. \(error)")
         }
@@ -46,7 +43,7 @@ class LocalProductManager: ProductManager {
            product.isUnitPriceValid(),
            product.isExpirationDateValid(),
            product.isURLValid() {
-            if let productInContext = product.toProductEntity(context: productsContainer.viewContext) {
+            if let productInContext = product.toProductEntity(context: mainContext) {
                 productInContext.productName = product.name
                 productInContext.quantityStock = product.qty
                 productInContext.unitCost = product.unitCost
@@ -55,7 +52,7 @@ class LocalProductManager: ProductManager {
                 // TODO: asignar imagen correctamente
                 //productInContext.toImageUrl = product.url
             } else {
-                _ = product.toNewProductEntity(context: productsContainer.viewContext)
+                _ = product.toNewProductEntity(context: mainContext)
             }
             saveData()
             message = "Success"
@@ -78,7 +75,7 @@ class LocalProductManager: ProductManager {
         var cart: Tb_Cart?
         let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
-            cart = try self.productsContainer.viewContext.fetch(request).first
+            cart = try self.mainContext.fetch(request).first
         } catch let error {
             print("Error fetching. \(error)")
         }
@@ -114,7 +111,7 @@ class LocalProductManager: ProductManager {
     }
     func saveData () {
         do {
-            try self.productsContainer.viewContext.save()
+            try self.mainContext.save()
         } catch {
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
@@ -131,7 +128,7 @@ class LocalProductManager: ProductManager {
         fetchRequest.sortDescriptors = [sortDescriptor]
         do {
             // Ejecutar la consulta y obtener los resultados
-            let productosBD = try self.productsContainer.viewContext.fetch(fetchRequest)
+            let productosBD = try self.mainContext.fetch(fetchRequest)
             products = productosBD.mapToListProduct()
             return products
         } catch {

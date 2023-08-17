@@ -20,13 +20,10 @@ protocol CarManager {
 }
 
 class LocalCarManager: CarManager {
-    let cartContainer: NSPersistentContainer
-    init(containerBDFlor: NSPersistentContainer) {
-        self.cartContainer = containerBDFlor
-    }
+    let mainContext: NSManagedObjectContext
     func saveData() {
         do {
-            try self.cartContainer.viewContext.save()
+            try self.mainContext.save()
         } catch {
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
@@ -35,9 +32,9 @@ class LocalCarManager: CarManager {
         var cart: Tb_Cart?
         let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
-            cart = try self.cartContainer.viewContext.fetch(request).first
+            cart = try self.mainContext.fetch(request).first
             if cart == nil {
-                cart = Tb_Cart(context: self.cartContainer.viewContext)
+                cart = Tb_Cart(context: self.mainContext)
                 cart!.idCart = UUID()
                 cart!.total = 0.0
                 saveData()
@@ -51,7 +48,7 @@ class LocalCarManager: CarManager {
         var cart: Tb_Cart?
         let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
-            cart = try self.cartContainer.viewContext.fetch(request).first
+            cart = try self.mainContext.fetch(request).first
         } catch let error {
             print("Error al recuperar el carrito de productos \(error)")
         }
@@ -70,8 +67,7 @@ class LocalCarManager: CarManager {
     }
     func addProductToCart(productIn: Product) -> Bool {
         var success: Bool = false
-        let context = self.cartContainer.viewContext
-        guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: context), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
+        guard let cart = getCartEntity(), let product = productIn.toProductEntity(context: mainContext), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
             return success
         }
         // Buscamos si existe este producto en el carrito
@@ -83,7 +79,7 @@ class LocalCarManager: CarManager {
             // Validamos si tiene sificiente Stock
             if product.quantityStock >= 1 {
                 // Crear el objeto detalleCarrito y establecer sus propiedades
-                let newCarDetail = Tb_CartDetail(context: context)
+                let newCarDetail = Tb_CartDetail(context: mainContext)
                 newCarDetail.idCartDetail = UUID() // Genera un nuevo UUID para el detalle del carrito
                 // detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
                 newCarDetail.quantityAdded = 1

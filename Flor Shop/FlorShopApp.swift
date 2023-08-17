@@ -12,17 +12,19 @@ import Firebase
 @main
 struct FlorShopApp: App {
     init() {
-            FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
-        }
+        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
+    }
     var body: some Scene {
         WindowGroup {
-            let productManager = LocalProductManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
+            //Definimos contexto para todos
+            let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
+            let cartManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
+            let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
+            
             let productRepository = ProductRepositoryImpl(manager: productManager)
             let productsCoreData = ProductViewModel(productRepository: productRepository)
-            let cartManager = LocalCarManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let cartCoreData = CartViewModel(carRepository: cartRepository)
-            let saleManager = LocalSaleManager(containerBDFlor: CoreDataProvider.shared.persistContainer)
             let salesRepository = SaleRepositoryImpl(manager: saleManager)
             let salesCoreData = SalesViewModel(saleRepository: salesRepository)
             let versionCheck = VersionCheck()

@@ -14,10 +14,7 @@ protocol SaleManager {
 }
 
 class LocalSaleManager: SaleManager {
-    let salesContainer: NSPersistentContainer
-    init(containerBDFlor: NSPersistentContainer) {
-        self.salesContainer = containerBDFlor
-    }
+    let mainContext: NSManagedObjectContext
     func registerSale() -> Bool {
         // Recorremos la lista de detalles del carrito para agregarlo a la venta
         if getListCart().count == 1 {
@@ -29,16 +26,16 @@ class LocalSaleManager: SaleManager {
         print("Se procede a hacer los calculos para registrar venta")
         if let cartDetailList = getListCart().first!.toCartDetail as? Set<Tb_CartDetail> {
             // Creamos un nuevo objeto venta
-            let newSale = Tb_Sale(context: salesContainer.viewContext)
+            let newSale = Tb_Sale(context: mainContext)
             newSale.idSale = UUID()
             newSale.saleDate = Date()
             newSale.total = getListCart().first!.total // Asignamos el mismo total del carrito a la venta
             for cartDetail in cartDetailList {
                 /*
                 for productInList in cartDetail {
-                    if let productInContext = salesContainer.viewContext.object(with: productInList) as? Tb_Product {
+                    if let productInContext = mainContext.object(with: productInList) as? Tb_Product {
                         // Crear el objeto detalleCarrito y establecer sus propiedades
-                        let saleDetail = Tb_SaleDetail(context: salesContainer.viewContext)
+                        let saleDetail = Tb_SaleDetail(context: mainContext)
                         saleDetail.idSaleDetail = UUID() // Genera un nuevo UUID para el detalle de la venta
                         saleDetail.quantitySold = cartDetail.quantityAdded // Asignamos la misma cantidad del producto del carrito
                         saleDetail.subtotal = cartDetail.subtotal // Asignamos el mismo subtotal del producto del carrito
@@ -60,7 +57,7 @@ class LocalSaleManager: SaleManager {
         var cart: [Tb_Cart] = []
             let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
             do {
-                cart = try self.salesContainer.viewContext.fetch(request)
+                cart = try self.mainContext.fetch(request)
             } catch let error {
                 print("Error fetching. \(error)")
             }
@@ -70,7 +67,7 @@ class LocalSaleManager: SaleManager {
         var sales: [Tb_Sale] = []
             let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
             do {
-                sales = try self.salesContainer.viewContext.fetch(request)
+                sales = try self.mainContext.fetch(request)
             } catch let error {
                 print("Error fetching. \(error)")
             }
@@ -78,7 +75,7 @@ class LocalSaleManager: SaleManager {
     }
     func saveData () {
         do {
-            try self.salesContainer.viewContext.save()
+            try self.mainContext.save()
         } catch {
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
