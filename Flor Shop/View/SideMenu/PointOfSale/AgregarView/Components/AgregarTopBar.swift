@@ -10,9 +10,9 @@ import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var companyViewModel: CompanyViewModel
+    @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @Binding var editedFields: AgregarViewModel
     @Binding var buttonPress: Bool
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
@@ -20,15 +20,14 @@ struct AgregarTopBar: View {
             AgregarViewPopoverHelp()
             Spacer()
             Button(action: {
-                if productsCoreDataViewModel.addProduct() {
+                if agregarViewModel.addProduct(subsidiary: companyViewModel.subsidiary ?? Subsidiary.getDummySubsidiary()) {
                     print("Se agrego un producto exitosamente")
                     carritoCoreDataViewModel.updateCartTotal()
-                    editedFields.resetValuesFields()
+                    agregarViewModel.resetValuesFields()
                     playSound(named: "Success1")
                 } else {
                     buttonPress = true
-                    editedFields.editedFields.imageURLError = "lol"
-                    editedFields.fieldsTrue()
+                    agregarViewModel.fieldsTrue()
                     playSound(named: "Fail1")
                     print("No se pudo agregar correctamente")
                 }
@@ -59,6 +58,6 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        AgregarTopBar(editedFields: .constant(AgregarViewModel()), buttonPress: .constant(false))
+        AgregarTopBar(buttonPress: .constant(false))
     }
 }

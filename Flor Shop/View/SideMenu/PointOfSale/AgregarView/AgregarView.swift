@@ -11,13 +11,13 @@ import UniformTypeIdentifiers
 import SafariServices
 
 struct AgregarView: View {
-    @State var editedFields = AgregarViewModel()
+    //@State var editedFields = AgregarViewModel()
     @State var buttonPress = false
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                AgregarTopBar(editedFields: $editedFields, buttonPress: $buttonPress)
-                CamposProductoAgregar(editedFields: $editedFields, buttonPress: $buttonPress)
+                AgregarTopBar(buttonPress: $buttonPress)
+                CamposProductoAgregar(buttonPress: $buttonPress)
             }
             .background(Color("color_background"))
         }
@@ -29,8 +29,9 @@ struct AgregarView_Previews: PreviewProvider {
         let prdManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
         let repository = ProductRepositoryImpl(manager: prdManager)
         AgregarView()
-            .environmentObject(ProductViewModel(productRepository: repository))
-            .ignoresSafeArea()
+           .environmentObject(ProductViewModel(productRepository: repository))
+           .environmentObject(AgregarViewModel(productRepository: repository))
+            //.ignoresSafeArea()
     }
 }
 
@@ -165,7 +166,7 @@ struct CampoIndividualDouble: View {
 }
 
 struct CampoIndividualInt: View {
-    @Binding var contenido: Int64
+    @Binding var contenido: Int
     @State var value: String = "0"
     @State private var oldValue: String = ""
     @FocusState var focus: Bool
@@ -195,7 +196,7 @@ struct CampoIndividualInt: View {
                             value = oldValue
                         } else {
                             if let valueDouble: Int = Int(value) {
-                                contenido = Int64(valueDouble)
+                                contenido = valueDouble
                             } else {
                                 value = oldValue
                             }
@@ -204,7 +205,7 @@ struct CampoIndividualInt: View {
                 })
                 .onChange(of: value, perform: { _ in
                     if let valueDouble: Int = Int(value) {
-                        contenido = Int64(valueDouble)
+                        contenido = valueDouble
                     }
                 })
                 .onChange(of: contenido, perform: { _ in
@@ -245,7 +246,7 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @Binding var editedFields: AgregarViewModel
+    @EnvironmentObject var agregarViewModel: AgregarViewModel
     @Binding var buttonPress: Bool
     var sizeCampo: CGFloat = 200
     var body: some View {
@@ -306,7 +307,7 @@ struct CamposProductoAgregar: View {
                             Spacer()
                             */
                             HStack {
-                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $editedFields.editedFields.productEdited)
+                                CampoIndividual(contenido: $productsCoreDataViewModel.temporalProduct.name, edited: $agregarViewModel.editedFields.productEdited)
                             }
                             Button(action: {
                                 if productsCoreDataViewModel.temporalProduct.name != "" {
@@ -323,7 +324,7 @@ struct CamposProductoAgregar: View {
                             })
                         }
                 }
-                if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && editedFields.editedFields.productEdited {
+                if !productsCoreDataViewModel.temporalProduct.isProductNameValid() && agregarViewModel.editedFields.productEdited {
                     ErrorMessageText(message: "Nombre no válido")
                         .padding(.top, 6)
                 }
@@ -334,14 +335,14 @@ struct CamposProductoAgregar: View {
                 HStack {
                     HStack {
                         HStack {
-                            CampoIndividualURL(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $editedFields.editedFields.imageURLEdited)
+                            CampoIndividualURL(contenido: $productsCoreDataViewModel.temporalProduct.url, edited: $agregarViewModel.editedFields.imageURLEdited)
                         }
                         Spacer()
                         Button(action: {
                             if productsCoreDataViewModel.temporalProduct.name != "" {
                                 productsCoreDataViewModel.temporalProduct.url = pasteFromClipboard()
                             } else {
-                                editedFields.urlEdited()
+                                agregarViewModel.urlEdited()
                             }
                         }, label: {
                             Text("Pegar Imagen")
@@ -354,10 +355,10 @@ struct CamposProductoAgregar: View {
                         })
                     }
                 }
-                if !productsCoreDataViewModel.temporalProduct.isURLValid() && productsCoreDataViewModel.temporalProduct.name != "" && editedFields.editedFields.imageURLEdited {
+                if !productsCoreDataViewModel.temporalProduct.isURLValid() && productsCoreDataViewModel.temporalProduct.name != "" && agregarViewModel.editedFields.imageURLEdited {
                     ErrorMessageText(message: "Pega la imagen copiada")
                         .padding(.top, 6)
-                } else if !productsCoreDataViewModel.temporalProduct.isURLValid() && editedFields.editedFields.imageURLEdited {
+                } else if !productsCoreDataViewModel.temporalProduct.isURLValid() && agregarViewModel.editedFields.imageURLEdited {
                     ErrorMessageText(message: "Ingresa un nombre de producto")
                         .padding(.top, 6)
                 }
@@ -373,7 +374,7 @@ struct CamposProductoAgregar: View {
                             .foregroundColor(.black)
                         Spacer()
                         HStack {
-                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $editedFields.editedFields.quantityEdited)
+                            CampoIndividualInt(contenido: $productsCoreDataViewModel.temporalProduct.qty, edited: $agregarViewModel.editedFields.quantityEdited)
                             /*
                             Menu {
                                 /*
@@ -400,7 +401,7 @@ struct CamposProductoAgregar: View {
                         }
                     }
                 }
-                if !productsCoreDataViewModel.temporalProduct.isQuantityValid() && editedFields.editedFields.quantityEdited {
+                if !productsCoreDataViewModel.temporalProduct.isQuantityValid() && agregarViewModel.editedFields.quantityEdited {
                     ErrorMessageText(message: "Cantidad Incorrecta")
                         .padding(.top, 18)
                 }
@@ -457,8 +458,8 @@ struct CamposProductoAgregar: View {
                 .padding(.top, 15)
                 HStack(spacing: 0) {
                     VStack {
-                        CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost, edited: $editedFields.editedFields.unitCostEdited, action: productsCoreDataViewModel.calcProfitMargin)
-                        if !productsCoreDataViewModel.temporalProduct.isUnitCostValid() && editedFields.editedFields.unitCostEdited {
+                        CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitCost, edited: $agregarViewModel.editedFields.unitCostEdited, action: productsCoreDataViewModel.calcProfitMargin)
+                        if !productsCoreDataViewModel.temporalProduct.isUnitCostValid() && agregarViewModel.editedFields.unitCostEdited {
                             ErrorMessageText(message: "Costo Unitario Incorrecto")
                                 .padding(.top, 6)
                         }
@@ -469,8 +470,8 @@ struct CamposProductoAgregar: View {
                     }
                     Spacer()
                     VStack {
-                        CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice, edited: $editedFields.editedFields.unitPriceEdited, action: productsCoreDataViewModel.calcProfitMargin)
-                        if !productsCoreDataViewModel.temporalProduct.isUnitPriceValid() && editedFields.editedFields.unitPriceEdited {
+                        CampoIndividualDouble(contenido: $productsCoreDataViewModel.temporalProduct.unitPrice, edited: $agregarViewModel.editedFields.unitPriceEdited, action: productsCoreDataViewModel.calcProfitMargin)
+                        if !productsCoreDataViewModel.temporalProduct.isUnitPriceValid() && agregarViewModel.editedFields.unitPriceEdited {
                             ErrorMessageText(message: "Precio Unitario Incorrecto")
                                 .padding(.top, 6)
                         }

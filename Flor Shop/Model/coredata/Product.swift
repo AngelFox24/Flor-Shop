@@ -19,18 +19,18 @@ extension Double {
 struct Product: Identifiable {
     var id: UUID
     var name: String
-    var qty: Int64
+    var qty: Int
     var unitCost: Double
     var unitPrice: Double
-    var expirationDate: Date
+    var expirationDate: Date?
     var url: String
     var totalCost: Double
     var profitMargin: Double
     var keyWords: String
-    init(id: UUID, name: String, qty: Int64, unitCost: Double, unitPrice: Double, expirationDate: Date, url: String) {
+    init(id: UUID, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, url: String) {
         self.id = id
         self.name = name
-        self.qty = qty
+        self.qty = Int(qty)
         self.unitCost = unitCost
         self.unitPrice = unitPrice
         self.expirationDate = expirationDate
@@ -39,6 +39,7 @@ struct Product: Identifiable {
         self.profitMargin = 0
         self.keyWords = "Producto"
     }
+    //Esta mal
     init () {
         self.id = UUID()
         self.name = ""

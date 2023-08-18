@@ -9,7 +9,7 @@ import Foundation
 
 struct CartDetail: Identifiable {
     let id: UUID
-    let quantity: Int64
+    let quantity: Int
     let subtotal: Double
     let product: Product
 }

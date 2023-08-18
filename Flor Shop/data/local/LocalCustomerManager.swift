@@ -36,7 +36,7 @@ class LocalCustomerManager: CustomerManager {
     }
     //R - Read
     func getCustomer(id: UUID) -> Customer {
-        return Customer(id: id, name: "Cindy", lastName: "Jarpi Menestra", image: ImageUrl(id: id, mageUrl: "https://yt3.googleusercontent.com/ytc/AOPolaRY4C6rIYTttVCU1PvNZis2qljWBq7Y46D9TG1TpA=s900-c-k-c0x00ffffff-no-rj"), active: true, creditLimit: 2000.0)
+        return Customer(id: id, name: "Cindy", lastName: "Jarpi Menestra", image: ImageUrl(id: id, imageUrl: "https://yt3.googleusercontent.com/ytc/AOPolaRY4C6rIYTttVCU1PvNZis2qljWBq7Y46D9TG1TpA=s900-c-k-c0x00ffffff-no-rj"), active: true, creditLimit: 2000.0)
     }
     //U - Update
     func updateCustomer(customer: Customer) {

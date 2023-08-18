@@ -16,7 +16,7 @@
     <entity name="Tb_Company" representedClassName=".Tb_Company" syncable="YES" codeGenerationType="class">
         <attribute name="companyName" attributeType="String"/>
         <attribute name="idCompany" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="ruc" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ruc" optional="YES" attributeType="String"/>
         <relationship name="toManager" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Manager" inverseName="toCompany" inverseEntity="Tb_Manager"/>
         <relationship name="toSubsidiary" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
     </entity>

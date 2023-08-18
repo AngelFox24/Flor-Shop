@@ -36,7 +36,7 @@ class LocalEmployeeManager: EmployeeManager {
     }
     //R - Read
     func getEmployee(id: UUID) -> Employee {
-        return Employee(id: id, name: "Angel", lastName: "Curi Laurente", role: "Vendedor", image: ImageUrl(id: id, mageUrl: "https://media.licdn.com/dms/image/D4E03AQGi8lmT8Kk_sQ/profile-displayphoto-shrink_800_800/0/1689080795681?e=2147483647&v=beta&t=2C0ItSYPqY2jrq6UKMBuuDObrYl5nQ-LNp-9VUqUNa0"), active: true)
+        return Employee(id: id, name: "Angel", lastName: "Curi Laurente", role: "Vendedor", image: ImageUrl(id: id, imageUrl: "https://media.licdn.com/dms/image/D4E03AQGi8lmT8Kk_sQ/profile-displayphoto-shrink_800_800/0/1689080795681?e=2147483647&v=beta&t=2C0ItSYPqY2jrq6UKMBuuDObrYl5nQ-LNp-9VUqUNa0"), active: true)
     }
     //U - Update
     func updateEmployee(employee: Employee) {

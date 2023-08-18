@@ -9,8 +9,8 @@ import Foundation
 import CoreData
 
 protocol CompanyRepository {
-    func addCompany(company: Company)
-    func getCompany(id: UUID) -> Company
+    func addCompany(company: Company, manager: Manager)
+    func getCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
 }
@@ -22,12 +22,12 @@ class CompanyRepositoryImpl: CompanyRepository {
         self.manager = manager
     }
     //C - Create
-    func addCompany(company: Company) {
-        self.manager.addCompany(company: company)
+    func addCompany(company: Company, manager: Manager) {
+        self.manager.addCompany(company: company, manager: manager)
     }
     //R - Read
-    func getCompany(id: UUID) -> Company {
-        return self.manager.getCompany(id: id)
+    func getCompany() -> Company? {
+        return self.manager.getCompany()
     }
     //U - Update
     func updateCompany(company: Company) {

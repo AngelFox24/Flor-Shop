@@ -12,8 +12,8 @@ import SwiftUI
 struct ProductCardView: View {
     let id: UUID
     let name: String
-    let expirationDate: Date
-    let quantity: Int64
+    let expirationDate: Date?
+    let quantity: Int
     let unitPrice: Double
     let url: String
     let size: CGFloat

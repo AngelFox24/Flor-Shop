@@ -14,7 +14,7 @@ extension Product {
         let newProduct = Tb_Product(context: context)
         newProduct.idProduct = id
         newProduct.productName = name
-        newProduct.quantityStock = qty
+        newProduct.quantityStock = Int64(qty)
         newProduct.unitCost = unitCost
         newProduct.unitPrice = unitPrice
         newProduct.expirationDate = expirationDate
@@ -41,6 +41,51 @@ extension Product {
     }
 }
 
+extension Manager {
+    func toManagerEntity(context: NSManagedObjectContext) -> Tb_Manager? {
+        var managerEntity: Tb_Manager?
+        let request: NSFetchRequest<Tb_Manager> = Tb_Manager.fetchRequest()
+        let filterAtt = NSPredicate(format: "idManager == %@ AND name == %@ AND lastName == %@", id.uuidString, name, lastName)
+        request.predicate = filterAtt
+        do {
+            managerEntity = try context.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return managerEntity
+    }
+}
+
+extension Company {
+    func toCompanyEntity(context: NSManagedObjectContext) -> Tb_Company? {
+        var companyEntity: Tb_Company?
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        let filterAtt = NSPredicate(format: "idCompany == %@ AND companyName == %@ AND ruc == %@", id.uuidString, companyName, ruc)
+        request.predicate = filterAtt
+        do {
+            companyEntity = try context.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return companyEntity
+    }
+}
+
+extension ImageUrl {
+    func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
+        var imageUrlEntity: Tb_ImageUrl?
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let filterAtt = NSPredicate(format: "idImageUrl == %@ AND imageUrl == %@ AND ruc == %@", id.uuidString, imageUrl)
+        request.predicate = filterAtt
+        do {
+            imageUrlEntity = try context.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return imageUrlEntity
+    }
+}
+
 extension Tb_Manager {
     func toManager() -> Manager {
         return Manager(id: idManager ?? UUID(),
@@ -49,11 +94,27 @@ extension Tb_Manager {
     }
 }
 
+extension Tb_Company {
+    func toCompany() -> Company {
+        return Company(id: idCompany ?? UUID(),
+                       companyName: companyName ?? "",
+                       ruc: ruc ?? "")
+    }
+}
+
+extension Tb_Subsidiary {
+    func toSubsidiary() -> Subsidiary {
+        return Subsidiary(id: idSubsidiary ?? UUID(),
+                          name: name ?? "",
+                          image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(), imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl))
+    }
+}
+
 extension Tb_Product {
     func toProduct() -> Product {
         return Product(id: idProduct ?? UUID(),
                        name: productName ?? "",
-                       qty: quantityStock,
+                       qty: Int(quantityStock),
                        unitCost: unitCost,
                        unitPrice: unitPrice,
                        expirationDate: expirationDate ?? Date(),
@@ -82,7 +143,7 @@ extension Tb_CartDetail {
     func mapToCarDetail() -> CartDetail {
         return CartDetail(
             id: idCartDetail ?? UUID(),
-            quantity: quantityAdded,
+            quantity: Int(quantityAdded),
             subtotal: subtotal,
             product: toProduct?.toProduct() ?? Product())
     }

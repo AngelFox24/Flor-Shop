@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol ProductRepository {
-    func saveProduct(product: Product) -> String
+    func saveProduct(product: Product, subsidiary: Subsidiary) -> String
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
     func filterProducts(word: String) -> [Product]
@@ -23,9 +23,9 @@ public class ProductRepositoryImpl: ProductRepository {
     init(manager: ProductManager) {
         self.manager = manager
     }
-    func saveProduct(product: Product) -> String {
+    func saveProduct(product: Product, subsidiary: Subsidiary) -> String {
         // add to remote logic
-        return manager.saveProduct(product: product)
+        return manager.saveProduct(product: product, subsidiary: subsidiary)
     }
     func getListProducts() -> [Product] {
         // add to remote logic

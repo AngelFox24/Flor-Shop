@@ -35,17 +35,19 @@ struct FlorShopApp: App {
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let salesRepository = SaleRepositoryImpl(manager: saleManager)
             //ViewModels
-            let productsCoreData = ProductViewModel(productRepository: productRepository)
-            let cartCoreData = CartViewModel(carRepository: cartRepository)
-            let salesCoreData = SalesViewModel(saleRepository: salesRepository)
-            let companyCoreData = CompanyViewModel(managerRepository: managerRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
+            let agregarViewModel = AgregarViewModel(productRepository: productRepository)
+            let productsViewModel = ProductViewModel(productRepository: productRepository)
+            let cartViewModel = CartViewModel(carRepository: cartRepository)
+            let salesViewModel = SalesViewModel(saleRepository: salesRepository)
+            let companyViewModel = CompanyViewModel(managerRepository: managerRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
             let versionCheck = VersionCheck()
             MenuView()
-                .environmentObject(productsCoreData)
-                .environmentObject(cartCoreData)
-                .environmentObject(salesCoreData)
+                .environmentObject(agregarViewModel)
+                .environmentObject(productsViewModel)
+                .environmentObject(cartViewModel)
+                .environmentObject(salesViewModel)
                 .environmentObject(versionCheck)
-                .environmentObject(companyCoreData)
+                .environmentObject(companyViewModel)
         }
     }
 }

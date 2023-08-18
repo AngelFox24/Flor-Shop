@@ -65,7 +65,7 @@ class LocalManagerEntityManager: ManagerEntityManager {
     func existManager(manager: Manager) -> Bool {
         var managerEntity: Tb_Manager?
         let request: NSFetchRequest<Tb_Manager> = Tb_Manager.fetchRequest()
-        var filterAtt = NSPredicate(format: "name == %@ AND lastName == %@", manager.name, manager.lastName)
+        let filterAtt = NSPredicate(format: "name == %@ AND lastName == %@", manager.name, manager.lastName)
         request.predicate = filterAtt
         do {
             managerEntity = try self.mainContext.fetch(request).first

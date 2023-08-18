@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol ProductManager {
-    func saveProduct(product: Product) -> String
+    func saveProduct(product: Product, subsidiary: Subsidiary) -> String
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
     func filterProducts(word: String) -> [Product]
@@ -38,7 +38,7 @@ class LocalProductManager: ProductManager {
         }
         return productList.mapToListProduct()
     }
-    func saveProduct(product: Product) -> String {
+    func saveProduct(product: Product, subsidiary: Subsidiary) -> String {
         var message = ""
         if product.isProductNameValid(),
            product.isQuantityValid(),
@@ -48,7 +48,7 @@ class LocalProductManager: ProductManager {
            product.isURLValid() {
             if let productInContext = product.toProductEntity(context: mainContext) {
                 productInContext.productName = product.name
-                productInContext.quantityStock = product.qty
+                productInContext.quantityStock = Int64(product.qty)
                 productInContext.unitCost = product.unitCost
                 productInContext.expirationDate = product.expirationDate
                 productInContext.unitPrice = product.unitPrice

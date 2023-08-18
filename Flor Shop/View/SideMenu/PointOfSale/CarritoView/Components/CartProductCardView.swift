@@ -16,7 +16,7 @@ struct CartProductCardView: View {
     let productName: String
     let product: Product
     let productUnitPrice: Double
-    let carQuantity: Int64
+    let carQuantity: Int
     let size: CGFloat
     var decreceProductAmount: (Product) -> Void
     var increaceProductAmount: (Product) -> Void

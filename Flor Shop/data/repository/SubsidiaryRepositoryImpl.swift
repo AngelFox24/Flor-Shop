@@ -9,8 +9,8 @@ import Foundation
 import CoreData
 
 protocol SubsidiaryRepository {
-    func addSubsidiary(subsidiary: Subsidiary)
-    func getSubsidiary(id: UUID) -> Subsidiary
+    func addSubsidiary(subsidiary: Subsidiary, company: Company)
+    func getSubsidiary() -> Subsidiary?
     func updateSubsidiary(subsidiary: Subsidiary)
     func deleteSubsidiary(subsidiary: Subsidiary)
 }
@@ -22,12 +22,12 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository {
         self.manager = manager
     }
     //C - Create
-    func addSubsidiary(subsidiary: Subsidiary) {
-        self.manager.addSubsidiary(subsidiary: subsidiary)
+    func addSubsidiary(subsidiary: Subsidiary, company: Company) {
+        self.manager.addSubsidiary(subsidiary: subsidiary, company: company)
     }
     //R - Read
-    func getSubsidiary(id: UUID) -> Subsidiary {
-        return self.manager.getSubsidiary(id: id)
+    func getSubsidiary() -> Subsidiary? {
+        return self.manager.getSubsidiary()
     }
     //U - Update
     func updateSubsidiary(subsidiary: Subsidiary) {

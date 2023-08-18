@@ -24,6 +24,7 @@ class ProductViewModel: ObservableObject {
         temporalProduct = Product()
         // print("cant: \(temporalProduct.qty) tipe: \()")
     }
+    /*
     func addProduct() -> Bool {
         let result = productRepository.saveProduct(product: temporalProduct)
         if result == "Success" {
@@ -36,6 +37,7 @@ class ProductViewModel: ObservableObject {
             return false
         }
     }
+     */
     func reduceStock() -> Bool {
         let success = productRepository.reduceStock()
         fetchProducts()
