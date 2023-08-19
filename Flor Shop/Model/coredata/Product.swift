@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import CoreGraphics
-import ImageIO
 
 extension Double {
     func rounded(toPlaces places: Int) -> Double {
@@ -86,41 +84,5 @@ struct Product: Identifiable {
             return false
         }
         return true
-    }
-    func validateImageURL(urlString: String, completion: @escaping (Bool) -> Void) {
-        let maxSizeInKB: Int = 10
-        let maxResolutionInMP: Int = 10
-        guard let url = URL(string: urlString) else {
-            completion(false)
-            return
-        }
-        let session = URLSession.shared
-        let task = session.dataTask(with: url) { (data, response, error) in
-            guard error == nil, let data = data else {
-                completion(false)
-                return
-            }
-            guard let mimeType = response?.mimeType, mimeType.hasPrefix("image") else {
-                completion(false)
-                return
-            }
-            let fileSize = data.count
-            if fileSize > maxSizeInKB * 1024 {
-                completion(false)
-                return
-            }
-            if let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
-               let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
-               let pixelWidth = properties[kCGImagePropertyPixelWidth] as? Int,
-               let pixelHeight = properties[kCGImagePropertyPixelHeight] as? Int {
-                let megapixels = (pixelWidth * pixelHeight) / (1_000_000)
-                if megapixels > maxResolutionInMP {
-                    completion(false)
-                    return
-                }
-            }
-            completion(true)
-        }
-        task.resume()
     }
 }

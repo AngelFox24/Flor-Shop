@@ -13,7 +13,6 @@ struct AgregarTopBar: View {
     @EnvironmentObject var companyViewModel: CompanyViewModel
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @Binding var buttonPress: Bool
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
@@ -22,11 +21,11 @@ struct AgregarTopBar: View {
             Button(action: {
                 if agregarViewModel.addProduct(subsidiary: companyViewModel.subsidiary ?? Subsidiary.getDummySubsidiary()) {
                     print("Se agrego un producto exitosamente")
+                    //TODO: Cambiar esta funcion al repositorio
                     carritoCoreDataViewModel.updateCartTotal()
                     agregarViewModel.resetValuesFields()
                     playSound(named: "Success1")
                 } else {
-                    buttonPress = true
                     agregarViewModel.fieldsTrue()
                     playSound(named: "Fail1")
                     print("No se pudo agregar correctamente")
@@ -58,6 +57,6 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        AgregarTopBar(buttonPress: .constant(false))
+        AgregarTopBar()
     }
 }

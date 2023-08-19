@@ -13,6 +13,9 @@ struct CustomTextField: View {
     @Binding var edited: Bool
     @FocusState var isTextFieldFocused
     var disable: Bool = false
+    var onSubmit: (() -> Void)?
+    var keyboardType: UIKeyboardType = .default
+    var disableAutocorrection: Bool = true
     var body: some View {
         HStack {
             ZStack {
@@ -22,28 +25,43 @@ struct CustomTextField: View {
                             .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 20))
                             .multilineTextAlignment(.center)
-                            .keyboardType(.numberPad)
+                            .keyboardType(keyboardType)
                             .padding(.all, 5)
                             .foregroundColor(.black)
                             .padding(.vertical, 4)
+                            .disableAutocorrection(disableAutocorrection)
                             .onTapGesture {
                                 isTextFieldFocused = true
                             }
+                            .onChange(of: value, perform: {text in
+                                if text != "" {
+                                    edited = true
+                                }
+                            })
+                            .onSubmit({
+                                if value != "" {
+                                    onSubmit?()
+                                }
+                            })
                             .disabled(disable)
+                        if isTextFieldFocused {
                             Button(action: {
                                 if isTextFieldFocused {
-                                    value = ""
+                                    print("Limpiamos \(title)")
+                                    value.removeAll()
+                                } else if !disable {
+                                    isTextFieldFocused = true
                                 }
-                                isTextFieldFocused = true
                             }, label: {
                                 Image(systemName: "x.circle")
                                     .foregroundColor(Color("color_accent"))
                                     .font(.custom("Artifika-Regular", size: 16))
                                     .padding(.horizontal, 2)
                                     .padding(.vertical, 8)
-                                    .opacity(isTextFieldFocused ? 1 : 0)
+                                    //.opacity(isTextFieldFocused ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.4), value: isTextFieldFocused)
                             })
+                        }
                     }
                     .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
                     .cornerRadius(8)
@@ -56,7 +74,9 @@ struct CustomTextField: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .offset(y: -22)
                         .onTapGesture {
-                            isTextFieldFocused = true
+                            if !disable {
+                                isTextFieldFocused = true
+                            }
                         }
                         .disabled(disable)
             }
@@ -68,11 +88,11 @@ struct CustomTextField_Previews: PreviewProvider {
     static var previews: some View {
         @State var dato: String = "Prueba"
         HStack(spacing: 6) {
-            CustomTextField(title: "Nombre del producto",value: $dato ,edited: .constant(false))
-            CustomTextField(value: $dato, edited: .constant(false), disable: false)
+            CustomTextField(title: "Nombre del producto",value: $dato ,edited: .constant(false), keyboardType: .numberPad)
+            CustomTextField(value: $dato, edited: .constant(false), disable: false, keyboardType: .numberPad)
             //CustomTextField(edited: .constant(false))
         }
-        .frame(maxHeight: .infinity)
+        //.frame(maxHeight: .infinity)
         .background(Color("color_background"))
     }
 }

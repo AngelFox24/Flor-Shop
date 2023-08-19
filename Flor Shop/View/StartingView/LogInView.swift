@@ -17,8 +17,8 @@ struct LogInView: View {
                 .font(.custom("Artifika-Regular", size: 30))
                 .padding(.bottom, 50)
             VStack(spacing: 40){
-                CustomTextField(title: "Usuario o Correo" ,value: $dato, edited: $edited)
-                CustomTextField(title: "Contraseña" ,value: $dato, edited: $edited)
+                CustomTextField(title: "Usuario o Correo" ,value: $dato, edited: $edited, keyboardType: .default)
+                CustomTextField(title: "Contraseña" ,value: $dato, edited: $edited, keyboardType: .default)
             }
             .padding(.horizontal, 30)
             VStack(spacing: 30) {
