@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol CarManager {
-    func getCar() -> Car
+    func getCart(employee: Employee) -> Car?
     func deleteProduct(product: Product)
     func addProductToCart(productIn: Product) -> Bool
     func emptyCart()
@@ -31,21 +31,28 @@ class LocalCarManager: CarManager {
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
-    func getCar() -> Car {
+    func createCart(employeeEntity: Tb_Employee) -> Tb_Cart {
         var cart: Tb_Cart?
         let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         do {
-            cart = try self.mainContext.fetch(request).first
-            if cart == nil {
-                cart = Tb_Cart(context: self.mainContext)
-                cart!.idCart = UUID()
-                cart!.total = 0.0
-                saveData()
-            }
+        cart = Tb_Cart(context: self.mainContext)
+        cart!.idCart = UUID()
+        cart!.total = 0.0
         } catch let error {
             print("Error al recuperar el carrito de productos \(error)")
         }
         return cart!.mapToCar()
+    }
+    func getCart(employee: Employee) -> Car? {
+        if let employeeEntity = employee.toEmployeeEntity(context: mainContext) {
+            if let cartEntity = employeeEntity.toCart {
+                return cartEntity.mapToCar()
+            } else {
+                return createCart(employeeEntity: employeeEntity).mapToCar()
+            }
+        } else {
+            return nil
+        }
     }
     private func getCartEntity() -> Tb_Cart? {
         var cart: Tb_Cart?

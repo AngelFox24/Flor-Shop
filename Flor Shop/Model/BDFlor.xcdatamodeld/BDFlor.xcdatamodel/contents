@@ -18,7 +18,7 @@
         <attribute name="idCompany" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="ruc" optional="YES" attributeType="String"/>
         <relationship name="toManager" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Manager" inverseName="toCompany" inverseEntity="Tb_Manager"/>
-        <relationship name="toSubsidiary" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
+        <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_Customer" representedClassName=".Tb_Customer" syncable="YES" codeGenerationType="class">
         <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
@@ -37,6 +37,7 @@
         <attribute name="role" attributeType="String"/>
         <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toEmployee" inverseEntity="Tb_Cart"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toEmployee" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toManager" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Manager" inverseName="toEmployee" inverseEntity="Tb_Manager"/>
         <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toEmployee" inverseEntity="Tb_Sale"/>
         <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toEmployee" inverseEntity="Tb_Subsidiary"/>
     </entity>
@@ -53,7 +54,8 @@
         <attribute name="idManager" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="lastName" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toManager" inverseEntity="Tb_Company"/>
+        <relationship name="toCompany" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toManager" inverseEntity="Tb_Company"/>
+        <relationship name="toEmployee" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toManager" inverseEntity="Tb_Employee"/>
     </entity>
     <entity name="Tb_Product" representedClassName=".Tb_Product" syncable="YES" codeGenerationType="class">
         <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>

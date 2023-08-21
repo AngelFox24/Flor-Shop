@@ -16,9 +16,9 @@ class CartViewModel: ObservableObject {
         fetchCart()
     }
     // MARK: CRUD Core Data
-    func fetchCart() {
+    func fetchCart(employee: Employee) {
         cartDetailCoreData = cartRepository.getListProductInCart()
-        cartCoreData = cartRepository.getCar()
+        cartCoreData = cartRepository.getCart(employee: employee)
     }
     // Elimina un producto del carrito de compras
     func deleteProduct(product: Product) {

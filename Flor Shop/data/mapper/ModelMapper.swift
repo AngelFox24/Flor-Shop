@@ -56,6 +56,21 @@ extension Manager {
     }
 }
 
+extension Employee {
+    func toEmployeeEntity(context: NSManagedObjectContext) -> Tb_Employee? {
+        var employeeEntity: Tb_Employee?
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let filterAtt = NSPredicate(format: "idEmployee == %@ AND name == %@ AND lastName == %@", id.uuidString, name, lastName)
+        request.predicate = filterAtt
+        do {
+            employeeEntity = try context.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return employeeEntity
+    }
+}
+
 extension Company {
     func toCompanyEntity(context: NSManagedObjectContext) -> Tb_Company? {
         var companyEntity: Tb_Company?

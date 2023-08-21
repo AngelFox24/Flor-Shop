@@ -27,7 +27,6 @@ struct AgregarView_Previews: PreviewProvider {
         AgregarView()
             .environmentObject(ProductViewModel(productRepository: repository))
             .environmentObject(AgregarViewModel(productRepository: repository))
-        //.ignoresSafeArea()
     }
 }
 
@@ -109,7 +108,6 @@ struct CamposProductoAgregar: View {
                 HStack {
                     HStack {
                         HStack {
-                            //CampoIndividualURL(contenido: $agregarViewModel.editedFields.imageUrl, edited: $agregarViewModel.editedFields.imageURLEdited)
                             CustomTextField(title: "URL de la Imagen" ,value: $agregarViewModel.editedFields.imageUrl, edited: $agregarViewModel.editedFields.imageURLEdited)
                         }
                         Spacer()

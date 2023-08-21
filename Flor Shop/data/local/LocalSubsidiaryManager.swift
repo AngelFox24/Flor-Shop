@@ -36,11 +36,24 @@ class LocalSubsidiaryManager: SubsidiaryManager {
                 print("La sucursal ya existe")
                 rollback()
             } else {
+                guard let managerEntity = company.toCompanyEntity(context: mainContext)?.toManager else {
+                    print("No se pudo obtener el manager para convertirlo en empleado")
+                    return
+                }
+                let firstEmployee = Tb_Employee(context: mainContext)
+                firstEmployee.idEmployee = UUID()
+                firstEmployee.name = managerEntity.name
+                firstEmployee.lastName = managerEntity.lastName
+                firstEmployee.role = "Manager"
+                firstEmployee.toImageUrl = ImageUrl.getDummyImage().toImageUrlEntity(context: mainContext)
+                firstEmployee.active = true
+                firstEmployee.toManager = managerEntity
                 let newSubsidiary = Tb_Subsidiary(context: mainContext)
                 newSubsidiary.idSubsidiary = subsidiary.id
                 newSubsidiary.name = subsidiary.name
                 newSubsidiary.toCompany = company.toCompanyEntity(context: mainContext)
                 newSubsidiary.toImageUrl = subsidiary.image.toImageUrlEntity(context: mainContext)
+                newSubsidiary.addToToEmployee(firstEmployee)
                 saveData()
             }
     }

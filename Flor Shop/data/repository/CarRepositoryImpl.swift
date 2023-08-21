@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol CarRepository {
-    func getCar() -> Car
+    func getCart(employee: Employee) -> Car?
     func deleteProduct(product: Product)
     func addProductoToCarrito(product: Product) -> Bool
     func emptyCart()
@@ -25,8 +25,8 @@ class CarRepositoryImpl: CarRepository {
     init(manager: CarManager) {
         self.manager = manager
     }
-    func getCar() -> Car {
-        return self.manager.getCar()
+    func getCart(employee: Employee) -> Car? {
+        return self.manager.getCart(employee: Employee)
     }
     func deleteProduct(product: Product) {
         self.manager.deleteProduct(product: product)

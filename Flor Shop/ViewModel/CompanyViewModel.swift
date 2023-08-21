@@ -46,11 +46,13 @@ class CompanyViewModel: ObservableObject {
         }
         self.subsidiary = subsidiaryRepository.getSubsidiary()
         if self.subsidiary == nil {
+            //Creamos una sucursal
             subsidiaryRepository.addSubsidiary(subsidiary: Subsidiary(id: UUID(uuidString: "SU001") ?? UUID(), name: "Tienda Flor", image: ImageUrl(id: UUID(uuidString: "IM001") ?? UUID(), imageUrl: "https://img.freepik.com/vector-premium/ilustracion-vector-fachada-tienda-abarrotes-escaparate-edificio-tienda-vista-frontal-fachada-tienda-dibujos-animados-plana-eps-10_505557-737.jpg?w=2000")), company: companyLocal)
             self.subsidiary = subsidiaryRepository.getSubsidiary()
             if self.subsidiary == nil {
                 print("Error al crear Subsidiaria")
             }
+            //Si la sucursal recien se ha creado hay que crear el primer empleado
         }
     }
     // MARK: CRUD Core Data
