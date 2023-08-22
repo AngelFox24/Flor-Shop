@@ -18,6 +18,8 @@
 		2728EAB02A1B0BD5002B534A /* CarRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */; };
 		2728EAB22A1B0E02002B534A /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB12A1B0E02002B534A /* Car.swift */; };
 		2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB32A1B0E0D002B534A /* Sale.swift */; };
+		2731F0B72A956BC800F6E5E0 /* LogInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */; };
+		2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */; };
 		2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */; };
 		27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27395ABF2A8463F100A91420 /* CustomTextField.swift */; };
 		273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BD5DE2A4B4493001C1C03 /* Notification.swift */; };
@@ -107,6 +109,8 @@
 		2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarRepositoryImpl.swift; sourceTree = "<group>"; };
 		2728EAB12A1B0E02002B534A /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		2728EAB32A1B0E0D002B534A /* Sale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sale.swift; sourceTree = "<group>"; };
+		2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewModel.swift; sourceTree = "<group>"; };
+		2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModel.swift; sourceTree = "<group>"; };
 		2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHideKeyboard.swift; sourceTree = "<group>"; };
 		27395ABF2A8463F100A91420 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		273BD5DE2A4B4493001C1C03 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
@@ -203,6 +207,15 @@
 			path = FirebaseSesionManagement;
 			sourceTree = "<group>";
 		};
+		2731F0B52A956BA500F6E5E0 /* Log In */ = {
+			isa = PBXGroup;
+			children = (
+				2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */,
+				2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */,
+			);
+			path = "Log In";
+			sourceTree = "<group>";
+		};
 		274CE28D29E6D792007C703D = {
 			isa = PBXGroup;
 			children = (
@@ -260,6 +273,7 @@
 		274CE2A829E6D817007C703D /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				2731F0B52A956BA500F6E5E0 /* Log In */,
 				271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */,
 				27C241FB2A008CB50045B2A0 /* ProductViewModel.swift */,
 				27C241FE2A00A89C0045B2A0 /* CartViewModel.swift */,
@@ -668,6 +682,7 @@
 				279C64A82A8D9823003B29BC /* SaleDetail.swift in Sources */,
 				279C64962A8D798A003B29BC /* CustomerRepositoryImpl.swift in Sources */,
 				279C649E2A8D9488003B29BC /* Company.swift in Sources */,
+				2731F0B72A956BC800F6E5E0 /* LogInViewModel.swift in Sources */,
 				279C64922A8D7940003B29BC /* LocalManagerEntityManager.swift in Sources */,
 				279C64982A8D89A2003B29BC /* LocalEmployeeManager.swift in Sources */,
 				273E638E2A897ACF0048DC44 /* PointOfSaleView.swift in Sources */,
@@ -691,6 +706,7 @@
 				68D990C52A1AE98A00A3A393 /* ModelMapper.swift in Sources */,
 				2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */,
 				27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */,
+				2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCarManager.swift in Sources */,
 				27C241FC2A008CB50045B2A0 /* ProductViewModel.swift in Sources */,
