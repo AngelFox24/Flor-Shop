@@ -9,32 +9,16 @@ import Foundation
 import Foundation
 
 class CompanyViewModel: ObservableObject {
-    @Published var managerPerson: Manager?
     @Published var company: Company?
     @Published var subsidiary: Subsidiary?
-    let managerRepository: ManagerRepository
     let companyRepository: CompanyRepository
     let subsidiaryRepository: SubsidiaryRepository
-    init(managerRepository: ManagerRepository, companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository) {
-        self.managerRepository = managerRepository
+    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository) {
         self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
-        //Check if everything necessary is created
-        self.managerPerson = managerRepository.getManager()
-        if self.managerPerson == nil {
-            managerRepository.addManager(manager: Manager(id: UUID(uuidString: "MA001") ?? UUID(), name: "Angel", lastName: "Curi Laurente"))
-            self.managerPerson = managerRepository.getManager()
-            if managerPerson == nil {
-                print("Error al crear Admin")
-            }
-        }
         self.company = companyRepository.getCompany()
-        guard let managerLocal = managerPerson else {
-            print("Error al crear Compañia, no hay Manager")
-            return
-        }
         if self.company == nil {
-            companyRepository.addCompany(company: Company(id: UUID(uuidString: "CO001") ?? UUID(), companyName: "Cindy", ruc: "Jarpi Menestra"), manager: managerLocal)
+            companyRepository.addCompany(company: Company(id: UUID(uuidString: "CO001") ?? UUID(), companyName: "Cindy", ruc: "Jarpi Menestra"))
             self.company = companyRepository.getCompany()
             if self.company == nil {
                 print("Error al crear Compañia")

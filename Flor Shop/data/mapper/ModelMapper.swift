@@ -41,21 +41,6 @@ extension Product {
     }
 }
 
-extension Manager {
-    func toManagerEntity(context: NSManagedObjectContext) -> Tb_Manager? {
-        var managerEntity: Tb_Manager?
-        let request: NSFetchRequest<Tb_Manager> = Tb_Manager.fetchRequest()
-        let filterAtt = NSPredicate(format: "idManager == %@ AND name == %@ AND lastName == %@", id.uuidString, name, lastName)
-        request.predicate = filterAtt
-        do {
-            managerEntity = try context.fetch(request).first
-        } catch let error {
-            print("Error fetching. \(error)")
-        }
-        return managerEntity
-    }
-}
-
 extension Employee {
     func toEmployeeEntity(context: NSManagedObjectContext) -> Tb_Employee? {
         var employeeEntity: Tb_Employee?
@@ -68,6 +53,21 @@ extension Employee {
             print("Error fetching. \(error)")
         }
         return employeeEntity
+    }
+}
+
+extension Subsidiary {
+    func toSubsidiaryEntity(context: NSManagedObjectContext) -> Tb_Subsidiary? {
+        var subsidiaryEntity: Tb_Subsidiary?
+        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
+        let filterAtt = NSPredicate(format: "idSubsidiary == %@ AND name == %@", id.uuidString, name)
+        request.predicate = filterAtt
+        do {
+            subsidiaryEntity = try context.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return subsidiaryEntity
     }
 }
 
@@ -101,14 +101,6 @@ extension ImageUrl {
     }
 }
 
-extension Tb_Manager {
-    func toManager() -> Manager {
-        return Manager(id: idManager ?? UUID(),
-                       name: name ?? "",
-                       lastName: lastName ?? "")
-    }
-}
-
 extension Tb_Company {
     func toCompany() -> Company {
         return Company(id: idCompany ?? UUID(),
@@ -136,6 +128,19 @@ extension Tb_Product {
                        //TODO: Arreglar asignacion de imagen url, temporal url
                        url: "")
                        //url: url ?? "")
+    }
+}
+
+extension Tb_Employee {
+    func toEmployee() -> Employee {
+        return Employee(id: idEmployee ?? UUID(),
+                        name: name ?? "",
+                        user: user ?? "",
+                        email: email ?? "",
+                        lastName: lastName ?? "",
+                        role: role ?? "",
+                        image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(), imageUrl: toImageUrl?.imageUrl ?? ""),
+                        active: active)
     }
 }
 

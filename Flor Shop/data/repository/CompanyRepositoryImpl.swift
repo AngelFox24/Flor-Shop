@@ -9,32 +9,32 @@ import Foundation
 import CoreData
 
 protocol CompanyRepository {
-    func addCompany(company: Company, manager: Manager)
+    func addCompany(company: Company) -> Bool
     func getCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
 }
 
 class CompanyRepositoryImpl: CompanyRepository {
-    let manager: CompanyManager
+    let companyManager: CompanyManager
     // let remote:  remoto, se puede implementar el remoto aqui
-    init(manager: CompanyManager) {
-        self.manager = manager
+    init(companyManager: CompanyManager) {
+        self.companyManager = companyManager
     }
     //C - Create
-    func addCompany(company: Company, manager: Manager) {
-        self.manager.addCompany(company: company, manager: manager)
+    func addCompany(company: Company) -> Bool {
+        self.companyManager.addCompany(company: company)
     }
     //R - Read
     func getCompany() -> Company? {
-        return self.manager.getCompany()
+        return self.companyManager.getCompany()
     }
     //U - Update
     func updateCompany(company: Company) {
-        self.manager.updateCompany(company: company)
+        self.companyManager.updateCompany(company: company)
     }
     //D - Delete
     func deleteCompany(company: Company) {
-        self.manager.deleteCompany(company: company)
+        self.companyManager.deleteCompany(company: company)
     }
 }

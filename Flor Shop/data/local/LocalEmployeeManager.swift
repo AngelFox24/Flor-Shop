@@ -9,14 +9,16 @@ import Foundation
 import CoreData
 
 protocol EmployeeManager {
-    func addEmployee(employee: Employee)
-    func getEmployee(id: UUID) -> Employee
+    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool
+    func getEmployees() -> [Employee]
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
+    func logIn(user: String, password: String) -> Employee?
 }
 
 class LocalEmployeeManager: EmployeeManager {
     let mainContext: NSManagedObjectContext
+    var mainEmployeeEntity: Tb_Employee?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -31,12 +33,32 @@ class LocalEmployeeManager: EmployeeManager {
         self.mainContext.rollback()
     }
     //C - Create
-    func addEmployee(employee: Employee) {
-        
+    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool {
+        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext) else {
+            let newEmployeeEntity = Tb_Employee(context: self.mainContext)
+            newEmployeeEntity.idEmployee = employee.id
+            newEmployeeEntity.name = employee.name
+            newEmployeeEntity.lastName = employee.lastName
+            newEmployeeEntity.role = employee.role
+            newEmployeeEntity.toImageUrl = employee.image.toImageUrlEntity(context: self.mainContext)
+            newEmployeeEntity.active = employee.active
+            newEmployeeEntity.toSubsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext)
+            saveData()
+            return true
+        }
+        rollback()
+        return false
     }
     //R - Read
-    func getEmployee(id: UUID) -> Employee {
-        return Employee(id: id, name: "Angel", lastName: "Curi Laurente", role: "Vendedor", image: ImageUrl(id: id, imageUrl: "https://media.licdn.com/dms/image/D4E03AQGi8lmT8Kk_sQ/profile-displayphoto-shrink_800_800/0/1689080795681?e=2147483647&v=beta&t=2C0ItSYPqY2jrq6UKMBuuDObrYl5nQ-LNp-9VUqUNa0"), active: true)
+    func getEmployees() -> [Employee] {
+        var employeesEntityList: [Tb_Employee] = []
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        do {
+            employeesEntityList = try self.mainContext.fetch(request)
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return employeesEntityList.map { $0.toEmployee() }
     }
     //U - Update
     func updateEmployee(employee: Employee) {
@@ -45,6 +67,23 @@ class LocalEmployeeManager: EmployeeManager {
     //D - Delete
     func deleteEmployee(employee: Employee) {
         
+    }
+    func logIn(user: String, password: String) -> Employee? {
+        var employeeEntity: Tb_Employee?
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let filterAtt = NSPredicate(format: "user == %@", user)
+        request.predicate = filterAtt
+        do {
+            employeeEntity = try self.mainContext.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        if let employee = employeeEntity {
+            mainEmployeeEntity = employee
+            return employee.toEmployee()
+        } else {
+            return nil
+        }
     }
 }
 

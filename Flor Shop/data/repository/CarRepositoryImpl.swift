@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol CarRepository {
-    func getCart(employee: Employee) -> Car?
+    func getCart() -> Car?
     func deleteProduct(product: Product)
     func addProductoToCarrito(product: Product) -> Bool
     func emptyCart()
@@ -17,16 +17,17 @@ protocol CarRepository {
     func increaceProductAmount (product: Product)
     func decreceProductAmount(product: Product)
     func getListProductInCart () -> [CartDetail]
+    func createCart(employee: Employee)
 }
 
 class CarRepositoryImpl: CarRepository {
-    let manager: CarManager
+    let manager: CartManager
     // let remote:  remoto
-    init(manager: CarManager) {
+    init(manager: CartManager) {
         self.manager = manager
     }
-    func getCart(employee: Employee) -> Car? {
-        return self.manager.getCart(employee: Employee)
+    func getCart() -> Car? {
+        return self.manager.getCart()
     }
     func deleteProduct(product: Product) {
         self.manager.deleteProduct(product: product)
@@ -48,5 +49,8 @@ class CarRepositoryImpl: CarRepository {
     }
     func getListProductInCart () -> [CartDetail] {
         self.manager.getListProductInCart()
+    }
+    func createCart(employee: Employee) {
+        self.manager.createCart(employee: employee)
     }
 }

@@ -10,6 +10,8 @@ import Foundation
 struct Employee: Identifiable {
     var id: UUID
     var name: String
+    var user: String
+    var email: String
     var lastName: String
     var role: String
     var image: ImageUrl

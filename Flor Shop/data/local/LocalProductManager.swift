@@ -15,11 +15,13 @@ protocol ProductManager {
     func filterProducts(word: String) -> [Product]
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
+    func setDefaultSubsidiary(employee: Employee)
 }
 
 class LocalProductManager: ProductManager {
     var primaryOrder: PrimaryOrder = .nameAsc
     var filterAttribute: ProductsFilterAttributes = .allProducts
+    var mainSubsidiaryEntity: Tb_Subsidiary?
     let mainContext: NSManagedObjectContext
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
@@ -174,5 +176,13 @@ class LocalProductManager: ProductManager {
             filterAtt = NSPredicate(format: "quantityStock == 0")
         }
         return filterAtt
+    }
+    func setDefaultSubsidiary(employee: Employee) {
+        let employeeEntity = employee.toEmployeeEntity(context: mainContext)
+        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
+            print("No se pudo asingar sucursar default")
+            return
+        }
+        self.mainSubsidiaryEntity = subsidiaryEntity
     }
 }

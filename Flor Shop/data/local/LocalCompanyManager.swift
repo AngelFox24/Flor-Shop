@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol CompanyManager {
-    func addCompany(company: Company, manager: Manager)
+    func addCompany(company: Company) -> Bool
     func getCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
@@ -17,6 +17,7 @@ protocol CompanyManager {
 
 class LocalCompanyManager: CompanyManager {
     let mainContext: NSManagedObjectContext
+    var mainCompanyEntity: Tb_Company?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -31,18 +32,18 @@ class LocalCompanyManager: CompanyManager {
         self.mainContext.rollback()
     }
     //C - Create
-    func addCompany(company: Company, manager: Manager) {
-        if existCompany(company: company) {
-            print("La empresa ya existe")
-            rollback()
-        } else {
+    func addCompany(company: Company) -> Bool {
+        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
             let newCompany = Tb_Company(context: mainContext)
             newCompany.idCompany = company.id
             newCompany.companyName = company.companyName
             newCompany.ruc = company.ruc
-            newCompany.toManager = manager.toManagerEntity(context: mainContext)
+            self.mainCompanyEntity = newCompany
             saveData()
+            return true
         }
+        rollback()
+        return false
     }
     //R - Read
     func getCompany() -> Company? {
@@ -62,21 +63,5 @@ class LocalCompanyManager: CompanyManager {
     //D - Delete
     func deleteCompany(company: Company) {
         
-    }
-    func existCompany(company: Company) -> Bool {
-        var companyEntity: Tb_Manager?
-        let request: NSFetchRequest<Tb_Manager> = Tb_Manager.fetchRequest()
-        let filterAtt = NSPredicate(format: "companyName == %@ AND ruc == %@", company.companyName, company.ruc)
-        request.predicate = filterAtt
-        do {
-            companyEntity = try self.mainContext.fetch(request).first
-        } catch let error {
-            print("Error fetching. \(error)")
-        }
-        if companyEntity == nil {
-            return false
-        } else {
-            return true
-        }
     }
 }

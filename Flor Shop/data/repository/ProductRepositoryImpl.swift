@@ -15,6 +15,7 @@ protocol ProductRepository {
     func filterProducts(word: String) -> [Product]
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
+    func setDefaultSubsidiary(employee: Employee)
 }
 
 public class ProductRepositoryImpl: ProductRepository {
@@ -43,5 +44,8 @@ public class ProductRepositoryImpl: ProductRepository {
     }
     func setFilter(filter: ProductsFilterAttributes) {
         return manager.setFilter(filter: filter)
+    }
+    func setDefaultSubsidiary(employee: Employee) {
+        self.manager.setDefaultSubsidiary(employee: employee)
     }
 }

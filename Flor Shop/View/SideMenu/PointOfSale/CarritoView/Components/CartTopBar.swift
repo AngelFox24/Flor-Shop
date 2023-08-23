@@ -69,7 +69,7 @@ struct CartTopBar: View {
 }
 struct CartTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
+        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
         let carRepository = CarRepositoryImpl(manager: carManager)
         let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
         let salesRepository = SaleRepositoryImpl(manager: saleManager)

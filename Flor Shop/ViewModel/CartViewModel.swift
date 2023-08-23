@@ -13,12 +13,11 @@ class CartViewModel: ObservableObject {
     let cartRepository: CarRepository
     init(carRepository: CarRepository) {
         self.cartRepository = carRepository
-        fetchCart()
     }
     // MARK: CRUD Core Data
-    func fetchCart(employee: Employee) {
+    func fetchCart() {
         cartDetailCoreData = cartRepository.getListProductInCart()
-        cartCoreData = cartRepository.getCart(employee: employee)
+        cartCoreData = cartRepository.getCart()
     }
     // Elimina un producto del carrito de compras
     func deleteProduct(product: Product) {

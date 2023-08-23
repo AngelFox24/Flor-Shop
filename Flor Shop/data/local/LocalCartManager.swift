@@ -8,8 +8,8 @@
 import Foundation
 import CoreData
 
-protocol CarManager {
-    func getCart(employee: Employee) -> Car?
+protocol CartManager {
+    func getCart() -> Car?
     func deleteProduct(product: Product)
     func addProductToCart(productIn: Product) -> Bool
     func emptyCart()
@@ -17,10 +17,12 @@ protocol CarManager {
     func increaceProductAmount(product: Product)
     func decreceProductAmount(product: Product)
     func getListProductInCart () -> [CartDetail]
+    func createCart(employee: Employee)
 }
 
-class LocalCarManager: CarManager {
+class LocalCartManager: CartManager {
     let mainContext: NSManagedObjectContext
+    var mainEmployeeEntity: Tb_Employee?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -28,28 +30,26 @@ class LocalCarManager: CarManager {
         do {
             try self.mainContext.save()
         } catch {
+            self.mainContext.rollback()
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
-    func createCart(employeeEntity: Tb_Employee) -> Tb_Cart {
-        var cart: Tb_Cart?
-        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
-        do {
-        cart = Tb_Cart(context: self.mainContext)
-        cart!.idCart = UUID()
-        cart!.total = 0.0
-        } catch let error {
-            print("Error al recuperar el carrito de productos \(error)")
+    func createCart(employee: Employee) {
+        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext) else {
+            print("No se encontro empleado para crear carrito")
+            return
         }
-        return cart!.mapToCar()
+        var cart: Tb_Cart
+        cart = Tb_Cart(context: self.mainContext)
+        cart.idCart = UUID()
+        cart.total = 0.0
+        cart.toEmployee = employeeEntity
+        mainEmployeeEntity = employeeEntity
+        saveData()
     }
-    func getCart(employee: Employee) -> Car? {
-        if let employeeEntity = employee.toEmployeeEntity(context: mainContext) {
-            if let cartEntity = employeeEntity.toCart {
-                return cartEntity.mapToCar()
-            } else {
-                return createCart(employeeEntity: employeeEntity).mapToCar()
-            }
+    func getCart() -> Car? {
+        if let cartEntity = mainEmployeeEntity?.toCart {
+            return cartEntity.mapToCar()
         } else {
             return nil
         }

@@ -99,7 +99,7 @@ struct CartProductCardView: View {
 
 struct CartProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        let cartManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
+        let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
         let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU"))
         CartProductCardView(productId: cartDetail.product.id, productUrl: cartDetail.product.url, productName: cartDetail.product.name, product: cartDetail.product, productUnitPrice: cartDetail.product.unitPrice, carQuantity: cartDetail.quantity, size: 100, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })

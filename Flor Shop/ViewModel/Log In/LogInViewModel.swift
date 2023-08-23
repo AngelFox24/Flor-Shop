@@ -7,64 +7,39 @@
 
 import Foundation
 
-class AgregarViewModel: ObservableObject {
+class LogInViewModel: ObservableObject {
     @Published var logInFields: LogInFields = LogInFields()
-    let managerRepository: ManagerRepository
-    init(managerRepository: ProductRepository) {
-        self.managerRepository = managerRepository
-    }
-    func resetValuesFields() {
-        logInFields = LogInFields()
+    let subsidiaryRepository: SubsidiaryRepository
+    let employeeRepository: EmployeeRepository
+    let cartRepository: CarRepository
+    let productReporsitory: ProductRepository
+    init(subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository) {
+        self.subsidiaryRepository = subsidiaryRepository
+        self.employeeRepository = employeeRepository
+        self.cartRepository = cartRepository
+        self.productReporsitory = productReporsitory
     }
     func fieldsTrue() {
         print("All value true")
         logInFields.userOrEmailEdited = true
         logInFields.passwordEdited = true
     }
-    func addProduct(subsidiary: Subsidiary) -> Bool {
-        fieldsTrue()
-        return false
-    }
-    func urlEdited() {
-        print("New work")
-        editedFields.imageURLEdited = true
-    }
-    func createProduct() -> Product? {
-        guard let quantityStock = Int(editedFields.quantityStock), let unitCost = Double(editedFields.unitCost), let unitPrice = Double(editedFields.unitPrice) else {
-            print("Los valores no se pueden convertir correctamente")
-            return nil
-        }
-        return Product(id: UUID(), name: editedFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: editedFields.expirationDate, url: editedFields.imageUrl)
-    }
-    func isProductNameValid() -> Bool {
-        return !editedFields.productName.trimmingCharacters(in: .whitespaces).isEmpty
-    }
-    func isQuantityValid() -> Bool {
-        guard let quantityStock = Int(editedFields.quantityStock) else {
+    func logIn() -> Bool {
+        if let employee = employeeRepository.logIn(user: logInFields.userOrEmail, password: logInFields.password) {
+            createCart(employee: employee)
+            setDefaultSubsidiary(employee: employee)
+            return true
+        } else {
+            logInFields.errorLogIn = "No se encontro usuario en la BD"
             return false
         }
-        return quantityStock < 0 ? false : true
     }
-    func isUnitCostValid() -> Bool {
-        guard let unitCost = Double(editedFields.unitCost) else {
-            return false
-        }
-        return unitCost < 0.0 ? false : true
+    func createCart(employee: Employee) {
+        self.cartRepository.createCart(employee: employee)
     }
-    func isUnitPriceValid() -> Bool {
-        guard let unitPrice = Double(editedFields.unitPrice) else {
-            return false
-        }
-        return unitPrice < 0.0 ? false : true
-    }
-    func isExpirationDateValid() -> Bool {
-        return true
-    }
-    func isURLValid() -> Bool {
-        guard URL(string: editedFields.imageUrl) != nil else {
-            return false
-        }
-        return true
+    func setDefaultSubsidiary(employee: Employee) {
+        self.subsidiaryRepository.setDefaultSubsidiary(employee: employee)
+        self.productReporsitory.setDefaultSubsidiary(employee: employee)
     }
 }
 class LogInFields {
@@ -80,10 +55,11 @@ class LogInFields {
     var password: String = ""
     var passwordEdited: Bool = false
     var passwordError: String {
-        if passwordError == "" && passwordEdited {
+        if self.password == "" && self.passwordEdited {
             return "Contraseña no válido"
         } else {
             return ""
         }
     }
+    var errorLogIn: String = ""
 }

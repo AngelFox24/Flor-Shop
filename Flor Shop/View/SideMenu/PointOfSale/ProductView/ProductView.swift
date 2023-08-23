@@ -26,7 +26,7 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
         let productRepository = ProductRepositoryImpl(manager: productManager)
-        let carManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
+        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
         let carRepository = CarRepositoryImpl(manager: carManager)
         @State var showMenu: Bool = false
         ProductView(selectedTab: .constant(.magnifyingglass), showMenu: $showMenu)

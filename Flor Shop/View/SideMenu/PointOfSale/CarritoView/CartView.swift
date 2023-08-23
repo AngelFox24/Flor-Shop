@@ -22,7 +22,7 @@ struct CartView: View {
 
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
+        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
         let carRepository = CarRepositoryImpl(manager: carManager)
         CartView(selectedTab: .constant(.cart))
             .environmentObject(CartViewModel(carRepository: carRepository))
@@ -53,7 +53,7 @@ struct ListCartController: View {
             } else {
             List {
                 ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
-                    CartProductCardView(productId: cartDetail.product.id, productUrl: cartDetail.product.url, productName: cartDetail.product.name, product: cartDetail.product, productUnitPrice: cartDetail.product.unitPrice, carQuantity: cartDetail.quantity, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                    CartProductCardView(productId: cartDetail.product.id, productUrl: cartDetail.product.url, productName: cartDetail.product.name, product: cartDetail.product,productUnitPrice: cartDetail.product.unitPrice, carQuantity: cartDetail.quantity, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {

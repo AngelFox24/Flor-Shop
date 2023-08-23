@@ -9,10 +9,11 @@ import Foundation
 import CoreData
 
 protocol EmployeeRepository {
-    func addEmployee(employee: Employee)
-    func getEmployee(id: UUID) -> Employee
+    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool
+    func getEmployees() -> [Employee]
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
+    func logIn(user: String, password: String) -> Employee?
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -21,13 +22,17 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     init(manager: EmployeeManager) {
         self.manager = manager
     }
+    //Luego se migrara a Firebase
+    func logIn(user: String, password: String) -> Employee? {
+        return self.manager.logIn(user: user, password: password)
+    }
     //C - Create
-    func addEmployee(employee: Employee) {
-        self.manager.addEmployee(employee: employee)
+    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool {
+        return self.manager.addEmployee(subsidiary: subsidiary, employee: employee)
     }
     //R - Read
-    func getEmployee(id: UUID) -> Employee {
-        return self.manager.getEmployee(id: id)
+    func getEmployees() -> [Employee] {
+        return self.manager.getEmployees()
     }
     //U - Update
     func updateEmployee(employee: Employee) {

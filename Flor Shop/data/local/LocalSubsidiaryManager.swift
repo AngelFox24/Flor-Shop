@@ -9,14 +9,16 @@ import Foundation
 import CoreData
 
 protocol SubsidiaryManager {
-    func addSubsidiary(subsidiary: Subsidiary, company: Company)
+    func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool
     func getSubsidiary() -> Subsidiary?
     func updateSubsidiary(subsidiary: Subsidiary)
     func deleteSubsidiary(subsidiary: Subsidiary)
+    func setDefaultSubsidiary(employee: Employee)
 }
 
 class LocalSubsidiaryManager: SubsidiaryManager {
     let mainContext: NSManagedObjectContext
+    var mainSubsidiaryEntity: Tb_Subsidiary?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -31,31 +33,26 @@ class LocalSubsidiaryManager: SubsidiaryManager {
         self.mainContext.rollback()
     }
     //C - Create
-    func addSubsidiary(subsidiary: Subsidiary, company: Company) {
-            if existSubsidiary(subsidiary: subsidiary) {
-                print("La sucursal ya existe")
-                rollback()
-            } else {
-                guard let managerEntity = company.toCompanyEntity(context: mainContext)?.toManager else {
-                    print("No se pudo obtener el manager para convertirlo en empleado")
-                    return
-                }
-                let firstEmployee = Tb_Employee(context: mainContext)
-                firstEmployee.idEmployee = UUID()
-                firstEmployee.name = managerEntity.name
-                firstEmployee.lastName = managerEntity.lastName
-                firstEmployee.role = "Manager"
-                firstEmployee.toImageUrl = ImageUrl.getDummyImage().toImageUrlEntity(context: mainContext)
-                firstEmployee.active = true
-                firstEmployee.toManager = managerEntity
-                let newSubsidiary = Tb_Subsidiary(context: mainContext)
-                newSubsidiary.idSubsidiary = subsidiary.id
-                newSubsidiary.name = subsidiary.name
-                newSubsidiary.toCompany = company.toCompanyEntity(context: mainContext)
-                newSubsidiary.toImageUrl = subsidiary.image.toImageUrlEntity(context: mainContext)
-                newSubsidiary.addToToEmployee(firstEmployee)
-                saveData()
-            }
+    func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
+        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
+            print("No existe compañia para crear una sucursal")
+            rollback()
+            return false
+        }
+        if let subsidiaryEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext) {
+            print("Ya existe sucursal, no se puede crear")
+            rollback()
+            return false
+        } else {
+            let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
+            newSubsidiaryEntity.idSubsidiary = subsidiary.id
+            newSubsidiaryEntity.name = subsidiary.name
+            newSubsidiaryEntity.toImageUrl = subsidiary.image.toImageUrlEntity(context: self.mainContext) ?? ImageUrl.getDummyImage()
+            newSubsidiaryEntity.toCompany = companyEntity
+            self.mainSubsidiaryEntity = newSubsidiaryEntity
+            saveData()
+            return true
+        }
     }
     //R - Read
     func getSubsidiary() -> Subsidiary? {
@@ -91,5 +88,13 @@ class LocalSubsidiaryManager: SubsidiaryManager {
         } else {
             return true
         }
+    }
+    func setDefaultSubsidiary(employee: Employee) {
+        let employeeEntity = employee.toEmployeeEntity(context: mainContext)
+        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
+            print("No se pudo asingar sucursar default")
+            return
+        }
+        self.mainSubsidiaryEntity = subsidiaryEntity
     }
 }

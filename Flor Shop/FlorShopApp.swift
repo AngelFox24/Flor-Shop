@@ -17,17 +17,15 @@ struct FlorShopApp: App {
     var body: some Scene {
         WindowGroup {
             //Definimos contexto para todos
-            let managerEntityManager = LocalManagerEntityManager(mainContext: CoreDataProvider.shared.viewContext)
             let companyManager = LocalCompanyManager(mainContext: CoreDataProvider.shared.viewContext)
             let subsidiaryManager = LocalSubsidiaryManager(mainContext: CoreDataProvider.shared.viewContext)
             let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
             let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
             let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-            let cartManager = LocalCarManager(mainContext: CoreDataProvider.shared.viewContext)
+            let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
             let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
             //Repositorios
-            let managerRepository = ManagerRepositoryImpl(manager: managerEntityManager)
-            let companyRepository = CompanyRepositoryImpl(manager: companyManager)
+            let companyRepository = CompanyRepositoryImpl(companyManager: companyManager)
             let subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
             let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
             let customerRepository = CustomerRepositoryImpl(manager: customerManager)
@@ -39,7 +37,7 @@ struct FlorShopApp: App {
             let productsViewModel = ProductViewModel(productRepository: productRepository)
             let cartViewModel = CartViewModel(carRepository: cartRepository)
             let salesViewModel = SalesViewModel(saleRepository: salesRepository)
-            let companyViewModel = CompanyViewModel(managerRepository: managerRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
+            let companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
             let versionCheck = VersionCheck()
             MenuView()
                 .environmentObject(agregarViewModel)
