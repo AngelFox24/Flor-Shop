@@ -7,13 +7,20 @@
 
 import Foundation
 
+enum LogInStatus {
+    case success
+    case fail
+}
 class LogInViewModel: ObservableObject {
+    @Published var logInStatus: LogInStatus = .fail
     @Published var logInFields: LogInFields = LogInFields()
-    let subsidiaryRepository: SubsidiaryRepository
-    let employeeRepository: EmployeeRepository
-    let cartRepository: CarRepository
-    let productReporsitory: ProductRepository
-    init(subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository) {
+    private let companyRepository: CompanyRepository
+    private let subsidiaryRepository: SubsidiaryRepository
+    private let employeeRepository: EmployeeRepository
+    private let cartRepository: CarRepository
+    private let productReporsitory: ProductRepository
+    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository) {
+        self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
         self.employeeRepository = employeeRepository
         self.cartRepository = cartRepository
@@ -24,22 +31,31 @@ class LogInViewModel: ObservableObject {
         logInFields.userOrEmailEdited = true
         logInFields.passwordEdited = true
     }
-    func logIn() -> Bool {
+    func logIn() {
         if let employee = employeeRepository.logIn(user: logInFields.userOrEmail, password: logInFields.password) {
             createCart(employee: employee)
+            //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
+            setDefaultCompany(employee: employee)
             setDefaultSubsidiary(employee: employee)
-            return true
+            setDefaultEmployee(employee: employee)
+            self.logInStatus = .success
         } else {
             logInFields.errorLogIn = "No se encontro usuario en la BD"
-            return false
+            self.logInStatus = .fail
         }
     }
     func createCart(employee: Employee) {
         self.cartRepository.createCart(employee: employee)
     }
+    func setDefaultCompany(employee: Employee) {
+        self.companyRepository.setDefaultCompany(employee: employee)
+    }
     func setDefaultSubsidiary(employee: Employee) {
         self.subsidiaryRepository.setDefaultSubsidiary(employee: employee)
         self.productReporsitory.setDefaultSubsidiary(employee: employee)
+    }
+    func setDefaultEmployee(employee: Employee) {
+        self.employeeRepository.setDefaultEmployee(employee: employee)
     }
 }
 class LogInFields {

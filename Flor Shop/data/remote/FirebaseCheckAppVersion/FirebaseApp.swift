@@ -9,7 +9,7 @@ import Foundation
 import Firebase
 import FirebaseDatabase
 class VersionCheck: ObservableObject {
-    @Published var versionIsOk: VersionResult = .loading
+    @Published var versionIsOk: VersionResult = .versionOk
     enum VersionResult {
         case loading
         case lockVersion

@@ -90,7 +90,7 @@ extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
         var imageUrlEntity: Tb_ImageUrl?
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        let filterAtt = NSPredicate(format: "idImageUrl == %@ AND imageUrl == %@ AND ruc == %@", id.uuidString, imageUrl)
+        let filterAtt = NSPredicate(format: "idImageUrl == %@ AND imageUrl == %@", id.uuidString, imageUrl)
         request.predicate = filterAtt
         do {
             imageUrlEntity = try context.fetch(request).first
@@ -201,3 +201,4 @@ extension Array where Element == Tb_Sale {
         }
     }
 }
+

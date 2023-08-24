@@ -8,12 +8,13 @@
 import Foundation
 
 class RegistrationViewModel: ObservableObject {
+    @Published var logInStatus: LogInStatus = .fail
     @Published var registrationFields: RegistrationFields = RegistrationFields()
-    let companyRepository: CompanyRepository
-    let subsidiaryRepository: SubsidiaryRepository
-    let employeeRepository: EmployeeRepository
-    let cartRepository: CarRepository
-    let productReporsitory: ProductRepository
+    private let companyRepository: CompanyRepository
+    private let subsidiaryRepository: SubsidiaryRepository
+    private let employeeRepository: EmployeeRepository
+    private let cartRepository: CarRepository
+    private let productReporsitory: ProductRepository
     init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository) {
         self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
@@ -31,34 +32,42 @@ class RegistrationViewModel: ObservableObject {
         registrationFields.managerLastNameEdited = true
         registrationFields.companyRUCEdited = true
     }
-    func registerUser() -> Bool {
+    func registerUser() {
         let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
         let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: ImageUrl.getDummyImage())
         let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: ImageUrl.getDummyImage(), active: true)
-        if companyRepository.addCompany(company: Company) {
-            createSubsidiary(subsidiary: subsidiaryRegistration, company: companyRegistration)
-            createEmployee(company: companyRegistration, employee: userRegistration)
+        if companyRepository.addCompany(company: companyRegistration) {
+            _ = createSubsidiary(subsidiary: subsidiaryRegistration, company: companyRegistration)
+            _ = createEmployee(subsidiary: subsidiaryRegistration, employee: userRegistration)
             createCart(employee: userRegistration)
-            setDefaultSubsidiary(employee: employee)
-            return true
+            //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
+            setDefaultCompany(employee: userRegistration)
+            setDefaultSubsidiary(employee: userRegistration)
+            setDefaultEmployee(employee: userRegistration)
+            self.logInStatus = .success
         } else {
-            registrationFields.errorRegistration = "Puede que ya exista la compañia"
-            
-            return false
+            registrationFields.errorRegistration = "Muchos errores pueden haber ocurrido"
+            self.logInStatus = .fail
         }
     }
     func createCart(employee: Employee) {
         self.cartRepository.createCart(employee: employee)
     }
+    func setDefaultCompany(employee: Employee) {
+        self.companyRepository.setDefaultCompany(employee: employee)
+    }
     func createSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
         return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary, company: company)
     }
-    func createEmployee(company: Company ,employee: Employee) -> Bool {
-        return self.employeeRepository.addEmployee(subsidiary: company, employee: employee)
+    func createEmployee(subsidiary: Subsidiary ,employee: Employee) -> Bool {
+        return self.employeeRepository.addEmployee(subsidiary: subsidiary, employee: employee)
     }
     func setDefaultSubsidiary(employee: Employee) {
         self.subsidiaryRepository.setDefaultSubsidiary(employee: employee)
         self.productReporsitory.setDefaultSubsidiary(employee: employee)
+    }
+    func setDefaultEmployee(employee: Employee) {
+        self.employeeRepository.setDefaultEmployee(employee: employee)
     }
 }
 class RegistrationFields {

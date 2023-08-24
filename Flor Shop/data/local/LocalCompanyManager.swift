@@ -13,6 +13,7 @@ protocol CompanyManager {
     func getCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
+    func setDefaultCompany(employee: Employee)
 }
 
 class LocalCompanyManager: CompanyManager {
@@ -30,6 +31,13 @@ class LocalCompanyManager: CompanyManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func setDefaultCompany(employee: Employee) {
+        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext), let companyEntity = employeeEntity.toSubsidiary?.toCompany else {
+            print("No se pudo asingar compañia default")
+            return
+        }
+        self.mainCompanyEntity = companyEntity
     }
     //C - Create
     func addCompany(company: Company) -> Bool {

@@ -14,6 +14,7 @@ protocol EmployeeManager {
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
+    func setDefaultEmployee(employee: Employee)
 }
 
 class LocalEmployeeManager: EmployeeManager {
@@ -31,6 +32,13 @@ class LocalEmployeeManager: EmployeeManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func setDefaultEmployee(employee: Employee) {
+        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext) else {
+            print("No se pudo asingar empleado default")
+            return
+        }
+        self.mainEmployeeEntity = employeeEntity
     }
     //C - Create
     func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool {
@@ -79,7 +87,7 @@ class LocalEmployeeManager: EmployeeManager {
             print("Error fetching. \(error)")
         }
         if let employee = employeeEntity {
-            mainEmployeeEntity = employee
+            //setDefaultEmployee(employee: employee.toEmployee())
             return employee.toEmployee()
         } else {
             return nil

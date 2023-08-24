@@ -29,17 +29,21 @@ struct WelcomeView: View {
             Spacer()
             VStack(spacing: 30) {
                 Button(action: {}, label: {
-                    CustomButton2(text: "Crear Cuenta", backgroudColor: Color("color_background"), minWidthC: 250)
-                        .foregroundColor(Color(.black))
+                    NavigationLink(destination: LogInView(), label: {
+                        CustomButton2(text: "Tengo una cuenta", backgroudColor: Color("color_accent"), minWidthC: 250)
+                            .foregroundColor(Color(.black))
+                    })
                 })
                 Button(action: {}, label: {
-                    CustomButton2(text: "Tengo una cuenta", backgroudColor: Color("color_primary"), minWidthC: 250)
-                        .foregroundColor(Color(.black))
+                    NavigationLink(destination: CreateAccountView(), label: {
+                        CustomButton2(text: "Crear Cuenta", backgroudColor: Color("color_background"), minWidthC: 250)
+                            .foregroundColor(Color(.black))
+                    })
                 })
             }
             Spacer()
         }
-        .background(Color("color_accent"))
+        .background(Color("color_primary"))
     }
 }
 

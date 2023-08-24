@@ -13,6 +13,7 @@ protocol CompanyRepository {
     func getCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
+    func setDefaultCompany(employee: Employee)
 }
 
 class CompanyRepositoryImpl: CompanyRepository {
@@ -36,5 +37,8 @@ class CompanyRepositoryImpl: CompanyRepository {
     //D - Delete
     func deleteCompany(company: Company) {
         self.companyManager.deleteCompany(company: company)
+    }
+    func setDefaultCompany(employee: Employee) {
+        self.companyManager.setDefaultCompany(employee: employee)
     }
 }

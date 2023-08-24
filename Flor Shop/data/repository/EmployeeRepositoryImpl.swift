@@ -14,6 +14,7 @@ protocol EmployeeRepository {
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
+    func setDefaultEmployee(employee: Employee)
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -41,5 +42,8 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     //D - Delete
     func deleteEmployee(employee: Employee) {
         self.manager.deleteEmployee(employee: employee)
+    }
+    func setDefaultEmployee(employee: Employee) {
+        self.manager.setDefaultEmployee(employee: employee)
     }
 }

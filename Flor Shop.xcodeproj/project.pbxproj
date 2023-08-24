@@ -21,6 +21,8 @@
 		2731F0B72A956BC800F6E5E0 /* LogInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */; };
 		2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */; };
 		2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */; };
+		2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737740D2A97E58F004C0BD1 /* MenuView.swift */; };
+		273774102A980781004C0BD1 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737740F2A980781004C0BD1 /* CustomBackButton.swift */; };
 		27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27395ABF2A8463F100A91420 /* CustomTextField.swift */; };
 		273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BD5DE2A4B4493001C1C03 /* Notification.swift */; };
 		273E638E2A897ACF0048DC44 /* PointOfSaleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E638D2A897ACF0048DC44 /* PointOfSaleView.swift */; };
@@ -50,7 +52,7 @@
 		279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */; };
 		27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */; };
 		27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936B29F73B510085D4EC /* CustomTabBar.swift */; };
-		27B3936E29F74E4B0085D4EC /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936D29F74E4B0085D4EC /* MenuView.swift */; };
+		27B3936E29F74E4B0085D4EC /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936D29F74E4B0085D4EC /* MainView.swift */; };
 		27B3937029F7575C0085D4EC /* SearchTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936F29F7575C0085D4EC /* SearchTopBar.swift */; };
 		27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 27BA28182A79BF46008F3F08 /* Artifika-Regular.ttf */; };
 		27BA281B2A79CA67008F3F08 /* PopoverHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BA281A2A79CA67008F3F08 /* PopoverHelp.swift */; };
@@ -109,6 +111,8 @@
 		2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewModel.swift; sourceTree = "<group>"; };
 		2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModel.swift; sourceTree = "<group>"; };
 		2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHideKeyboard.swift; sourceTree = "<group>"; };
+		2737740D2A97E58F004C0BD1 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		2737740F2A980781004C0BD1 /* CustomBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackButton.swift; sourceTree = "<group>"; };
 		27395ABF2A8463F100A91420 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		273BD5DE2A4B4493001C1C03 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		273E638D2A897ACF0048DC44 /* PointOfSaleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointOfSaleView.swift; sourceTree = "<group>"; };
@@ -139,7 +143,7 @@
 		279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuncOpenGoogle.swift; sourceTree = "<group>"; };
 		27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAsyncImageView.swift; sourceTree = "<group>"; };
 		27B3936B29F73B510085D4EC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
-		27B3936D29F74E4B0085D4EC /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		27B3936D29F74E4B0085D4EC /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		27B3936F29F7575C0085D4EC /* SearchTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTopBar.swift; sourceTree = "<group>"; };
 		27BA28182A79BF46008F3F08 /* Artifika-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Artifika-Regular.ttf"; sourceTree = "<group>"; };
 		27BA281A2A79CA67008F3F08 /* PopoverHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverHelp.swift; sourceTree = "<group>"; };
@@ -281,12 +285,12 @@
 		274CE2A929E6D81E007C703D /* View */ = {
 			isa = PBXGroup;
 			children = (
-				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27CC2DFB2A881B4B000EDB64 /* StartingView */,
+				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27C7B9D12A60CEB400CA2818 /* Onboarding */,
 				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
 				27C241F52A0088A70045B2A0 /* Resource */,
-				27B3936D29F74E4B0085D4EC /* MenuView.swift */,
+				27B3936D29F74E4B0085D4EC /* MainView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -330,6 +334,7 @@
 				27CC2E0A2A8844EA000EDB64 /* TabButton.swift */,
 				27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */,
 				279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */,
+				2737740F2A980781004C0BD1 /* CustomBackButton.swift */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -409,6 +414,7 @@
 				27CC2DFC2A881B93000EDB64 /* WelcomeView.swift */,
 				27CC2DFE2A881BA1000EDB64 /* LogInView.swift */,
 				27CC2E002A881BB8000EDB64 /* CreateAccountView.swift */,
+				2737740D2A97E58F004C0BD1 /* MenuView.swift */,
 			);
 			path = StartingView;
 			sourceTree = "<group>";
@@ -695,6 +701,7 @@
 				68D990C52A1AE98A00A3A393 /* ModelMapper.swift in Sources */,
 				2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */,
 				27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */,
+				2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */,
 				2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCartManager.swift in Sources */,
@@ -703,7 +710,8 @@
 				27EBAFE82A59B52E006E5CAD /* LockScreenView.swift in Sources */,
 				27E7A51C2A1D18570042983D /* CartDetail.swift in Sources */,
 				279C64942A8D796D003B29BC /* EmployeeRepositoryImpl.swift in Sources */,
-				27B3936E29F74E4B0085D4EC /* MenuView.swift in Sources */,
+				27B3936E29F74E4B0085D4EC /* MainView.swift in Sources */,
+				273774102A980781004C0BD1 /* CustomBackButton.swift in Sources */,
 				68D990C22A1ADEA700A3A393 /* LocalProductManager.swift in Sources */,
 				68A4B1102A197BFB00FC8D9D /* ProductRepositoryImpl.swift in Sources */,
 				27C7B9D32A60CEC600CA2818 /* OnboardingView.swift in Sources */,

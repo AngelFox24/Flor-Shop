@@ -47,9 +47,8 @@ class LocalSubsidiaryManager: SubsidiaryManager {
             let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
             newSubsidiaryEntity.idSubsidiary = subsidiary.id
             newSubsidiaryEntity.name = subsidiary.name
-            newSubsidiaryEntity.toImageUrl = subsidiary.image.toImageUrlEntity(context: self.mainContext) ?? ImageUrl.getDummyImage()
+            newSubsidiaryEntity.toImageUrl = subsidiary.image.toImageUrlEntity(context: self.mainContext) ?? ImageUrl.getDummyImage().toImageUrlEntity(context: self.mainContext)
             newSubsidiaryEntity.toCompany = companyEntity
-            self.mainSubsidiaryEntity = newSubsidiaryEntity
             saveData()
             return true
         }
@@ -92,6 +91,13 @@ class LocalSubsidiaryManager: SubsidiaryManager {
     func setDefaultSubsidiary(employee: Employee) {
         let employeeEntity = employee.toEmployeeEntity(context: mainContext)
         guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
+            print("No se pudo asingar sucursar default")
+            return
+        }
+        self.mainSubsidiaryEntity = subsidiaryEntity
+    }
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        guard let subsidiaryEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
             print("No se pudo asingar sucursar default")
             return
         }

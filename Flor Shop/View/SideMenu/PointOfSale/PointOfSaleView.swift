@@ -12,29 +12,39 @@ struct PointOfSaleView: View {
     @Binding var isKeyboardVisible: Bool
     @Binding var showMenu: Bool
     var body: some View {
-        VStack(spacing: 0, content: {
-            if tabSelected == .plus {
-                AgregarView()
-            } else if tabSelected == .magnifyingglass {
-                ProductView(selectedTab: $tabSelected, showMenu: $showMenu)
-            } else if tabSelected == .cart {
-                CartView(selectedTab: $tabSelected)
+        ZStack {
+            if !showMenu {
+                Color("color_primary")
+                    .ignoresSafeArea()
             }
-            if isKeyboardVisible {
-                CustomHideKeyboard()
-            } else {
-                CustomTabBar(selectedTab: $tabSelected)
-            }
-        })
-        .cornerRadius(showMenu ? 35 : 0)
+            VStack(spacing: 0, content: {
+                if tabSelected == .plus {
+                    AgregarView()
+                } else if tabSelected == .magnifyingglass {
+                    ProductView(selectedTab: $tabSelected, showMenu: $showMenu)
+                } else if tabSelected == .cart {
+                    CartView(selectedTab: $tabSelected)
+                }
+                if isKeyboardVisible {
+                    CustomHideKeyboard()
+                } else {
+                    CustomTabBar(selectedTab: $tabSelected)
+                }
+            })
+            .cornerRadius(showMenu ? 35 : 0)
+        }
+        //.cornerRadius(showMenu ? 35 : 0)
+        //.ignoresSafeArea()
     }
 }
-/*
 struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
         @State var isKeyboardVisible: Bool = false
         @State var showMenu: Bool = false
+        let prdManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
+        let repository = ProductRepositoryImpl(manager: prdManager)
         PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+            .environmentObject(ProductViewModel(productRepository: repository))
+            .environmentObject(VersionCheck())
     }
 }
-*/
