@@ -11,7 +11,7 @@
         <attribute name="quantityAdded" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="subtotal" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toCartDetail" inverseEntity="Tb_Cart"/>
-        <relationship name="toProduct" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toCartDetail" inverseEntity="Tb_Product"/>
+        <relationship name="toProduct" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toCartDetail" inverseEntity="Tb_Product"/>
     </entity>
     <entity name="Tb_Company" representedClassName=".Tb_Company" syncable="YES" codeGenerationType="class">
         <attribute name="companyName" attributeType="String"/>

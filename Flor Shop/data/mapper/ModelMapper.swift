@@ -9,19 +9,6 @@ import Foundation
 import CoreData
 
 extension Product {
-    func toNewProductEntity(context: NSManagedObjectContext) -> Tb_Product {
-        //Esta mal, no cumple con mi estandar
-        let newProduct = Tb_Product(context: context)
-        newProduct.idProduct = id
-        newProduct.productName = name
-        newProduct.quantityStock = Int64(qty)
-        newProduct.unitCost = unitCost
-        newProduct.unitPrice = unitPrice
-        newProduct.expirationDate = expirationDate
-        //TODO: Arreglar asignacion de imagen url
-        //newProduct.toImageUrl = url
-        return newProduct
-    }
     func toProductEntity(context: NSManagedObjectContext) -> Tb_Product? {
         let fetchRequest: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         var productList: [Tb_Product] = []
@@ -90,7 +77,7 @@ extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
         var imageUrlEntity: Tb_ImageUrl?
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        let filterAtt = NSPredicate(format: "idImageUrl == %@ AND imageUrl == %@", id.uuidString, imageUrl)
+        let filterAtt = NSPredicate(format: "imageUrl == %@", imageUrl)
         request.predicate = filterAtt
         do {
             imageUrlEntity = try context.fetch(request).first
@@ -125,8 +112,7 @@ extension Tb_Product {
                        unitCost: unitCost,
                        unitPrice: unitPrice,
                        expirationDate: expirationDate ?? Date(),
-                       //TODO: Arreglar asignacion de imagen url, temporal url
-                       url: "")
+                       image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(), imageUrl: toImageUrl?.imageUrl ?? ""))
                        //url: url ?? "")
     }
 }
@@ -165,7 +151,7 @@ extension Tb_CartDetail {
             id: idCartDetail ?? UUID(),
             quantity: Int(quantityAdded),
             subtotal: subtotal,
-            product: toProduct?.toProduct() ?? Product())
+            product: toProduct?.toProduct() ?? Product.getDummyProduct())
     }
 }
 

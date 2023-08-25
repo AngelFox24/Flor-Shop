@@ -21,34 +21,21 @@ struct Product: Identifiable {
     var unitCost: Double
     var unitPrice: Double
     var expirationDate: Date?
-    var url: String
     var totalCost: Double
     var profitMargin: Double
     var keyWords: String
-    init(id: UUID, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, url: String) {
+    var image: ImageUrl
+    init(id: UUID, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, image: ImageUrl) {
         self.id = id
         self.name = name
         self.qty = Int(qty)
         self.unitCost = unitCost
         self.unitPrice = unitPrice
         self.expirationDate = expirationDate
-        self.url = url
         self.totalCost = 0
         self.profitMargin = 0
         self.keyWords = "Producto"
-    }
-    //Esta mal
-    init () {
-        self.id = UUID()
-        self.name = ""
-        self.qty = 0
-        self.unitCost = 0.0
-        self.unitPrice = 0.0
-        self.expirationDate = Date()
-        self.url = ""
-        self.totalCost = 0.0
-        self.profitMargin = 0.0
-        self.keyWords = "Producto"
+        self.image = image
     }
     // MARK: Validacion Crear Producto
     func isProductNameValid() -> Bool {
@@ -63,7 +50,7 @@ struct Product: Identifiable {
         }
     }
     func isUnitCostValid() -> Bool {
-        if  unitCost > 0.0 {
+        if unitCost > 0.0 {
             return true
         } else {
             return false
@@ -79,10 +66,7 @@ struct Product: Identifiable {
     func isExpirationDateValid() -> Bool {
         return true
     }
-    func isURLValid() -> Bool {
-        guard URL(string: url) != nil else {
-            return false
-        }
-        return true
+    static func getDummyProduct() -> Product {
+        return Product(id: UUID(), name: "No existe", qty: 0, unitCost: 0, unitPrice: 0, expirationDate: nil, image: ImageUrl.getDummyImage())
     }
 }

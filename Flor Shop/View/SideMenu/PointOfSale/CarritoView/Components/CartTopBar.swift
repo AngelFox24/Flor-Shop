@@ -21,7 +21,7 @@ struct CartTopBar: View {
                 Text(String("S/. "))
                     .foregroundColor(.black)
                     .font(.custom("Artifika-Regular", size: 15))
-                Text(String(carritoCoreDataViewModel.cartCoreData!.total))
+                Text(String(carritoCoreDataViewModel.cartCoreData?.total ?? 0.0))
                     .foregroundColor(.black)
                     .font(.custom("Artifika-Regular", size: 25))
             }

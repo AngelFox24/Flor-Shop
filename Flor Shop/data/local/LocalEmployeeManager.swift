@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol EmployeeManager {
-    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool
+    func addEmployee(employee: Employee) -> Bool
     func getEmployees() -> [Employee]
     func getEmployee() -> Employee?
     func updateEmployee(employee: Employee)
@@ -43,16 +43,23 @@ class LocalEmployeeManager: EmployeeManager {
         self.mainEmployeeEntity = employeeEntity
     }
     //C - Create
-    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool {
+    func addEmployee(employee: Employee) -> Bool {
         guard let employeeEntity = employee.toEmployeeEntity(context: mainContext) else {
             let newEmployeeEntity = Tb_Employee(context: self.mainContext)
             newEmployeeEntity.idEmployee = employee.id
             newEmployeeEntity.name = employee.name
             newEmployeeEntity.lastName = employee.lastName
             newEmployeeEntity.role = employee.role
-            newEmployeeEntity.toImageUrl = employee.image.toImageUrlEntity(context: self.mainContext)
             newEmployeeEntity.active = employee.active
-            newEmployeeEntity.toSubsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext)
+            newEmployeeEntity.toSubsidiary = mainEmployeeEntity?.toSubsidiary
+            if let imageEntity = employee.image.toImageUrlEntity(context: self.mainContext) {
+                newEmployeeEntity.toImageUrl = imageEntity
+            } else {
+                let newImage = Tb_ImageUrl(context: self.mainContext)
+                newImage.idImageUrl = UUID()
+                newImage.imageUrl = employee.image.imageUrl
+                newEmployeeEntity.toImageUrl = newImage
+            }
             saveData()
             return true
         }

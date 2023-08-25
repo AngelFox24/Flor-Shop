@@ -29,15 +29,12 @@ class AgregarViewModel: ObservableObject {
         editedFields.profitMarginEdited = true
         editedFields.unitPriceEdited = true
     }
-    func addProduct(subsidiary: Subsidiary) -> Bool {
-        fieldsTrue()
-        return false
-        /*
+    func addProduct() -> Bool {
         guard let product = createProduct() else {
             print("No se pudo crear producto")
             return false
         }
-        let result = productRepository.saveProduct(product: product, subsidiary: subsidiary)
+        let result = productRepository.saveProduct(product: product)
         if result == "Success" {
             print("Se añadio correctamente")
             resetValuesFields()
@@ -46,7 +43,9 @@ class AgregarViewModel: ObservableObject {
             print(result)
             return false
         }
-         */
+    }
+    func editProduct(product: Product) {
+        
     }
     func urlEdited() {
         print("New work")
@@ -57,7 +56,7 @@ class AgregarViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Product(id: UUID(), name: editedFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: editedFields.expirationDate, url: editedFields.imageUrl)
+        return Product(id: UUID(), name: editedFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: editedFields.expirationDate, image: ImageUrl(id: UUID(), imageUrl: editedFields.imageUrl))
     }
     func isProductNameValid() -> Bool {
         return !editedFields.productName.trimmingCharacters(in: .whitespaces).isEmpty
@@ -146,7 +145,7 @@ class FieldEditTemporal {
             return "Debe ser número entero"
         }
         if quantityStockInt <= 0 && unitCostEdited {
-            return "Debe ser mayor a 0"
+            return "Debe ser mayor a 0: \(unitCostEdited)"
         } else {
             return ""
         }
@@ -161,7 +160,7 @@ class FieldEditTemporal {
             return "Debe ser número decimal o entero"
         }
         if unitCostDouble <= 0.0 && unitCostEdited {
-            return "Debe ser mayor a 0"
+            return "Debe ser mayor a 0: \(unitCostEdited)"
         } else {
             return ""
         }
@@ -174,7 +173,7 @@ class FieldEditTemporal {
             return "Debe ser número decimal o entero"
         }
         if unitPriceDouble <= 0.0 && unitPriceEdited {
-            return "Debe ser mayor a 0"
+            return "Debe ser mayor a 0: \(unitPriceEdited)"
         } else {
             return ""
         }

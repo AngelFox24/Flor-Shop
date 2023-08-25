@@ -36,6 +36,7 @@ struct HomeView_Previews: PreviewProvider {
 }
 
 struct ListaControler: View {
+    @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @State private var audioPlayer: AVAudioPlayer?
@@ -68,7 +69,7 @@ struct ListaControler: View {
                         expirationDate: producto.expirationDate,
                         quantity: producto.qty,
                         unitPrice: producto.unitPrice,
-                        url: producto.url,
+                        url: producto.image.imageUrl,
                         size: 80.0)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
@@ -87,7 +88,7 @@ struct ListaControler: View {
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(action: {
-                            editarProducto(producto: producto)
+                            editProduct(product: producto)
                             selectedTab = .plus
                         }, label: {
                             Image(systemName: "pencil")
@@ -102,9 +103,8 @@ struct ListaControler: View {
         .padding(.horizontal, 10)
         .background(Color("color_background"))
     }
-    func editarProducto(producto: Product) {
-        productsCoreDataViewModel.editProduct(product: producto)
-        print("Se esta editando el producto \(producto.name)")
+    func editProduct(product: Product) {
+        agregarViewModel.editProduct(product: product)
     }
     func agregarProductoACarrito(producto: Product) -> Bool {
         print("Se agrego el producto al carrito \(producto.name)")

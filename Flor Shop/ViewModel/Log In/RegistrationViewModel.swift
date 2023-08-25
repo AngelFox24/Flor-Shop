@@ -37,7 +37,7 @@ class RegistrationViewModel: ObservableObject {
         let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: ImageUrl.getDummyImage(), active: true)
         if companyRepository.addCompany(company: companyRegistration) {
             _ = createSubsidiary(subsidiary: subsidiaryRegistration, company: companyRegistration)
-            _ = createEmployee(subsidiary: subsidiaryRegistration, employee: userRegistration)
+            _ = createEmployee(employee: userRegistration)
             createCart(employee: userRegistration)
             //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
             setDefaultCompany(employee: userRegistration)
@@ -58,8 +58,8 @@ class RegistrationViewModel: ObservableObject {
     func createSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
         return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary, company: company)
     }
-    func createEmployee(subsidiary: Subsidiary ,employee: Employee) -> Bool {
-        return self.employeeRepository.addEmployee(subsidiary: subsidiary, employee: employee)
+    func createEmployee(employee: Employee) -> Bool {
+        return self.employeeRepository.addEmployee(employee: employee)
     }
     func setDefaultSubsidiary(employee: Employee) {
         self.subsidiaryRepository.setDefaultSubsidiary(employee: employee)

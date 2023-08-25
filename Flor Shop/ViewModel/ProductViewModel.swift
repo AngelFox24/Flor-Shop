@@ -10,7 +10,6 @@ import Foundation
 
 class ProductViewModel: ObservableObject {
     @Published var productsCoreData: [Product] = []
-    @Published var temporalProduct: Product = Product()
     let productRepository: ProductRepository
     init(productRepository: ProductRepository) {
         self.productRepository = productRepository
@@ -19,10 +18,6 @@ class ProductViewModel: ObservableObject {
     // MARK: CRUD Core Data
     func fetchProducts () {
         productsCoreData = productRepository.getListProducts()
-    }
-    func setDefaultProduct() {
-        temporalProduct = Product()
-        // print("cant: \(temporalProduct.qty) tipe: \()")
     }
     /*
     func addProduct() -> Bool {
@@ -43,10 +38,6 @@ class ProductViewModel: ObservableObject {
         fetchProducts()
         return success
     }
-    func editProduct (product: Product) {
-        self.temporalProduct = product
-        calcProfitMargin()
-    }
     func filterProducts(word: String) {
         if word == "" {
             fetchProducts()
@@ -59,14 +50,5 @@ class ProductViewModel: ObservableObject {
     }
     func setFilter(filter: ProductsFilterAttributes) {
         productRepository.setFilter(filter: filter)
-    }
-    func calcProfitMargin() {
-        print("Se llamo a la funcion calcular profit")
-        if ((temporalProduct.unitPrice - temporalProduct.unitCost) > 0.0) && (temporalProduct.unitPrice > 0) && (temporalProduct.unitCost > 0) {
-            temporalProduct.profitMargin = (temporalProduct.unitPrice - temporalProduct.unitCost) / temporalProduct.unitCost
-            print("Se calculo profit: \(temporalProduct.profitMargin)")
-        } else {
-            temporalProduct.profitMargin = 0.0
-        }
     }
 }

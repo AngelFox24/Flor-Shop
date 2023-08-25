@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol ProductManager {
-    func saveProduct(product: Product, subsidiary: Subsidiary) -> String
+    func saveProduct(product: Product) -> String
     func getListProducts() -> [Product]
     func reduceStock() -> Bool
     func filterProducts(word: String) -> [Product]
@@ -40,41 +40,37 @@ class LocalProductManager: ProductManager {
         }
         return productList.mapToListProduct()
     }
-    func saveProduct(product: Product, subsidiary: Subsidiary) -> String {
-        var message = ""
-        if product.isProductNameValid(),
-           product.isQuantityValid(),
-           product.isUnitCostValid(),
-           product.isUnitPriceValid(),
-           product.isExpirationDateValid(),
-           product.isURLValid() {
-            if let productInContext = product.toProductEntity(context: mainContext) {
-                productInContext.productName = product.name
-                productInContext.quantityStock = Int64(product.qty)
-                productInContext.unitCost = product.unitCost
-                productInContext.expirationDate = product.expirationDate
-                productInContext.unitPrice = product.unitPrice
-                // TODO: asignar imagen correctamente
-                //productInContext.toImageUrl = product.url
-            } else {
-                _ = product.toNewProductEntity(context: mainContext)
-            }
+    func saveProduct(product: Product) -> String {
+        if let productInContext = product.toProductEntity(context: mainContext) {
+            //Existe este producto, vamos a actualizarlo
+            print("Se encontro producto, lo vamos a actualizar")
+            productInContext.productName = product.name
+            productInContext.quantityStock = Int64(product.qty)
+            productInContext.unitCost = product.unitCost
+            productInContext.expirationDate = product.expirationDate
+            productInContext.unitPrice = product.unitPrice
+            productInContext.toImageUrl?.imageUrl = product.image.imageUrl
+            // TODO: asignar imagen correctamente
+            //productInContext.toImageUrl = product.url
             saveData()
-            message = "Success"
         } else {
-            if !product.isProductNameValid() {
-                message = "El nombre del producto esta mal \(product.name)"
-            } else if !product.isUnitCostValid() {
-                message = "El costo unitario esta mal \(product.unitCost)"
-            } else if !product.isUnitPriceValid() {
-                message = "El precio unitario esta mal \(product.unitPrice)"
-            } else if !product.isExpirationDateValid() {
-                message = "La fecha de vencimiento esta mal \(product.expirationDate)"
-            } else if !product.isURLValid() {
-                message = "La URL esta mal \(product.url)"
-            }
+            print("No se encontro producto, lo vamos a crear")
+            //Creamos una nueva Imagen
+            let newImage = Tb_ImageUrl(context: mainContext)
+            newImage.idImageUrl = product.image.id
+            newImage.imageUrl = product.image.imageUrl
+            //Creamos un nuevo producto
+            let newProduct = Tb_Product(context: mainContext)
+            newProduct.idProduct = product.id
+            newProduct.productName = product.name
+            newProduct.quantityStock = Int64(product.qty)
+            newProduct.unitCost = product.unitCost
+            newProduct.unitPrice = product.unitPrice
+            newProduct.expirationDate = product.expirationDate
+            newProduct.toImageUrl = newImage
+            saveData()
         }
-        return message
+        return "Success"
     }
     func getListCart() -> Tb_Cart? {
         var cart: Tb_Cart?

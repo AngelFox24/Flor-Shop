@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol EmployeeRepository {
-    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool
+    func addEmployee(employee: Employee) -> Bool
     func getEmployees() -> [Employee]
     func getEmployee() -> Employee?
     func updateEmployee(employee: Employee)
@@ -30,8 +30,8 @@ class EmployeeRepositoryImpl: EmployeeRepository {
         return self.manager.logIn(user: user, password: password)
     }
     //C - Create
-    func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool {
-        return self.manager.addEmployee(subsidiary: subsidiary, employee: employee)
+    func addEmployee(employee: Employee) -> Bool {
+        return self.manager.addEmployee(employee: employee)
     }
     //R - Read
     func getEmployees() -> [Employee] {

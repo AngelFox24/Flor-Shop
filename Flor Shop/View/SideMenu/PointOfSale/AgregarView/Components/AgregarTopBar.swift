@@ -10,7 +10,7 @@ import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
-    @EnvironmentObject var companyViewModel: CompanyViewModel
+    @EnvironmentObject var productViewModel: ProductViewModel
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @State private var audioPlayer: AVAudioPlayer?
@@ -19,11 +19,12 @@ struct AgregarTopBar: View {
             AgregarViewPopoverHelp()
             Spacer()
             Button(action: {
-                if agregarViewModel.addProduct(subsidiary: companyViewModel.subsidiary ?? Subsidiary.getDummySubsidiary()) {
+                if agregarViewModel.addProduct() {
                     print("Se agrego un producto exitosamente")
                     //TODO: Cambiar esta funcion al repositorio
                     carritoCoreDataViewModel.updateCartTotal()
                     agregarViewModel.resetValuesFields()
+                    productViewModel.fetchProducts()
                     playSound(named: "Success1")
                 } else {
                     agregarViewModel.fieldsTrue()

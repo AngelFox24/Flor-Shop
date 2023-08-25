@@ -53,6 +53,26 @@ class LocalCompanyManager: CompanyManager {
         rollback()
         return false
     }
+    func addSubsidiary(subsidiary: Subsidiary) -> Bool {
+        guard let companyEntity = mainCompanyEntity else {
+            print("No existe compañia para crear una sucursal")
+            rollback()
+            return false
+        }
+        if let subsidiaryEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext) {
+            print("Ya existe sucursal, no se puede crear")
+            rollback()
+            return false
+        } else {
+            let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
+            newSubsidiaryEntity.idSubsidiary = subsidiary.id
+            newSubsidiaryEntity.name = subsidiary.name
+            newSubsidiaryEntity.toImageUrl = subsidiary.image.toImageUrlEntity(context: self.mainContext) ?? ImageUrl.getDummyImage().toImageUrlEntity(context: self.mainContext)
+            newSubsidiaryEntity.toCompany = companyEntity
+            saveData()
+            return true
+        }
+    }
     //R - Read
     func getCompany() -> Company? {
         return mainCompanyEntity?.toCompany()

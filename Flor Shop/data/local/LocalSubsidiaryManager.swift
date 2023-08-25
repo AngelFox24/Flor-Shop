@@ -34,6 +34,7 @@ class LocalSubsidiaryManager: SubsidiaryManager {
         self.mainContext.rollback()
     }
     //C - Create
+    /*
     func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
         guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
             print("No existe compañia para crear una sucursal")
@@ -54,6 +55,7 @@ class LocalSubsidiaryManager: SubsidiaryManager {
             return true
         }
     }
+     */
     //R - Read
     func getSubsidiary() -> Subsidiary? {
         return mainSubsidiaryEntity?.toSubsidiary()
