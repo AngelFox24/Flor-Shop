@@ -10,6 +10,7 @@ import CoreData
 
 protocol CartManager {
     func getCart() -> Car?
+    func getCartEmployee() -> Employee?
     func deleteProduct(product: Product)
     func addProductToCart(productIn: Product) -> Bool
     func emptyCart()
@@ -22,7 +23,7 @@ protocol CartManager {
 
 class LocalCartManager: CartManager {
     let mainContext: NSManagedObjectContext
-    var mainEmployeeEntity: Tb_Employee?
+    var mainCartEntity: Tb_Cart?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -44,15 +45,18 @@ class LocalCartManager: CartManager {
         cart.idCart = UUID()
         cart.total = 0.0
         cart.toEmployee = employeeEntity
-        mainEmployeeEntity = employeeEntity
+        mainCartEntity = cart
         saveData()
     }
     func getCart() -> Car? {
-        if let cartEntity = mainEmployeeEntity?.toCart {
+        if let cartEntity = self.mainCartEntity {
             return cartEntity.mapToCar()
         } else {
             return nil
         }
+    }
+    func getCartEmployee() -> Employee? {
+        return mainCartEntity?.toEmployee?.toEmployee()
     }
     private func getCartEntity() -> Tb_Cart? {
         var cart: Tb_Cart?

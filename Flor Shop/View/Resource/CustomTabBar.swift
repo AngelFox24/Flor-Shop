@@ -33,37 +33,40 @@ struct CustomTabBar: View {
         }
     }
     var body: some View {
-        VStack {
-            HStack {
-                ForEach(Tab.allCases, id: \.rawValue) { tab in
-                    VStack {
-                        HStack {
-                            Spacer()
-                            VStack {
-                                Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
-                                    .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
-                                    .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
-                                    .font(.custom("Artifika-Regular", size: 24))
-                                Text(getTabText(for: tab))
-                                    .font(.custom("Artifika-Regular", size: 16))
-                                    .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
+        ZStack {
+            VStack {
+                Spacer()
+                HStack {
+                    ForEach(Tab.allCases, id: \.rawValue) { tab in
+                        VStack {
+                            HStack {
+                                Spacer()
+                                VStack {
+                                    Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
+                                        .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
+                                        .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
+                                        .font(.custom("Artifika-Regular", size: 24))
+                                    Text(getTabText(for: tab))
+                                        .font(.custom("Artifika-Regular", size: 16))
+                                        .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
+                                }
+                                .padding(.top, 8)
+                                //.padding(.bottom, 60)
+                                Spacer()
                             }
-                            .padding(.top, 8)
-                            //.padding(.bottom, 60)
-                            Spacer()
+                            .frame(maxHeight: .infinity)
                         }
-                        .frame(maxHeight: .infinity)
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            selectedTab = tab
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                selectedTab = tab
+                            }
                         }
                     }
                 }
+                .background(Color("color_primary"))
+                .frame(width: nil, height: 50)
             }
-            .background(Color("color_primary"))
-            .frame(width: nil, height: 50)
         }
     }
 }

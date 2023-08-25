@@ -55,14 +55,7 @@ class LocalCompanyManager: CompanyManager {
     }
     //R - Read
     func getCompany() -> Company? {
-        var companyEntity: Tb_Company?
-        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        do {
-            companyEntity = try self.mainContext.fetch(request).first
-        } catch let error {
-            print("Error fetching. \(error)")
-        }
-        return companyEntity?.toCompany()
+        return mainCompanyEntity?.toCompany()
     }
     //U - Update
     func updateCompany(company: Company) {

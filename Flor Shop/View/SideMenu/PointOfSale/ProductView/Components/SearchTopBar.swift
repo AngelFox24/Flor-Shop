@@ -98,7 +98,7 @@ struct SearchTopBar: View {
                     filtrarProductos(filterWord: seach)
                 })
             }
-            .padding(.horizontal, 30)
+            .padding(.horizontal, 20)
         }
         .padding(.bottom, 9)
         .background(Color("color_primary"))

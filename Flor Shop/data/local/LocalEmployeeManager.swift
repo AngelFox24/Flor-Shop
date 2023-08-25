@@ -11,10 +11,12 @@ import CoreData
 protocol EmployeeManager {
     func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool
     func getEmployees() -> [Employee]
+    func getEmployee() -> Employee?
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
     func setDefaultEmployee(employee: Employee)
+    func getEmployeeSubsidiary() -> Subsidiary?
 }
 
 class LocalEmployeeManager: EmployeeManager {
@@ -67,6 +69,12 @@ class LocalEmployeeManager: EmployeeManager {
             print("Error fetching. \(error)")
         }
         return employeesEntityList.map { $0.toEmployee() }
+    }
+    func getEmployee() -> Employee? {
+        return mainEmployeeEntity?.toEmployee()
+    }
+    func getEmployeeSubsidiary() -> Subsidiary? {
+        return mainEmployeeEntity?.toSubsidiary?.toSubsidiary()
     }
     //U - Update
     func updateEmployee(employee: Employee) {

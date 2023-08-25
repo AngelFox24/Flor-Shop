@@ -38,7 +38,7 @@ class LogInViewModel: ObservableObject {
             setDefaultCompany(employee: employee)
             setDefaultSubsidiary(employee: employee)
             setDefaultEmployee(employee: employee)
-            self.logInStatus = .success
+            //self.logInStatus = .success
         } else {
             logInFields.errorLogIn = "No se encontro usuario en la BD"
             self.logInStatus = .fail
@@ -56,6 +56,45 @@ class LogInViewModel: ObservableObject {
     }
     func setDefaultEmployee(employee: Employee) {
         self.employeeRepository.setDefaultEmployee(employee: employee)
+    }
+    func checkDBIntegrity() {
+        guard let _ = self.cartRepository.getCart() else {
+            print("No se fijo el carrito")
+            return
+        }
+        guard let employee = self.employeeRepository.getEmployee() else {
+            print("No se fijo el empleado")
+            return
+        }
+        guard let subsidiary = self.subsidiaryRepository.getSubsidiary() else {
+            print("No se fijo la sucursal")
+            return
+        }
+        guard let company = self.companyRepository.getCompany() else {
+            print("No se fijo la compañia")
+            return
+        }
+        guard let cartEmployee = self.cartRepository.getCartEmployee() else {
+            print("Carrito no pertenece a un empleado")
+            return
+        }
+        guard let employeeSubsidiary = self.employeeRepository.getEmployeeSubsidiary() else {
+            print("Empleado no tiene sucursal")
+            return
+        }
+        guard let subsidiaryCompany = self.subsidiaryRepository.getSubsidiaryCompany() else {
+            print("La sucursar no tiene compañia")
+            return
+        }
+        if subsidiary.id != employeeSubsidiary.id {
+            print("Empleado no pertenece a esta sucursal \(employeeSubsidiary.name) y \(subsidiary.name)")
+        } else if company.id != subsidiaryCompany.id {
+            print("Sucursal no pertenece a esta compañia \(company.companyName) y \(subsidiaryCompany.companyName)")
+        } else if employee.id != cartEmployee.id {
+            print("Carrito no pertenece a este empleado \(employee.name) y \(cartEmployee.name)")
+        } else {
+            self.logInStatus = .success
+        }
     }
 }
 class LogInFields {

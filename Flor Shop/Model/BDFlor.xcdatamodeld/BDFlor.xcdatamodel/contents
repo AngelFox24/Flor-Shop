@@ -36,7 +36,7 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="role" attributeType="String"/>
         <attribute name="user" optional="YES" attributeType="String"/>
-        <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toEmployee" inverseEntity="Tb_Cart"/>
+        <relationship name="toCart" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toEmployee" inverseEntity="Tb_Cart"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toEmployee" inverseEntity="Tb_ImageUrl"/>
         <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toEmployee" inverseEntity="Tb_Sale"/>
         <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toEmployee" inverseEntity="Tb_Subsidiary"/>

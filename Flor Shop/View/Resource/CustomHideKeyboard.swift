@@ -9,21 +9,24 @@ import SwiftUI
 
 struct CustomHideKeyboard: View {
     var body: some View {
-        VStack {
-            HStack {
+        ZStack {
+            VStack {
                 Spacer()
-                Button(action: {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }, label: {
-                    Image(systemName: "keyboard.chevron.compact.down")
-                        .font(.system(size: 30))
-                        .foregroundColor(Color("color_accent"))
-                        .padding(.trailing, 50)
-                        .padding(.vertical, 10)
-                })
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }, label: {
+                        Image(systemName: "keyboard.chevron.compact.down")
+                            .font(.system(size: 30))
+                            .foregroundColor(Color("color_accent"))
+                            .padding(.trailing, 50)
+                            .padding(.vertical, 10)
+                    })
+                }
+                .background(Color("color_primary"))
             }
         }
-        .background(Color("color_primary"))
     }
 }
 

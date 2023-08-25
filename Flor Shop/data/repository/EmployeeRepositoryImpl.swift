@@ -11,10 +11,12 @@ import CoreData
 protocol EmployeeRepository {
     func addEmployee(subsidiary: Subsidiary, employee: Employee) -> Bool
     func getEmployees() -> [Employee]
+    func getEmployee() -> Employee?
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
     func setDefaultEmployee(employee: Employee)
+    func getEmployeeSubsidiary() -> Subsidiary?
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -45,5 +47,11 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     }
     func setDefaultEmployee(employee: Employee) {
         self.manager.setDefaultEmployee(employee: employee)
+    }
+    func getEmployee() -> Employee? {
+        return self.manager.getEmployee()
+    }
+    func getEmployeeSubsidiary() -> Subsidiary? {
+        return self.manager.getEmployeeSubsidiary()
     }
 }

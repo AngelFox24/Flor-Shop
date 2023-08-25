@@ -74,7 +74,7 @@ struct SideMenuView: View {
     @Binding var showMenu: Bool
     var body: some View {
             ZStack {
-                Color("color_accent")
+                Color(showMenu ? "color_accent" : "color_primary")
                     .ignoresSafeArea()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 15, content: {

@@ -8,7 +8,6 @@
 import Foundation
 
 class RegistrationViewModel: ObservableObject {
-    @Published var logInStatus: LogInStatus = .fail
     @Published var registrationFields: RegistrationFields = RegistrationFields()
     private let companyRepository: CompanyRepository
     private let subsidiaryRepository: SubsidiaryRepository
@@ -32,7 +31,7 @@ class RegistrationViewModel: ObservableObject {
         registrationFields.managerLastNameEdited = true
         registrationFields.companyRUCEdited = true
     }
-    func registerUser() {
+    func registerUser() -> Bool {
         let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
         let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: ImageUrl.getDummyImage())
         let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: ImageUrl.getDummyImage(), active: true)
@@ -44,10 +43,10 @@ class RegistrationViewModel: ObservableObject {
             setDefaultCompany(employee: userRegistration)
             setDefaultSubsidiary(employee: userRegistration)
             setDefaultEmployee(employee: userRegistration)
-            self.logInStatus = .success
+            return true
         } else {
             registrationFields.errorRegistration = "Muchos errores pueden haber ocurrido"
-            self.logInStatus = .fail
+            return false
         }
     }
     func createCart(employee: Employee) {
@@ -71,7 +70,7 @@ class RegistrationViewModel: ObservableObject {
     }
 }
 class RegistrationFields {
-    var email: String = ""
+    var email: String = "curilaurente@gmail.com"
     var emailEdited: Bool = false
     var emailError: String {
         if email == "" && emailEdited {
@@ -80,7 +79,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var user: String = ""
+    var user: String = "Mrfox"
     var userEdited: Bool = false
     var userError: String {
         if user == "" && userEdited {
@@ -89,7 +88,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var password: String = ""
+    var password: String = "pro"
     var passwordEdited: Bool = false
     var passwordError: String {
         if self.password == "" && self.passwordEdited {
@@ -98,7 +97,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var companyName: String = ""
+    var companyName: String = "FlorShop"
     var companyNameEdited: Bool = false
     var companyNameError: String {
         if self.companyName == "" && self.companyNameEdited {
@@ -116,7 +115,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var managerName: String = ""
+    var managerName: String = "Angel"
     var managerNameEdited: Bool = false
     var managerNameError: String {
         if self.managerName == "" && self.managerNameEdited {
@@ -125,7 +124,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var managerLastName: String = ""
+    var managerLastName: String = "Curi Laurente"
     var managerLastNameEdited: Bool = false
     var managerLastNameError: String {
         if self.managerLastName == "" && self.managerLastNameEdited {

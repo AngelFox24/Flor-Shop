@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @Binding var isKeyboardVisible: Bool
     var body: some View {
         VStack {
             Spacer()
@@ -29,13 +30,13 @@ struct WelcomeView: View {
             Spacer()
             VStack(spacing: 30) {
                 Button(action: {}, label: {
-                    NavigationLink(destination: LogInView(), label: {
+                    NavigationLink(destination: LogInView(isKeyboardVisible: $isKeyboardVisible), label: {
                         CustomButton2(text: "Tengo una cuenta", backgroudColor: Color("color_accent"), minWidthC: 250)
                             .foregroundColor(Color(.black))
                     })
                 })
                 Button(action: {}, label: {
-                    NavigationLink(destination: CreateAccountView(), label: {
+                    NavigationLink(destination: CreateAccountView(isKeyboardVisible: $isKeyboardVisible), label: {
                         CustomButton2(text: "Crear Cuenta", backgroudColor: Color("color_background"), minWidthC: 250)
                             .foregroundColor(Color(.black))
                     })
@@ -49,6 +50,6 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView()
+        WelcomeView(isKeyboardVisible: .constant(true))
     }
 }

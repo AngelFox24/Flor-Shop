@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var logInViewModel: LogInViewModel
+    @State private var isKeyboardVisible: Bool = false
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     var body: some View {
         VStack(spacing: 0) {
@@ -26,11 +27,11 @@ struct MainView: View {
                 case .versionOk:
                     //Etapa del LogIn o Registro
                     if logInViewModel.logInStatus == .success {
-                        MenuView()
+                        MenuView(isKeyboardVisible: $isKeyboardVisible)
                     } else {
                         NavigationView(content: {
                             VStack(content: {
-                                WelcomeView()
+                                WelcomeView(isKeyboardVisible: $isKeyboardVisible)
                             })
                         })
                     }
@@ -41,6 +42,13 @@ struct MainView: View {
         }
         .onAppear {
             //versionCheck.checkAppVersion()
+            // checkForPermission()
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = true
+            }
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = false
+            }
         }
     }
 }

@@ -13,10 +13,6 @@ struct PointOfSaleView: View {
     @Binding var showMenu: Bool
     var body: some View {
         ZStack {
-            if !showMenu {
-                Color("color_primary")
-                    .ignoresSafeArea()
-            }
             VStack(spacing: 0, content: {
                 if tabSelected == .plus {
                     AgregarView()
@@ -25,16 +21,14 @@ struct PointOfSaleView: View {
                 } else if tabSelected == .cart {
                     CartView(selectedTab: $tabSelected)
                 }
-                if isKeyboardVisible {
-                    CustomHideKeyboard()
-                } else {
-                    CustomTabBar(selectedTab: $tabSelected)
-                }
             })
-            .cornerRadius(showMenu ? 35 : 0)
+            if isKeyboardVisible {
+                CustomHideKeyboard()
+                    .padding(.bottom, 12)
+            } else {
+                CustomTabBar(selectedTab: $tabSelected)
+            }
         }
-        //.cornerRadius(showMenu ? 35 : 0)
-        //.ignoresSafeArea()
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {

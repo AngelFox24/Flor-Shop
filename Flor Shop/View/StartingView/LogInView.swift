@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
+    @Binding var isKeyboardVisible: Bool
     var body: some View {
         ZStack {
             Color("color_primary")
@@ -39,6 +40,7 @@ struct LogInView: View {
                     VStack(spacing: 30) {
                         Button(action: {
                             logInViewModel.logIn()
+                            logInViewModel.checkDBIntegrity()
                         }, label: {
                             VStack {
                                 CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
@@ -65,6 +67,9 @@ struct LogInView: View {
                 }
             }
             .padding(.top, 1) //Resuelve el problema del desvanecimiento en el navigation back button
+            if isKeyboardVisible {
+                CustomHideKeyboard()
+            }
         }
         //.ignoresSafeArea()
     }
@@ -83,7 +88,7 @@ struct LogInView_Previews: PreviewProvider {
         let productRepository = ProductRepositoryImpl(manager: productManager)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
         let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
-        LogInView()
+        LogInView(isKeyboardVisible: .constant(true))
             .environmentObject(logInViewModel)
     }
 }

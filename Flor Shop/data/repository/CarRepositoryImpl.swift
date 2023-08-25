@@ -10,6 +10,7 @@ import CoreData
 
 protocol CarRepository {
     func getCart() -> Car?
+    func getCartEmployee() -> Employee?
     func deleteProduct(product: Product)
     func addProductoToCarrito(product: Product) -> Bool
     func emptyCart()
@@ -52,5 +53,8 @@ class CarRepositoryImpl: CarRepository {
     }
     func createCart(employee: Employee) {
         self.manager.createCart(employee: employee)
+    }
+    func getCartEmployee() -> Employee? {
+        return self.manager.getCartEmployee()
     }
 }

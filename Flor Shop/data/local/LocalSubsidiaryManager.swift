@@ -14,6 +14,7 @@ protocol SubsidiaryManager {
     func updateSubsidiary(subsidiary: Subsidiary)
     func deleteSubsidiary(subsidiary: Subsidiary)
     func setDefaultSubsidiary(employee: Employee)
+    func getSubsidiaryCompany() -> Company?
 }
 
 class LocalSubsidiaryManager: SubsidiaryManager {
@@ -55,14 +56,7 @@ class LocalSubsidiaryManager: SubsidiaryManager {
     }
     //R - Read
     func getSubsidiary() -> Subsidiary? {
-        var subsidiaryEntity: Tb_Subsidiary?
-        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        do {
-            subsidiaryEntity = try self.mainContext.fetch(request).first
-        } catch let error {
-            print("Error fetching. \(error)")
-        }
-        return subsidiaryEntity?.toSubsidiary()
+        return mainSubsidiaryEntity?.toSubsidiary()
     }
     //U - Update
     func updateSubsidiary(subsidiary: Subsidiary) {
@@ -102,5 +96,8 @@ class LocalSubsidiaryManager: SubsidiaryManager {
             return
         }
         self.mainSubsidiaryEntity = subsidiaryEntity
+    }
+    func getSubsidiaryCompany() -> Company? {
+        return mainSubsidiaryEntity?.toCompany?.toCompany()
     }
 }

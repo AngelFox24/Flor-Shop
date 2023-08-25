@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct CreateAccountView: View {
+    @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var registrationViewModel: RegistrationViewModel
+    @Binding var isKeyboardVisible: Bool
     var body: some View {
         ZStack {
             Color("color_primary")
@@ -76,7 +78,9 @@ struct CreateAccountView: View {
                     .padding(.horizontal, 30)
                     Spacer()
                     Button(action: {
-                        registrationViewModel.registerUser()
+                        if registrationViewModel.registerUser() {
+                            logInViewModel.checkDBIntegrity()
+                        }
                     }, label: {
                         CustomButton2(text: "Registrar", backgroudColor: Color("color_accent"), minWidthC: 250)
                             .foregroundColor(Color(.black))
@@ -85,6 +89,9 @@ struct CreateAccountView: View {
                 }
             }
             .padding(.top, 1)
+            if isKeyboardVisible {
+                CustomHideKeyboard()
+            }
         }
     }
 }
@@ -101,8 +108,10 @@ struct CreateAccountView_Previews: PreviewProvider {
         let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
         let productRepository = ProductRepositoryImpl(manager: productManager)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
+        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
         let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
-        CreateAccountView()
+        CreateAccountView(isKeyboardVisible: .constant(true))
+            .environmentObject(logInViewModel)
             .environmentObject(registrationViewModel)
     }
 }
