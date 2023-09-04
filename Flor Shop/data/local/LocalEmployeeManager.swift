@@ -56,7 +56,14 @@ class LocalEmployeeManager: EmployeeManager {
     }
     //C - Create
     func addEmployee(employee: Employee) -> Bool {
-        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext) else {
+        if employee.toEmployeeEntity(context: mainContext) != nil { //Busqueda por id
+            print("Empleado ya existe: \(String(describing: employee.name))")
+            rollback()
+            return false
+        } else if employeeExist(employee: employee) { //Comprobamos si existe el mismo empleado por otros atributos
+            rollback()
+            return false
+        } else { //Creamos un nuevo empleado
             let newEmployeeEntity = Tb_Employee(context: self.mainContext)
             newEmployeeEntity.idEmployee = employee.id
             newEmployeeEntity.email = employee.email
@@ -65,20 +72,17 @@ class LocalEmployeeManager: EmployeeManager {
             newEmployeeEntity.role = employee.role
             newEmployeeEntity.active = employee.active
             newEmployeeEntity.toSubsidiary = self.mainSubsidiaryEntity
-            if let imageEntity = employee.image.toImageUrlEntity(context: self.mainContext) {
+            if let imageEntity = employee.image.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 newEmployeeEntity.toImageUrl = imageEntity
-            } else {
+            } else { // Si no existe creamos uno nuevo
                 let newImage = Tb_ImageUrl(context: self.mainContext)
-                newImage.idImageUrl = UUID()
+                newImage.idImageUrl = employee.image.id
                 newImage.imageUrl = employee.image.imageUrl
                 newEmployeeEntity.toImageUrl = newImage
             }
             saveData()
             return true
         }
-        print("Empleado ya existe: \(employeeEntity.name)")
-        rollback()
-        return false
     }
     //R - Read
     func getEmployees() -> [Employee] {
@@ -124,6 +128,18 @@ class LocalEmployeeManager: EmployeeManager {
         } catch let error {
             print("Error fetching. \(error)")
             return nil
+        }
+    }
+    func employeeExist(employee: Employee) -> Bool {
+        let filterAtt = NSPredicate(format: "(name == %@ AND lastName == %@) OR email == %@", employee.name, employee.lastName, employee.email)
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let total = try self.mainContext.fetch(request).count
+            return total == 0 ? false : true
+        } catch let error {
+            print("Error fetching. \(error)")
+            return false
         }
     }
 }

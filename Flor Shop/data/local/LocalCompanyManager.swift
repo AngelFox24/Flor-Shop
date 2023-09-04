@@ -49,7 +49,13 @@ class LocalCompanyManager: CompanyManager {
     }
     //C - Create
     func addCompany(company: Company) -> Bool {
-        guard let _ = company.toCompanyEntity(context: self.mainContext) else {
+        if company.toCompanyEntity(context: self.mainContext) != nil { //Comprobacion Inicial por Id
+            rollback()
+            return false
+        } else if companyExist(company: company) { //Buscamos compañia por otros atributos
+            rollback()
+            return false
+        } else { //Creamos una nueva comañia
             let newCompany = Tb_Company(context: mainContext)
             newCompany.idCompany = company.id
             newCompany.companyName = company.companyName
@@ -58,8 +64,6 @@ class LocalCompanyManager: CompanyManager {
             saveData()
             return true
         }
-        rollback()
-        return false
     }
     //R - Read
     func getDefaultCompany() -> Company? {
@@ -72,5 +76,17 @@ class LocalCompanyManager: CompanyManager {
     //D - Delete
     func deleteCompany(company: Company) {
         
+    }
+    func companyExist(company: Company) -> Bool {
+        let filterAtt = NSPredicate(format: "companyName == %@ OR ruc == %@", company.companyName, company.ruc)
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let total = try self.mainContext.fetch(request).count
+            return total == 0 ? false : true
+        } catch let error {
+            print("Error fetching. \(error)")
+            return false
+        }
     }
 }

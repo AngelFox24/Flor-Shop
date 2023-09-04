@@ -43,24 +43,16 @@ class LocalProductManager: ProductManager {
         return productList.mapToListProduct()
     }
     func saveProduct(product: Product) -> String {
-        if let productInContext = product.toProductEntity(context: mainContext) {
-            //Existe este producto, vamos a actualizarlo
+        if let productInContext = product.toProductEntity(context: mainContext) { //Existe este producto, vamos a actualizarlo
             print("Se encontro producto, lo vamos a actualizar")
             productInContext.productName = product.name
             productInContext.quantityStock = Int64(product.qty)
             productInContext.unitCost = product.unitCost
             productInContext.expirationDate = product.expirationDate
             productInContext.unitPrice = product.unitPrice
-            productInContext.toImageUrl?.imageUrl = product.image.imageUrl
-            // TODO: asignar imagen correctamente
-            //productInContext.toImageUrl = product.url
-            saveData()
+            productInContext.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
         } else {
             print("No se encontro producto, lo vamos a crear")
-            //Creamos una nueva Imagen
-            let newImage = Tb_ImageUrl(context: mainContext)
-            newImage.idImageUrl = product.image.id
-            newImage.imageUrl = product.image.imageUrl
             //Creamos un nuevo producto
             let newProduct = Tb_Product(context: mainContext)
             newProduct.idProduct = product.id
@@ -69,9 +61,9 @@ class LocalProductManager: ProductManager {
             newProduct.unitCost = product.unitCost
             newProduct.unitPrice = product.unitPrice
             newProduct.expirationDate = product.expirationDate
-            newProduct.toImageUrl = newImage
-            saveData()
+            newProduct.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
         }
+        saveData()
         return "Success"
     }
     func getListCart() -> Tb_Cart? {

@@ -10,19 +10,14 @@ import CoreData
 
 extension Product {
     func toProductEntity(context: NSManagedObjectContext) -> Tb_Product? {
-        let fetchRequest: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        var productList: [Tb_Product] = []
+        let filterAtt = NSPredicate(format: "idProduct == %@", id.uuidString)
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        request.predicate = filterAtt
         do {
-            productList = try context.fetch(fetchRequest)
+            let productEntity = try context.fetch(request).first
+            return productEntity
         } catch let error {
             print("Error fetching. \(error)")
-        }
-        if let product = productList.first(where: { $0.idProduct == id }) {
-            print("Producto encontrado: \(product.productName ?? "")")
-            return product
-        } else {
-            // No se encontró ningún producto con el ID especificado
-            print("Producto no encontrado")
             return nil
         }
     }
@@ -30,61 +25,68 @@ extension Product {
 
 extension Employee {
     func toEmployeeEntity(context: NSManagedObjectContext) -> Tb_Employee? {
-        var employeeEntity: Tb_Employee?
+        let filterAtt = NSPredicate(format: "idEmployee == %@", id.uuidString)
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        let filterAtt = NSPredicate(format: "idEmployee == %@ OR (name == %@ AND lastName == %@)", id.uuidString, name, lastName)
         request.predicate = filterAtt
         do {
-            employeeEntity = try context.fetch(request).first
+            let employeeEntity = try context.fetch(request).first
+            return employeeEntity
         } catch let error {
             print("Error fetching. \(error)")
+            return nil
         }
-        return employeeEntity
     }
 }
 
 extension Subsidiary {
     func toSubsidiaryEntity(context: NSManagedObjectContext) -> Tb_Subsidiary? {
-        var subsidiaryEntity: Tb_Subsidiary?
+        let filterAtt = NSPredicate(format: "idSubsidiary == %@", id.uuidString)
         let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        let filterAtt = NSPredicate(format: "idSubsidiary == %@ AND name == %@", id.uuidString, name)
         request.predicate = filterAtt
         do {
-            subsidiaryEntity = try context.fetch(request).first
+            let subsidiaryEntity = try context.fetch(request).first
+            return subsidiaryEntity
         } catch let error {
             print("Error fetching. \(error)")
+            return nil
         }
-        return subsidiaryEntity
     }
 }
 
 extension Company {
     func toCompanyEntity(context: NSManagedObjectContext) -> Tb_Company? {
-        var companyEntity: Tb_Company?
+        let filterAtt = NSPredicate(format: "idCompany == %@", id.uuidString)
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let filterAtt = NSPredicate(format: "idCompany == %@ AND companyName == %@ AND ruc == %@", id.uuidString, companyName, ruc)
         request.predicate = filterAtt
         do {
-            companyEntity = try context.fetch(request).first
+            let companyEntity = try context.fetch(request).first
+            return companyEntity
         } catch let error {
             print("Error fetching. \(error)")
+            return nil
         }
-        return companyEntity
     }
 }
 
 extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
-        var imageUrlEntity: Tb_ImageUrl?
-        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
         let filterAtt = NSPredicate(format: "imageUrl == %@", imageUrl)
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
         request.predicate = filterAtt
         do {
-            imageUrlEntity = try context.fetch(request).first
+            let imageUrlEntity = try context.fetch(request).first
+            if let image = imageUrlEntity {
+                return image
+            } else {
+                let newImage = Tb_ImageUrl(context: context)
+                newImage.idImageUrl = id
+                newImage.imageUrl = imageUrl
+                return newImage
+            }
         } catch let error {
             print("Error fetching. \(error)")
+            return nil
         }
-        return imageUrlEntity
     }
 }
 
@@ -100,7 +102,8 @@ extension Tb_Subsidiary {
     func toSubsidiary() -> Subsidiary {
         return Subsidiary(id: idSubsidiary ?? UUID(),
                           name: name ?? "",
-                          image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(), imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl))
+                          image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(),
+                                          imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl))
     }
 }
 
@@ -112,8 +115,8 @@ extension Tb_Product {
                        unitCost: unitCost,
                        unitPrice: unitPrice,
                        expirationDate: expirationDate ?? Date(),
-                       image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(), imageUrl: toImageUrl?.imageUrl ?? ""))
-                       //url: url ?? "")
+                       image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(),
+                                       imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl))
     }
 }
 
@@ -125,7 +128,8 @@ extension Tb_Employee {
                         email: email ?? "",
                         lastName: lastName ?? "",
                         role: role ?? "",
-                        image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(), imageUrl: toImageUrl?.imageUrl ?? ""),
+                        image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(),
+                                        imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl),
                         active: active)
     }
 }
@@ -155,34 +159,28 @@ extension Tb_CartDetail {
     }
 }
 
-// MARK: Array Extencions
+// MARK: Array Extensions
 extension Array where Element == Tb_Product {
     func mapToListProduct() -> [Product] {
-        return self.map { prd in
-            prd.toProduct()
-        }
+        return self.map {$0.toProduct()}
     }
 }
 
 extension Array where Element == Product {
     func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Product] {
-        return self.compactMap { prd in
-            prd.toProductEntity(context: context)
-        }
+        return self.compactMap {$0.toProductEntity(context: context)}
     }
 }
 
 extension Array where Element == Tb_CartDetail {
     func mapToListCartDetail() -> [CartDetail] {
-        return self.map{$0.mapToCarDetail()}
+        return self.map {$0.mapToCarDetail()}
     }
 }
 
 extension Array where Element == Tb_Sale {
     func mapToListSale() -> [Sale] {
-        return self.map { sale in
-            sale.toSale()
-        }
+        return self.map {$0.toSale()}
     }
 }
 
