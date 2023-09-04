@@ -18,7 +18,9 @@ protocol CarRepository {
     func increaceProductAmount (product: Product)
     func decreceProductAmount(product: Product)
     func getListProductInCart () -> [CartDetail]
-    func createCart(employee: Employee)
+    func createCart()
+    func setDefaultEmployee(employee: Employee)
+    func getDefaultEmployee() -> Employee?
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -51,10 +53,16 @@ class CarRepositoryImpl: CarRepository {
     func getListProductInCart () -> [CartDetail] {
         self.manager.getListProductInCart()
     }
-    func createCart(employee: Employee) {
-        self.manager.createCart(employee: employee)
+    func createCart() {
+        self.manager.createCart()
     }
     func getCartEmployee() -> Employee? {
         return self.manager.getCartEmployee()
+    }
+    func setDefaultEmployee(employee: Employee) {
+        self.manager.setDefaultEmployee(employee: employee)
+    }
+    func getDefaultEmployee() -> Employee? {
+        return self.manager.getDefaultEmployee()
     }
 }

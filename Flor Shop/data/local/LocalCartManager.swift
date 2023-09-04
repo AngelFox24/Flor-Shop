@@ -18,12 +18,14 @@ protocol CartManager {
     func increaceProductAmount(product: Product)
     func decreceProductAmount(product: Product)
     func getListProductInCart () -> [CartDetail]
-    func createCart(employee: Employee)
+    func createCart()
+    func setDefaultEmployee(employee: Employee)
+    func getDefaultEmployee() -> Employee?
 }
 
 class LocalCartManager: CartManager {
     let mainContext: NSManagedObjectContext
-    var mainCartEntity: Tb_Cart?
+    var mainEmployeeEntity: Tb_Employee?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -35,38 +37,34 @@ class LocalCartManager: CartManager {
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
-    func createCart(employee: Employee) {
-        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext) else {
-            print("No se encontro empleado para crear carrito")
+    func createCart() {
+        print("Se llamo a createCart")
+        guard let employeeEntity = self.mainEmployeeEntity else {
+            print("No se encontro empleado default para crear carrito")
             return
         }
-        var cart: Tb_Cart
-        cart = Tb_Cart(context: self.mainContext)
-        cart.idCart = UUID()
-        cart.total = 0.0
-        cart.toEmployee = employeeEntity
-        mainCartEntity = cart
-        saveData()
+        print("Empleado existe por defecto en CartManager \(employeeEntity.toEmployee().name)")
+        if getCartEntity() == nil {
+            let newCart: Tb_Cart = Tb_Cart(context: self.mainContext)
+            newCart.idCart = UUID()
+            newCart.total = 0.0
+            newCart.toEmployee = employeeEntity
+            // Redundante?
+            self.mainEmployeeEntity?.toCart = newCart
+            saveData()
+        } else {
+            print("Existe carrito ya creado para este empleado \(employeeEntity.toEmployee().name)")
+        }
     }
     func getCart() -> Car? {
-        if let cartEntity = self.mainCartEntity {
-            return cartEntity.mapToCar()
-        } else {
-            return nil
-        }
+        print("Se llamo a getCart en LocalCartManager")
+        return getCartEntity()?.mapToCar()
     }
     func getCartEmployee() -> Employee? {
-        return mainCartEntity?.toEmployee?.toEmployee()
+        return mainEmployeeEntity?.toEmployee()
     }
     private func getCartEntity() -> Tb_Cart? {
-        var cart: Tb_Cart?
-        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
-        do {
-            cart = try self.mainContext.fetch(request).first
-        } catch let error {
-            print("Error al recuperar el carrito de productos \(error)")
-        }
-        return cart
+        return self.mainEmployeeEntity?.toCart
     }
     func deleteProduct(product: Product) {
         guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
@@ -115,12 +113,11 @@ class LocalCartManager: CartManager {
         return success
     }
     func emptyCart() {
-        guard let cart = getCartEntity() else {
-            return
+        if let cart = getCartEntity() {
+            cart.toCartDetail = nil
+            cart.total = 0
+            saveData()
         }
-        cart.toCartDetail = nil
-        updateCartTotal()
-        saveData()
     }
     func updateCartTotal() {
         guard let cart = getCartEntity(), let cartDetail = cart.toCartDetail as? Set<Tb_CartDetail> else {
@@ -166,5 +163,15 @@ class LocalCartManager: CartManager {
             return cartDetails.mapToListCartDetail()
         }
         return cartDetail.mapToListCartDetail()
+    }
+    func setDefaultEmployee(employee: Employee) {
+        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext) else {
+            print("No se pudo asingar employee default")
+            return
+        }
+        self.mainEmployeeEntity = employeeEntity
+    }
+    func getDefaultEmployee() -> Employee? {
+        return self.mainEmployeeEntity?.toEmployee()
     }
 }

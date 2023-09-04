@@ -32,7 +32,7 @@ extension Employee {
     func toEmployeeEntity(context: NSManagedObjectContext) -> Tb_Employee? {
         var employeeEntity: Tb_Employee?
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        let filterAtt = NSPredicate(format: "idEmployee == %@ AND name == %@ AND lastName == %@", id.uuidString, name, lastName)
+        let filterAtt = NSPredicate(format: "idEmployee == %@ OR (name == %@ AND lastName == %@)", id.uuidString, name, lastName)
         request.predicate = filterAtt
         do {
             employeeEntity = try context.fetch(request).first
@@ -174,9 +174,7 @@ extension Array where Element == Product {
 
 extension Array where Element == Tb_CartDetail {
     func mapToListCartDetail() -> [CartDetail] {
-        return self.map { prd in
-            prd.mapToCarDetail()
-        }
+        return self.map{$0.mapToCarDetail()}
     }
 }
 

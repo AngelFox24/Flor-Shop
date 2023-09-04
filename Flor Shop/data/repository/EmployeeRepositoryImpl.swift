@@ -11,12 +11,14 @@ import CoreData
 protocol EmployeeRepository {
     func addEmployee(employee: Employee) -> Bool
     func getEmployees() -> [Employee]
-    func getEmployee() -> Employee?
     func updateEmployee(employee: Employee)
     func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
-    func setDefaultEmployee(employee: Employee)
+    func setDefaultSubsidiary(employee: Employee)
     func getEmployeeSubsidiary() -> Subsidiary?
+    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func getSubsidiary(employee: Employee) -> Subsidiary?
+    func getDefaultSubsidiary() -> Subsidiary?
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -45,13 +47,19 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     func deleteEmployee(employee: Employee) {
         self.manager.deleteEmployee(employee: employee)
     }
-    func setDefaultEmployee(employee: Employee) {
-        self.manager.setDefaultEmployee(employee: employee)
+    func setDefaultSubsidiary(employee: Employee) {
+        self.manager.setDefaultSubsidiary(employee: employee)
     }
-    func getEmployee() -> Employee? {
-        return self.manager.getEmployee()
+    func setDefaultSubsidiary(subisidiary: Subsidiary) {
+        self.manager.setDefaultSubsidiary(subisidiary: subisidiary)
     }
     func getEmployeeSubsidiary() -> Subsidiary? {
         return self.manager.getEmployeeSubsidiary()
+    }
+    func getSubsidiary(employee: Employee) -> Subsidiary? {
+        return self.manager.getSubsidiary(employee: employee)
+    }
+    func getDefaultSubsidiary() -> Subsidiary? {
+        return self.manager.getDefaultSubsidiary()
     }
 }

@@ -35,38 +35,48 @@ class RegistrationViewModel: ObservableObject {
         let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
         let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: ImageUrl.getDummyImage())
         let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: ImageUrl.getDummyImage(), active: true)
-        if companyRepository.addCompany(company: companyRegistration) {
-            _ = createSubsidiary(subsidiary: subsidiaryRegistration, company: companyRegistration)
-            _ = createEmployee(employee: userRegistration)
-            createCart(employee: userRegistration)
-            //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
-            setDefaultCompany(employee: userRegistration)
-            setDefaultSubsidiary(employee: userRegistration)
-            setDefaultEmployee(employee: userRegistration)
-            return true
+        //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
+        if createCompany(company: companyRegistration) {
+            setDefaultCompany(company: companyRegistration)
+            if createSubsidiary(subsidiary: subsidiaryRegistration) {
+                setDefaultSubsidiary(subsidiary: subsidiaryRegistration)
+                if createEmployee(employee: userRegistration) {
+                    setDefaultEmployee(employee: userRegistration)
+                    return true
+                } else {
+                    registrationFields.errorRegistration = "Empleado ya existe en la BD"
+                    return false
+                }
+            } else {
+                registrationFields.errorRegistration = "Sucursal ya existe en la BD"
+                return false
+            }
         } else {
-            registrationFields.errorRegistration = "Muchos errores pueden haber ocurrido"
+            registrationFields.errorRegistration = "Compañia ya existe en la BD"
             return false
         }
     }
-    func createCart(employee: Employee) {
-        self.cartRepository.createCart(employee: employee)
+    func createCompany(company: Company) -> Bool {
+        return self.companyRepository.addCompany(company: company)
     }
-    func setDefaultCompany(employee: Employee) {
-        self.companyRepository.setDefaultCompany(employee: employee)
-    }
-    func createSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
-        return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary, company: company)
+    func createSubsidiary(subsidiary: Subsidiary) -> Bool {
+        return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
     }
     func createEmployee(employee: Employee) -> Bool {
         return self.employeeRepository.addEmployee(employee: employee)
     }
-    func setDefaultSubsidiary(employee: Employee) {
-        self.subsidiaryRepository.setDefaultSubsidiary(employee: employee)
-        self.productReporsitory.setDefaultSubsidiary(employee: employee)
+    func setDefaultCompany(company: Company) {
+        self.companyRepository.setDefaultCompany(company: company)
+        self.subsidiaryRepository.setDefaultCompany(company: company)
+    }
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        self.productReporsitory.setDefaultSubsidiary(subisidiary: subsidiary)
+        self.employeeRepository.setDefaultSubsidiary(subisidiary: subsidiary)
     }
     func setDefaultEmployee(employee: Employee) {
-        self.employeeRepository.setDefaultEmployee(employee: employee)
+        self.cartRepository.setDefaultEmployee(employee: employee)
+        // Creamos un carrito si no existe
+        self.cartRepository.createCart()
     }
 }
 class RegistrationFields {

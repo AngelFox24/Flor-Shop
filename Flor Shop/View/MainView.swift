@@ -64,7 +64,7 @@ struct MainView_Previews: PreviewProvider {
         let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
         let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
         //Repositorios
-        let companyRepository = CompanyRepositoryImpl(companyManager: companyManager)
+        let companyRepository = CompanyRepositoryImpl(manager: companyManager)
         let subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
         let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
         let productRepository = ProductRepositoryImpl(manager: productManager)

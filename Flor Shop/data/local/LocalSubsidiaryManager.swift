@@ -9,17 +9,19 @@ import Foundation
 import CoreData
 
 protocol SubsidiaryManager {
-    func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool
-    func getSubsidiary() -> Subsidiary?
+    func addSubsidiary(subsidiary: Subsidiary) -> Bool
+    func getSubsidiaries() -> [Subsidiary]
     func updateSubsidiary(subsidiary: Subsidiary)
     func deleteSubsidiary(subsidiary: Subsidiary)
-    func setDefaultSubsidiary(employee: Employee)
-    func getSubsidiaryCompany() -> Company?
+    func setDefaultCompany(company: Company)
+    func setDefaultSubsidiaryCompany(employee: Employee)
+    func getCompany(subsidiary: Subsidiary) -> Company?
+    func getDefaultCompany() -> Company?
 }
 
 class LocalSubsidiaryManager: SubsidiaryManager {
     let mainContext: NSManagedObjectContext
-    var mainSubsidiaryEntity: Tb_Subsidiary?
+    var mainCompanyEntity: Tb_Company?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -34,14 +36,13 @@ class LocalSubsidiaryManager: SubsidiaryManager {
         self.mainContext.rollback()
     }
     //C - Create
-    /*
-    func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
-        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
+    func addSubsidiary(subsidiary: Subsidiary) -> Bool {
+        guard let companyEntity = mainCompanyEntity else {
             print("No existe compañia para crear una sucursal")
             rollback()
             return false
         }
-        if let subsidiaryEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext) {
+        if let _ = subsidiary.toSubsidiaryEntity(context: self.mainContext) {
             print("Ya existe sucursal, no se puede crear")
             rollback()
             return false
@@ -55,10 +56,20 @@ class LocalSubsidiaryManager: SubsidiaryManager {
             return true
         }
     }
-     */
     //R - Read
-    func getSubsidiary() -> Subsidiary? {
-        return mainSubsidiaryEntity?.toSubsidiary()
+    func getSubsidiaries() -> [Subsidiary] {
+        var subsidiaries: [Tb_Subsidiary] = []
+        if let list = mainCompanyEntity?.toSubsidiary {
+            subsidiaries = list.compactMap{$0 as? Tb_Subsidiary}
+        }
+        return subsidiaries.map{$0.toSubsidiary()}
+    }
+    func getCompany(subsidiary: Subsidiary) -> Company? {
+        guard let companyEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext)?.toCompany else {
+            print("No se encontro la compañia de la sucursal")
+            return nil
+        }
+        return companyEntity.toCompany()
     }
     //U - Update
     func updateSubsidiary(subsidiary: Subsidiary) {
@@ -68,38 +79,29 @@ class LocalSubsidiaryManager: SubsidiaryManager {
     func deleteSubsidiary(subsidiary: Subsidiary) {
         
     }
-    func existSubsidiary(subsidiary: Subsidiary) -> Bool {
-        var subsidiaryEntity: Tb_Subsidiary?
-        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        let filterAtt = NSPredicate(format: "name == %@", subsidiary.name)
-        request.predicate = filterAtt
-        do {
-            subsidiaryEntity = try self.mainContext.fetch(request).first
-        } catch let error {
-            print("Error fetching. \(error)")
+    func setDefaultSubsidiaryCompany(employee: Employee) {
+        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext) else {
+            print("Empleado no existe en BD")
+            return
         }
-        if subsidiaryEntity == nil {
-            return false
-        } else {
-            return true
+        guard let subsidiaryEntity = employeeEntity.toSubsidiary else {
+            print("Empleado no tiene ninguna sibsidiaria")
+            return
         }
+        guard let companyEntity = subsidiaryEntity.toCompany else {
+            print("Subsidiaria no tiene ninguna Compañia")
+            return
+        }
+        self.mainCompanyEntity = companyEntity
     }
-    func setDefaultSubsidiary(employee: Employee) {
-        let employeeEntity = employee.toEmployeeEntity(context: mainContext)
-        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
+    func setDefaultCompany(company: Company) {
+        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
             print("No se pudo asingar sucursar default")
             return
         }
-        self.mainSubsidiaryEntity = subsidiaryEntity
+        self.mainCompanyEntity = companyEntity
     }
-    func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        guard let subsidiaryEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
-            print("No se pudo asingar sucursar default")
-            return
-        }
-        self.mainSubsidiaryEntity = subsidiaryEntity
-    }
-    func getSubsidiaryCompany() -> Company? {
-        return mainSubsidiaryEntity?.toCompany?.toCompany()
+    func getDefaultCompany() -> Company? {
+        return self.mainCompanyEntity?.toCompany()
     }
 }

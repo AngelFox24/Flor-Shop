@@ -16,6 +16,8 @@ protocol ProductManager {
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
     func setDefaultSubsidiary(employee: Employee)
+    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func getDefaultSubsidiary() -> Subsidiary?
 }
 
 class LocalProductManager: ProductManager {
@@ -143,6 +145,13 @@ class LocalProductManager: ProductManager {
     func setFilter(filter: ProductsFilterAttributes) {
         self.filterAttribute = filter
     }
+    func setDefaultSubsidiary(subisidiary: Subsidiary) {
+        guard let subsidiaryEntity: Tb_Subsidiary = subisidiary.toSubsidiaryEntity(context: self.mainContext) else {
+            print("No se pudo asingar sucursar default")
+            return
+        }
+        self.mainSubsidiaryEntity = subsidiaryEntity
+    }
     func getOrderFilter() -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
         switch primaryOrder {
@@ -174,11 +183,13 @@ class LocalProductManager: ProductManager {
         return filterAtt
     }
     func setDefaultSubsidiary(employee: Employee) {
-        let employeeEntity = employee.toEmployeeEntity(context: mainContext)
         guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
             print("No se pudo asingar sucursar default")
             return
         }
         self.mainSubsidiaryEntity = subsidiaryEntity
+    }
+    func getDefaultSubsidiary() -> Subsidiary? {
+        return self.mainSubsidiaryEntity?.toSubsidiary()
     }
 }

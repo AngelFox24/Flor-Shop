@@ -28,16 +28,16 @@ class LocalImageManager: ImageManager {
     }
     //C - Create
     func createImage(image: ImageUrl) -> ImageUrl {
+        return ImageUrl.getDummyImage()
     }
     //R - Read
     func getImage(image: ImageUrl) -> ImageUrl {
+        return ImageUrl.getDummyImage()
     }
     //U - Update
-    func updateCompany(company: Company) {
-        
+    func updateImage(image: ImageUrl) {
     }
     //D - Delete
-    func deleteCompany(company: Company) {
-        
+    func deleteImage(image: ImageUrl) {
     }
 }

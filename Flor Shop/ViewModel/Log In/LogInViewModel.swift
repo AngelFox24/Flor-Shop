@@ -33,72 +33,90 @@ class LogInViewModel: ObservableObject {
     }
     func logIn() {
         if let employee = employeeRepository.logIn(user: logInFields.userOrEmail, password: logInFields.password) {
-            createCart(employee: employee)
-            //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
-            setDefaultCompany(employee: employee)
-            setDefaultSubsidiary(employee: employee)
+            print("ok employee")
             setDefaultEmployee(employee: employee)
-            //self.logInStatus = .success
+            if let subsidiary = getSubsidiary(employee: employee) {
+                print("ok subsidiary")
+                setDefaultSubsidiary(subsidiary: subsidiary)
+                if let company = getCompany(subsidiary: subsidiary) {
+                    print("ok company")
+                    setDefaultCompany(company: company)
+                } else {
+                    print("Nok company")
+                    logInFields.errorLogIn = "No se encontro compañia de la sucursal"
+                }
+            } else {
+                print("Nok subsidiary")
+                logInFields.errorLogIn = "No se encontro sucursal del empleado"
+            }
         } else {
+            print("Nok employee")
             logInFields.errorLogIn = "No se encontro usuario en la BD"
-            self.logInStatus = .fail
         }
     }
-    func createCart(employee: Employee) {
-        self.cartRepository.createCart(employee: employee)
+    func getSubsidiary(employee: Employee) -> Subsidiary? {
+        return self.employeeRepository.getSubsidiary(employee: employee)
     }
-    func setDefaultCompany(employee: Employee) {
-        self.companyRepository.setDefaultCompany(employee: employee)
+    func getCompany(subsidiary: Subsidiary) -> Company? {
+        return self.subsidiaryRepository.getCompany(subsidiary: subsidiary)
     }
-    func setDefaultSubsidiary(employee: Employee) {
-        self.subsidiaryRepository.setDefaultSubsidiary(employee: employee)
-        self.productReporsitory.setDefaultSubsidiary(employee: employee)
+    func setDefaultCompany(company: Company) {
+        self.companyRepository.setDefaultCompany(company: company)
+        self.subsidiaryRepository.setDefaultCompany(company: company)
+    }
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        self.productReporsitory.setDefaultSubsidiary(subisidiary: subsidiary)
+        self.employeeRepository.setDefaultSubsidiary(subisidiary: subsidiary)
     }
     func setDefaultEmployee(employee: Employee) {
-        self.employeeRepository.setDefaultEmployee(employee: employee)
+        self.cartRepository.setDefaultEmployee(employee: employee)
+        // Creamos un carrito si no existe
+        self.cartRepository.createCart()
     }
     func checkDBIntegrity() {
+        //Verficamos si existe un carrito del empleado default
         guard let _ = self.cartRepository.getCart() else {
-            print("No se fijo el carrito")
+            print("No se fijo el carrito LogInViewModel")
             return
         }
-        guard let employee = self.employeeRepository.getEmployee() else {
-            print("No se fijo el empleado")
+        //Verificamos si existe un empleado por defecto
+        guard let _ = self.cartRepository.getDefaultEmployee() else {
+            print("No se fijo el empleado en cartManager")
             return
         }
-        guard let subsidiary = self.subsidiaryRepository.getSubsidiary() else {
-            print("No se fijo la sucursal")
+        //Verificamos si existe la sucursal del empleado por defecto
+        guard let employeeSubsidiary: Subsidiary = self.employeeRepository.getDefaultSubsidiary() else {
+            print("No se fijo la sucursal en employeeManager")
             return
         }
-        guard let company = self.companyRepository.getCompany() else {
-            print("No se fijo la compañia")
+        //Verificamos si existe la sucursal del producto por defecto
+        guard let productSubsidiary: Subsidiary = self.productReporsitory.getDefaultSubsidiary() else {
+            print("No se fijo la sucursal en productManager")
             return
         }
-        guard let cartEmployee = self.cartRepository.getCartEmployee() else {
-            print("Carrito no pertenece a un empleado")
+        //Verificamos si existe la compañia de la sucursal por defecto
+        guard let subsidiaryCompany: Company = self.subsidiaryRepository.getDefaulCompany() else {
+            print("No se fijo la sucursal en subsidiaryManager")
             return
         }
-        guard let employeeSubsidiary = self.employeeRepository.getEmployeeSubsidiary() else {
-            print("Empleado no tiene sucursal")
+        //Verificamos si existe la compañia por defecto
+        guard let companyDefaul: Company = self.companyRepository.getDefaultCompany() else {
+            print("No se fijo la compañia en companyManager")
             return
         }
-        guard let subsidiaryCompany = self.subsidiaryRepository.getSubsidiaryCompany() else {
-            print("La sucursar no tiene compañia")
-            return
-        }
-        if subsidiary.id != employeeSubsidiary.id {
-            print("Empleado no pertenece a esta sucursal \(employeeSubsidiary.name) y \(subsidiary.name)")
-        } else if company.id != subsidiaryCompany.id {
-            print("Sucursal no pertenece a esta compañia \(company.companyName) y \(subsidiaryCompany.companyName)")
-        } else if employee.id != cartEmployee.id {
-            print("Carrito no pertenece a este empleado \(employee.name) y \(cartEmployee.name)")
+        if companyDefaul.id == subsidiaryCompany.id {
+            if productSubsidiary.id == employeeSubsidiary.id {
+                self.logInStatus = .success
+            } else {
+                print("productManager no coincide con employeeManager en Subsidiary Default")
+            }
         } else {
-            self.logInStatus = .success
+            print("companyManager no coincide con subsidiaryManager en Company Default")
         }
     }
 }
 class LogInFields {
-    var userOrEmail: String = ""
+    var userOrEmail: String = "curilaurente@gmail.com"
     var userOrEmailEdited: Bool = false
     var userOrEmailError: String {
         if userOrEmail == "" && userOrEmailEdited {

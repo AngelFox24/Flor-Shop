@@ -10,9 +10,10 @@ import CoreData
 
 protocol CompanyManager {
     func addCompany(company: Company) -> Bool
-    func getCompany() -> Company?
+    func getDefaultCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
+    func setDefaultCompany(company: Company)
     func setDefaultCompany(employee: Employee)
 }
 
@@ -32,6 +33,13 @@ class LocalCompanyManager: CompanyManager {
     func rollback() {
         self.mainContext.rollback()
     }
+    func setDefaultCompany(company: Company) {
+        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
+            print("No se pudo asingar compañia default")
+            return
+        }
+        self.mainCompanyEntity = companyEntity
+    }
     func setDefaultCompany(employee: Employee) {
         guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext), let companyEntity = employeeEntity.toSubsidiary?.toCompany else {
             print("No se pudo asingar compañia default")
@@ -41,7 +49,7 @@ class LocalCompanyManager: CompanyManager {
     }
     //C - Create
     func addCompany(company: Company) -> Bool {
-        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
+        guard let _ = company.toCompanyEntity(context: self.mainContext) else {
             let newCompany = Tb_Company(context: mainContext)
             newCompany.idCompany = company.id
             newCompany.companyName = company.companyName
@@ -53,28 +61,8 @@ class LocalCompanyManager: CompanyManager {
         rollback()
         return false
     }
-    func addSubsidiary(subsidiary: Subsidiary) -> Bool {
-        guard let companyEntity = mainCompanyEntity else {
-            print("No existe compañia para crear una sucursal")
-            rollback()
-            return false
-        }
-        if let subsidiaryEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext) {
-            print("Ya existe sucursal, no se puede crear")
-            rollback()
-            return false
-        } else {
-            let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
-            newSubsidiaryEntity.idSubsidiary = subsidiary.id
-            newSubsidiaryEntity.name = subsidiary.name
-            newSubsidiaryEntity.toImageUrl = subsidiary.image.toImageUrlEntity(context: self.mainContext) ?? ImageUrl.getDummyImage().toImageUrlEntity(context: self.mainContext)
-            newSubsidiaryEntity.toCompany = companyEntity
-            saveData()
-            return true
-        }
-    }
     //R - Read
-    func getCompany() -> Company? {
+    func getDefaultCompany() -> Company? {
         return mainCompanyEntity?.toCompany()
     }
     //U - Update

@@ -103,7 +103,7 @@ struct CreateAccountView_Previews: PreviewProvider {
         let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
         let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
         let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let companyRepository = CompanyRepositoryImpl(companyManager: companyManager)
+        let companyRepository = CompanyRepositoryImpl(manager: companyManager)
         let subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
         let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
         let productRepository = ProductRepositoryImpl(manager: productManager)

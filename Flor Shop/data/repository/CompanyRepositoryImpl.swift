@@ -10,35 +10,39 @@ import CoreData
 
 protocol CompanyRepository {
     func addCompany(company: Company) -> Bool
-    func getCompany() -> Company?
+    func getDefaultCompany() -> Company?
     func updateCompany(company: Company)
     func deleteCompany(company: Company)
     func setDefaultCompany(employee: Employee)
+    func setDefaultCompany(company: Company)
 }
 
 class CompanyRepositoryImpl: CompanyRepository {
-    let companyManager: CompanyManager
+    let manager: CompanyManager
     // let remote:  remoto, se puede implementar el remoto aqui
-    init(companyManager: CompanyManager) {
-        self.companyManager = companyManager
+    init(manager: CompanyManager) {
+        self.manager = manager
     }
     //C - Create
     func addCompany(company: Company) -> Bool {
-        self.companyManager.addCompany(company: company)
+        self.manager.addCompany(company: company)
     }
     //R - Read
-    func getCompany() -> Company? {
-        return self.companyManager.getCompany()
+    func getDefaultCompany() -> Company? {
+        return self.manager.getDefaultCompany()
     }
     //U - Update
     func updateCompany(company: Company) {
-        self.companyManager.updateCompany(company: company)
+        self.manager.updateCompany(company: company)
     }
     //D - Delete
     func deleteCompany(company: Company) {
-        self.companyManager.deleteCompany(company: company)
+        self.manager.deleteCompany(company: company)
     }
     func setDefaultCompany(employee: Employee) {
-        self.companyManager.setDefaultCompany(employee: employee)
+        self.manager.setDefaultCompany(employee: employee)
+    }
+    func setDefaultCompany(company: Company) {
+        self.manager.setDefaultCompany(company: company)
     }
 }

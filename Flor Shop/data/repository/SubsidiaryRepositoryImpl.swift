@@ -9,12 +9,14 @@ import Foundation
 import CoreData
 
 protocol SubsidiaryRepository {
-    func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool
-    func getSubsidiary() -> Subsidiary?
+    func addSubsidiary(subsidiary: Subsidiary) -> Bool
+    func getSubsidiaries() -> [Subsidiary]
     func updateSubsidiary(subsidiary: Subsidiary)
     func deleteSubsidiary(subsidiary: Subsidiary)
-    func setDefaultSubsidiary(employee: Employee)
-    func getSubsidiaryCompany() -> Company?
+    func setDefaultCompany(company: Company)
+    func setDefaultSubsidiaryCompany(employee: Employee)
+    func getDefaulCompany() -> Company?
+    func getCompany(subsidiary: Subsidiary) -> Company?
 }
 
 class SubsidiaryRepositoryImpl: SubsidiaryRepository {
@@ -24,12 +26,12 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository {
         self.manager = manager
     }
     //C - Create
-    func addSubsidiary(subsidiary: Subsidiary, company: Company) -> Bool {
-        return self.manager.addSubsidiary(subsidiary: subsidiary, company: company)
+    func addSubsidiary(subsidiary: Subsidiary) -> Bool {
+        return self.manager.addSubsidiary(subsidiary: subsidiary)
     }
     //R - Read
-    func getSubsidiary() -> Subsidiary? {
-        return self.manager.getSubsidiary()
+    func getSubsidiaries() -> [Subsidiary] {
+        return self.manager.getSubsidiaries()
     }
     //U - Update
     func updateSubsidiary(subsidiary: Subsidiary) {
@@ -39,10 +41,16 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository {
     func deleteSubsidiary(subsidiary: Subsidiary) {
         self.manager.deleteSubsidiary(subsidiary: subsidiary)
     }
-    func setDefaultSubsidiary(employee: Employee) {
-        self.manager.setDefaultSubsidiary(employee: employee)
+    func setDefaultCompany(company: Company) {
+        self.manager.setDefaultCompany(company: company)
     }
-    func getSubsidiaryCompany() -> Company? {
-        return self.manager.getSubsidiaryCompany()
+    func setDefaultSubsidiaryCompany(employee: Employee) {
+        self.manager.setDefaultSubsidiaryCompany(employee: employee)
+    }
+    func getCompany(subsidiary: Subsidiary) -> Company? {
+        return self.manager.getCompany(subsidiary: subsidiary)
+    }
+    func getDefaulCompany() -> Company? {
+        return self.manager.getDefaultCompany()
     }
 }

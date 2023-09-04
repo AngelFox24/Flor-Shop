@@ -16,6 +16,8 @@ protocol ProductRepository {
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
     func setDefaultSubsidiary(employee: Employee)
+    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func getDefaultSubsidiary() -> Subsidiary?
 }
 
 public class ProductRepositoryImpl: ProductRepository {
@@ -47,5 +49,11 @@ public class ProductRepositoryImpl: ProductRepository {
     }
     func setDefaultSubsidiary(employee: Employee) {
         self.manager.setDefaultSubsidiary(employee: employee)
+    }
+    func setDefaultSubsidiary(subisidiary: Subsidiary) {
+        self.manager.setDefaultSubsidiary(subisidiary: subisidiary)
+    }
+    func getDefaultSubsidiary() -> Subsidiary? {
+        return self.manager.getDefaultSubsidiary()
     }
 }
