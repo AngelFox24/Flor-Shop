@@ -18,7 +18,7 @@ struct CartProductCardView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                CustomAsyncImageView(id: cartDetail.product.id, urlProducto: cartDetail.product.image.imageUrl, size: size)
+                CustomAsyncImageView(id: cartDetail.product.image.id, urlProducto: cartDetail.product.image.imageUrl, size: size)
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)

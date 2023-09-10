@@ -117,40 +117,26 @@ extension Tb_Subsidiary {
     func toSubsidiary() -> Subsidiary {
         return Subsidiary(id: idSubsidiary ?? UUID(),
                           name: name ?? "",
-                          image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(),
-                                          imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl))
+                          image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage())
     }
 }
 
 extension Tb_ImageUrl {
     func toImage() -> ImageUrl {
-        print("MapImage: \(String(describing: idImageUrl))")
         return ImageUrl(id: idImageUrl ?? UUID(), imageUrl: imageUrl ?? "")
     }
 }
 
 extension Tb_Product {
     func toProduct() -> Product {
-        print("MapProduct: \(String(describing: productName))")
-        if let image = toImageUrl {
-            print("Se encontro imagen linkeada en BD \(String(describing: image.idImageUrl))")
-            return Product(id: idProduct ?? UUID(),
-                           name: productName ?? "",
-                           qty: Int(quantityStock),
-                           unitCost: unitCost,
-                           unitPrice: unitPrice,
-                           expirationDate: expirationDate ?? Date(),
-                           image: image.toImage())
-        } else {
-            print("No se encontro imagen linkeada en BD")
-            return Product(id: idProduct ?? UUID(),
-                           name: productName ?? "",
-                           qty: Int(quantityStock),
-                           unitCost: unitCost,
-                           unitPrice: unitPrice,
-                           expirationDate: expirationDate ?? Date(),
-                           image: ImageUrl.getDummyImage())
-        }
+        return Product(id: idProduct ?? UUID(),
+                       name: productName ?? "",
+                       qty: Int(quantityStock),
+                       unitCost: unitCost,
+                       unitPrice: unitPrice,
+                       expirationDate: expirationDate ?? Date(),
+                       image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage())
+        
     }
 }
 
@@ -162,8 +148,7 @@ extension Tb_Employee {
                         email: email ?? "",
                         lastName: lastName ?? "",
                         role: role ?? "",
-                        image: ImageUrl(id: toImageUrl?.idImageUrl ?? UUID(),
-                                        imageUrl: toImageUrl?.imageUrl ?? ImageUrl.getDummyImage().imageUrl),
+                        image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
                         active: active)
     }
 }
