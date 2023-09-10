@@ -167,17 +167,22 @@ class LocalCartManager: CartManager {
             saveData()
             return
         }
-        cartEntity.total = Double(cartDetailEntityList.reduce(0) {$0 + $1.quantityAdded})
+        cartEntity.total = Double(cartDetailEntityList.reduce(0) {$0 + $1.subtotal})
         saveData()
     }
     func increaceProductAmount (cartDetail: CartDetail) {
-        //Verficamos si existe este detalle
+        //Verificamos si existe este detalle
         guard let cartDetailEntity = cartDetail.toCartDetailEntity(context: self.mainContext) else {
             print("Detalle de producto no existe en carrito")
             return
         }
-        if cartDetail.product.qty > cartDetailEntity.quantityAdded {
+        guard let productEntity = cartDetailEntity.toProduct else {
+            print("Este detalle de carrito no tiene producto")
+            return
+        }
+        if productEntity.quantityStock > cartDetailEntity.quantityAdded {
             cartDetailEntity.quantityAdded += 1
+            cartDetailEntity.subtotal = Double(cartDetailEntity.quantityAdded) * productEntity.unitPrice
         } else {
             print("Producto no tiene stock suficiente")
         }
@@ -190,8 +195,13 @@ class LocalCartManager: CartManager {
             print("Detalle de producto no existe en carrito")
             return
         }
+        guard let productEntity = cartDetailEntity.toProduct else {
+            print("Este detalle de carrito no tiene producto")
+            return
+        }
         if cartDetailEntity.quantityAdded > 1 {
             cartDetailEntity.quantityAdded -= 1
+            cartDetailEntity.subtotal = Double(cartDetailEntity.quantityAdded) * productEntity.unitPrice
         } else {
             print("La cantida agregada no puede disminuir menos que 0")
         }
