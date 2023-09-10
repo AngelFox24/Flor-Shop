@@ -44,11 +44,11 @@
     <entity name="Tb_ImageUrl" representedClassName=".Tb_ImageUrl" syncable="YES" codeGenerationType="class">
         <attribute name="idImageUrl" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageUrl" attributeType="String"/>
-        <relationship name="toCustomer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toImageUrl" inverseEntity="Tb_Customer"/>
-        <relationship name="toEmployee" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toImageUrl" inverseEntity="Tb_Employee"/>
-        <relationship name="toProduct" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toImageUrl" inverseEntity="Tb_Product"/>
-        <relationship name="toSaleDetail" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_SaleDetail" inverseName="toImageUrl" inverseEntity="Tb_SaleDetail"/>
-        <relationship name="toSubsidiary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toImageUrl" inverseEntity="Tb_Subsidiary"/>
+        <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toImageUrl" inverseEntity="Tb_Customer"/>
+        <relationship name="toEmployee" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toImageUrl" inverseEntity="Tb_Employee"/>
+        <relationship name="toProduct" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toImageUrl" inverseEntity="Tb_Product"/>
+        <relationship name="toSaleDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_SaleDetail" inverseName="toImageUrl" inverseEntity="Tb_SaleDetail"/>
+        <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toImageUrl" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_Product" representedClassName=".Tb_Product" syncable="YES" codeGenerationType="class">
         <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>

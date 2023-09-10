@@ -63,14 +63,7 @@ struct ListaControler: View {
             } else {
             List {
                 ForEach(productsCoreDataViewModel.productsCoreData) { producto in
-                    ProductCardView(
-                        id: producto.id,
-                        name: producto.name,
-                        expirationDate: producto.expirationDate,
-                        quantity: producto.qty,
-                        unitPrice: producto.unitPrice,
-                        url: producto.image.imageUrl,
-                        size: 80.0)
+                    ProductCardView(product: producto, size: 80)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                     .listRowBackground(Color("color_background"))

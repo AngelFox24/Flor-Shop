@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 import Combine
 import ImageIO
-import UniformTypeIdentifiers
-import MobileCoreServices
+//import UniformTypeIdentifiers
+//import MobileCoreServices
 
 class ImageProductNetworkViewModel: ObservableObject {
     @Published var imageProduct: Image?
@@ -21,10 +21,6 @@ class ImageProductNetworkViewModel: ObservableObject {
             print("Imagen ya esta cargada para que quieres cargarlo pz")
             return
         } else {
-            if !checkImageURLMatchesMetadata(id: id, imageURL: url.absoluteString) {
-                print("Se va a eliminar porque no concide")
-                deleteImage(id: id)
-            }
             if let savedImage = loadSavedImage(id: id) {
                 print("Se ha cargado desde local")
                 imageProduct = Image(uiImage: savedImage)
@@ -58,6 +54,8 @@ class ImageProductNetworkViewModel: ObservableObject {
             }
         }
     }
+    /*
+    //Se descontinua porque se manejara con BD en coredata
     func checkImageURLMatchesMetadata(id: UUID, imageURL: String) -> Bool {
         guard let imagesDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?.appendingPathComponent("Images") else {
             print("Error al obtener el directorio de imágenes")
@@ -72,11 +70,6 @@ class ImageProductNetworkViewModel: ObservableObject {
             print("Error al obtener las propiedades de la imagen")
             return false
         }
-        /*
-        print("Propiedades de la imagen:")
-        for (key, value) in imageProperties {
-            print("\(key): \(value)")
-        }*/
         guard let tiffProperties = imageProperties[kCGImagePropertyTIFFDictionary as String] as? [String: Any] else {
             print("Error al obtener las propiedades TIFF de la imagen")
             return false
@@ -94,6 +87,7 @@ class ImageProductNetworkViewModel: ObservableObject {
             return false
         }
     }
+     */
     func saveImage(id: UUID, image: UIImage, url: String) -> Bool {
         var savedImage = false
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
@@ -111,7 +105,8 @@ class ImageProductNetworkViewModel: ObservableObject {
             do {
                 // Guardar la imagen en el dispositivo
                 try data.write(to: fileURL)
-                // Agregar metadatos
+                // Agregar metadatos(Descontinuado)
+                /*
                 if let imageDestination = CGImageDestinationCreateWithURL(fileURL as CFURL, UTType.jpeg.identifier as CFString, 1, nil) {
                     let metadata = NSMutableDictionary()
                     let tiffMetadata = NSMutableDictionary()
@@ -123,6 +118,8 @@ class ImageProductNetworkViewModel: ObservableObject {
                     print("Se guardó la imagen en el dispositivo local: \(id.uuidString)")
                     print("Ruta de la imagen guardada: \(fileURL.path)")
                 }
+                */
+                savedImage = true
             } catch {
                 print("Error al guardar la imagen: \(error)")
             }

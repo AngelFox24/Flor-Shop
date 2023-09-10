@@ -10,20 +10,16 @@
 import SwiftUI
 
 struct ProductCardView: View {
-    let id: UUID
-    let name: String
-    let expirationDate: Date?
-    let quantity: Int
-    let unitPrice: Double
-    let url: String
+    let product: Product
     let size: CGFloat
     var body: some View {
         VStack {
             HStack {
-                CustomAsyncImageView(id: id, urlProducto: url, size: size)
+                let _ = print("ProductID: \(product.id) y ImagenID: \(product.image.id)")
+                CustomAsyncImageView(id: product.image.id, urlProducto: product.image.imageUrl, size: size)
                 VStack {
                     HStack { // Nombre Producto
-                        Text(name)
+                        Text(product.name)
                             .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 16))
                             .lineLimit(3)
@@ -31,7 +27,7 @@ struct ProductCardView: View {
                     }
                     .padding(.top, 6)
                     HStack { // Cantidad Producto
-                        Text(String(quantity)+" u")
+                        Text(String(product.qty)+" u")
                             .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 16))
                             .padding(.vertical, 5)
@@ -46,7 +42,7 @@ struct ProductCardView: View {
                     HStack(spacing: 0) {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
-                        Text(String(unitPrice))
+                        Text(String(product.unitPrice))
                             .font(.custom("Artifika-Regular", size: 18))
                     }
                     .padding(.vertical, 8)
@@ -66,6 +62,6 @@ struct ProductCardView: View {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", expirationDate: Date(), quantity: 34, unitPrice: 23.2, url: "https://falabella.scene7.com/is/image/FalabellaPE/882430431_1?wid=180", size: 100)
+        ProductCardView(product: Product.getDummyProduct(), size: 80)
     }
 }
