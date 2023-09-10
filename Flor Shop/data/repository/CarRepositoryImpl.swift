@@ -10,13 +10,12 @@ import CoreData
 
 protocol CarRepository {
     func getCart() -> Car?
-    func getCartEmployee() -> Employee?
-    func deleteProduct(product: Product)
+    func deleteCartDetail(cartDetail: CartDetail)
     func addProductoToCarrito(product: Product) -> Bool
     func emptyCart()
     func updateCartTotal()
-    func increaceProductAmount (product: Product)
-    func decreceProductAmount(product: Product)
+    func increaceProductAmount (cartDetail: CartDetail)
+    func decreceProductAmount(cartDetail: CartDetail)
     func getListProductInCart () -> [CartDetail]
     func createCart()
     func setDefaultEmployee(employee: Employee)
@@ -32,8 +31,8 @@ class CarRepositoryImpl: CarRepository {
     func getCart() -> Car? {
         return self.manager.getCart()
     }
-    func deleteProduct(product: Product) {
-        self.manager.deleteProduct(product: product)
+    func deleteCartDetail(cartDetail: CartDetail) {
+        self.manager.deleteCartDetail(cartDetail: cartDetail)
     }
     func addProductoToCarrito(product: Product) -> Bool {
         return self.manager.addProductToCart(productIn: product)
@@ -44,20 +43,17 @@ class CarRepositoryImpl: CarRepository {
     func updateCartTotal() {
         self.manager.updateCartTotal()
     }
-    func increaceProductAmount (product: Product) {
-        self.manager.increaceProductAmount(product: product)
+    func increaceProductAmount (cartDetail: CartDetail) {
+        self.manager.increaceProductAmount(cartDetail: cartDetail)
     }
-    func decreceProductAmount(product: Product) {
-        self.manager.decreceProductAmount(product: product)
+    func decreceProductAmount(cartDetail: CartDetail) {
+        self.manager.decreceProductAmount(cartDetail: cartDetail)
     }
     func getListProductInCart () -> [CartDetail] {
         self.manager.getListProductInCart()
     }
     func createCart() {
         self.manager.createCart()
-    }
-    func getCartEmployee() -> Employee? {
-        return self.manager.getCartEmployee()
     }
     func setDefaultEmployee(employee: Employee) {
         self.manager.setDefaultEmployee(employee: employee)

@@ -20,13 +20,12 @@ class CartViewModel: ObservableObject {
         cartCoreData = cartRepository.getCart()
     }
     // Elimina un producto del carrito de compras
-    func deleteProduct(product: Product) {
-        self.cartRepository.deleteProduct(product: product)
+    func deleteCartDetail(cartDetail: CartDetail) {
+        self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
         fetchCart()
     }
     func addProductoToCarrito(product: Product) -> Bool {
-        var value: Bool = false
-        value = self.cartRepository.addProductoToCarrito(product: product)
+        let value = self.cartRepository.addProductoToCarrito(product: product)
         fetchCart()
         return value
     }
@@ -38,12 +37,12 @@ class CartViewModel: ObservableObject {
         self.cartRepository.updateCartTotal()
         fetchCart()
     }
-    func increaceProductAmount (product: Product) {
-        self.cartRepository.increaceProductAmount(product: product)
+    func increaceProductAmount (cartDetail: CartDetail) {
+        self.cartRepository.increaceProductAmount(cartDetail: cartDetail)
         fetchCart()
     }
-    func decreceProductAmount (product: Product) {
-        self.cartRepository.decreceProductAmount(product: product)
+    func decreceProductAmount (cartDetail: CartDetail) {
+        self.cartRepository.decreceProductAmount(cartDetail: cartDetail)
         fetchCart()
     }
 }

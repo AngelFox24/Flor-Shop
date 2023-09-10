@@ -41,11 +41,18 @@ class AgregarViewModel: ObservableObject {
             return true
         } else {
             print(result)
+            editedFields.errorBD = result
             return false
         }
     }
     func editProduct(product: Product) {
-        
+        editedFields.productId = product.id
+        editedFields.productName = product.name
+        editedFields.imageUrl = product.image.imageUrl
+        editedFields.quantityStock = String(product.qty)
+        editedFields.unitCost = String(product.unitCost)
+        editedFields.unitPrice = String(product.unitPrice)
+        editedFields.errorBD = ""
     }
     func urlEdited() {
         print("New work")
@@ -56,7 +63,7 @@ class AgregarViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Product(id: UUID(), name: editedFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: editedFields.expirationDate, image: ImageUrl(id: UUID(), imageUrl: editedFields.imageUrl))
+        return Product(id: editedFields.productId ?? UUID(), name: editedFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: editedFields.expirationDate, image: ImageUrl(id: UUID(), imageUrl: editedFields.imageUrl))
     }
     func isProductNameValid() -> Bool {
         return !editedFields.productName.trimmingCharacters(in: .whitespaces).isEmpty
@@ -126,6 +133,8 @@ class AgregarViewModel: ObservableObject {
     }
 }
 class FieldEditTemporal {
+    var productId: UUID?
+    var errorBD: String = ""
     var productName: String = ""
     var productEdited: Bool = false
     var productError: String {

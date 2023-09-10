@@ -53,12 +53,13 @@ struct ListCartController: View {
             } else {
             List {
                 ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
-                    CartProductCardView(productId: cartDetail.product.id, productUrl: cartDetail.product.image.imageUrl, productName: cartDetail.product.name, product: cartDetail.product,productUnitPrice: cartDetail.product.unitPrice, carQuantity: cartDetail.quantity, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                    //Enviar CartDeail en vez de product al increace o decrece
+                    CartProductCardView(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive, action: {
-                                deleteProduct(product: cartDetail.product)
+                                deleteCartDetail(cartDetail: cartDetail)
                             }, label: {
                                 Image(systemName: "trash")
                             })
@@ -73,13 +74,13 @@ struct ListCartController: View {
         .padding(.horizontal, 10)
         .background(Color("color_background"))
     }
-    func deleteProduct(product: Product) {
-        cartViewModel.deleteProduct(product: product)
+    func deleteCartDetail(cartDetail: CartDetail) {
+        cartViewModel.deleteCartDetail(cartDetail: cartDetail)
     }
-    func decreceProductAmount(product: Product) {
-        cartViewModel.decreceProductAmount(product: product)
+    func decreceProductAmount(cartDetail: CartDetail) {
+        cartViewModel.decreceProductAmount(cartDetail: cartDetail)
     }
-    func increaceProductAmount(product: Product) {
-        cartViewModel.increaceProductAmount(product: product)
+    func increaceProductAmount(cartDetail: CartDetail) {
+        cartViewModel.increaceProductAmount(cartDetail: cartDetail)
     }
 }

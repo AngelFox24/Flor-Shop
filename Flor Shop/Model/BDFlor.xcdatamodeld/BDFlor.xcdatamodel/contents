@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22G90" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tb_Cart" representedClassName=".Tb_Cart" syncable="YES" codeGenerationType="class">
         <attribute name="idCart" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="total" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -60,7 +60,7 @@
         <attribute name="unitPrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toProduct" inverseEntity="Tb_CartDetail"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toProduct" inverseEntity="Tb_ImageUrl"/>
-        <relationship name="toSubsidiary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toProduct" inverseEntity="Tb_Subsidiary"/>
+        <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toProduct" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_Sale" representedClassName=".Tb_Sale" syncable="YES" codeGenerationType="class">
         <attribute name="idSale" attributeType="UUID" usesScalarValueType="NO"/>

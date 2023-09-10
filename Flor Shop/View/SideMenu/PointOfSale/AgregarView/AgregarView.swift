@@ -23,10 +23,9 @@ struct AgregarView: View {
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         let prdManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let repository = ProductRepositoryImpl(manager: prdManager)
+        let productRepo = ProductRepositoryImpl(manager: prdManager)
         AgregarView()
-            .environmentObject(ProductViewModel(productRepository: repository))
-            .environmentObject(AgregarViewModel(productRepository: repository))
+            .environmentObject(AgregarViewModel(productRepository: productRepo))
     }
 }
 
@@ -39,7 +38,6 @@ struct ErrorMessageText: View {
 }
 
 struct CamposProductoAgregar: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     var sizeCampo: CGFloat = 200
     var body: some View {

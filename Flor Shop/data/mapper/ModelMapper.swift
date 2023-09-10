@@ -53,6 +53,21 @@ extension Subsidiary {
     }
 }
 
+extension CartDetail {
+    func toCartDetailEntity(context: NSManagedObjectContext) -> Tb_CartDetail? {
+        let filterAtt = NSPredicate(format: "idCartDetail == %@", id.uuidString)
+        let request: NSFetchRequest<Tb_CartDetail> = Tb_CartDetail.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let cartDetailEntity = try context.fetch(request).first
+            return cartDetailEntity
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+}
+
 extension Company {
     func toCompanyEntity(context: NSManagedObjectContext) -> Tb_Company? {
         let filterAtt = NSPredicate(format: "idCompany == %@", id.uuidString)
@@ -143,14 +158,14 @@ extension Tb_Sale {
 }
 
 extension Tb_Cart {
-    func mapToCar() -> Car {
+    func toCar() -> Car {
         return Car(id: idCart ?? UUID(),
                    total: total)
     }
 }
 
 extension Tb_CartDetail {
-    func mapToCarDetail() -> CartDetail {
+    func toCarDetail() -> CartDetail {
         return CartDetail(
             id: idCartDetail ?? UUID(),
             quantity: Int(quantityAdded),
@@ -173,8 +188,8 @@ extension Array where Element == Product {
 }
 
 extension Array where Element == Tb_CartDetail {
-    func mapToListCartDetail() -> [CartDetail] {
-        return self.map {$0.mapToCarDetail()}
+    func toListCartDetail() -> [CartDetail] {
+        return self.map {$0.toCarDetail()}
     }
 }
 

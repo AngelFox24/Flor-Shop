@@ -33,8 +33,8 @@ class ProductViewModel: ObservableObject {
         }
     }
      */
-    func reduceStock() -> Bool {
-        let success = productRepository.reduceStock()
+    func reduceStock(cartDetails: [CartDetail]) -> Bool {
+        let success = productRepository.reduceStock(cartDetails: cartDetails)
         fetchProducts()
         return success
     }

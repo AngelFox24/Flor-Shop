@@ -11,11 +11,10 @@ import CoreData
 protocol ProductManager {
     func saveProduct(product: Product) -> String
     func getListProducts() -> [Product]
-    func reduceStock() -> Bool
+    func reduceStock(cartDetails: [CartDetail]) -> Bool
     func filterProducts(word: String) -> [Product]
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
-    func setDefaultSubsidiary(employee: Employee)
     func setDefaultSubsidiary(subisidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
 }
@@ -28,21 +27,39 @@ class LocalProductManager: ProductManager {
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
+    func saveData () {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en ProductRepositoryImpl \(error)")
+        }
+    }
+    func rollback() {
+        self.mainContext.rollback()
+    }
     func getListProducts() -> [Product] {
-        var productList: [Tb_Product] = []
+        var productList: [Product] = []
+        guard let subsidiary = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return productList
+        }
+        let filterAtt = NSPredicate(format: "toSubsidiary == %@", subsidiary)
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate = getFilterAtribute()
-        request.predicate = predicate
+        request.predicate = filterAtt
         let sortDescriptor = getOrderFilter()
         request.sortDescriptors = [sortDescriptor]
         do {
-            productList = try self.mainContext.fetch(request)
+            productList = try self.mainContext.fetch(request).map{$0.toProduct()}
         } catch let error {
             print("Error fetching. \(error)")
         }
-        return productList.mapToListProduct()
+        return productList
     }
     func saveProduct(product: Product) -> String {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return "No se encontró sucursal"
+        }
         if let productInContext = product.toProductEntity(context: mainContext) { //Existe este producto, vamos a actualizarlo
             print("Se encontro producto, lo vamos a actualizar")
             productInContext.productName = product.name
@@ -51,70 +68,77 @@ class LocalProductManager: ProductManager {
             productInContext.expirationDate = product.expirationDate
             productInContext.unitPrice = product.unitPrice
             productInContext.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
+            saveData()
+            return "Success"
         } else {
-            print("No se encontro producto, lo vamos a crear")
-            //Creamos un nuevo producto
-            let newProduct = Tb_Product(context: mainContext)
-            newProduct.idProduct = product.id
-            newProduct.productName = product.name
-            newProduct.quantityStock = Int64(product.qty)
-            newProduct.unitCost = product.unitCost
-            newProduct.unitPrice = product.unitPrice
-            newProduct.expirationDate = product.expirationDate
-            newProduct.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
+            //Buscar el nombre del producto con el mismo nombre en la sucursal
+            if !existProductInSubsidiary(product: product) {
+                print("No se encontro producto, lo vamos a crear")
+                //Creamos un nuevo producto
+                let newProduct = Tb_Product(context: mainContext)
+                newProduct.idProduct = product.id
+                newProduct.productName = product.name
+                newProduct.quantityStock = Int64(product.qty)
+                newProduct.unitCost = product.unitCost
+                newProduct.unitPrice = product.unitPrice
+                newProduct.expirationDate = product.expirationDate
+                newProduct.toSubsidiary = subsidiaryEntity
+                newProduct.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
+                saveData()
+                return "Success"
+            } else {
+                print("Se encontro duplicados del nombre del producto")
+                return "Se encontro duplicados del nombre del producto"
+            }
         }
-        saveData()
-        return "Success"
     }
-    func getListCart() -> Tb_Cart? {
-        var cart: Tb_Cart?
-        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
+    func existProductInSubsidiary(product: Product) -> Bool {
+        guard let subsidiary = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return true
+        }
+        let filterAtt = NSPredicate(format: "productName == %@ AND toSubsidiary == %@", product.name, subsidiary)
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        request.predicate = filterAtt
         do {
-            cart = try self.mainContext.fetch(request).first
+            let quantityDuplicate = try self.mainContext.fetch(request).count
+            print("Cantidad de Duplicados: \(quantityDuplicate)")
+            return quantityDuplicate == 0 ? false : true
         } catch let error {
             print("Error fetching. \(error)")
+            return false
         }
-        return cart
     }
-    func reduceStock() -> Bool {
+    func reduceStock(cartDetails: [CartDetail]) -> Bool {
         var saveChanges: Bool = true
-        //TODO: Arreglar esta funcion
-        /*
-        if let cartList = getListCart()?.toCartDetail as? Set<Tb_CartDetail> {
-            for cartDetail in cartList {
-                let reducedQuantity: Int64 = cartDetail.quantityAdded
-                let filteredProducts = getListProducts().mapToListProductEntity(context: productsContainer.viewContext).filter { $0.idProduct == cartDetail.toProduct?.idProduct }
-                if let productFound = filteredProducts.first {
-                    if productFound.cantidadStock >= reducedQuantity {
-                        productFound.cantidadStock -= reducedQuantity
-                    } else {
-                        saveChanges = false
-                    }
+        for cartDetail in cartDetails {
+            if let productEntity = cartDetail.product.toProductEntity(context: self.mainContext) {
+                if productEntity.quantityStock >= Int64(cartDetail.quantity) {
+                    productEntity.quantityStock -= Int64(cartDetail.quantity)
                 } else {
                     saveChanges = false
                 }
+            } else {
+                print("No se encontro producto para reduceStock")
+                saveChanges = false
             }
         }
         if saveChanges {
             saveData()
         } else {
-            print("Eliminamos los cambios")
-            self.productsContainer.viewContext.rollback()
+            print("Eliminamos los cambios en reduceStock")
+            rollback()
         }
-         */
         return saveChanges
-    }
-    func saveData () {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en ProductRepositoryImpl \(error)")
-        }
     }
     func filterProducts(word: String) -> [Product] {
         var products: [Product] = []
+        guard let subsidiaryEntity: Tb_Subsidiary = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return products
+        }
         let fetchRequest: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate1 = NSPredicate(format: "nombreProducto CONTAINS[c] %@", word)
+        let predicate1 = NSPredicate(format: "productName CONTAINS[c] %@ AND toSubsidiary == %@", word, subsidiaryEntity)
         let predicate2 = getFilterAtribute()
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
         fetchRequest.predicate = compoundPredicate
@@ -173,13 +197,6 @@ class LocalProductManager: ProductManager {
             filterAtt = NSPredicate(format: "quantityStock == 0")
         }
         return filterAtt
-    }
-    func setDefaultSubsidiary(employee: Employee) {
-        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
-            print("No se pudo asingar sucursar default")
-            return
-        }
-        self.mainSubsidiaryEntity = subsidiaryEntity
     }
     func getDefaultSubsidiary() -> Subsidiary? {
         return self.mainSubsidiaryEntity?.toSubsidiary()

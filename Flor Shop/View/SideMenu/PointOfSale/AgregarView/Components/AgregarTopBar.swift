@@ -14,6 +14,7 @@ struct AgregarTopBar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @State private var audioPlayer: AVAudioPlayer?
+    @State private var showingErrorAlert = false
     var body: some View {
         HStack {
             AgregarViewPopoverHelp()
@@ -30,10 +31,12 @@ struct AgregarTopBar: View {
                     agregarViewModel.fieldsTrue()
                     playSound(named: "Fail1")
                     print("No se pudo agregar correctamente")
+                    showingErrorAlert = true
                 }
             }, label: {
                 CustomButton1(text: "Guardar")
             })
+            .alert(agregarViewModel.editedFields.errorBD, isPresented: $showingErrorAlert, actions: {})
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)

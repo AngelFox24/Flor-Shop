@@ -29,7 +29,7 @@ struct CartTopBar: View {
             Button(action: {
                 // Reducimos stock
                 print("Se se va a proceder a reducir el stock en CarritoTopBar")
-                if productsCoreDataViewModel.reduceStock() {
+                if productsCoreDataViewModel.reduceStock(cartDetails: carritoCoreDataViewModel.cartDetailCoreData) {
                     print("Se ha reducido el stock en CarritoTopBar exitosamente")
                     // Luego de haber reducido el stock de forma exitosa vendemos
                     if ventasCoreDataViewModel.registerSale() {
