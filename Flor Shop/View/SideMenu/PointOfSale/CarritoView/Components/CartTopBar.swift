@@ -29,10 +29,14 @@ struct CartTopBar: View {
             Button(action: {
                 // Reducimos stock
                 print("Se se va a proceder a reducir el stock en CarritoTopBar")
+                if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData) {
+                    
+                }
+                /*
                 if productsCoreDataViewModel.reduceStock(cartDetails: carritoCoreDataViewModel.cartDetailCoreData) {
                     print("Se ha reducido el stock en CarritoTopBar exitosamente")
                     // Luego de haber reducido el stock de forma exitosa vendemos
-                    if ventasCoreDataViewModel.registerSale() {
+                    if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData) {
                         print("Se procede a vaciar el carrito")
                         carritoCoreDataViewModel.emptyCart()
                         playSound(named: "Success1")
@@ -42,6 +46,7 @@ struct CartTopBar: View {
                 } else {
                     print("No hay sufiente stock")
                 }
+                 */
             }, label: {
                 CustomButton1(text: "Vender")
             })

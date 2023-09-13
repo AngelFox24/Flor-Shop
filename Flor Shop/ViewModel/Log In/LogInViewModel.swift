@@ -19,12 +19,14 @@ class LogInViewModel: ObservableObject {
     private let employeeRepository: EmployeeRepository
     private let cartRepository: CarRepository
     private let productReporsitory: ProductRepository
-    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository) {
+    private let saleRepository: SaleRepository
+    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository, saleRepository: SaleRepository) {
         self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
         self.employeeRepository = employeeRepository
         self.cartRepository = cartRepository
         self.productReporsitory = productReporsitory
+        self.saleRepository = saleRepository
     }
     func fieldsTrue() {
         print("All value true")
@@ -65,8 +67,9 @@ class LogInViewModel: ObservableObject {
         self.subsidiaryRepository.setDefaultCompany(company: company)
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        self.productReporsitory.setDefaultSubsidiary(subisidiary: subsidiary)
-        self.employeeRepository.setDefaultSubsidiary(subisidiary: subsidiary)
+        self.productReporsitory.setDefaultSubsidiary(subsidiary: subsidiary)
+        self.employeeRepository.setDefaultSubsidiary(subsidiary: subsidiary)
+        self.saleRepository.setDefaultSubsidiary(subsidiary: subsidiary)
     }
     func setDefaultEmployee(employee: Employee) {
         self.cartRepository.setDefaultEmployee(employee: employee)

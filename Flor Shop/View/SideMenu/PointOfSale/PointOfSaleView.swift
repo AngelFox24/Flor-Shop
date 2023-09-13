@@ -11,6 +11,8 @@ struct PointOfSaleView: View {
     @State var tabSelected: Tab = .magnifyingglass
     @Binding var isKeyboardVisible: Bool
     @Binding var showMenu: Bool
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     var body: some View {
         ZStack {
             VStack(spacing: 0, content: {
@@ -28,6 +30,10 @@ struct PointOfSaleView: View {
             } else {
                 CustomTabBar(selectedTab: $tabSelected)
             }
+        }
+        .onAppear {
+            productsCoreDataViewModel.lazyFetchProducts()
+            carritoCoreDataViewModel.lazyFetchCart()
         }
     }
 }

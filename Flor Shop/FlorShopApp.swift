@@ -33,8 +33,8 @@ struct FlorShopApp: App {
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let salesRepository = SaleRepositoryImpl(manager: saleManager)
             //ViewModels
-            let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
-            let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
+            let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
+            let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
             
             let agregarViewModel = AgregarViewModel(productRepository: productRepository)
             let productsViewModel = ProductViewModel(productRepository: productRepository)

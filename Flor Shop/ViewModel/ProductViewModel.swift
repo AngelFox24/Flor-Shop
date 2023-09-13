@@ -16,27 +16,8 @@ class ProductViewModel: ObservableObject {
         fetchProducts()
     }
     // MARK: CRUD Core Data
-    func fetchProducts () {
+    func fetchProducts() {
         productsCoreData = productRepository.getListProducts()
-    }
-    /*
-    func addProduct() -> Bool {
-        let result = productRepository.saveProduct(product: temporalProduct)
-        if result == "Success" {
-            print("Se añadio correctamente")
-            setDefaultProduct()
-            fetchProducts()
-            return true
-        } else {
-            print(result)
-            return false
-        }
-    }
-     */
-    func reduceStock(cartDetails: [CartDetail]) -> Bool {
-        let success = productRepository.reduceStock(cartDetails: cartDetails)
-        fetchProducts()
-        return success
     }
     func filterProducts(word: String) {
         if word == "" {
@@ -50,5 +31,10 @@ class ProductViewModel: ObservableObject {
     }
     func setFilter(filter: ProductsFilterAttributes) {
         productRepository.setFilter(filter: filter)
+    }
+    func lazyFetchProducts() {
+        if productsCoreData.isEmpty {
+            fetchProducts()
+        }
     }
 }

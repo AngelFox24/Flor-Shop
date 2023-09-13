@@ -45,4 +45,9 @@ class CartViewModel: ObservableObject {
         self.cartRepository.decreceProductAmount(cartDetail: cartDetail)
         fetchCart()
     }
+    func lazyFetchCart() {
+        if cartDetailCoreData.isEmpty {
+            fetchCart()
+        }
+    }
 }

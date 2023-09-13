@@ -9,8 +9,10 @@ import Foundation
 import CoreData
 
 protocol SaleRepository {
-    func registerSale() -> Bool
+    func registerSale(cart: Car?) -> Bool
     func getListSales() -> [Sale]
+    func setDefaultSubsidiary(subsidiary: Subsidiary)
+    func getDefaultSubsidiary() -> Subsidiary?
 }
 
 class SaleRepositoryImpl: SaleRepository {
@@ -19,11 +21,17 @@ class SaleRepositoryImpl: SaleRepository {
     init(manager: SaleManager) {
         self.manager = manager
     }
-    func registerSale() -> Bool {
-        return self.manager.registerSale()
+    func registerSale(cart: Car?) -> Bool {
+        return self.manager.registerSale(cart: cart)
     }
     func getListSales() -> [Sale] {
         // add to remote logic
         return self.manager.getListSales()
+    }
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        self.manager.setDefaultSubsidiary(subsidiary: subsidiary)
+    }
+    func getDefaultSubsidiary() -> Subsidiary? {
+        return self.manager.getDefaultSubsidiary()
     }
 }

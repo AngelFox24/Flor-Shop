@@ -69,9 +69,10 @@ struct MainView_Previews: PreviewProvider {
         let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
         let productRepository = ProductRepositoryImpl(manager: productManager)
         let cartRepository = CarRepositoryImpl(manager: cartManager)
+        let salesRepository = SaleRepositoryImpl(manager: saleManager)
         
-        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
-        let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository)
+        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
+        let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
         MainView()
             .environmentObject(logInViewModel)
             .environmentObject(VersionCheck())

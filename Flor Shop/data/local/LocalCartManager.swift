@@ -69,11 +69,14 @@ class LocalCartManager: CartManager {
             return
         }
         //Verificamos carrito del empleado
-        guard let employeeCartEntity = self.mainEmployeeEntity?.toCart else {
+        guard let _ = self.mainEmployeeEntity?.toCart else {
             print("Empleado por defecto no tiene carrito")
             return
         }
-        employeeCartEntity.removeFromToCartDetail(cartDetailEntity)
+        //Solo desvincula
+        //employeeCartEntity.removeFromToCartDetail(cartDetailEntity)
+        //Eliminamos
+        self.mainContext.delete(cartDetailEntity)
         updateCartTotal()
         saveData()
     }

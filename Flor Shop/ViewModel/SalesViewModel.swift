@@ -18,7 +18,7 @@ class SalesViewModel: ObservableObject {
     func fetchVentas () {
         salesCoreData = self.saleRepository.getListSales()
     }
-    func registerSale() -> Bool {
-        return saleRepository.registerSale()
+    func registerSale(cart: Car?) -> Bool {
+        return saleRepository.registerSale(cart: cart)
     }
 }

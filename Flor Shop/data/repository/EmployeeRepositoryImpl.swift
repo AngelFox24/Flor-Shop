@@ -16,7 +16,7 @@ protocol EmployeeRepository {
     func logIn(user: String, password: String) -> Employee?
     func setDefaultSubsidiary(employee: Employee)
     func getEmployeeSubsidiary() -> Subsidiary?
-    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getSubsidiary(employee: Employee) -> Subsidiary?
     func getDefaultSubsidiary() -> Subsidiary?
 }
@@ -50,8 +50,8 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     func setDefaultSubsidiary(employee: Employee) {
         self.manager.setDefaultSubsidiary(employee: employee)
     }
-    func setDefaultSubsidiary(subisidiary: Subsidiary) {
-        self.manager.setDefaultSubsidiary(subisidiary: subisidiary)
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        self.manager.setDefaultSubsidiary(subsidiary: subsidiary)
     }
     func getEmployeeSubsidiary() -> Subsidiary? {
         return self.manager.getEmployeeSubsidiary()

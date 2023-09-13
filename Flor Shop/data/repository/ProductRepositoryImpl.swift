@@ -11,11 +11,10 @@ import CoreData
 protocol ProductRepository {
     func saveProduct(product: Product) -> String
     func getListProducts() -> [Product]
-    func reduceStock(cartDetails: [CartDetail]) -> Bool
     func filterProducts(word: String) -> [Product]
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
-    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
 }
 
@@ -33,10 +32,6 @@ public class ProductRepositoryImpl: ProductRepository {
         // add to remote logic
         return manager.getListProducts()
     }
-    func reduceStock(cartDetails: [CartDetail]) -> Bool {
-        // add to remote logic
-        return manager.reduceStock(cartDetails: cartDetails)
-    }
     func filterProducts(word: String) -> [Product] {
         return manager.filterProducts(word: word)
     }
@@ -46,8 +41,8 @@ public class ProductRepositoryImpl: ProductRepository {
     func setFilter(filter: ProductsFilterAttributes) {
         return manager.setFilter(filter: filter)
     }
-    func setDefaultSubsidiary(subisidiary: Subsidiary) {
-        self.manager.setDefaultSubsidiary(subisidiary: subisidiary)
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        self.manager.setDefaultSubsidiary(subsidiary: subsidiary)
     }
     func getDefaultSubsidiary() -> Subsidiary? {
         return self.manager.getDefaultSubsidiary()

@@ -11,11 +11,10 @@ import CoreData
 protocol ProductManager {
     func saveProduct(product: Product) -> String
     func getListProducts() -> [Product]
-    func reduceStock(cartDetails: [CartDetail]) -> Bool
     func filterProducts(word: String) -> [Product]
     func setOrder(order: PrimaryOrder)
     func setFilter(filter: ProductsFilterAttributes)
-    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
 }
 
@@ -109,28 +108,6 @@ class LocalProductManager: ProductManager {
             return false
         }
     }
-    func reduceStock(cartDetails: [CartDetail]) -> Bool {
-        var saveChanges: Bool = true
-        for cartDetail in cartDetails {
-            if let productEntity = cartDetail.product.toProductEntity(context: self.mainContext) {
-                if productEntity.quantityStock >= Int64(cartDetail.quantity) {
-                    productEntity.quantityStock -= Int64(cartDetail.quantity)
-                } else {
-                    saveChanges = false
-                }
-            } else {
-                print("No se encontro producto para reduceStock")
-                saveChanges = false
-            }
-        }
-        if saveChanges {
-            saveData()
-        } else {
-            print("Eliminamos los cambios en reduceStock")
-            rollback()
-        }
-        return saveChanges
-    }
     func filterProducts(word: String) -> [Product] {
         var products: [Product] = []
         guard let subsidiaryEntity: Tb_Subsidiary = self.mainSubsidiaryEntity else {
@@ -161,8 +138,8 @@ class LocalProductManager: ProductManager {
     func setFilter(filter: ProductsFilterAttributes) {
         self.filterAttribute = filter
     }
-    func setDefaultSubsidiary(subisidiary: Subsidiary) {
-        guard let subsidiaryEntity: Tb_Subsidiary = subisidiary.toSubsidiaryEntity(context: self.mainContext) else {
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
             print("No se pudo asingar sucursar default")
             return
         }

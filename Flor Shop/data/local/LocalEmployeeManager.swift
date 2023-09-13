@@ -15,7 +15,7 @@ protocol EmployeeManager {
     func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
     func setDefaultSubsidiary(employee: Employee)
-    func setDefaultSubsidiary(subisidiary: Subsidiary)
+    func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getEmployeeSubsidiary() -> Subsidiary?
     func getSubsidiary(employee: Employee) -> Subsidiary?
     func getDefaultSubsidiary() -> Subsidiary?
@@ -44,8 +44,8 @@ class LocalEmployeeManager: EmployeeManager {
         }
         self.mainSubsidiaryEntity = subsidiaryEntity
     }
-    func setDefaultSubsidiary(subisidiary: Subsidiary) {
-        guard let subsidiaryEntity: Tb_Subsidiary = subisidiary.toSubsidiaryEntity(context: self.mainContext) else {
+    func setDefaultSubsidiary(subsidiary: Subsidiary) {
+        guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
             print("No se pudo asingar sucursar default")
             return
         }
