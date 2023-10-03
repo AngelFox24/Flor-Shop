@@ -52,26 +52,18 @@ struct CustomerListController: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-            List {
-                ForEach(customerViewModel.customerList) { customer in
-                    CardViewTipe2(image: customer.image, mainText: customer.name + " " + customer.lastName, mainIndicatorPrefix: "S/. ", mainIndicator: String(customer.totalDebt), mainIndicatorAlert: false, secondaryIndicatorSuffix: " " + customDateFormatter(dateIn: customer.dateLimit), secondaryIndicator: Calendar.current.component(.day, from: customer.dateLimit), secondaryIndicatorAlert: false, size: 80)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                    .listRowBackground(Color("color_background"))
+                List {
+                    ForEach(customerViewModel.customerList) { customer in
+                        CardViewTipe2(image: customer.image, mainText: customer.name + " " + customer.lastName, mainIndicatorPrefix: "S/. ", mainIndicator: String(customer.totalDebt), mainIndicatorAlert: false, secondaryIndicatorSuffix: " " + customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month), secondaryIndicator: String(customer.dateLimit.getDateComponent(dateComponent: .day)), secondaryIndicatorAlert: false, size: 80)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowBackground(Color("color_background"))
+                    }
                 }
-            }
-            .listStyle(PlainListStyle())
+                .listStyle(PlainListStyle())
             }
         }
         .padding(.horizontal, 10)
         .background(Color("color_background"))
     }
-}
-
-func customDateFormatter(dateIn: Date) -> String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale(identifier: "es_ES") // Establece el idioma español
-    dateFormatter.dateFormat = "LLL" // Usa "LLL" para obtener el nombre del mes corto
-
-    return dateFormatter.string(from: dateIn)
 }
