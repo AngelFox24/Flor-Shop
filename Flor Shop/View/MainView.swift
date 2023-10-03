@@ -80,10 +80,10 @@ struct MainView_Previews: PreviewProvider {
         
         let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
         let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
-        let employeeViewModel = EmployeeViewModel(employeeRepository: employeeRepository)
+        let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
         MainView()
             .environmentObject(logInViewModel)
-            .environmentObject(employeeViewModel)
+            .environmentObject(customerViewModel)
             .environmentObject(VersionCheck())
             .environmentObject(registrationViewModel)
     }

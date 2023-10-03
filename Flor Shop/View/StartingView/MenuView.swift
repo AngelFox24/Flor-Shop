@@ -47,7 +47,7 @@ struct MenuView: View {
                         .padding(.top, showMenu ? 0 : 1)
                         .disabled(showMenu ? true : false)
                 case .customersTab:
-                    PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                    CustomersView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
                         .cornerRadius(showMenu ? 35 : 0)
                         .padding(.top, showMenu ? 0 : 1)
                         .disabled(showMenu ? true : false)
