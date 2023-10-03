@@ -16,4 +16,5 @@ struct Employee: Identifiable {
     var role: String
     var image: ImageUrl
     var active: Bool
+    var phoneNumber: String
 }

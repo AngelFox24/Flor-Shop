@@ -164,7 +164,22 @@ extension Tb_Employee {
                         lastName: lastName ?? "",
                         role: role ?? "",
                         image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
-                        active: active)
+                        active: active,
+                        phoneNumber: phoneNumber ?? "")
+    }
+}
+
+extension Tb_Customer {
+    func toCustomer() -> Customer {
+        return Customer(id: idCustomer ?? UUID(),
+                        name: name ?? "",
+                        lastName: lastName ?? "",
+                        image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
+                        active: active,
+                        creditLimit: creditLimit,
+                        dateLimit: dateLimit ?? Date(),
+                        phoneNumber: phoneNumber ?? "",
+                        totalDebt: totalDebt)
     }
 }
 

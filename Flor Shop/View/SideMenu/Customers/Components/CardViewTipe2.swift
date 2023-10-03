@@ -15,7 +15,7 @@ struct CardViewTipe2: View {
     var mainIndicatorPrefix: String?
     var mainIndicator: String
     var mainIndicatorAlert: Bool
-    var secondaryIndicatorPrefix: String?
+    var secondaryIndicatorSuffix: String?
     var secondaryIndicator: String?
     var secondaryIndicatorAlert: Bool
     let size: CGFloat
@@ -48,8 +48,8 @@ struct CardViewTipe2: View {
                                 Text(secondaryIndicatorUnwrap)
                                     .foregroundColor(.black)
                                     .font(.custom("Artifika-Regular", size: 16))
-                                if let secondaryIndicatorPrefixUnwrap = secondaryIndicatorPrefix {
-                                    Text(secondaryIndicatorPrefixUnwrap)
+                                if let secondaryIndicatorSuffixUnwrap = secondaryIndicatorSuffix {
+                                    Text(secondaryIndicatorSuffixUnwrap)
                                         .foregroundColor(.black)
                                         .font(.custom("Artifika-Regular", size: 12))
                                 }
@@ -91,7 +91,7 @@ struct CardViewTipe2: View {
 
 struct CardViewTipe2_Previews: PreviewProvider {
     static var previews: some View {
-        CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorPrefix: " u", secondaryIndicator: "9", secondaryIndicatorAlert: true, size: 80)
+        CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "9", secondaryIndicatorAlert: true, size: 80)
             .frame(maxHeight: .infinity)
             .background(Color.gray)
     }

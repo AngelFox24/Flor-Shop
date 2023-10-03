@@ -41,6 +41,7 @@ struct FlorShopApp: App {
             let cartViewModel = CartViewModel(carRepository: cartRepository)
             let salesViewModel = SalesViewModel(saleRepository: salesRepository)
             let employeeViewModel = EmployeeViewModel(employeeRepository: employeeRepository)
+            let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
             let companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
             let versionCheck = VersionCheck()
             MainView()
@@ -53,6 +54,7 @@ struct FlorShopApp: App {
                 .environmentObject(versionCheck)
                 .environmentObject(companyViewModel)
                 .environmentObject(employeeViewModel)
+                .environmentObject(customerViewModel)
         }
     }
 }

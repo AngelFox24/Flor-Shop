@@ -20,6 +20,8 @@
 		2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728EAB32A1B0E0D002B534A /* Sale.swift */; };
 		2731F0B72A956BC800F6E5E0 /* LogInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */; };
 		2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */; };
+		2733AF632ACB934800BF8531 /* CustomersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733AF622ACB934800BF8531 /* CustomersView.swift */; };
+		2733AF652ACB942E00BF8531 /* CustomerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733AF642ACB942E00BF8531 /* CustomerViewModel.swift */; };
 		2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */; };
 		2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737740D2A97E58F004C0BD1 /* MenuView.swift */; };
 		273774102A980781004C0BD1 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737740F2A980781004C0BD1 /* CustomBackButton.swift */; };
@@ -115,6 +117,8 @@
 		2728EAB32A1B0E0D002B534A /* Sale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sale.swift; sourceTree = "<group>"; };
 		2731F0B62A956BC800F6E5E0 /* LogInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewModel.swift; sourceTree = "<group>"; };
 		2731F0B82A956BF900F6E5E0 /* RegistrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModel.swift; sourceTree = "<group>"; };
+		2733AF622ACB934800BF8531 /* CustomersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomersView.swift; sourceTree = "<group>"; };
+		2733AF642ACB942E00BF8531 /* CustomerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerViewModel.swift; sourceTree = "<group>"; };
 		2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHideKeyboard.swift; sourceTree = "<group>"; };
 		2737740D2A97E58F004C0BD1 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		2737740F2A980781004C0BD1 /* CustomBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackButton.swift; sourceTree = "<group>"; };
@@ -224,6 +228,14 @@
 			path = "Log In";
 			sourceTree = "<group>";
 		};
+		2733AF612ACB932E00BF8531 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				278142092AC33DEA0093B402 /* CardViewTipe2.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		274CE28D29E6D792007C703D = {
 			isa = PBXGroup;
 			children = (
@@ -289,6 +301,7 @@
 				271BA1542A58799800572674 /* AgregarViewModel.swift */,
 				274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */,
 				274C65A42AC48B4800B778A2 /* EmployeeViewModel.swift */,
+				2733AF642ACB942E00BF8531 /* CustomerViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -318,7 +331,6 @@
 			isa = PBXGroup;
 			children = (
 				278142072AC333A60093B402 /* CartViewTipe1.swift */,
-				278142092AC33DEA0093B402 /* CardViewTipe2.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -473,6 +485,8 @@
 		27CC2E052A883BA8000EDB64 /* Customers */ = {
 			isa = PBXGroup;
 			children = (
+				2733AF612ACB932E00BF8531 /* Components */,
+				2733AF622ACB934800BF8531 /* CustomersView.swift */,
 			);
 			path = Customers;
 			sourceTree = "<group>";
@@ -691,6 +705,7 @@
 			files = (
 				27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */,
 				279C64902A8D7912003B29BC /* LocalCompanyManager.swift in Sources */,
+				2733AF652ACB942E00BF8531 /* CustomerViewModel.swift in Sources */,
 				27EBAFE62A59A2CB006E5CAD /* LaunchScreenView.swift in Sources */,
 				279C64882A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift in Sources */,
 				27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */,
@@ -743,6 +758,7 @@
 				27EE72F029F8A104007C3B5F /* ProductCardView.swift in Sources */,
 				27E9FD372A583AB30070216B /* VersionLockView.swift in Sources */,
 				27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */,
+				2733AF632ACB934800BF8531 /* CustomersView.swift in Sources */,
 				27CB99C52A3354F60083CAB7 /* CustomButtons.swift in Sources */,
 				27CC2E012A881BB8000EDB64 /* CreateAccountView.swift in Sources */,
 				27BA281B2A79CA67008F3F08 /* PopoverHelp.swift in Sources */,

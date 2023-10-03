@@ -10,7 +10,7 @@ import CoreData
 
 protocol CustomerRepository {
     func addCustomer(customer: Customer)
-    func getCustomer() -> Customer
+    func getCustomers() -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
 }
@@ -26,8 +26,8 @@ class CustomerRepositoryImpl: CustomerRepository {
         self.manager.addCustomer(customer: customer)
     }
     //R - Read
-    func getCustomer() -> Customer {
-        return self.manager.getCustomer()
+    func getCustomers() -> [Customer] {
+        return self.manager.getCustomers()
     }
     //U - Update
     func updateCustomer(customer: Customer) {

@@ -10,7 +10,7 @@ import CoreData
 
 protocol CustomerManager {
     func addCustomer(customer: Customer)
-    func getCustomer() -> Customer
+    func getCustomers() -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
 }
@@ -35,8 +35,15 @@ class LocalCustomerManager: CustomerManager {
         
     }
     //R - Read
-    func getCustomer() -> Customer {
-        return Customer(id: UUID(), name: "Cindy", lastName: "Jarpi Menestra", image: ImageUrl(id: UUID(), imageUrl: "https://yt3.googleusercontent.com/ytc/AOPolaRY4C6rIYTttVCU1PvNZis2qljWBq7Y46D9TG1TpA=s900-c-k-c0x00ffffff-no-rj"), active: true, creditLimit: 2000.0)
+    func getCustomers() -> [Customer] {
+        var customerEntityList: [Tb_Customer] = []
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        do {
+            customerEntityList = try self.mainContext.fetch(request)
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return customerEntityList.map { $0.toCustomer() }
     }
     //U - Update
     func updateCustomer(customer: Customer) {
