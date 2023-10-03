@@ -89,9 +89,11 @@ struct CreateAccountView: View {
                 }
             }
             .padding(.top, 1)
+            /*
             if isKeyboardVisible {
                 CustomHideKeyboard()
             }
+             */
         }
     }
 }

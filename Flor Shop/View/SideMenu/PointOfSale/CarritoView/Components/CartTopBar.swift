@@ -27,33 +27,17 @@ struct CartTopBar: View {
             }
             Spacer()
             Button(action: {
-                // Reducimos stock
-                print("Se se va a proceder a reducir el stock en CarritoTopBar")
                 if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData) {
-                    
+                    carritoCoreDataViewModel.fetchCart()
+                    productsCoreDataViewModel.fetchProducts()
+                    playSound(named: "Success1")
                 }
-                /*
-                if productsCoreDataViewModel.reduceStock(cartDetails: carritoCoreDataViewModel.cartDetailCoreData) {
-                    print("Se ha reducido el stock en CarritoTopBar exitosamente")
-                    // Luego de haber reducido el stock de forma exitosa vendemos
-                    if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData) {
-                        print("Se procede a vaciar el carrito")
-                        carritoCoreDataViewModel.emptyCart()
-                        playSound(named: "Success1")
-                    } else {
-                        print("Todo esta mal renuncia xd")
-                    }
-                } else {
-                    print("No hay sufiente stock")
-                }
-                 */
             }, label: {
                 CustomButton1(text: "Vender")
             })
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
-        //.padding(.top, 57)
         .padding(.horizontal, 40)
         .background(Color("color_primary"))
     }

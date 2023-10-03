@@ -117,7 +117,6 @@ struct CartProductCardView_Previews: PreviewProvider {
          
      }
  }
- */
 struct SizeCalculator: ViewModifier {
     @Binding var size: CGSize
     func body(content: Content) -> some View {
@@ -137,3 +136,5 @@ extension View {
         modifier(SizeCalculator(size: size))
     }
 }
+ 
+ */

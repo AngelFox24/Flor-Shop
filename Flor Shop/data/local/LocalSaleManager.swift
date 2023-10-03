@@ -103,6 +103,8 @@ class LocalSaleManager: SaleManager {
                         newSaleDetailEntity.quantitySold = cartDetailEntity.quantityAdded
                         newSaleDetailEntity.subtotal = cartDetailEntity.subtotal
                         newSaleDetailEntity.toSale = newSaleEntity
+                        //Eliminamos el detalle del carrito
+                        self.mainContext.delete(cartDetailEntity)
                     } else {
                         saveChanges = false
                     }
@@ -110,6 +112,7 @@ class LocalSaleManager: SaleManager {
                     saveChanges = false
                 }
             }
+            cartEntity.total = 0.0
         } else {
             saveChanges = false
         }
@@ -130,6 +133,7 @@ class LocalSaleManager: SaleManager {
             productEntity.quantityStock -= cartDetailEntity.quantityAdded
             return true
         } else {
+            print("No hay stock suficiente")
             return false
         }
     }

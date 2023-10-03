@@ -24,10 +24,7 @@ struct PointOfSaleView: View {
                     CartView(selectedTab: $tabSelected)
                 }
             })
-            if isKeyboardVisible {
-                CustomHideKeyboard()
-                    .padding(.bottom, 12)
-            } else {
+            if !isKeyboardVisible {
                 CustomTabBar(selectedTab: $tabSelected)
             }
         }
@@ -39,12 +36,22 @@ struct PointOfSaleView: View {
 }
 struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var isKeyboardVisible: Bool = false
+        @State var isKeyboardVisible: Bool = true
         @State var showMenu: Bool = false
-        let prdManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let repository = ProductRepositoryImpl(manager: prdManager)
+        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
+        let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
+        
+        let productRepository = ProductRepositoryImpl(manager: productManager)
+        let cartRepository = CarRepositoryImpl(manager: cartManager)
+        
+        let agregarViewModel = AgregarViewModel(productRepository: productRepository)
+        let productsViewModel = ProductViewModel(productRepository: productRepository)
+        let cartViewModel = CartViewModel(carRepository: cartRepository)
+        
         PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-            .environmentObject(ProductViewModel(productRepository: repository))
+            .environmentObject(agregarViewModel)
+            .environmentObject(productsViewModel)
+            .environmentObject(cartViewModel)
             .environmentObject(VersionCheck())
     }
 }

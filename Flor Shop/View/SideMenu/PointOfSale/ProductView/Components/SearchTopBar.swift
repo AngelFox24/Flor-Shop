@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SearchTopBar: View {
+struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @State private var selectedOrder: PrimaryOrder = PrimaryOrder.nameAsc
     @State private var selectedFilter: ProductsFilterAttributes = ProductsFilterAttributes.allProducts
@@ -121,7 +121,7 @@ struct SearchTopBar_Previews: PreviewProvider {
         let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
         let productRepository = ProductRepositoryImpl(manager: productManager)
         @State var showMenu: Bool = false
-        SearchTopBar(showMenu: $showMenu)
+        ProductSearchTopBar(showMenu: $showMenu)
             .environmentObject(ProductViewModel(productRepository: productRepository))
     }
 }

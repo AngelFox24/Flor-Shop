@@ -13,41 +13,47 @@ struct MainView: View {
     @State private var isKeyboardVisible: Bool = false
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     var body: some View {
-        VStack(spacing: 0) {
-            if !hasShownOnboarding {
-                OnboardingView(onAction: {
-                    hasShownOnboarding = true
-                })
-            } else {
-                switch versionCheck.versionIsOk {
-                case .loading:
-                    LaunchScreenView()
-                case .lockVersion:
-                    LockScreenView()
-                case .versionOk:
-                    //Etapa del LogIn o Registro
-                    if logInViewModel.logInStatus == .success {
-                        MenuView(isKeyboardVisible: $isKeyboardVisible)
-                    } else {
-                        NavigationView(content: {
-                            VStack(content: {
-                                WelcomeView(isKeyboardVisible: $isKeyboardVisible)
+        ZStack {
+            VStack(spacing: 0) {
+                if !hasShownOnboarding {
+                    OnboardingView(onAction: {
+                        hasShownOnboarding = true
+                    })
+                } else {
+                    switch versionCheck.versionIsOk {
+                    case .loading:
+                        LaunchScreenView()
+                    case .lockVersion:
+                        LockScreenView()
+                    case .versionOk:
+                        //Etapa del LogIn o Registro
+                        if logInViewModel.logInStatus == .success {
+                            MenuView(isKeyboardVisible: $isKeyboardVisible)
+                        } else {
+                            NavigationView(content: {
+                                VStack(content: {
+                                    WelcomeView(isKeyboardVisible: $isKeyboardVisible)
+                                })
                             })
-                        })
+                        }
+                    case .unowned:
+                        LockScreenView()
                     }
-                case .unowned:
-                    LockScreenView()
                 }
             }
-        }
-        .onAppear {
-            //versionCheck.checkAppVersion()
-            // checkForPermission()
-            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
-                isKeyboardVisible = true
+            .onAppear {
+                //versionCheck.checkAppVersion()
+                // checkForPermission()
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
+                    isKeyboardVisible = true
+                }
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                    isKeyboardVisible = false
+                }
             }
-            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-                isKeyboardVisible = false
+            if isKeyboardVisible {
+                CustomHideKeyboard()
+                    //.padding(.bottom, 12)
             }
         }
     }
