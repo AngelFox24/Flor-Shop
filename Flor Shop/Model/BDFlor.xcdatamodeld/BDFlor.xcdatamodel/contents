@@ -17,6 +17,7 @@
         <attribute name="companyName" attributeType="String"/>
         <attribute name="idCompany" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="ruc" optional="YES" attributeType="String"/>
+        <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toCompany" inverseEntity="Tb_Customer"/>
         <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_Customer" representedClassName=".Tb_Customer" syncable="YES" codeGenerationType="class">
@@ -28,6 +29,7 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="phoneNumber" optional="YES" attributeType="String"/>
         <attribute name="totalDebt" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toCustomer" inverseEntity="Tb_Company"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toCustomer" inverseEntity="Tb_ImageUrl"/>
         <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toCustomer" inverseEntity="Tb_Sale"/>
     </entity>

@@ -17,6 +17,7 @@ protocol CustomerManager {
 
 class LocalCustomerManager: CustomerManager {
     let mainContext: NSManagedObjectContext
+    var mainCompanyEntity: Tb_Company?
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
     }
@@ -52,5 +53,15 @@ class LocalCustomerManager: CustomerManager {
     //D - Delete
     func deleteCustomer(customer: Customer) {
         
+    }
+    func setDefaultCompany(company: Company) {
+        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
+            print("No se pudo asingar sucursar default")
+            return
+        }
+        self.mainCompanyEntity = companyEntity
+    }
+    func getDefaultCompany() -> Company? {
+        return self.mainCompanyEntity?.toCompany()
     }
 }

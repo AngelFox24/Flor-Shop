@@ -41,42 +41,50 @@ struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     var sizeCampo: CGFloat = 200
     var body: some View {
-        List {
-            HStack {
-                Spacer()
-                AsyncImage(url: URL(string: agregarViewModel.editedFields.imageUrl )) { phase in
-                    switch phase {
-                    case .empty:
-                        Image("ProductoSinNombre")
-                            .resizable()
-                            .frame(width: sizeCampo, height: sizeCampo)
-                            .cornerRadius(20.0)
-                    case .success(let returnetImage):
-                        returnetImage
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: sizeCampo, height: sizeCampo)
-                            .cornerRadius(20.0)
-                    case .failure:
-                        Image("groundhog-cry")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: sizeCampo, height: sizeCampo)
-                            .cornerRadius(20.0)
-                    default:
-                        Image("groundhog-cry")
-                            .resizable()
-                            .frame(width: sizeCampo, height: sizeCampo)
-                            .cornerRadius(20.0)
-                    }
-                }
-                Spacer()
-            }
-            .listRowSeparator(.hidden)
+        //List(content: {
+        /*Para formularios no es necesario usar List ya que se tiene:
+         - Padding por default
+         - Necesita especificar el color de fondo de los elementos de la lista y ocultar el separador
             .listRowBackground(Color("color_background"))
-            VStack {
+            .listRowSeparator(.hidden)
+         - Necesita especificar PlainListStyle
+            .listStyle(PlainListStyle())
+         */
+        ScrollView(content: {
+            VStack(spacing: 23, content: {
                 HStack {
-                    // El texto hace que tenga una separacion mayor del elemento
+                    Spacer()
+                    AsyncImage(url: URL(string: agregarViewModel.editedFields.imageUrl )) { phase in
+                        switch phase {
+                        case .empty:
+                            Image("ProductoSinNombre")
+                                .resizable()
+                                .frame(width: sizeCampo, height: sizeCampo)
+                                .cornerRadius(20.0)
+                        case .success(let returnetImage):
+                            returnetImage
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: sizeCampo, height: sizeCampo)
+                                .cornerRadius(20.0)
+                        case .failure:
+                            Image("groundhog-cry")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: sizeCampo, height: sizeCampo)
+                                .cornerRadius(20.0)
+                        default:
+                            Image("groundhog-cry")
+                                .resizable()
+                                .frame(width: sizeCampo, height: sizeCampo)
+                                .cornerRadius(20.0)
+                        }
+                    }
+                    Spacer()
+                }
+                VStack {
+                    HStack {
+                        // El texto hace que tenga una separacion mayor del elemento
                         HStack {
                             CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.editedFields.productName, edited: $agregarViewModel.editedFields.productEdited)
                         }
@@ -94,78 +102,74 @@ struct CamposProductoAgregar: View {
                                 .background(Color("color_secondary"))
                                 .cornerRadius(10)
                         })
-                }
-                if agregarViewModel.editedFields.productError != "" {
-                    ErrorMessageText(message: agregarViewModel.editedFields.productError)
-                        .padding(.top, 6)
-                }
-            }
-            .listRowBackground(Color("color_background"))
-            .listRowSeparator(.hidden)
-            VStack {
-                HStack {
-                    HStack {
-                        HStack {
-                            CustomTextField(title: "URL de la Imagen" ,value: $agregarViewModel.editedFields.imageUrl, edited: $agregarViewModel.editedFields.imageURLEdited)
-                        }
-                        Spacer()
-                        Button(action: {
-                            print("Se presiono Pegar Imagen")
-                            if agregarViewModel.editedFields.productName != "" {
-                                agregarViewModel.editedFields.imageUrl = pasteFromClipboard()
-                            } else {
-                                agregarViewModel.urlEdited()
-                            }
-                        }, label: {
-                            Text("Pegar Imagen")
-                                .foregroundColor(.black)
-                                .font(.custom("Artifika-Regular", size: 16))
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 5)
-                                .background(Color("color_secondary"))
-                                .cornerRadius(10)
-                        })
+                    }
+                    if agregarViewModel.editedFields.productError != "" {
+                        ErrorMessageText(message: agregarViewModel.editedFields.productError)
+                            .padding(.top, 6)
                     }
                 }
-                if !agregarViewModel.isURLValid() && agregarViewModel.editedFields.productName != "" && agregarViewModel.editedFields.imageURLEdited {
-                    ErrorMessageText(message: "Pega la imagen copiada")
-                        .padding(.top, 6)
-                } else if !agregarViewModel.isURLValid() && agregarViewModel.editedFields.imageURLEdited {
-                    ErrorMessageText(message: "Ingresa un nombre de producto")
-                        .padding(.top, 6)
+                .listRowBackground(Color("color_background"))
+                .listRowSeparator(.hidden)
+                VStack {
+                    HStack {
+                        HStack {
+                            HStack {
+                                CustomTextField(title: "URL de la Imagen" ,value: $agregarViewModel.editedFields.imageUrl, edited: $agregarViewModel.editedFields.imageURLEdited)
+                            }
+                            Spacer()
+                            Button(action: {
+                                print("Se presiono Pegar Imagen")
+                                if agregarViewModel.editedFields.productName != "" {
+                                    agregarViewModel.editedFields.imageUrl = pasteFromClipboard()
+                                } else {
+                                    agregarViewModel.urlEdited()
+                                }
+                            }, label: {
+                                Text("Pegar Imagen")
+                                    .foregroundColor(.black)
+                                    .font(.custom("Artifika-Regular", size: 16))
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 5)
+                                    .background(Color("color_secondary"))
+                                    .cornerRadius(10)
+                            })
+                        }
+                    }
+                    if !agregarViewModel.isURLValid() && agregarViewModel.editedFields.productName != "" && agregarViewModel.editedFields.imageURLEdited {
+                        ErrorMessageText(message: "Pega la imagen copiada")
+                            .padding(.top, 6)
+                    } else if !agregarViewModel.isURLValid() && agregarViewModel.editedFields.imageURLEdited {
+                        ErrorMessageText(message: "Ingresa un nombre de producto")
+                            .padding(.top, 6)
+                    }
                 }
-            }
-            .listRowBackground(Color("color_background"))
-            .listRowSeparator(.hidden)
-            VStack {
-                HStack {
-                    CustomTextField(title: "Cantidad" ,value: $agregarViewModel.editedFields.quantityStock, edited: $agregarViewModel.editedFields.quantityEdited, keyboardType: .numberPad)
-                    CustomTextField(title: "Costo Unitario" ,value: $agregarViewModel.editedFields.unitCost, edited: $agregarViewModel.editedFields.unitCostEdited, keyboardType: .decimalPad)
+                VStack {
+                    HStack {
+                        CustomTextField(title: "Cantidad" ,value: $agregarViewModel.editedFields.quantityStock, edited: $agregarViewModel.editedFields.quantityEdited, keyboardType: .numberPad)
+                        CustomTextField(title: "Costo Unitario" ,value: $agregarViewModel.editedFields.unitCost, edited: $agregarViewModel.editedFields.unitCostEdited, keyboardType: .decimalPad)
+                    }
+                    if agregarViewModel.editedFields.quantityError != "" {
+                        ErrorMessageText(message: agregarViewModel.editedFields.quantityError)
+                            .padding(.top, 18)
+                    }
+                    if agregarViewModel.editedFields.unitCostError != "" {
+                        ErrorMessageText(message: agregarViewModel.editedFields.unitCostError)
+                            .padding(.top, 6)
+                    }
                 }
-                if agregarViewModel.editedFields.quantityError != "" {
-                    ErrorMessageText(message: agregarViewModel.editedFields.quantityError)
-                        .padding(.top, 18)
+                VStack {
+                    HStack {
+                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.editedFields.profitMargin), edited: .constant(false), disable: true)
+                        CustomTextField(title: "Precio de Venta" ,value: $agregarViewModel.editedFields.unitPrice, edited: $agregarViewModel.editedFields.unitPriceEdited, keyboardType: .decimalPad)
+                    }
+                    if agregarViewModel.editedFields.unitPriceError != "" {
+                        ErrorMessageText(message: agregarViewModel.editedFields.unitPriceError)
+                            .padding(.top, 6)
+                    }
                 }
-                if agregarViewModel.editedFields.unitCostError != "" {
-                    ErrorMessageText(message: agregarViewModel.editedFields.unitCostError)
-                        .padding(.top, 6)
-                }
-            }
-            .listRowBackground(Color("color_background"))
-            .listRowSeparator(.hidden)
-            VStack {
-                HStack {
-                    CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.editedFields.profitMargin), edited: .constant(false), disable: true)
-                    CustomTextField(title: "Precio de Venta" ,value: $agregarViewModel.editedFields.unitPrice, edited: $agregarViewModel.editedFields.unitPriceEdited, keyboardType: .decimalPad)
-                }
-                if agregarViewModel.editedFields.unitPriceError != "" {
-                    ErrorMessageText(message: agregarViewModel.editedFields.unitPriceError)
-                        .padding(.top, 6)
-                }
-            }
-            .listRowBackground(Color("color_background"))
-            .listRowSeparator(.hidden)
-        }
-        .listStyle(PlainListStyle())
+            })
+            .padding(.top, 10)
+        })
+        .padding(.horizontal, 10)
     }
 }

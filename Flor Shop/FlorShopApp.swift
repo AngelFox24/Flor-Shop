@@ -16,7 +16,7 @@ struct FlorShopApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            //Definimos contexto para todos
+            //Managers
             let companyManager = LocalCompanyManager(mainContext: CoreDataProvider.shared.viewContext)
             let subsidiaryManager = LocalSubsidiaryManager(mainContext: CoreDataProvider.shared.viewContext)
             let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
