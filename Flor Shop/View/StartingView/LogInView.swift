@@ -67,13 +67,7 @@ struct LogInView: View {
                 }
             }
             .padding(.top, 1) //Resuelve el problema del desvanecimiento en el navigation back button
-            /*
-            if isKeyboardVisible {
-                CustomHideKeyboard()
-            }
-             */
         }
-        //.ignoresSafeArea()
     }
 }
 

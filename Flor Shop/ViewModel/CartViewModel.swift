@@ -10,6 +10,7 @@ import Foundation
 class CartViewModel: ObservableObject {
     @Published var cartCoreData: Car?
     @Published var cartDetailCoreData: [CartDetail] = []
+    @Published var customerInCar: Customer?
     private let cartRepository: CarRepository
     init(carRepository: CarRepository) {
         self.cartRepository = carRepository

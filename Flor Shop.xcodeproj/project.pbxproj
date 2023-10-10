@@ -28,6 +28,8 @@
 		27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27395ABF2A8463F100A91420 /* CustomTextField.swift */; };
 		273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BD5DE2A4B4493001C1C03 /* Notification.swift */; };
 		273E638E2A897ACF0048DC44 /* PointOfSaleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E638D2A897ACF0048DC44 /* PointOfSaleView.swift */; };
+		274960A22AD4933000BC257B /* PaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274960A12AD4933000BC257B /* PaymentView.swift */; };
+		274960A62AD4966300BC257B /* PaymentTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274960A52AD4966300BC257B /* PaymentTopBar.swift */; };
 		274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */; };
 		274C65A12AC48A3200B778A2 /* EmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274C65A02AC48A3200B778A2 /* EmployeeView.swift */; };
 		274C65A52AC48B4800B778A2 /* EmployeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274C65A42AC48B4800B778A2 /* EmployeeViewModel.swift */; };
@@ -126,6 +128,8 @@
 		27395ABF2A8463F100A91420 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		273BD5DE2A4B4493001C1C03 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		273E638D2A897ACF0048DC44 /* PointOfSaleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointOfSaleView.swift; sourceTree = "<group>"; };
+		274960A12AD4933000BC257B /* PaymentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentView.swift; sourceTree = "<group>"; };
+		274960A52AD4966300BC257B /* PaymentTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentTopBar.swift; sourceTree = "<group>"; };
 		274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyViewModel.swift; sourceTree = "<group>"; };
 		274C65A02AC48A3200B778A2 /* EmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeView.swift; sourceTree = "<group>"; };
 		274C65A42AC48B4800B778A2 /* EmployeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeViewModel.swift; sourceTree = "<group>"; };
@@ -234,6 +238,23 @@
 			isa = PBXGroup;
 			children = (
 				278142092AC33DEA0093B402 /* CardViewTipe2.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		274960A32AD4944F00BC257B /* PaymentView */ = {
+			isa = PBXGroup;
+			children = (
+				274960A42AD4949C00BC257B /* Components */,
+				274960A12AD4933000BC257B /* PaymentView.swift */,
+			);
+			path = PaymentView;
+			sourceTree = "<group>";
+		};
+		274960A42AD4949C00BC257B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				274960A52AD4966300BC257B /* PaymentTopBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -468,6 +489,7 @@
 				27C241F92A0089B50045B2A0 /* AgregarView */,
 				27C241F62A0088DE0045B2A0 /* ProductView */,
 				27C241F72A0088E90045B2A0 /* CarritoView */,
+				274960A32AD4944F00BC257B /* PaymentView */,
 			);
 			path = PointOfSale;
 			sourceTree = "<group>";
@@ -714,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				274960A62AD4966300BC257B /* PaymentTopBar.swift in Sources */,
 				27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */,
 				279C64902A8D7912003B29BC /* LocalCompanyManager.swift in Sources */,
 				2733AF652ACB942E00BF8531 /* CustomerViewModel.swift in Sources */,
@@ -767,6 +790,7 @@
 				68A4B1102A197BFB00FC8D9D /* ProductRepositoryImpl.swift in Sources */,
 				27C7B9D32A60CEC600CA2818 /* OnboardingView.swift in Sources */,
 				27EE72F029F8A104007C3B5F /* ProductCardView.swift in Sources */,
+				274960A22AD4933000BC257B /* PaymentView.swift in Sources */,
 				27E9FD372A583AB30070216B /* VersionLockView.swift in Sources */,
 				27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */,
 				2733AF632ACB934800BF8531 /* CustomersView.swift in Sources */,
