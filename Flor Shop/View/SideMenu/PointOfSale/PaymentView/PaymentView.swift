@@ -23,14 +23,6 @@ struct PaymentView_Previews: PreviewProvider {
         let carRepository = CarRepositoryImpl(manager: carManager)
         PaymentView()
             .environmentObject(CartViewModel(carRepository: carRepository))
-        /*
-        HStack{
-            CardViewTipe3(icon: "dollarsign", text: "Efectivo", enable: true)
-            CardViewTipe3(icon: "dollarsign", text: "Fiado")
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.gray)
-        */
     }
 }
 
@@ -54,13 +46,26 @@ struct PaymentsFields: View {
                         .foregroundColor(.black)
                     Spacer()
                 })
-                CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.green, topStatus: "Buen Pagador", mainText: "Mariano Aceña Simón", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "9", secondaryIndicatorAlert: false, size: 80)
+                CardViewTipe2(
+                    image: cartViewModel.customerInCar?.image ?? ImageUrl.getDummyImage(),
+                    topStatusColor: Color.green,
+                    topStatus: "Buen Pagador",
+                    mainText: cartViewModel.customerInCar?.name ?? "Deconocido" + " " + (cartViewModel.customerInCar?.lastName ?? "x"),
+                    mainIndicatorPrefix: "S/. ",
+                    mainIndicator: String(cartViewModel.customerInCar?.totalDebt ?? 0.0),
+                    mainIndicatorAlert: false,
+                    secondaryIndicatorSuffix: cartViewModel.customerInCar?.dateLimit == nil ? nil : " " + String(cartViewModel.customerInCar?.dateLimit?.getShortNameComponent(dateStringNameComponent: .month) ?? ""),
+                    secondaryIndicator: cartViewModel.customerInCar?.dateLimit == nil ? nil : String(cartViewModel.customerInCar?.dateLimit?.getDateComponent(dateComponent: .day) ?? 0),
+                    secondaryIndicatorAlert: false, size: 80)
                 HStack(content: {
                     Spacer()
-                    CardViewTipe3(icon: "dollarsign", text: "Efectivo", enable: true)
-                    Spacer()
-                    CardViewTipe3(icon: "list.clipboard", text: "Fiado")
-                    Spacer()
+                    ForEach(PaymentEnums.allValues, id: \.self, content: { paymentType in
+                        CardViewTipe3(icon: paymentType.icon, text: paymentType.icon, enable: cartViewModel.paymentType == paymentType)
+                            .onTapGesture {
+                                cartViewModel.paymentType = paymentType
+                            }
+                        Spacer()
+                    })
                 })
             })
         })

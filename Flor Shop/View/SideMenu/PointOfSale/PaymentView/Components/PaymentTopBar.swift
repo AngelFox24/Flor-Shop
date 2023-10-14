@@ -19,7 +19,7 @@ struct PaymentTopBar: View {
         HStack {
             Spacer()
             Button(action: {
-                if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData) {
+                if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar) {
                     carritoCoreDataViewModel.fetchCart()
                     productsCoreDataViewModel.fetchProducts()
                     playSound(named: "Success1")

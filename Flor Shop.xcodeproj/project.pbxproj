@@ -83,6 +83,7 @@
 		27CC2E0B2A8844EA000EDB64 /* TabButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E0A2A8844EA000EDB64 /* TabButton.swift */; };
 		27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */; };
 		27D2564B2ADB0087004FB365 /* AddCustomerTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2564A2ADB0087004FB365 /* AddCustomerTopBar.swift */; };
+		27D2564D2ADB11DE004FB365 /* PaymentEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2564C2ADB11DE004FB365 /* PaymentEnums.swift */; };
 		27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E113462A992B4C0027728A /* LocalImageManager.swift */; };
 		27E7A51C2A1D18570042983D /* CartDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E7A51B2A1D18570042983D /* CartDetail.swift */; };
 		27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27E9FD1D2A582C710070216B /* GoogleService-Info.plist */; };
@@ -190,6 +191,7 @@
 		27CC2E0A2A8844EA000EDB64 /* TabButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabButton.swift; sourceTree = "<group>"; };
 		27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCorners.swift; sourceTree = "<group>"; };
 		27D2564A2ADB0087004FB365 /* AddCustomerTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerTopBar.swift; sourceTree = "<group>"; };
+		27D2564C2ADB11DE004FB365 /* PaymentEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentEnums.swift; sourceTree = "<group>"; };
 		27E113462A992B4C0027728A /* LocalImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalImageManager.swift; sourceTree = "<group>"; };
 		27E7A51B2A1D18570042983D /* CartDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartDetail.swift; sourceTree = "<group>"; };
 		27E9FD1D2A582C710070216B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -363,6 +365,7 @@
 			children = (
 				2776A2EF2A86F35500410674 /* ProductsEnums.swift */,
 				2748918D2AD707B3004D6C6C /* CustomersEnums.swift */,
+				27D2564C2ADB11DE004FB365 /* PaymentEnums.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -773,6 +776,7 @@
 				27B3937029F7575C0085D4EC /* SearchTopBar.swift in Sources */,
 				27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */,
 				2728EAAE2A1B0BC2002B534A /* SaleRepositoryImpl.swift in Sources */,
+				27D2564D2ADB11DE004FB365 /* PaymentEnums.swift in Sources */,
 				279C649A2A8D89BB003B29BC /* LocalCustomerManager.swift in Sources */,
 				27F68FBE2AD84EDF00D917FF /* NavManager.swift in Sources */,
 				279C64A02A8D9539003B29BC /* Subsidiary.swift in Sources */,

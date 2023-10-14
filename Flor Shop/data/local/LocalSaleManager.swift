@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol SaleManager {
-    func registerSale (cart: Car?) -> Bool
+    func registerSale (cart: Car?, customer: Customer?) -> Bool
     func getListSales () -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
@@ -61,7 +61,7 @@ class LocalSaleManager: SaleManager {
             }
         return cart
     }
-    func registerSale(cart: Car?) -> Bool {
+    func registerSale(cart: Car?, customer: Customer?) -> Bool {
         var saveChanges: Bool = true
         //Verificamos si existe subisidiaria por defecto
         guard let defaultSubsidiaryEntity = self.mainSubsidiaryEntity else {
@@ -87,6 +87,9 @@ class LocalSaleManager: SaleManager {
             newSaleEntity.idSale = UUID()
             newSaleEntity.toSubsidiary = defaultSubsidiaryEntity
             newSaleEntity.toEmployee = employeeEntity
+            if let customerEntity = customer?.toCustomerEntity(context: self.mainContext) {
+                newSaleEntity.toCustomer = customerEntity
+            }
             newSaleEntity.paymentType = "Efectivo"
             newSaleEntity.saleDate = Date()
             newSaleEntity.total = cartEntity.total

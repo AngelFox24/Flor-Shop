@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol SaleRepository {
-    func registerSale(cart: Car?) -> Bool
+    func registerSale(cart: Car?, customer: Customer?) -> Bool
     func getListSales() -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
@@ -21,8 +21,8 @@ class SaleRepositoryImpl: SaleRepository {
     init(manager: SaleManager) {
         self.manager = manager
     }
-    func registerSale(cart: Car?) -> Bool {
-        return self.manager.registerSale(cart: cart)
+    func registerSale(cart: Car?, customer: Customer?) -> Bool {
+        return self.manager.registerSale(cart: cart, customer: customer)
     }
     func getListSales() -> [Sale] {
         // add to remote logic
