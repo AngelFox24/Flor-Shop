@@ -28,6 +28,8 @@
 		27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27395ABF2A8463F100A91420 /* CustomTextField.swift */; };
 		273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273BD5DE2A4B4493001C1C03 /* Notification.swift */; };
 		273E638E2A897ACF0048DC44 /* PointOfSaleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E638D2A897ACF0048DC44 /* PointOfSaleView.swift */; };
+		2748918C2AD7063E004D6C6C /* CustomerTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2748918B2AD7063E004D6C6C /* CustomerTopBar.swift */; };
+		2748918E2AD707B3004D6C6C /* CustomersEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2748918D2AD707B3004D6C6C /* CustomersEnums.swift */; };
 		274960A22AD4933000BC257B /* PaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274960A12AD4933000BC257B /* PaymentView.swift */; };
 		274960A62AD4966300BC257B /* PaymentTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274960A52AD4966300BC257B /* PaymentTopBar.swift */; };
 		274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */; };
@@ -98,6 +100,7 @@
 		27F54F3029FDDC810083B616 /* CartProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F2F29FDDC810083B616 /* CartProductCardView.swift */; };
 		27F54F3229FDE5210083B616 /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F3129FDE5210083B616 /* CartView.swift */; };
 		27F54F3429FDE6180083B616 /* CartTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F3329FDE6180083B616 /* CartTopBar.swift */; };
+		27F68FBE2AD84EDF00D917FF /* NavManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F68FBD2AD84EDF00D917FF /* NavManager.swift */; };
 		68A4B1092A196B7500FC8D9D /* CoreDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4B1082A196B7500FC8D9D /* CoreDataProvider.swift */; };
 		68A4B1102A197BFB00FC8D9D /* ProductRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4B10F2A197BFB00FC8D9D /* ProductRepositoryImpl.swift */; };
 		68A4B1132A19835200FC8D9D /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4B1122A19835200FC8D9D /* Product.swift */; };
@@ -128,6 +131,8 @@
 		27395ABF2A8463F100A91420 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		273BD5DE2A4B4493001C1C03 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		273E638D2A897ACF0048DC44 /* PointOfSaleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointOfSaleView.swift; sourceTree = "<group>"; };
+		2748918B2AD7063E004D6C6C /* CustomerTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerTopBar.swift; sourceTree = "<group>"; };
+		2748918D2AD707B3004D6C6C /* CustomersEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomersEnums.swift; sourceTree = "<group>"; };
 		274960A12AD4933000BC257B /* PaymentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentView.swift; sourceTree = "<group>"; };
 		274960A52AD4966300BC257B /* PaymentTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentTopBar.swift; sourceTree = "<group>"; };
 		274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyViewModel.swift; sourceTree = "<group>"; };
@@ -190,6 +195,7 @@
 		27F54F2F29FDDC810083B616 /* CartProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartProductCardView.swift; sourceTree = "<group>"; };
 		27F54F3129FDE5210083B616 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
 		27F54F3329FDE6180083B616 /* CartTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartTopBar.swift; sourceTree = "<group>"; };
+		27F68FBD2AD84EDF00D917FF /* NavManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavManager.swift; sourceTree = "<group>"; };
 		68A4B1082A196B7500FC8D9D /* CoreDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataProvider.swift; sourceTree = "<group>"; };
 		68A4B10F2A197BFB00FC8D9D /* ProductRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductRepositoryImpl.swift; sourceTree = "<group>"; };
 		68A4B1122A19835200FC8D9D /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
@@ -238,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				278142092AC33DEA0093B402 /* CardViewTipe2.swift */,
+				2748918B2AD7063E004D6C6C /* CustomerTopBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -316,6 +323,7 @@
 		274CE2A829E6D817007C703D /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				27F68FBC2AD84EC700D917FF /* Navigation */,
 				2731F0B52A956BA500F6E5E0 /* Log In */,
 				271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */,
 				27C241FB2A008CB50045B2A0 /* ProductViewModel.swift */,
@@ -346,6 +354,7 @@
 			isa = PBXGroup;
 			children = (
 				2776A2EF2A86F35500410674 /* ProductsEnums.swift */,
+				2748918D2AD707B3004D6C6C /* CustomersEnums.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -563,6 +572,14 @@
 			path = LauchScreen;
 			sourceTree = "<group>";
 		};
+		27F68FBC2AD84EC700D917FF /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				27F68FBD2AD84EDF00D917FF /* NavManager.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
 		68A4B1072A196B6400FC8D9D /* manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -747,6 +764,7 @@
 				27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */,
 				2728EAAE2A1B0BC2002B534A /* SaleRepositoryImpl.swift in Sources */,
 				279C649A2A8D89BB003B29BC /* LocalCustomerManager.swift in Sources */,
+				27F68FBE2AD84EDF00D917FF /* NavManager.swift in Sources */,
 				279C64A02A8D9539003B29BC /* Subsidiary.swift in Sources */,
 				279C64A82A8D9823003B29BC /* SaleDetail.swift in Sources */,
 				279C64962A8D798A003B29BC /* CustomerRepositoryImpl.swift in Sources */,
@@ -758,6 +776,7 @@
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */,
 				274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */,
+				2748918E2AD707B3004D6C6C /* CustomersEnums.swift in Sources */,
 				274CE29C29E6D792007C703D /* ProductView.swift in Sources */,
 				27F54F3429FDE6180083B616 /* CartTopBar.swift in Sources */,
 				273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */,
@@ -775,6 +794,7 @@
 				2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */,
 				27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */,
 				2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */,
+				2748918C2AD7063E004D6C6C /* CustomerTopBar.swift in Sources */,
 				2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCartManager.swift in Sources */,
@@ -955,7 +975,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -990,7 +1010,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

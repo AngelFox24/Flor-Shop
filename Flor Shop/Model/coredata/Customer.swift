@@ -17,4 +17,8 @@ struct Customer: Identifiable {
     var dateLimit: Date
     var phoneNumber: String
     var totalDebt: Double
+    
+    static func getDummyCustomer() -> Customer {
+        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: ImageUrl.getDummyImage(), active: true, creditLimit: 12.0, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53)
+    }
 }

@@ -34,40 +34,42 @@ struct MenuView: View {
                     Color("color_primary")
                         .ignoresSafeArea()
                 }
-                switch selectedTab {
-                case .pointOfSaleTab:
-                    PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                        .cornerRadius(showMenu ? 35 : 0)
-                        .padding(.top, showMenu ? 0 : 1)
-                        .disabled(showMenu ? true : false)
+                //NavigationStack(path: $menuNavManager.bodyPaths) {
+                    switch selectedTab {
+                    case .pointOfSaleTab:
+                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                            .cornerRadius(showMenu ? 35 : 0)
+                            .padding(.top, showMenu ? 0 : 1)
+                            .disabled(showMenu ? true : false)
                         //.ignoresSafeArea()
-                case .salesTab:
-                    PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                        .cornerRadius(showMenu ? 35 : 0)
-                        .padding(.top, showMenu ? 0 : 1)
-                        .disabled(showMenu ? true : false)
-                case .customersTab:
-                    CustomersView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                        .cornerRadius(showMenu ? 35 : 0)
-                        .padding(.top, showMenu ? 0 : 1)
-                        .disabled(showMenu ? true : false)
-                case .employeesTab:
-                    EmployeeView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                        .cornerRadius(showMenu ? 35 : 0)
-                        .padding(.top, showMenu ? 0 : 1)
-                        .disabled(showMenu ? true : false)
+                    case .salesTab:
+                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                            .cornerRadius(showMenu ? 35 : 0)
+                            .padding(.top, showMenu ? 0 : 1)
+                            .disabled(showMenu ? true : false)
+                    case .customersTab:
+                        CustomersView(showMenu: $showMenu)
+                            .cornerRadius(showMenu ? 35 : 0)
+                            .padding(.top, showMenu ? 0 : 1)
+                            .disabled(showMenu ? true : false)
+                    case .employeesTab:
+                        EmployeeView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                            .cornerRadius(showMenu ? 35 : 0)
+                            .padding(.top, showMenu ? 0 : 1)
+                            .disabled(showMenu ? true : false)
                         //.ignoresSafeArea()
-                case .settingsTab:
-                    PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                        .cornerRadius(showMenu ? 35 : 0)
-                        .padding(.top, showMenu ? 0 : 1)
-                        .disabled(showMenu ? true : false)
-                case .logOut:
-                    PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                        .cornerRadius(showMenu ? 35 : 0)
-                        .padding(.top, showMenu ? 0 : 1)
-                        .disabled(showMenu ? true : false)
-                }
+                    case .settingsTab:
+                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                            .cornerRadius(showMenu ? 35 : 0)
+                            .padding(.top, showMenu ? 0 : 1)
+                            .disabled(showMenu ? true : false)
+                    case .logOut:
+                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                            .cornerRadius(showMenu ? 35 : 0)
+                            .padding(.top, showMenu ? 0 : 1)
+                            .disabled(showMenu ? true : false)
+                    }
+                //}
             }
             .scaleEffect(showMenu ? 0.84 : 1)
             .offset(x: showMenu ? getRect().width - 120 : 0)

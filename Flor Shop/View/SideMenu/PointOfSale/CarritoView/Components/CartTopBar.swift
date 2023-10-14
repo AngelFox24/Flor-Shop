@@ -15,30 +15,57 @@ struct CartTopBar: View {
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @State private var audioPlayer: AVAudioPlayer?
+    @State private var isShowingCustomerView = false
     @State private var isShowingPaymentView = false
     var body: some View {
         HStack {
-            Spacer()
-            Button(action: {
-                self.isShowingPaymentView = true
-            }, label: {
-                //CustomButton2(text: "Vender", backgroudColor: Color("color_accent"), minWidthC: 10)
-                //.foregroundColor(Color(.black))
-                HStack(spacing: 5, content: {
-                    Text(String("S/. "))
-                        .foregroundColor(.black)
-                        .font(.custom("Artifika-Regular", size: 15))
-                    Text(String(carritoCoreDataViewModel.cartCoreData?.total ?? 0.0))
-                        .foregroundColor(.black)
-                        .font(.custom("Artifika-Regular", size: 20))
+            HStack{
+                Button(action: {
+                    self.isShowingCustomerView = true
+                }, label: {
+                    //CustomButton2(text: "Vender", backgroudColor: Color("color_accent"), minWidthC: 10)
+                    //.foregroundColor(Color(.black))
+                    if let customer = carritoCoreDataViewModel.customerInCar {
+                        CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 45)
+                    } else {
+                        HStack(spacing: 5, content: {
+                            Image(systemName: "person.crop.circle.badge.plus")
+                                .foregroundColor(Color("color_primary"))
+                                .font(.custom("Artifika-Regular", size: 22))
+                        })
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 10)
+                        .background(Color("color_background"))
+                        .cornerRadius(15.0)
+                    }
                 })
-                .padding(.horizontal, 15)
-                .padding(.vertical, 10)
-                .background(Color("color_accent"))
-                .cornerRadius(15.0)
-            })
-            .sheet(isPresented: $isShowingPaymentView) {
-                PaymentView()
+                /*
+                .sheet(isPresented: $isShowingCustomerView) {
+                    CustomerViewPopUp(customerInContext: $carritoCoreDataViewModel.customerInCar)
+                }
+                 */
+                Spacer()
+                Button(action: {
+                    self.isShowingPaymentView = true
+                }, label: {
+                    //CustomButton2(text: "Vender", backgroudColor: Color("color_accent"), minWidthC: 10)
+                    //.foregroundColor(Color(.black))
+                    HStack(spacing: 5, content: {
+                        Text(String("S/. "))
+                            .foregroundColor(.black)
+                            .font(.custom("Artifika-Regular", size: 15))
+                        Text(String(carritoCoreDataViewModel.cartCoreData?.total ?? 0.0))
+                            .foregroundColor(.black)
+                            .font(.custom("Artifika-Regular", size: 20))
+                    })
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 10)
+                    .background(Color("color_accent"))
+                    .cornerRadius(15.0)
+                })
+                .sheet(isPresented: $isShowingPaymentView) {
+                    PaymentView()
+                }
             }
         }
         .frame(maxWidth: .infinity)
@@ -46,6 +73,7 @@ struct CartTopBar: View {
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
+    
     private func playSound(named fileName: String) {
         var soundURL: URL?
         soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")

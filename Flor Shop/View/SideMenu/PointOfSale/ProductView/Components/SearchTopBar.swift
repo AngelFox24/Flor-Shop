@@ -17,7 +17,7 @@ struct ProductSearchTopBar: View {
     @Binding var showMenu: Bool
     var body: some View {
         VStack {
-            HStack {
+            HStack(spacing: 10, content: {
                 Button(action: {
                     withAnimation(.spring()){
                         showMenu.toggle()
@@ -65,7 +65,6 @@ struct ProductSearchTopBar: View {
                 }
                 .background(.white)
                 .cornerRadius(20.0)
-                .padding(.trailing, 8)
                 Menu {
                     Picker("", selection: $selectedOrder) {
                         ForEach(menuOrders, id: \.self) {
@@ -97,8 +96,8 @@ struct ProductSearchTopBar: View {
                     setFilter(filter: item)
                     filtrarProductos(filterWord: seach)
                 })
-            }
-            .padding(.horizontal, 20)
+            })
+            .padding(.horizontal, 10)
         }
         .padding(.bottom, 9)
         .background(Color("color_primary"))

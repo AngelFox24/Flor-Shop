@@ -13,6 +13,9 @@ protocol CustomerRepository {
     func getCustomers() -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
+    func filterCustomer(word: String) -> [Customer]
+    func setOrder(order: CustomerOrder)
+    func setFilter(filter: CustomerFilterAttributes)
 }
 
 class CustomerRepositoryImpl: CustomerRepository {
@@ -36,5 +39,14 @@ class CustomerRepositoryImpl: CustomerRepository {
     //D - Delete
     func deleteCustomer(customer: Customer) {
         self.manager.deleteCustomer(customer: customer)
+    }
+    func filterCustomer(word: String) -> [Customer] {
+        return self.manager.filterCustomer(word: word)
+    }
+    func setOrder(order: CustomerOrder) {
+        self.manager.setOrder(order: order)
+    }
+    func setFilter(filter: CustomerFilterAttributes) {
+        self.manager.setFilter(filter: filter)
     }
 }

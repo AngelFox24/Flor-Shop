@@ -95,6 +95,8 @@ struct CreateAccountView: View {
             }
              */
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
     }
 }
 

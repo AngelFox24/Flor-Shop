@@ -17,6 +17,19 @@ class CustomerViewModel: ObservableObject {
     func fetchListCustomer() {
         customerList = customerRepository.getCustomers()
     }
+    func filterCustomer(word: String) {
+        if word == "" {
+            fetchListCustomer()
+        } else {
+            customerList = self.customerRepository.filterCustomer(word: word)
+        }
+    }
+    func setOrder(order: CustomerOrder) {
+        customerRepository.setOrder(order: order)
+    }
+    func setFilter(filter: CustomerFilterAttributes) {
+        customerRepository.setFilter(filter: filter)
+    }
     func lazyFetchList() {
         if customerList.isEmpty {
             fetchListCustomer()

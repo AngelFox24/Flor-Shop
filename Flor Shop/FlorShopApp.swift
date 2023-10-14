@@ -44,6 +44,7 @@ struct FlorShopApp: App {
             let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
             let companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
             let versionCheck = VersionCheck()
+            let navManager = NavManager()
             MainView()
                 .environmentObject(logInViewModel)
                 .environmentObject(registrationViewModel)
@@ -55,6 +56,7 @@ struct FlorShopApp: App {
                 .environmentObject(companyViewModel)
                 .environmentObject(employeeViewModel)
                 .environmentObject(customerViewModel)
+                .environmentObject(navManager)
         }
     }
 }

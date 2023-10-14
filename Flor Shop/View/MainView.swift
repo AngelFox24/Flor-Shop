@@ -10,52 +10,57 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var logInViewModel: LogInViewModel
+    @EnvironmentObject var navManager: NavManager
     @State private var isKeyboardVisible: Bool = false
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                if !hasShownOnboarding {
-                    OnboardingView(onAction: {
-                        hasShownOnboarding = true
-                    })
-                } else {
-                    switch versionCheck.versionIsOk {
-                    case .loading:
-                        LaunchScreenView()
-                    case .lockVersion:
-                        LockScreenView()
-                    case .versionOk:
-                        //Etapa del LogIn o Registro
-                        if logInViewModel.logInStatus == .success {
-                            MenuView(isKeyboardVisible: $isKeyboardVisible)
-                        } else {
-                            NavigationView(content: {
-                                VStack(content: {
+            ZStack {
+                VStack(spacing: 0) {
+                    if !hasShownOnboarding {
+                        OnboardingView(onAction: {
+                            hasShownOnboarding = true
+                        })
+                    } else {
+                        switch versionCheck.versionIsOk {
+                        case .loading:
+                            LaunchScreenView()
+                        case .lockVersion:
+                            LockScreenView()
+                        case .versionOk:
+                            //Etapa del LogIn o Registro
+                            NavigationStack(path: $navManager.navPaths) {
+                                if logInViewModel.logInStatus == .success {
+                                    MenuView(isKeyboardVisible: $isKeyboardVisible)
+                                } else {
                                     WelcomeView(isKeyboardVisible: $isKeyboardVisible)
-                                })
+                                }
+                            }
+                            .onChange(of: logInViewModel.logInStatus, perform: { status in
+                                if status == .success {
+                                    navManager.popToRoot()
+                                }
                             })
+                        case .unowned:
+                            LockScreenView()
                         }
-                    case .unowned:
-                        LockScreenView()
                     }
                 }
-            }
-            .onAppear {
-                //versionCheck.checkAppVersion()
-                // checkForPermission()
-                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
-                    isKeyboardVisible = true
+                .onAppear {
+                    //versionCheck.checkAppVersion()
+                    // checkForPermission()
+                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
+                        isKeyboardVisible = true
+                    }
+                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                        isKeyboardVisible = false
+                    }
                 }
-                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-                    isKeyboardVisible = false
-                }
-            }
-            if isKeyboardVisible {
-                CustomHideKeyboard()
+                if isKeyboardVisible {
+                    CustomHideKeyboard()
                     //.padding(.bottom, 12)
+                }
             }
-        }
+        //}
     }
 }
 
@@ -81,11 +86,13 @@ struct MainView_Previews: PreviewProvider {
         let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
         let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
         let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
+        let navManager = NavManager()
         MainView()
             .environmentObject(logInViewModel)
             .environmentObject(customerViewModel)
             .environmentObject(VersionCheck())
             .environmentObject(registrationViewModel)
+            .environmentObject(navManager)
     }
 }
 
