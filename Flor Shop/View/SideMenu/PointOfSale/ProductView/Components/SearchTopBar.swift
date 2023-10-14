@@ -79,14 +79,8 @@ struct ProductSearchTopBar: View {
                     }
                 } label: {
                     Button(action: {}, label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 22))
-                            .foregroundColor(Color("color_accent"))
+                        CustomButton3(simbol: "slider.horizontal.3")
                     })
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .cornerRadius(15.0)
                 }
                 .onChange(of: selectedOrder, perform: { item in
                     setOrder(order: item)

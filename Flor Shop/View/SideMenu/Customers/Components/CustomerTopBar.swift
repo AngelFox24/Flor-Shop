@@ -9,29 +9,39 @@ import SwiftUI
 
 struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
+    @EnvironmentObject var navManager: NavManager
     @State private var selectedOrder: CustomerOrder = .nameAsc
     @State private var selectedFilter: CustomerFilterAttributes = .allCustomers
     let menuOrders: [CustomerOrder] = CustomerOrder.allValues
     let menuFilters: [CustomerFilterAttributes] = CustomerFilterAttributes.allValues
     @State private var seach: String = ""
     @Binding var showMenu: Bool
+    var backButton: Bool = false
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
-                Button(action: {
-                    withAnimation(.spring()){
-                        showMenu.toggle()
-                    }
-                }, label: {
-                    HStack {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                    .background(Color("colorlaunchbackground"))
-                    .cornerRadius(10)
-                    .frame(width: 40, height: 40)
-                })
+                if backButton {
+                    Button(action: {
+                        navManager.goToBack()
+                    }, label: {
+                        CustomButton3(simbol: "chevron.backward")
+                    })
+                } else {
+                    Button(action: {
+                        withAnimation(.spring()){
+                            showMenu.toggle()
+                        }
+                    }, label: {
+                        HStack {
+                            Image("logo")
+                                .resizable()
+                                .scaledToFit()
+                        }
+                        .background(Color("colorlaunchbackground"))
+                        .cornerRadius(10)
+                        .frame(width: 40, height: 40)
+                    })
+                }
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color("color_accent"))
@@ -79,14 +89,8 @@ struct CustomerTopBar: View {
                     }
                 } label: {
                     Button(action: {}, label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 22))
-                            .foregroundColor(Color("color_accent"))
+                        CustomButton3(simbol: "slider.horizontal.3")
                     })
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .cornerRadius(15.0)
                 }
                 .onChange(of: selectedOrder, perform: { item in
                     setOrder(order: item)
@@ -212,9 +216,11 @@ struct CustomerTopBar_Previews: PreviewProvider {
     let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
     let customerRepository = CustomerRepositoryImpl(manager: customerManager)
     let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
+    let navManager = NavManager()
     static var previews: some View {
         CustomerTopBar(showMenu: .constant(false))
             .environmentObject(customerViewModel)
+            .environmentObject(navManager)
     }
 }
 */

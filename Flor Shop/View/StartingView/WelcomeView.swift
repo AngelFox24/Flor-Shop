@@ -31,14 +31,12 @@ struct WelcomeView: View {
             Spacer()
             VStack(spacing: 30) {
                 Button(action: {
-                    print("1")
                     navManager.goToLoginView()
                 }, label: {
                     CustomButton2(text: "Tengo una cuenta", backgroudColor: Color("color_accent"), minWidthC: 250)
                         .foregroundColor(Color(.black))
                 })
                 Button(action: {
-                    print("2")
                     navManager.goToRegistrationView()
                 }, label: {
                     CustomButton2(text: "Crear Cuenta", backgroudColor: Color("color_background"), minWidthC: 250)
@@ -47,10 +45,8 @@ struct WelcomeView: View {
             }
             .navigationDestination(for: NavPathsEnum.self, destination: { view in
                 if view == .loginView {
-                    let _ = print("3")
                     LogInView(isKeyboardVisible: $isKeyboardVisible)
                 } else if view == .registrationView {
-                    let _ = print("4")
                     CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
                 }
             })

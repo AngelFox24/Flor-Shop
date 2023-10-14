@@ -14,42 +14,30 @@ struct CartTopBar: View {
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
-    @State private var isShowingCustomerView = false
     @State private var isShowingPaymentView = false
     var body: some View {
         HStack {
             HStack{
                 Button(action: {
-                    self.isShowingCustomerView = true
+                    navManager.goToCustomerView()
                 }, label: {
-                    //CustomButton2(text: "Vender", backgroudColor: Color("color_accent"), minWidthC: 10)
-                    //.foregroundColor(Color(.black))
                     if let customer = carritoCoreDataViewModel.customerInCar {
                         CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 45)
                     } else {
-                        HStack(spacing: 5, content: {
-                            Image(systemName: "person.crop.circle.badge.plus")
-                                .foregroundColor(Color("color_primary"))
-                                .font(.custom("Artifika-Regular", size: 22))
-                        })
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 10)
-                        .background(Color("color_background"))
-                        .cornerRadius(15.0)
+                        CustomButton3(simbol: "person.crop.circle.badge.plus")
                     }
                 })
-                /*
-                .sheet(isPresented: $isShowingCustomerView) {
-                    CustomerViewPopUp(customerInContext: $carritoCoreDataViewModel.customerInCar)
-                }
-                 */
+                .navigationDestination(for: NavPathsEnum.self, destination: { view in
+                    if view == .customerView {
+                        CustomersView(showMenu: .constant(false), backButton: true)
+                    }
+                })
                 Spacer()
                 Button(action: {
                     self.isShowingPaymentView = true
                 }, label: {
-                    //CustomButton2(text: "Vender", backgroudColor: Color("color_accent"), minWidthC: 10)
-                    //.foregroundColor(Color(.black))
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .foregroundColor(.black)
@@ -95,8 +83,10 @@ struct CartTopBar_Previews: PreviewProvider {
         let carRepository = CarRepositoryImpl(manager: carManager)
         let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
         let salesRepository = SaleRepositoryImpl(manager: saleManager)
+        let navManager = NavManager()
         CartTopBar()
             .environmentObject(CartViewModel(carRepository: carRepository))
             .environmentObject(SalesViewModel(saleRepository: salesRepository))
+            .environmentObject(navManager)
     }
 }

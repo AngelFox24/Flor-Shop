@@ -8,34 +8,21 @@
 import SwiftUI
 
 struct CustomersView: View {
+    @EnvironmentObject var customerViewModel: CustomerViewModel
     @Binding var showMenu: Bool
-    @EnvironmentObject var customerViewModel: CustomerViewModel
+    var backButton: Bool = false
     var body: some View {
-        NavigationView {
+        //NavigationView {
             VStack(spacing: 0) {
-                CustomerTopBar(showMenu: $showMenu)
-                CustomerListController()
+                CustomerTopBar(showMenu: $showMenu, backButton: backButton)
+                CustomerListController(forSelectCustomer: backButton)
             }
             .onAppear {
                 customerViewModel.lazyFetchList()
             }
-        }
-    }
-}
-
-struct CustomerViewPopUp: View {
-    @EnvironmentObject var customerViewModel: CustomerViewModel
-    @Binding var customerInContext: Customer?
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                CustomerTopBarPopUp()
-                CustomerListControllerOfPopUp(customerInContext: $customerInContext)
-            }
-            .onAppear {
-                customerViewModel.lazyFetchList()
-            }
-        }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+        //}
     }
 }
 
@@ -46,47 +33,16 @@ struct CustomersView_Previews: PreviewProvider {
         let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
         @State var customerInContext: Customer?
         @State var showMenu: Bool = false
-        CustomerViewPopUp(customerInContext: $customerInContext)
+        CustomersView(showMenu: .constant(false))
             .environmentObject(customerViewModel)
     }
 }
 
 struct CustomerListController: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    var body: some View {
-        VStack(spacing: 0) {
-            if customerViewModel.customerList.count == 0 {
-                VStack {
-                    Image("groundhog_finding")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 300, height: 300)
-                    Text("No hay clientes registrados aún.")
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 20)
-                        .font(.custom("Artifika-Regular", size: 18))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                List {
-                    ForEach(customerViewModel.customerList) { customer in
-                        CardViewTipe2(image: customer.image, mainText: customer.name + " " + customer.lastName, mainIndicatorPrefix: "S/. ", mainIndicator: String(customer.totalDebt), mainIndicatorAlert: false, secondaryIndicatorSuffix: " " + customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month), secondaryIndicator: String(customer.dateLimit.getDateComponent(dateComponent: .day)), secondaryIndicatorAlert: false, size: 80)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
-                    }
-                }
-                .listStyle(PlainListStyle())
-            }
-        }
-        .padding(.horizontal, 10)
-        .background(Color("color_background"))
-    }
-}
-
-struct CustomerListControllerOfPopUp: View {
-    @EnvironmentObject var customerViewModel: CustomerViewModel
-    @Binding var customerInContext: Customer?
+    @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var navManager: NavManager
+    var forSelectCustomer: Bool = false
     var body: some View {
         VStack(spacing: 0) {
             if customerViewModel.customerList.count == 0 {
@@ -109,7 +65,10 @@ struct CustomerListControllerOfPopUp: View {
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                             .listRowBackground(Color("color_background"))
                             .onTapGesture {
-                                customerInContext = customer
+                                if forSelectCustomer {
+                                    cartViewModel.customerInCar = customer
+                                    navManager.goToBack()
+                                }
                             }
                     }
                 }

@@ -37,6 +37,18 @@ struct CustomButton2: View {
     }
 }
 
+struct CustomButton3: View {
+    var simbol: String = "chevron.backward"
+    var body: some View {
+        Image(systemName: simbol)
+            .font(.custom("Artifika-Regular", size: 22))
+            .foregroundColor(Color("color_accent"))
+            .frame(width: 40, height: 40)
+            .background(.white)
+            .cornerRadius(15)
+    }
+}
+
 struct CustomButtons_Previews: PreviewProvider {
     static var previews: some View {
         CustomButton2(text: "Limpiar")
