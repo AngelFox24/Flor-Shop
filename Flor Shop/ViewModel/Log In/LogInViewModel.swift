@@ -20,13 +20,15 @@ class LogInViewModel: ObservableObject {
     private let cartRepository: CarRepository
     private let productReporsitory: ProductRepository
     private let saleRepository: SaleRepository
-    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository, saleRepository: SaleRepository) {
+    private let customerRepository: CustomerRepository
+    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository, saleRepository: SaleRepository, customerRepository: CustomerRepository) {
         self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
         self.employeeRepository = employeeRepository
         self.cartRepository = cartRepository
         self.productReporsitory = productReporsitory
         self.saleRepository = saleRepository
+        self.customerRepository = customerRepository
     }
     func fieldsTrue() {
         print("All value true")
@@ -65,6 +67,7 @@ class LogInViewModel: ObservableObject {
     func setDefaultCompany(company: Company) {
         self.companyRepository.setDefaultCompany(company: company)
         self.subsidiaryRepository.setDefaultCompany(company: company)
+        self.customerRepository.setDefaultCompany(company: company)
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         self.productReporsitory.setDefaultSubsidiary(subsidiary: subsidiary)
@@ -107,14 +110,19 @@ class LogInViewModel: ObservableObject {
             print("No se fijo la compañia en companyManager")
             return
         }
-        if companyDefaul.id == subsidiaryCompany.id {
+        //Verificamos si existe la compañia por defecto del customer
+        guard let customerCompanyDefaul: Company = self.customerRepository.getDefaultCompany() else {
+            print("No se fijo la compañia en CustomerManager")
+            return
+        }
+        if (companyDefaul.id == subsidiaryCompany.id) && (customerCompanyDefaul.id == companyDefaul.id) {
             if productSubsidiary.id == employeeSubsidiary.id {
                 self.logInStatus = .success
             } else {
                 print("productManager no coincide con employeeManager en Subsidiary Default")
             }
         } else {
-            print("companyManager no coincide con subsidiaryManager en Company Default")
+            print("companyManager no coincide con subsidiaryManager en Company Default ni CustomerCompany")
         }
     }
 }

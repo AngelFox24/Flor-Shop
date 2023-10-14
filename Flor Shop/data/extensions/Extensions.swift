@@ -29,7 +29,7 @@ enum DateStringNameComponent {
         case .day:
             return "LLL"
         case .month:
-            return "EEE"
+            return "MMM"
         }
     }
     var longName: String {
@@ -37,7 +37,7 @@ enum DateStringNameComponent {
         case .day:
             return "LLLL"
         case .month:
-            return "EEEE"
+            return "MMMM"
         }
     }
 }

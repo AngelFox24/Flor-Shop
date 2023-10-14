@@ -98,6 +98,21 @@ extension Company {
     }
 }
 
+extension Customer {
+    func toCustomerEntity(context: NSManagedObjectContext) -> Tb_Customer? {
+        let filterAtt = NSPredicate(format: "idCustomer == %@", id.uuidString)
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let customerEntity = try context.fetch(request).first
+            return customerEntity
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+}
+
 extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
         let filterAtt = NSPredicate(format: "imageUrl == %@", imageUrl)

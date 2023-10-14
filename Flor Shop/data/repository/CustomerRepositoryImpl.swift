@@ -9,13 +9,15 @@ import Foundation
 import CoreData
 
 protocol CustomerRepository {
-    func addCustomer(customer: Customer)
+    func addCustomer(customer: Customer) -> String
     func getCustomers() -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
     func filterCustomer(word: String) -> [Customer]
     func setOrder(order: CustomerOrder)
     func setFilter(filter: CustomerFilterAttributes)
+    func setDefaultCompany(company: Company)
+    func getDefaultCompany() -> Company?
 }
 
 class CustomerRepositoryImpl: CustomerRepository {
@@ -25,8 +27,8 @@ class CustomerRepositoryImpl: CustomerRepository {
         self.manager = manager
     }
     //C - Create
-    func addCustomer(customer: Customer) {
-        self.manager.addCustomer(customer: customer)
+    func addCustomer(customer: Customer) -> String {
+        return self.manager.addCustomer(customer: customer)
     }
     //R - Read
     func getCustomers() -> [Customer] {
@@ -48,5 +50,11 @@ class CustomerRepositoryImpl: CustomerRepository {
     }
     func setFilter(filter: CustomerFilterAttributes) {
         self.manager.setFilter(filter: filter)
+    }
+    func setDefaultCompany(company: Company) {
+        self.manager.setDefaultCompany(company: company)
+    }
+    func getDefaultCompany() -> Company? {
+        return self.manager.getDefaultCompany()
     }
 }

@@ -13,8 +13,8 @@ struct Customer: Identifiable {
     var lastName: String
     var image: ImageUrl
     var active: Bool
-    var creditLimit: Double
-    var dateLimit: Date
+    var creditLimit: Double?
+    var dateLimit: Date?
     var phoneNumber: String
     var totalDebt: Double
     

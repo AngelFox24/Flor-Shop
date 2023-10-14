@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */; };
+		2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */; };
 		2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */; };
 		271A7E1529F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */; };
 		271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271BA1542A58799800572674 /* AgregarViewModel.swift */; };
@@ -80,6 +82,7 @@
 		27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E082A883C1B000EDB64 /* SideMenuView.swift */; };
 		27CC2E0B2A8844EA000EDB64 /* TabButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E0A2A8844EA000EDB64 /* TabButton.swift */; };
 		27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */; };
+		27D2564B2ADB0087004FB365 /* AddCustomerTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2564A2ADB0087004FB365 /* AddCustomerTopBar.swift */; };
 		27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E113462A992B4C0027728A /* LocalImageManager.swift */; };
 		27E7A51C2A1D18570042983D /* CartDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E7A51B2A1D18570042983D /* CartDetail.swift */; };
 		27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27E9FD1D2A582C710070216B /* GoogleService-Info.plist */; };
@@ -109,6 +112,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerView.swift; sourceTree = "<group>"; };
+		2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerViewModel.swift; sourceTree = "<group>"; };
 		270C3E242A617FDC0086557A /* Flor Shop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Flor Shop.entitlements"; sourceTree = "<group>"; };
 		2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarTopBar.swift; sourceTree = "<group>"; };
 		271A7E1429F0FA3300BBAEA3 /* ImageProductNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProductNetworkViewModel.swift; sourceTree = "<group>"; };
@@ -184,6 +189,7 @@
 		27CC2E082A883C1B000EDB64 /* SideMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuView.swift; sourceTree = "<group>"; };
 		27CC2E0A2A8844EA000EDB64 /* TabButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabButton.swift; sourceTree = "<group>"; };
 		27CC2E0C2A884C66000EDB64 /* CustomCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCorners.swift; sourceTree = "<group>"; };
+		27D2564A2ADB0087004FB365 /* AddCustomerTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerTopBar.swift; sourceTree = "<group>"; };
 		27E113462A992B4C0027728A /* LocalImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalImageManager.swift; sourceTree = "<group>"; };
 		27E7A51B2A1D18570042983D /* CartDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartDetail.swift; sourceTree = "<group>"; };
 		27E9FD1D2A582C710070216B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -245,6 +251,7 @@
 			children = (
 				278142092AC33DEA0093B402 /* CardViewTipe2.swift */,
 				2748918B2AD7063E004D6C6C /* CustomerTopBar.swift */,
+				27D2564A2ADB0087004FB365 /* AddCustomerTopBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -333,6 +340,7 @@
 				274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */,
 				274C65A42AC48B4800B778A2 /* EmployeeViewModel.swift */,
 				2733AF642ACB942E00BF8531 /* CustomerViewModel.swift */,
+				2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -528,6 +536,7 @@
 			children = (
 				2733AF612ACB932E00BF8531 /* Components */,
 				2733AF622ACB934800BF8531 /* CustomersView.swift */,
+				2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */,
 			);
 			path = Customers;
 			sourceTree = "<group>";
@@ -757,6 +766,7 @@
 				27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */,
 				279C64902A8D7912003B29BC /* LocalCompanyManager.swift in Sources */,
 				2733AF652ACB942E00BF8531 /* CustomerViewModel.swift in Sources */,
+				2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */,
 				27EBAFE62A59A2CB006E5CAD /* LaunchScreenView.swift in Sources */,
 				279C64882A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift in Sources */,
 				27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */,
@@ -773,6 +783,7 @@
 				274C65A52AC48B4800B778A2 /* EmployeeViewModel.swift in Sources */,
 				279C64982A8D89A2003B29BC /* LocalEmployeeManager.swift in Sources */,
 				273E638E2A897ACF0048DC44 /* PointOfSaleView.swift in Sources */,
+				2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */,
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */,
 				274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */,
@@ -794,6 +805,7 @@
 				2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */,
 				27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */,
 				2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */,
+				27D2564B2ADB0087004FB365 /* AddCustomerTopBar.swift in Sources */,
 				2748918C2AD7063E004D6C6C /* CustomerTopBar.swift in Sources */,
 				2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,

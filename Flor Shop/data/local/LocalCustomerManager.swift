@@ -9,13 +9,15 @@ import Foundation
 import CoreData
 
 protocol CustomerManager {
-    func addCustomer(customer: Customer)
+    func addCustomer(customer: Customer) -> String
     func getCustomers() -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
     func filterCustomer(word: String) -> [Customer]
     func setOrder(order: CustomerOrder)
     func setFilter(filter: CustomerFilterAttributes)
+    func setDefaultCompany(company: Company)
+    func getDefaultCompany() -> Company?
 }
 
 class LocalCustomerManager: CustomerManager {
@@ -37,8 +39,38 @@ class LocalCustomerManager: CustomerManager {
         self.mainContext.rollback()
     }
     //C - Create
-    func addCustomer(customer: Customer) {
-        
+    func addCustomer(customer: Customer) -> String {
+        guard let companyEntity = self.mainCompanyEntity else {
+            return "La hay compañia default"
+        }
+        if customer.toCustomerEntity(context: self.mainContext) != nil { //Busqueda por id
+            rollback()
+            return "Cliente ya existe: \(String(describing: customer.name))"
+        } else if customerExist(customer: customer) { //Comprobamos si existe el mismo empleado por otros atributos
+            rollback()
+            return "Hay otro cliente con el mismo nombre y apellido"
+        } else { //Creamos un nuevo empleado
+            let newCustomerEntity = Tb_Customer(context: self.mainContext)
+            newCustomerEntity.idCustomer = customer.id
+            newCustomerEntity.name = customer.name
+            newCustomerEntity.lastName = customer.lastName
+            if let imageEntity = customer.image.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                newCustomerEntity.toImageUrl = imageEntity
+            } else { // Si no existe creamos uno nuevo
+                let newImage = Tb_ImageUrl(context: self.mainContext)
+                newImage.idImageUrl = customer.image.id
+                newImage.imageUrl = customer.image.imageUrl
+                newCustomerEntity.toImageUrl = newImage
+            }
+            newCustomerEntity.active = customer.active
+            newCustomerEntity.creditLimit = customer.creditLimit ?? 0
+            newCustomerEntity.dateLimit = customer.dateLimit
+            newCustomerEntity.phoneNumber = customer.phoneNumber
+            newCustomerEntity.totalDebt = 0
+            newCustomerEntity.toCompany = companyEntity
+            saveData()
+            return ""
+        }
     }
     //R - Read
     func getCustomers() -> [Customer] {
@@ -68,6 +100,18 @@ class LocalCustomerManager: CustomerManager {
     }
     func getDefaultCompany() -> Company? {
         return self.mainCompanyEntity?.toCompany()
+    }
+    func customerExist(customer: Customer) -> Bool {
+        let filterAtt = NSPredicate(format: "name == %@ AND lastName == %@", customer.name, customer.lastName)
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let total = try self.mainContext.fetch(request).count
+            return total == 0 ? false : true
+        } catch let error {
+            print("Error fetching. \(error)")
+            return false
+        }
     }
     func filterCustomer(word: String) -> [Customer] {
         var customers: [Customer] = []

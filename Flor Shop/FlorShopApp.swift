@@ -33,8 +33,8 @@ struct FlorShopApp: App {
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let salesRepository = SaleRepositoryImpl(manager: saleManager)
             //ViewModels
-            let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
-            let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
+            let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
+            let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
             
             let agregarViewModel = AgregarViewModel(productRepository: productRepository)
             let productsViewModel = ProductViewModel(productRepository: productRepository)
@@ -43,6 +43,7 @@ struct FlorShopApp: App {
             let employeeViewModel = EmployeeViewModel(employeeRepository: employeeRepository)
             let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
             let companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
+            let addCustomerViewModel = AddCustomerViewModel(customerRepository: customerRepository)
             let versionCheck = VersionCheck()
             let navManager = NavManager()
             MainView()
@@ -56,6 +57,7 @@ struct FlorShopApp: App {
                 .environmentObject(companyViewModel)
                 .environmentObject(employeeViewModel)
                 .environmentObject(customerViewModel)
+                .environmentObject(addCustomerViewModel)
                 .environmentObject(navManager)
         }
     }

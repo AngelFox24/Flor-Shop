@@ -83,8 +83,8 @@ struct MainView_Previews: PreviewProvider {
         let cartRepository = CarRepositoryImpl(manager: cartManager)
         let salesRepository = SaleRepositoryImpl(manager: saleManager)
         
-        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
-        let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository)
+        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
+        let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
         let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
         let navManager = NavManager()
         MainView()

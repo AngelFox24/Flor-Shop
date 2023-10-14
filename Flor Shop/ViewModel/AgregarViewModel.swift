@@ -132,6 +132,7 @@ class AgregarViewModel: ObservableObject {
         task.resume()
     }
 }
+
 class FieldEditTemporal {
     var productId: UUID?
     var errorBD: String = ""
