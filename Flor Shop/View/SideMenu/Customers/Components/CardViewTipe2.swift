@@ -68,7 +68,7 @@ struct CardViewTipe2: View {
                         if let mainIndicatorPrefixUnwrap = mainIndicatorPrefix {
                             Text(mainIndicatorPrefixUnwrap)
                                 .foregroundColor(.black)
-                                .font(.custom("Artifika-Regular", size: 15))
+                                .font(.custom("Artifika-Regular", size: 14))
                         }
                         Text(mainIndicator)
                             .foregroundColor(.black)
@@ -76,7 +76,6 @@ struct CardViewTipe2: View {
                     }
                     .padding(.vertical, 6)
                     .padding(.horizontal, 8)
-                    .foregroundColor(.white)
                     .background(mainIndicatorAlert ? Color(.red) : Color("color_secondary"))
                     .cornerRadius(20)
                 }

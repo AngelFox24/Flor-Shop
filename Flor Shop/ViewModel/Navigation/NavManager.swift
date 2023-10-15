@@ -13,6 +13,7 @@ enum NavPathsEnum {
     case registrationView
     case customerView
     case addCustomerView
+    case paymentView
 }
 
 class NavManager: ObservableObject {
@@ -35,5 +36,8 @@ class NavManager: ObservableObject {
     }
     func goToAddCustomerView() {
         navPaths.append(NavPathsEnum.addCustomerView)
+    }
+    func goToPaymentView() {
+        navPaths.append(NavPathsEnum.paymentView)
     }
 }

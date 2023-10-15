@@ -16,7 +16,6 @@ struct CartTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
-    @State private var isShowingPaymentView = false
     var body: some View {
         HStack {
             HStack{
@@ -29,32 +28,40 @@ struct CartTopBar: View {
                         CustomButton3(simbol: "person.crop.circle.badge.plus")
                     }
                 })
-                .navigationDestination(for: NavPathsEnum.self, destination: { view in
-                    if view == .customerView {
-                        CustomersView(showMenu: .constant(false), backButton: true)
-                    }
+                .contextMenu(menuItems: {
+                    Button(role: .destructive,action: {
+                        carritoCoreDataViewModel.customerInCar = nil
+                    }, label: {
+                        Text("Desvincular Cliente")
+                    })
                 })
                 Spacer()
                 Button(action: {
-                    self.isShowingPaymentView = true
+                    navManager.goToPaymentView()
+                    print("Se presiono cobrar")
                 }, label: {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
-                            .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 15))
                         Text(String(carritoCoreDataViewModel.cartCoreData?.total ?? 0.0))
-                            .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 20))
                     })
-                    .padding(.horizontal, 15)
-                    .padding(.vertical, 10)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .foregroundColor(Color("color_background"))
                     .background(Color("color_accent"))
                     .cornerRadius(15.0)
                 })
-                .sheet(isPresented: $isShowingPaymentView) {
-                    PaymentView()
-                }
             }
+            .navigationDestination(for: NavPathsEnum.self, destination: { view in
+                if view == .paymentView {
+                    PaymentView()
+                } else if view == .customerView {
+                    CustomersView(showMenu: .constant(false), backButton: true)
+                } else {
+                    let _ = print("Nose")
+                }
+            })
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)

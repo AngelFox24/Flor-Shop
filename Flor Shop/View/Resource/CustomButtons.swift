@@ -14,7 +14,7 @@ struct CustomButton1: View {
             .font(.custom("Artifika-Regular", size: 20))
             .foregroundColor(.white)
             .multilineTextAlignment(.center)
-            .padding(.horizontal, 15)
+            .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(Color("color_accent"))
             .cornerRadius(15.0)

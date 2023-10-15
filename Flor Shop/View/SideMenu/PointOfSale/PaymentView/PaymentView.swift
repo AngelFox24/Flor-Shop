@@ -14,6 +14,8 @@ struct PaymentView: View {
             PaymentsFields()
         }
         .background(Color("color_background"))
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -28,6 +30,7 @@ struct PaymentView_Previews: PreviewProvider {
 
 struct PaymentsFields: View {
     @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var navManager: NavManager
     var body: some View {
         ScrollView(content: {
             VStack(spacing: 20, content: {
@@ -57,16 +60,31 @@ struct PaymentsFields: View {
                     secondaryIndicatorSuffix: cartViewModel.customerInCar?.dateLimit == nil ? nil : " " + String(cartViewModel.customerInCar?.dateLimit?.getShortNameComponent(dateStringNameComponent: .month) ?? ""),
                     secondaryIndicator: cartViewModel.customerInCar?.dateLimit == nil ? nil : String(cartViewModel.customerInCar?.dateLimit?.getDateComponent(dateComponent: .day) ?? 0),
                     secondaryIndicatorAlert: false, size: 80)
+                .onTapGesture {
+                    navManager.goToCustomerView()
+                }
+                .contextMenu(menuItems: {
+                    Button(role: .destructive,action: {
+                        cartViewModel.customerInCar = nil
+                    }, label: {
+                        Text("Desvincular Cliente")
+                    })
+                })
                 HStack(content: {
                     Spacer()
                     ForEach(PaymentEnums.allValues, id: \.self, content: { paymentType in
-                        CardViewTipe3(icon: paymentType.icon, text: paymentType.icon, enable: cartViewModel.paymentType == paymentType)
+                        CardViewTipe3(icon: paymentType.icon, text: paymentType.description, enable: cartViewModel.paymentType == paymentType)
                             .onTapGesture {
                                 cartViewModel.paymentType = paymentType
                             }
                         Spacer()
                     })
                 })
+            })
+            .navigationDestination(for: NavPathsEnum.self, destination: { view in
+                if view == .customerView {
+                    CustomersView(showMenu: .constant(false), backButton: true)
+                }
             })
         })
         .padding(.horizontal, 10)

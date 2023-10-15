@@ -47,7 +47,7 @@ struct CartProductCardView: View {
                             Text(String(cartDetail.quantity)+" u")
                                 .foregroundColor(.black)
                                 .font(.custom("Artifika-Regular", size: 16))
-                                .padding(.vertical, 5)
+                                .padding(.vertical, 2)
                                 .padding(.horizontal, 10)
                                 .background(Color("color_secondary"))
                                 .cornerRadius(20)
@@ -73,14 +73,14 @@ struct CartProductCardView: View {
                 VStack {
                     HStack(spacing: 0) {
                         Text(String("S/. "))
-                            .font(.custom("Artifika-Regular", size: 15))
+                            .font(.custom("Artifika-Regular", size: 14))
                         Text(String(cartDetail.product.unitPrice))
-                            .font(.custom("Artifika-Regular", size: 18))
+                            .font(.custom("Artifika-Regular", size: 16))
                     }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
-                    .foregroundColor(.white)
-                    .background(Color("color_accent"))
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 8)
+                    .foregroundColor(.black)
+                    .background(Color("color_secondary"))
                     .cornerRadius(20)
                 }
                 .padding(.horizontal, 10)

@@ -14,22 +14,30 @@ struct PaymentTopBar: View {
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
-            Spacer()
-            Button(action: {
-                if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar) {
-                    carritoCoreDataViewModel.fetchCart()
-                    productsCoreDataViewModel.fetchProducts()
-                    playSound(named: "Success1")
-                }
-            }, label: {
-                CustomButton1(text: "Finalizar")
+            HStack(content: {
+                Button(action: {
+                    navManager.goToBack()
+                }, label: {
+                    CustomButton3()
+                })
+                Spacer()
+                Button(action: {
+                    if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar) {
+                        carritoCoreDataViewModel.fetchCart()
+                        productsCoreDataViewModel.fetchProducts()
+                        playSound(named: "Success1")
+                    }
+                }, label: {
+                    CustomButton1(text: "Finalizar")
+                })
             })
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
