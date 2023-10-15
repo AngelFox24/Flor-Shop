@@ -54,7 +54,7 @@ struct ListCartController: View {
             List {
                 ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
                     //Enviar CartDeail en vez de product al increace o decrece
-                    CartProductCardView(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                    CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color("color_background"))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {

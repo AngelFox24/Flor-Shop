@@ -73,7 +73,7 @@ struct PaymentsFields: View {
                 HStack(content: {
                     Spacer()
                     ForEach(PaymentEnums.allValues, id: \.self, content: { paymentType in
-                        CardViewTipe3(icon: paymentType.icon, text: paymentType.description, enable: cartViewModel.paymentType == paymentType)
+                        CardViewTipe4(icon: paymentType.icon, text: paymentType.description, enable: cartViewModel.paymentType == paymentType)
                             .onTapGesture {
                                 cartViewModel.paymentType = paymentType
                             }
@@ -88,27 +88,5 @@ struct PaymentsFields: View {
             })
         })
         .padding(.horizontal, 10)
-    }
-}
-
-struct CardViewTipe3: View {
-    var icon: String
-    var text: String
-    var enable: Bool = false
-    var body: some View {
-        VStack(spacing: 0, content: {
-            Spacer()
-            Image(systemName: icon)
-                .font(.custom("Artifika-Regular", size: 28))
-                .foregroundColor(enable ? Color("color_background") : Color("color_primary"))
-            Spacer()
-            Text(text)
-                .font(.custom("Artifika-Regular", size: 15))
-                .foregroundColor(enable ? Color("color_background") : Color("color_primary"))
-            Spacer()
-        })
-        .frame(width: 80, height: 80)
-        .background(enable ? Color("color_accent") : Color(.white))
-        .cornerRadius(15)
     }
 }
