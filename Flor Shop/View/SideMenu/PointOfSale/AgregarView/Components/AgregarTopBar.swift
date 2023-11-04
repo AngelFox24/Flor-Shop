@@ -24,8 +24,8 @@ struct AgregarTopBar: View {
                     print("Se agrego un producto exitosamente")
                     //TODO: Cambiar esta funcion al repositorio
                     carritoCoreDataViewModel.updateCartTotal()
-                    agregarViewModel.resetValuesFields()
                     productViewModel.fetchProducts()
+                    agregarViewModel.resetValuesFields()
                     playSound(named: "Success1")
                 } else {
                     agregarViewModel.fieldsTrue()
@@ -40,7 +40,7 @@ struct AgregarTopBar: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
-        .padding(.horizontal, 40)
+        .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
     private func playSound(named fileName: String) {

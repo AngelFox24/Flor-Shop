@@ -49,27 +49,33 @@ struct PaymentsFields: View {
                         .foregroundColor(.black)
                     Spacer()
                 })
-                CardViewTipe2(
-                    image: cartViewModel.customerInCar?.image ?? ImageUrl.getDummyImage(),
-                    topStatusColor: Color.green,
-                    topStatus: "Buen Pagador",
-                    mainText: cartViewModel.customerInCar?.name ?? "Deconocido" + " " + (cartViewModel.customerInCar?.lastName ?? "x"),
-                    mainIndicatorPrefix: "S/. ",
-                    mainIndicator: String(cartViewModel.customerInCar?.totalDebt ?? 0.0),
-                    mainIndicatorAlert: false,
-                    secondaryIndicatorSuffix: cartViewModel.customerInCar?.dateLimit == nil ? nil : " " + String(cartViewModel.customerInCar?.dateLimit?.getShortNameComponent(dateStringNameComponent: .month) ?? ""),
-                    secondaryIndicator: cartViewModel.customerInCar?.dateLimit == nil ? nil : String(cartViewModel.customerInCar?.dateLimit?.getDateComponent(dateComponent: .day) ?? 0),
-                    secondaryIndicatorAlert: false, size: 80)
+                VStack(content: {
+                    if let customer = cartViewModel.customerInCar {
+                        CardViewTipe2(
+                            image: customer.image,
+                            topStatusColor: Color.green,
+                            topStatus: "Buen Pagador",
+                            mainText: customer.name + " " + customer.lastName,
+                            mainIndicatorPrefix: "S/. ",
+                            mainIndicator: String(customer.totalDebt),
+                            mainIndicatorAlert: false,
+                            secondaryIndicatorSuffix: customer.dateLimit == nil ? nil : " " + String(customer.dateLimit?.getShortNameComponent(dateStringNameComponent: .month) ?? ""),
+                            secondaryIndicator: customer.dateLimit == nil ? nil : String(customer.dateLimit?.getDateComponent(dateComponent: .day) ?? 0),
+                            secondaryIndicatorAlert: false, size: 80)
+                        .contextMenu(menuItems: {
+                            Button(role: .destructive,action: {
+                                cartViewModel.customerInCar = nil
+                            }, label: {
+                                Text("Desvincular Cliente")
+                            })
+                        })
+                    } else {
+                        CardViewPlaceHolder1(size: 80)
+                    }
+                })
                 .onTapGesture {
                     navManager.goToCustomerView()
                 }
-                .contextMenu(menuItems: {
-                    Button(role: .destructive,action: {
-                        cartViewModel.customerInCar = nil
-                    }, label: {
-                        Text("Desvincular Cliente")
-                    })
-                })
                 HStack(content: {
                     Spacer()
                     ForEach(PaymentEnums.allValues, id: \.self, content: { paymentType in

@@ -18,7 +18,7 @@ struct AgregarViewPopoverHelp: View {
                     .foregroundColor(Color("color_accent"))
                     .font(.custom("Artifika-Regular", size: 35))
             })
-            .popover(isPresented: $isPopoverPresented, arrowEdge: .bottom) {
+            .sheet(isPresented: $isPopoverPresented) {
                 VStack(spacing: 0) {
                     Text("Cantidad")
                         .font(.custom("Artifika-Regular", size: 18))
@@ -49,7 +49,6 @@ struct AgregarViewPopoverHelp: View {
                     Spacer()
                 }
                 .background(Color("color_background"))
-                .cornerRadius(8)
             }
         }
     }

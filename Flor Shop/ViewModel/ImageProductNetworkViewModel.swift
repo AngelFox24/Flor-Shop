@@ -126,6 +126,7 @@ class ImageProductNetworkViewModel: ObservableObject {
         }
         return savedImage
     }
+    
     func loadSavedImage(id: UUID) -> UIImage? {
         print("Se entro a verificar si hay imagen guarda")
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {

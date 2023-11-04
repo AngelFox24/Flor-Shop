@@ -246,6 +246,60 @@ struct CardViewTipe4: View {
     }
 }
 
+struct CardViewPlaceHolder1: View {
+    //No se declara modelos de datos de capa vista porque se reutilizara para varias vistas
+    let size: CGFloat
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                //CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: size)
+                VStack {
+                    Image(systemName: "person.fill.badge.plus")
+                        .font(.system(size: 44))
+                    //.scaledToFit()
+                }
+                .foregroundColor(.gray)
+                .padding(.vertical, 25)
+                .frame(width: size, height: size)
+                .background(Color("color_secondary"))
+                .cornerRadius(15)
+                VStack(spacing: 2) {
+                    HStack {
+                        Text("Agregar Cliente")
+                            .foregroundColor(.black)
+                            .font(.custom("Artifika-Regular", size: 16))
+                            .lineLimit(3)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    }
+                }
+                .padding(.vertical, 6)
+            }
+            .frame(maxWidth: .infinity, maxHeight: size)
+            .background(.white)
+        }
+        .cornerRadius(15)
+    }
+}
+
+struct CardViewPlaceHolder2: View {
+    var text: String = "Agregar Imagen"
+    let size: CGFloat
+    var body: some View {
+        VStack(spacing: 4, content: {
+            Image(systemName: "photo.on.rectangle.angled")
+                .font(.system(size: 55))
+            Text(text)
+                .font(.custom("Artifika-Regular", size: 18))
+                .multilineTextAlignment(.center)
+        })
+        .padding(.vertical, 10)
+        .foregroundColor(.black)
+        .frame(width: size, height: size)
+        .background(Color(.white))
+        .cornerRadius(15)
+    }
+}
+
 struct CardViews_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 10, content: {
@@ -257,6 +311,8 @@ struct CardViews_Previews: PreviewProvider {
             CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
                 .environmentObject(CartViewModel(carRepository: cartRepository))
             CardViewTipe4(icon: "plus", text: "Puerco")
+            CardViewPlaceHolder1(size: 80)
+            CardViewPlaceHolder2(size: 150)
         })
         .frame(maxHeight: .infinity)
         .background(Color.gray)
@@ -297,5 +353,4 @@ extension View {
         modifier(SizeCalculator(size: size))
     }
 }
- 
  */

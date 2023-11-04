@@ -23,17 +23,17 @@ struct CartTopBar: View {
                     navManager.goToCustomerView()
                 }, label: {
                     if let customer = carritoCoreDataViewModel.customerInCar {
-                        CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 45)
+                        CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 40)
+                            .contextMenu(menuItems: {
+                                Button(role: .destructive,action: {
+                                    carritoCoreDataViewModel.customerInCar = nil
+                                }, label: {
+                                    Text("Desvincular Cliente")
+                                })
+                            })
                     } else {
                         CustomButton3(simbol: "person.crop.circle.badge.plus")
                     }
-                })
-                .contextMenu(menuItems: {
-                    Button(role: .destructive,action: {
-                        carritoCoreDataViewModel.customerInCar = nil
-                    }, label: {
-                        Text("Desvincular Cliente")
-                    })
                 })
                 Spacer()
                 Button(action: {

@@ -39,7 +39,7 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    var sizeCampo: CGFloat = 200
+    var sizeCampo: CGFloat = 150
     var body: some View {
         //List(content: {
         /*Para formularios no es necesario usar List ya que se tiene:
@@ -57,10 +57,7 @@ struct CamposProductoAgregar: View {
                     AsyncImage(url: URL(string: agregarViewModel.editedFields.imageUrl )) { phase in
                         switch phase {
                         case .empty:
-                            Image("ProductoSinNombre")
-                                .resizable()
-                                .frame(width: sizeCampo, height: sizeCampo)
-                                .cornerRadius(20.0)
+                            CardViewPlaceHolder2(size: sizeCampo)
                         case .success(let returnetImage):
                             returnetImage
                                 .resizable()
@@ -68,16 +65,9 @@ struct CamposProductoAgregar: View {
                                 .frame(width: sizeCampo, height: sizeCampo)
                                 .cornerRadius(20.0)
                         case .failure:
-                            Image("groundhog-cry")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: sizeCampo, height: sizeCampo)
-                                .cornerRadius(20.0)
+                            CardViewPlaceHolder2(text: "Fallo en Carga", size: sizeCampo)
                         default:
-                            Image("groundhog-cry")
-                                .resizable()
-                                .frame(width: sizeCampo, height: sizeCampo)
-                                .cornerRadius(20.0)
+                            CardViewPlaceHolder2(text: "Error", size: sizeCampo)
                         }
                     }
                     Spacer()
