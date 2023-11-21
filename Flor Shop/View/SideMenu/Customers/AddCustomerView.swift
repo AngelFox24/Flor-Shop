@@ -31,13 +31,17 @@ struct AddCustomerView_Previews: PreviewProvider {
 
 struct AddCustomerFields : View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    var sizeCampo: CGFloat = 200
+    var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(content: {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()
-                    //Imagen
+                    Button(action: {
+                        
+                    }, label: {
+                        CardViewPlaceHolder2(size: sizeCampo)
+                    })
                     Spacer()
                 }
                 HStack {
