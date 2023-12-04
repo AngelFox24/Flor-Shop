@@ -81,6 +81,7 @@ class LogInViewModel: ObservableObject {
         self.cartRepository.createCart()
     }
     func checkDBIntegrity() {
+        /*
         //Verficamos si existe un carrito del empleado default
         guard let _ = self.cartRepository.getCart() else {
             print("No se fijo el carrito LogInViewModel")
@@ -125,6 +126,7 @@ class LogInViewModel: ObservableObject {
         } else {
             print("companyManager no coincide con subsidiaryManager en Company Default ni CustomerCompany")
         }
+        */
     }
 }
 
