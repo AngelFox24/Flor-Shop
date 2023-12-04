@@ -11,6 +11,7 @@ enum LogInStatus {
     case success
     case fail
 }
+
 class LogInViewModel: ObservableObject {
     @Published var logInStatus: LogInStatus = .fail
     @Published var logInFields: LogInFields = LogInFields()
@@ -126,6 +127,7 @@ class LogInViewModel: ObservableObject {
         }
     }
 }
+
 class LogInFields {
     var userOrEmail: String = "curilaurente@gmail.com"
     var userOrEmailEdited: Bool = false
