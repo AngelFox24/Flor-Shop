@@ -9,13 +9,14 @@ import Foundation
 
 class EmployeeViewModel: ObservableObject {
     @Published var employeeList: [Employee] = []
-    private let employeeRepository: EmployeeRepository
-    init(employeeRepository: EmployeeRepository) {
-        self.employeeRepository = employeeRepository
+    private let getEmployeesUseCase: GetEmployeesUseCase
+    init(getEmployeesUseCase: GetEmployeesUseCase) {
+        self.getEmployeesUseCase = getEmployeesUseCase
+        fetchListEmployees()
     }
     // MARK: CRUD Core Data
     func fetchListEmployees() {
-        employeeList = employeeRepository.getEmployees()
+        self.employeeList = self.getEmployeesUseCase.execute(page: 1)
     }
     func lazyFetchList() {
         if employeeList.isEmpty {

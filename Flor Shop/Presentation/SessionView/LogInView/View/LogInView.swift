@@ -75,22 +75,8 @@ struct LogInView: View {
 
 struct LogInView_Previews: PreviewProvider {
     static var previews: some View {
-        let companyManager = LocalCompanyManager(mainContext: CoreDataProvider.shared.viewContext)
-        let subsidiaryManager = LocalSubsidiaryManager(mainContext: CoreDataProvider.shared.viewContext)
-        let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-        let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
-        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
-        let companyRepository = CompanyRepositoryImpl(manager: companyManager)
-        let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        let subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
-        let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
-        let productRepository = ProductRepositoryImpl(manager: productManager)
-        let cartRepository = CarRepositoryImpl(manager: cartManager)
-        let salesRepository = SaleRepositoryImpl(manager: saleManager)
-        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
+        let dependencies = Dependencies()
         LogInView(isKeyboardVisible: .constant(true))
-            .environmentObject(logInViewModel)
+            .environmentObject(dependencies.logInViewModel)
     }
 }

@@ -9,21 +9,9 @@ import Foundation
 
 class RegistrationViewModel: ObservableObject {
     @Published var registrationFields: RegistrationFields = RegistrationFields()
-    private let companyRepository: CompanyRepository
-    private let subsidiaryRepository: SubsidiaryRepository
-    private let employeeRepository: EmployeeRepository
-    private let cartRepository: CarRepository
-    private let productReporsitory: ProductRepository
-    private let saleRepository: SaleRepository
-    private let customerRepository: CustomerRepository
-    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository, saleRepository: SaleRepository, customerRepository: CustomerRepository) {
-        self.companyRepository = companyRepository
-        self.subsidiaryRepository = subsidiaryRepository
-        self.employeeRepository = employeeRepository
-        self.cartRepository = cartRepository
-        self.productReporsitory = productReporsitory
-        self.saleRepository = saleRepository
-        self.customerRepository = customerRepository
+    private let registerUserUseCase: RegisterUserUseCase
+    init(registerUserUseCase: RegisterUserUseCase) {
+        self.registerUserUseCase = registerUserUseCase
     }
     func fieldsTrue() {
         print("All value true")
@@ -39,49 +27,7 @@ class RegistrationViewModel: ObservableObject {
         let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
         let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: ImageUrl.getDummyImage())
         let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: ImageUrl.getDummyImage(), active: true, phoneNumber: "")
-        //Ponemos como Default la Compañia, Sucursal y el Empleado, para que todos los cambios esten relacionados a estos
-        if createCompany(company: companyRegistration) {
-            setDefaultCompany(company: companyRegistration)
-            if createSubsidiary(subsidiary: subsidiaryRegistration) {
-                setDefaultSubsidiary(subsidiary: subsidiaryRegistration)
-                if createEmployee(employee: userRegistration) {
-                    setDefaultEmployee(employee: userRegistration)
-                    return true
-                } else {
-                    registrationFields.errorRegistration = "Empleado ya existe en la BD"
-                    return false
-                }
-            } else {
-                registrationFields.errorRegistration = "Sucursal ya existe en la BD"
-                return false
-            }
-        } else {
-            registrationFields.errorRegistration = "Compañia ya existe en la BD"
-            return false
-        }
-    }
-    func createCompany(company: Company) -> Bool {
-        return self.companyRepository.addCompany(company: company)
-    }
-    func createSubsidiary(subsidiary: Subsidiary) -> Bool {
-        return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
-    }
-    func createEmployee(employee: Employee) -> Bool {
-        return self.employeeRepository.addEmployee(employee: employee)
-    }
-    func setDefaultCompany(company: Company) {
-        self.companyRepository.setDefaultCompany(company: company)
-        self.subsidiaryRepository.setDefaultCompany(company: company)
-        self.customerRepository.setDefaultCompany(company: company)
-    }
-    func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        self.productReporsitory.setDefaultSubsidiary(subsidiary: subsidiary)
-        self.employeeRepository.setDefaultSubsidiary(subsidiary: subsidiary)
-    }
-    func setDefaultEmployee(employee: Employee) {
-        self.cartRepository.setDefaultEmployee(employee: employee)
-        // Creamos un carrito si no existe
-        self.cartRepository.createCart()
+        return self.registerUserUseCase.execute(company: companyRegistration, subsidiary: subsidiaryRegistration, employee: userRegistration)
     }
 }
 class RegistrationFields {

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol LogInUseCase {
-    func execute(email: String, password: String)
+    func execute(email: String, password: String) -> LogInStatus
 }
 
 final class LogInInteractor: LogInUseCase {
@@ -28,7 +28,8 @@ final class LogInInteractor: LogInUseCase {
         self.getSubsidiaryUseCase = getSubsidiaryUseCase
     }
     
-    func execute(email: String, password: String) {
+    func execute(email: String, password: String) -> LogInStatus {
+        var status: LogInStatus = .fail
         if let employee = self.employeeRepository.logIn(user: email, password: password) {
             print("ok employee")
             //setDefaultEmployee(employee: employee)
@@ -41,6 +42,7 @@ final class LogInInteractor: LogInUseCase {
                     print("ok company")
                     //setDefaultCompany(company: company)
                     self.setDefaultCompanyUseCase.execute(company: company)
+                    status = .success
                 } else {
                     print("Nok company")
                     //logInFields.errorLogIn = "No se encontro compañia de la sucursal"
@@ -53,5 +55,54 @@ final class LogInInteractor: LogInUseCase {
             print("Nok employee")
             //logInFields.errorLogIn = "No se encontro usuario en la BD"
         }
+        return status
     }
+    /*
+    func checkDBIntegrity() {
+        //Verficamos si existe un carrito del empleado default
+        guard let _ = self.cartRepository.getCart() else {
+            print("No se fijo el carrito LogInViewModel")
+            return
+        }
+        //Verificamos si existe un empleado por defecto
+        guard let _ = self.cartRepository.getDefaultEmployee() else {
+            print("No se fijo el empleado en cartManager")
+            return
+        }
+        //Verificamos si existe la sucursal del empleado por defecto
+        guard let employeeSubsidiary: Subsidiary = self.employeeRepository.getDefaultSubsidiary() else {
+            print("No se fijo la sucursal en employeeManager")
+            return
+        }
+        //Verificamos si existe la sucursal del producto por defecto
+        guard let productSubsidiary: Subsidiary = self.productReporsitory.getDefaultSubsidiary() else {
+            print("No se fijo la sucursal en productManager")
+            return
+        }
+        //Verificamos si existe la compañia de la sucursal por defecto
+        guard let subsidiaryCompany: Company = self.subsidiaryRepository.getDefaulCompany() else {
+            print("No se fijo la sucursal en subsidiaryManager")
+            return
+        }
+        //Verificamos si existe la compañia por defecto
+        guard let companyDefaul: Company = self.companyRepository.getDefaultCompany() else {
+            print("No se fijo la compañia en companyManager")
+            return
+        }
+        //Verificamos si existe la compañia por defecto del customer
+        guard let customerCompanyDefaul: Company = self.customerRepository.getDefaultCompany() else {
+            print("No se fijo la compañia en CustomerManager")
+            return
+        }
+        if (companyDefaul.id == subsidiaryCompany.id) && (customerCompanyDefaul.id == companyDefaul.id) {
+            if productSubsidiary.id == employeeSubsidiary.id {
+                self.logInStatus = .success
+            } else {
+                print("productManager no coincide con employeeManager en Subsidiary Default")
+            }
+        } else {
+            print("companyManager no coincide con subsidiaryManager en Company Default ni CustomerCompany")
+        }
+    }
+    */
 }

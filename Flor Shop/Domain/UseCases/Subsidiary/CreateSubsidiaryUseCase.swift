@@ -19,7 +19,6 @@ final class CreateSubsidiaryInteractor: CreateSubsidiaryUseCase {
     }
      
     func execute(subsidiary: Subsidiary) -> Bool {
-        //return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
-        return true
+        return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
     }
 }

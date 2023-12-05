@@ -9,9 +9,10 @@ import Foundation
 
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
-    let customerRepository: CustomerRepository
-    init(customerRepository: CustomerRepository) {
-        self.customerRepository = customerRepository
+    let saveCustomerUseCase: SaveCustomerUseCase
+    
+    init(saveCustomerUseCase: SaveCustomerUseCase) {
+        self.saveCustomerUseCase = saveCustomerUseCase
     }
     func resetValuesFields() {
         fieldsAddCustomer = FieldsAddCustomer()
@@ -42,7 +43,7 @@ class AddCustomerViewModel: ObservableObject {
             print("No se pudo crear Cliente")
             return false
         }
-        let result = customerRepository.addCustomer(customer: customer)
+        let result = self.saveCustomerUseCase.execute(customer: customer)
         if result == "" {
             print("Se añadio correctamente")
             resetValuesFields()

@@ -38,20 +38,12 @@ struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
         @State var isKeyboardVisible: Bool = true
         @State var showMenu: Bool = false
-        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
         
-        let productRepository = ProductRepositoryImpl(manager: productManager)
-        let cartRepository = CarRepositoryImpl(manager: cartManager)
-        
-        let agregarViewModel = AgregarViewModel(productRepository: productRepository)
-        let productsViewModel = ProductViewModel(productRepository: productRepository)
-        let cartViewModel = CartViewModel(carRepository: cartRepository)
-        
+        let dependencies = Dependencies()
         PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-            .environmentObject(agregarViewModel)
-            .environmentObject(productsViewModel)
-            .environmentObject(cartViewModel)
-            .environmentObject(VersionCheck())
+            .environmentObject(dependencies.agregarViewModel)
+            .environmentObject(dependencies.productsViewModel)
+            .environmentObject(dependencies.cartViewModel)
+            .environmentObject(dependencies.versionCheck)
     }
 }

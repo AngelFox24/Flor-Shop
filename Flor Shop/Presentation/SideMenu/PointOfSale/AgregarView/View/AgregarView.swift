@@ -22,10 +22,9 @@ struct AgregarView: View {
 
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
-        let prdManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let productRepo = ProductRepositoryImpl(manager: prdManager)
+        let dependencies = Dependencies()
         AgregarView()
-            .environmentObject(AgregarViewModel(productRepository: productRepo))
+            .environmentObject(dependencies.agregarViewModel)
     }
 }
 

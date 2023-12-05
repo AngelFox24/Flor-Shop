@@ -10,10 +10,10 @@ import CoreData
 
 protocol ProductRepository {
     func saveProduct(product: Product) -> String
-    func getListProducts() -> [Product]
-    func filterProducts(word: String) -> [Product]
-    func setOrder(order: PrimaryOrder)
-    func setFilter(filter: ProductsFilterAttributes)
+    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product]
+    //func filterProducts(word: String) -> [Product]
+    //func setOrder(order: PrimaryOrder)
+    //func setFilter(filter: ProductsFilterAttributes)
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
 }
@@ -28,18 +28,9 @@ public class ProductRepositoryImpl: ProductRepository {
         // add to remote logic
         return manager.saveProduct(product: product)
     }
-    func getListProducts() -> [Product] {
+    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product] {
         // add to remote logic
-        return manager.getListProducts()
-    }
-    func filterProducts(word: String) -> [Product] {
-        return manager.filterProducts(word: word)
-    }
-    func setOrder(order: PrimaryOrder) {
-        return manager.setOrder(order: order)
-    }
-    func setFilter(filter: ProductsFilterAttributes) {
-        return manager.setFilter(filter: filter)
+        return manager.getListProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 20)
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         self.manager.setDefaultSubsidiary(subsidiary: subsidiary)

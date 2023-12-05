@@ -102,24 +102,9 @@ struct CreateAccountView: View {
 
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
-        let companyManager = LocalCompanyManager(mainContext: CoreDataProvider.shared.viewContext)
-        let subsidiaryManager = LocalSubsidiaryManager(mainContext: CoreDataProvider.shared.viewContext)
-        let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-        let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
-        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
-        let companyRepository = CompanyRepositoryImpl(manager: companyManager)
-        let subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
-        let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
-        let productRepository = ProductRepositoryImpl(manager: productManager)
-        let cartRepository = CarRepositoryImpl(manager: cartManager)
-        let salesRepository = SaleRepositoryImpl(manager: saleManager)
-        let logInViewModel = LogInViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
-        let registrationViewModel = RegistrationViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, employeeRepository: employeeRepository, cartRepository: cartRepository, productReporsitory: productRepository, saleRepository: salesRepository, customerRepository: customerRepository)
+        let dependencies = Dependencies()
         CreateAccountView(isKeyboardVisible: .constant(true))
-            .environmentObject(logInViewModel)
-            .environmentObject(registrationViewModel)
+            .environmentObject(dependencies.logInViewModel)
+            .environmentObject(dependencies.registrationViewModel)
     }
 }

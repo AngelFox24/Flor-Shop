@@ -21,11 +21,9 @@ struct AddCustomerView: View {
 
 struct AddCustomerView_Previews: PreviewProvider {
     static var previews: some View {
-        let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-        let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        let addCustomerViewModel = AddCustomerViewModel(customerRepository: customerRepository)
+        let dependencies = Dependencies()
         AddCustomerView()
-            .environmentObject(addCustomerViewModel)
+            .environmentObject(dependencies.addCustomerViewModel)
     }
 }
 

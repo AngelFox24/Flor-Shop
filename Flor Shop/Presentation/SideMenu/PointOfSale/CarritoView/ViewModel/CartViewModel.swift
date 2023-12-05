@@ -12,39 +12,54 @@ class CartViewModel: ObservableObject {
     @Published var cartDetailCoreData: [CartDetail] = []
     @Published var customerInCar: Customer?
     @Published var paymentType: PaymentEnums = .cash
-    private let cartRepository: CarRepository
-    init(carRepository: CarRepository) {
-        self.cartRepository = carRepository
+    private let getProductsInCartUseCase: GetProductsInCartUseCase
+    private let getCartUseCase: GetCartUseCase
+    private let deleteCartDetailUseCase: DeleteCartDetailUseCase
+    private let addProductoToCartUseCase: AddProductoToCartUseCase
+    private let emptyCartUseCase: EmptyCartUseCase
+    private let increaceProductInCartUseCase: IncreaceProductInCartUseCase
+    private let decreaceProductInCartUseCase: DecreaceProductInCartUseCase
+    
+    init(getProductsInCartUseCase: GetProductsInCartUseCase, getCartUseCase: GetCartUseCase, deleteCartDetailUseCase: DeleteCartDetailUseCase, addProductoToCartUseCase: AddProductoToCartUseCase, emptyCartUseCase: EmptyCartUseCase, increaceProductInCartUseCase: IncreaceProductInCartUseCase, decreaceProductInCartUseCase: DecreaceProductInCartUseCase) {
+        self.getProductsInCartUseCase = getProductsInCartUseCase
+        self.getCartUseCase = getCartUseCase
+        self.deleteCartDetailUseCase = deleteCartDetailUseCase
+        self.addProductoToCartUseCase = addProductoToCartUseCase
+        self.emptyCartUseCase = emptyCartUseCase
+        self.increaceProductInCartUseCase = increaceProductInCartUseCase
+        self.decreaceProductInCartUseCase = decreaceProductInCartUseCase
     }
+    
     // MARK: CRUD Core Data
     func fetchCart() {
-        cartDetailCoreData = cartRepository.getListProductInCart()
-        cartCoreData = cartRepository.getCart()
+        self.cartDetailCoreData = self.getProductsInCartUseCase.execute(page: 1)
+        self.cartCoreData = self.getCartUseCase.execute()
     }
-    // Elimina un producto del carrito de compras
     func deleteCartDetail(cartDetail: CartDetail) {
-        self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
+        self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)
         fetchCart()
     }
     func addProductoToCarrito(product: Product) -> Bool {
-        let value = self.cartRepository.addProductoToCarrito(product: product)
+        let value = self.addProductoToCartUseCase.execute(product: product)
         fetchCart()
         return value
     }
     func emptyCart () {
-        self.cartRepository.emptyCart()
+        self.emptyCartUseCase.execute()
         fetchCart()
     }
+    /*
     func updateCartTotal() {
         self.cartRepository.updateCartTotal()
         fetchCart()
     }
-    func increaceProductAmount (cartDetail: CartDetail) {
-        self.cartRepository.increaceProductAmount(cartDetail: cartDetail)
+     */
+    func increaceProductAmount(cartDetail: CartDetail) {
+        self.increaceProductInCartUseCase.execute(cartDetail: cartDetail)
         fetchCart()
     }
-    func decreceProductAmount (cartDetail: CartDetail) {
-        self.cartRepository.decreceProductAmount(cartDetail: cartDetail)
+    func decreceProductAmount(cartDetail: CartDetail) {
+        self.decreaceProductInCartUseCase.execute(cartDetail: cartDetail)
         fetchCart()
     }
     func lazyFetchCart() {

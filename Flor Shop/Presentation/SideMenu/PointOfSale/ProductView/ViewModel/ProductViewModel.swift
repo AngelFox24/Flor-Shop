@@ -5,33 +5,83 @@
 //  Created by Angel Curi Laurente on 1/05/23.
 //
 
-import CoreData
 import Foundation
+import Combine
 
 class ProductViewModel: ObservableObject {
     @Published var productsCoreData: [Product] = []
-    let productRepository: ProductRepository
-    init(productRepository: ProductRepository) {
-        self.productRepository = productRepository
-        fetchProducts()
+    @Published var searchText: String = ""
+    @Published var primaryOrder: PrimaryOrder = .nameAsc
+    @Published var filterAttribute: ProductsFilterAttributes = .allProducts
+    private var currentPage: Int = 1
+    private var lastCarge: Int = 0
+    private var cancellableSet = Set<AnyCancellable>()
+    
+    let getProductsUseCase: GetProductsUseCase
+    
+    init(getProductsUseCase: GetProductsUseCase) {
+        self.getProductsUseCase = getProductsUseCase
+        //fetchProducts()
+        addSearchTextSuscriber()
+        //addOrderSuscriber()
+        //addFilterSuscriber()
     }
-    // MARK: CRUD Core Data
-    func fetchProducts() {
-        productsCoreData = productRepository.getListProducts()
-    }
-    func filterProducts(word: String) {
-        if word == "" {
-            fetchProducts()
+    func fetchProducts(page: Int = 1) {
+        if page == 1 {
+            let productsNewCarge = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
+            lastCarge = productsNewCarge.count
+            self.productsCoreData = productsNewCarge
         } else {
-            productsCoreData = self.productRepository.filterProducts(word: word)
+            if lastCarge > 0 {
+                let productsNewCarge = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
+                lastCarge = productsNewCarge.count
+                self.productsCoreData.append(contentsOf: productsNewCarge)
+            }
+        }
+        //productsCoreData = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: currentPage)
+    }
+    func fetchNextPage() {
+        currentPage = currentPage + 1
+        fetchProducts(page: currentPage)
+    }
+    func addSearchTextSuscriber() {
+        $searchText
+            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                guard let self = self else { return }
+                self.currentPage = 1
+                fetchProducts()
+            })
+            .store(in: &cancellableSet)
+    }
+    func addFilterSuscriber() {
+        $filterAttribute
+            .sink(receiveValue: { [weak self] (_) in
+                guard let self = self else { return }
+                self.currentPage = 1
+                fetchProducts()
+            })
+            .store(in: &cancellableSet)
+    }
+    func addOrderSuscriber() {
+        $primaryOrder
+            .sink(receiveValue: { [weak self] (_) in
+                guard let self = self else { return }
+                self.currentPage = 1
+                fetchProducts()
+            })
+            .store(in: &cancellableSet)
+    }
+    
+    func shouldLoadData(product: Product) -> Bool {
+        if self.productsCoreData.isEmpty {
+            return false
+        } else {
+            guard let lastProduct = self.productsCoreData.last else { return false }
+            return product == lastProduct
         }
     }
-    func setOrder(order: PrimaryOrder) {
-        productRepository.setOrder(order: order)
-    }
-    func setFilter(filter: ProductsFilterAttributes) {
-        productRepository.setFilter(filter: filter)
-    }
+    
     func lazyFetchProducts() {
         if productsCoreData.isEmpty {
             fetchProducts()

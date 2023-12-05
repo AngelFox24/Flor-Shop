@@ -302,6 +302,7 @@ struct CardViewPlaceHolder2: View {
 
 struct CardViews_Previews: PreviewProvider {
     static var previews: some View {
+        let dependencies = Dependencies()
         VStack(spacing: 10, content: {
             CardViewTipe1(image: ImageUrl.getDummyImage(), topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
             CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "9", secondaryIndicatorAlert: true, size: 80)
@@ -309,7 +310,7 @@ struct CardViews_Previews: PreviewProvider {
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU")))
             CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
-                .environmentObject(CartViewModel(carRepository: cartRepository))
+                .environmentObject(dependencies.cartViewModel)
             CardViewTipe4(icon: "plus", text: "Puerco")
             CardViewPlaceHolder1(size: 80)
             CardViewPlaceHolder2(size: 150)

@@ -26,13 +26,10 @@ struct CustomersView: View {
 
 struct CustomersView_Previews: PreviewProvider {
     static var previews: some View {
-        let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-        let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
-        let navManager = NavManager()
+        let dependencies = Dependencies()
         CustomersView(showMenu: .constant(false))
-            .environmentObject(customerViewModel)
-            .environmentObject(navManager)
+            .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.navManager)
     }
 }
 

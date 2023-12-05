@@ -9,16 +9,17 @@ import Foundation
 
 class SalesViewModel: ObservableObject {
     @Published var salesCoreData: [Sale] = []
-    let saleRepository: SaleRepository
-    init(saleRepository: SaleRepository) {
-        self.saleRepository = saleRepository
+    let registerSaleUseCase: RegisterSaleUseCase
+    let getSalesUseCase: GetSalesUseCase
+    init(registerSaleUseCase: RegisterSaleUseCase, getSalesUseCase: GetSalesUseCase) {
+        self.registerSaleUseCase = registerSaleUseCase
+        self.getSalesUseCase = getSalesUseCase
         fetchVentas()
     }
-    // MARK: CRUD Core Data
     func fetchVentas () {
-        salesCoreData = self.saleRepository.getListSales()
+        salesCoreData = self.getSalesUseCase.execute(page: 1)
     }
     func registerSale(cart: Car?, customer: Customer?) -> Bool {
-        return saleRepository.registerSale(cart: cart, customer: customer)
+        return self.registerSaleUseCase.execute(cart: cart, customer: customer)
     }
 }

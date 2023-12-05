@@ -79,27 +79,13 @@ struct MenuView: View {
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
-        let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-        
-        let productRepository = ProductRepositoryImpl(manager: productManager)
-        let cartRepository = CarRepositoryImpl(manager: cartManager)
-        let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
-        let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        
-        let agregarViewModel = AgregarViewModel(productRepository: productRepository)
-        let productsViewModel = ProductViewModel(productRepository: productRepository)
-        let cartViewModel = CartViewModel(carRepository: cartRepository)
-        let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
-        let employeeViewModel = EmployeeViewModel(employeeRepository: employeeRepository)
+        let dependencies = Dependencies()
         MenuView(isKeyboardVisible: .constant(true))
-            .environmentObject(agregarViewModel)
-            .environmentObject(productsViewModel)
-            .environmentObject(cartViewModel)
-            .environmentObject(employeeViewModel)
-            .environmentObject(customerViewModel)
-            .environmentObject(VersionCheck())
+            .environmentObject(dependencies.agregarViewModel)
+            .environmentObject(dependencies.productsViewModel)
+            .environmentObject(dependencies.cartViewModel)
+            .environmentObject(dependencies.employeeViewModel)
+            .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.versionCheck)
     }
 }

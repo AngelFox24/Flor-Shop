@@ -68,12 +68,9 @@ struct AddCustomerTopBar: View {
 
 struct AddCustomerTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-        let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
-        let addCustomerViewModel = AddCustomerViewModel(customerRepository: customerRepository)
+        let dependencies = Dependencies()
         AddCustomerTopBar()
-            .environmentObject(customerViewModel)
-            .environmentObject(addCustomerViewModel)
+            .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.addCustomerViewModel)
     }
 }

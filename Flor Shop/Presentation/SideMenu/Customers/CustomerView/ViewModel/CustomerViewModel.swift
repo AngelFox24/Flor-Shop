@@ -9,26 +9,30 @@ import Foundation
 
 class CustomerViewModel: ObservableObject {
     @Published var customerList: [Customer] = []
-    private let customerRepository: CustomerRepository
-    init(customerRepository: CustomerRepository) {
-        self.customerRepository = customerRepository
+    @Published var searchWord: String = ""
+    @Published var order: CustomerOrder = .nameAsc
+    @Published var filter: CustomerFilterAttributes = .allCustomers
+    private var currentPage: Int = 1
+    private let getCustomersUseCase: GetCustomersUseCase
+    init(getCustomersUseCase: GetCustomersUseCase) {
+        self.getCustomersUseCase = getCustomersUseCase
     }
     // MARK: CRUD Core Data
     func fetchListCustomer() {
-        customerList = customerRepository.getCustomers()
+        customerList = self.getCustomersUseCase.execute(seachText: self.searchWord, order: self.order, filter: self.filter, page: self.currentPage)
     }
     func filterCustomer(word: String) {
         if word == "" {
             fetchListCustomer()
         } else {
-            customerList = self.customerRepository.filterCustomer(word: word)
+            customerList = self.getCustomersUseCase.execute(seachText: self.searchWord, order: self.order, filter: self.filter, page: self.currentPage)
         }
     }
     func setOrder(order: CustomerOrder) {
-        customerRepository.setOrder(order: order)
+        self.order = order
     }
     func setFilter(filter: CustomerFilterAttributes) {
-        customerRepository.setFilter(filter: filter)
+        self.filter = filter
     }
     func lazyFetchList() {
         if customerList.isEmpty {

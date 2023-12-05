@@ -25,7 +25,7 @@ struct FlorShopApp: App {
                 .environmentObject(dependencies.cartViewModel)
                 .environmentObject(dependencies.salesViewModel)
                 .environmentObject(dependencies.versionCheck)
-                .environmentObject(dependencies.companyViewModel)
+                //.environmentObject(dependencies.companyViewModel)
                 .environmentObject(dependencies.employeeViewModel)
                 .environmentObject(dependencies.customerViewModel)
                 .environmentObject(dependencies.addCustomerViewModel)

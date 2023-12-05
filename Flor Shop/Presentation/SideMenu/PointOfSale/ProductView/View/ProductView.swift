@@ -24,14 +24,11 @@ struct ProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let productRepository = ProductRepositoryImpl(manager: productManager)
-        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let carRepository = CarRepositoryImpl(manager: carManager)
+        let dependencies = Dependencies()
         @State var showMenu: Bool = false
         ProductView(selectedTab: .constant(.magnifyingglass), showMenu: $showMenu)
-            .environmentObject(ProductViewModel(productRepository: productRepository))
-            .environmentObject(CartViewModel(carRepository: carRepository))
+            .environmentObject(dependencies.productsViewModel)
+            .environmentObject(dependencies.cartViewModel)
     }
 }
 
@@ -88,6 +85,12 @@ struct ListaControler: View {
                         })
                         .tint(Color("color_accent"))
                     }
+                    .onAppear(perform: {
+                        if productsCoreDataViewModel.shouldLoadData(product: producto) {
+                            print("fetch nextpage")
+                            productsCoreDataViewModel.fetchNextPage()
+                        }
+                    })
                 }
             }
             .listStyle(PlainListStyle())

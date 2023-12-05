@@ -9,11 +9,8 @@ import SwiftUI
 
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @State private var selectedOrder: PrimaryOrder = PrimaryOrder.nameAsc
-    @State private var selectedFilter: ProductsFilterAttributes = ProductsFilterAttributes.allProducts
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
-    @State private var seach: String = ""
     @Binding var showMenu: Bool
     var body: some View {
         VStack {
@@ -39,22 +36,18 @@ struct ProductSearchTopBar: View {
                         .padding(.vertical, 10)
                         .padding(.leading, 10)
                     // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Producto", text: $seach)
+                    TextField("Buscar Producto", text: $productsCoreDataViewModel.searchText)
                         .padding(.vertical, 10)
                         .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color("color_primary"))
-                        .submitLabel(.search)
-                        .onSubmit {
-                            filtrarProductos(filterWord: seach)
-                        }
+                        .submitLabel(.done)
                         .disableAutocorrection(true)
                     Button(action: {
-                        seach = ""
-                        selectedOrder = .nameAsc
-                        selectedFilter = .allProducts
-                        setOrder(order: selectedOrder)
-                        setFilter(filter: selectedFilter)
-                        filtrarProductos(filterWord: seach)
+                        productsCoreDataViewModel.searchText = ""
+                        //No cambiar muchos atributos Combine
+                        //productsCoreDataViewModel.primaryOrder = .nameAsc
+                        //productsCoreDataViewModel.filterAttribute = .allProducts
+                        //productsCoreDataViewModel.fetchProducts()
                     }, label: {
                         Image(systemName: "x.circle")
                             .foregroundColor(Color("color_accent"))
@@ -66,13 +59,13 @@ struct ProductSearchTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 Menu {
-                    Picker("", selection: $selectedOrder) {
+                    Picker("", selection: $productsCoreDataViewModel.primaryOrder) {
                         ForEach(menuOrders, id: \.self) {
                             Text($0.longDescription)
                         }
                     }
                     Divider()
-                    Picker("", selection: $selectedFilter) {
+                    Picker("", selection: $productsCoreDataViewModel.filterAttribute) {
                         ForEach(menuFilters, id: \.self) {
                             Text($0.description)
                         }
@@ -82,13 +75,11 @@ struct ProductSearchTopBar: View {
                         CustomButton3(simbol: "slider.horizontal.3")
                     })
                 }
-                .onChange(of: selectedOrder, perform: { item in
-                    setOrder(order: item)
-                    filtrarProductos(filterWord: seach)
+                .onChange(of: productsCoreDataViewModel.primaryOrder, perform: { item in
+                    productsCoreDataViewModel.fetchProducts()
                 })
-                .onChange(of: selectedFilter, perform: { item in
-                    setFilter(filter: item)
-                    filtrarProductos(filterWord: seach)
+                .onChange(of: productsCoreDataViewModel.filterAttribute, perform: { item in
+                    productsCoreDataViewModel.fetchProducts()
                 })
             })
             .padding(.horizontal, 10)
@@ -96,25 +87,13 @@ struct ProductSearchTopBar: View {
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
-    func setOrder(order: PrimaryOrder) {
-        productsCoreDataViewModel.setOrder(order: order)
-    }
-    func setFilter(filter: ProductsFilterAttributes) {
-        productsCoreDataViewModel.setFilter(filter: filter)
-        print("Se presiono setFilter")
-    }
-    func filtrarProductos(filterWord: String) {
-        print("Se presiono buscarProductos")
-        productsCoreDataViewModel.filterProducts(word: filterWord)
-    }
 }
 
 struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let productManager = LocalProductManager(mainContext: CoreDataProvider.shared.viewContext)
-        let productRepository = ProductRepositoryImpl(manager: productManager)
+        let dependencies = Dependencies()
         @State var showMenu: Bool = false
         ProductSearchTopBar(showMenu: $showMenu)
-            .environmentObject(ProductViewModel(productRepository: productRepository))
+            .environmentObject(dependencies.productsViewModel)
     }
 }

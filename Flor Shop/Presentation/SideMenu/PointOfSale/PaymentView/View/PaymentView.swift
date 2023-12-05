@@ -21,10 +21,9 @@ struct PaymentView: View {
 
 struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let carRepository = CarRepositoryImpl(manager: carManager)
+        let dependencies = Dependencies()
         PaymentView()
-            .environmentObject(CartViewModel(carRepository: carRepository))
+            .environmentObject(dependencies.cartViewModel)
     }
 }
 

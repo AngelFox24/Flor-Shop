@@ -15,70 +15,19 @@ enum LogInStatus {
 class LogInViewModel: ObservableObject {
     @Published var logInStatus: LogInStatus = .fail
     @Published var logInFields: LogInFields = LogInFields()
-    private let companyRepository: CompanyRepository
-    private let subsidiaryRepository: SubsidiaryRepository
-    private let employeeRepository: EmployeeRepository
-    private let cartRepository: CarRepository
-    private let productReporsitory: ProductRepository
-    private let saleRepository: SaleRepository
-    private let customerRepository: CustomerRepository
-    init(companyRepository: CompanyRepository, subsidiaryRepository: SubsidiaryRepository, employeeRepository: EmployeeRepository, cartRepository: CarRepository, productReporsitory: ProductRepository, saleRepository: SaleRepository, customerRepository: CustomerRepository) {
-        self.companyRepository = companyRepository
-        self.subsidiaryRepository = subsidiaryRepository
-        self.employeeRepository = employeeRepository
-        self.cartRepository = cartRepository
-        self.productReporsitory = productReporsitory
-        self.saleRepository = saleRepository
-        self.customerRepository = customerRepository
+    private let logInUseCase: LogInUseCase
+    
+    init(logInUseCase: LogInUseCase) {
+        self.logInUseCase = logInUseCase
     }
+    
     func fieldsTrue() {
         print("All value true")
         logInFields.userOrEmailEdited = true
         logInFields.passwordEdited = true
     }
     func logIn() {
-        if let employee = employeeRepository.logIn(user: logInFields.userOrEmail, password: logInFields.password) {
-            print("ok employee")
-            setDefaultEmployee(employee: employee)
-            if let subsidiary = getSubsidiary(employee: employee) {
-                print("ok subsidiary")
-                setDefaultSubsidiary(subsidiary: subsidiary)
-                if let company = getCompany(subsidiary: subsidiary) {
-                    print("ok company")
-                    setDefaultCompany(company: company)
-                } else {
-                    print("Nok company")
-                    logInFields.errorLogIn = "No se encontro compañia de la sucursal"
-                }
-            } else {
-                print("Nok subsidiary")
-                logInFields.errorLogIn = "No se encontro sucursal del empleado"
-            }
-        } else {
-            print("Nok employee")
-            logInFields.errorLogIn = "No se encontro usuario en la BD"
-        }
-    }
-    func getSubsidiary(employee: Employee) -> Subsidiary? {
-        return self.employeeRepository.getSubsidiary(employee: employee)
-    }
-    func getCompany(subsidiary: Subsidiary) -> Company? {
-        return self.subsidiaryRepository.getCompany(subsidiary: subsidiary)
-    }
-    func setDefaultCompany(company: Company) {
-        self.companyRepository.setDefaultCompany(company: company)
-        self.subsidiaryRepository.setDefaultCompany(company: company)
-        self.customerRepository.setDefaultCompany(company: company)
-    }
-    func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        self.productReporsitory.setDefaultSubsidiary(subsidiary: subsidiary)
-        self.employeeRepository.setDefaultSubsidiary(subsidiary: subsidiary)
-        self.saleRepository.setDefaultSubsidiary(subsidiary: subsidiary)
-    }
-    func setDefaultEmployee(employee: Employee) {
-        self.cartRepository.setDefaultEmployee(employee: employee)
-        // Creamos un carrito si no existe
-        self.cartRepository.createCart()
+        self.logInStatus = self.logInUseCase.execute(email: logInFields.userOrEmail, password: logInFields.password)
     }
     func checkDBIntegrity() {
         /*

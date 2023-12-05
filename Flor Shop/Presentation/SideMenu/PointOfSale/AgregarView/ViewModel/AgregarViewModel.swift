@@ -11,9 +11,9 @@ import ImageIO
 
 class AgregarViewModel: ObservableObject {
     @Published var editedFields: FieldEditTemporal = FieldEditTemporal()
-    let productRepository: ProductRepository
-    init(productRepository: ProductRepository) {
-        self.productRepository = productRepository
+    private let saveProductUseCase: SaveProductUseCase
+    init(saveProductUseCase: SaveProductUseCase) {
+        self.saveProductUseCase = saveProductUseCase
     }
     func resetValuesFields() {
         editedFields = FieldEditTemporal()
@@ -34,7 +34,7 @@ class AgregarViewModel: ObservableObject {
             print("No se pudo crear producto")
             return false
         }
-        let result = productRepository.saveProduct(product: product)
+        let result = self.saveProductUseCase.execute(product: product)
         if result == "Success" {
             print("Se añadio correctamente")
             resetValuesFields()

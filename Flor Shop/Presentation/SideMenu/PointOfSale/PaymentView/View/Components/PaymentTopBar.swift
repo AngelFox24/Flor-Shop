@@ -58,12 +58,9 @@ struct PaymentTopBar: View {
 }
 struct PaymentTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let carRepository = CarRepositoryImpl(manager: carManager)
-        let saleManager = LocalSaleManager(mainContext: CoreDataProvider.shared.viewContext)
-        let salesRepository = SaleRepositoryImpl(manager: saleManager)
+        let dependencies = Dependencies()
         PaymentTopBar()
-            .environmentObject(CartViewModel(carRepository: carRepository))
-            .environmentObject(SalesViewModel(saleRepository: salesRepository))
+            .environmentObject(dependencies.cartViewModel)
+            .environmentObject(dependencies.salesViewModel)
     }
 }

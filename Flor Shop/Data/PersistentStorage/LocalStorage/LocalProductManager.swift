@@ -10,17 +10,13 @@ import CoreData
 
 protocol ProductManager {
     func saveProduct(product: Product) -> String
-    func getListProducts() -> [Product]
-    func filterProducts(word: String) -> [Product]
-    func setOrder(order: PrimaryOrder)
-    func setFilter(filter: ProductsFilterAttributes)
+    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
+    //func filterProducts(word: String) -> [Product]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
 }
 
 class LocalProductManager: ProductManager {
-    var primaryOrder: PrimaryOrder = .nameAsc
-    var filterAttribute: ProductsFilterAttributes = .allProducts
     var mainSubsidiaryEntity: Tb_Subsidiary?
     let mainContext: NSManagedObjectContext
     init(mainContext: NSManagedObjectContext) {
@@ -36,16 +32,25 @@ class LocalProductManager: ProductManager {
     func rollback() {
         self.mainContext.rollback()
     }
-    func getListProducts() -> [Product] {
+    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         var productList: [Product] = []
-        guard let subsidiary = self.mainSubsidiaryEntity else {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
             return productList
         }
-        let filterAtt = NSPredicate(format: "toSubsidiary == %@", subsidiary)
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        request.predicate = filterAtt
-        let sortDescriptor = getOrderFilter()
+        request.fetchLimit = pageSize
+        request.fetchOffset = (page - 1) * pageSize
+        
+        var predicate1 = NSPredicate(format: "toSubsidiary == %@", subsidiaryEntity)
+        if seachText != "" {
+            predicate1 = NSPredicate(format: "productName CONTAINS[c] %@ AND toSubsidiary == %@", seachText, subsidiaryEntity)
+        }
+        let predicate2 = getFilterAtribute(filter: filterAttribute)
+        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
+        
+        request.predicate = compoundPredicate
+        let sortDescriptor = getOrderFilter(order: primaryOrder)
         request.sortDescriptors = [sortDescriptor]
         do {
             productList = try self.mainContext.fetch(request).map{$0.toProduct()}
@@ -108,36 +113,6 @@ class LocalProductManager: ProductManager {
             return false
         }
     }
-    func filterProducts(word: String) -> [Product] {
-        var products: [Product] = []
-        guard let subsidiaryEntity: Tb_Subsidiary = self.mainSubsidiaryEntity else {
-            print("No se encontró sucursal")
-            return products
-        }
-        let fetchRequest: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate1 = NSPredicate(format: "productName CONTAINS[c] %@ AND toSubsidiary == %@", word, subsidiaryEntity)
-        let predicate2 = getFilterAtribute()
-        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
-        fetchRequest.predicate = compoundPredicate
-        // Agregar el sort descriptor para ordenar por nombre ascendente
-        let sortDescriptor = getOrderFilter()
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        do {
-            // Ejecutar la consulta y obtener los resultados
-            let productosBD = try self.mainContext.fetch(fetchRequest)
-            products = productosBD.mapToListProduct()
-            return products
-        } catch {
-            print("Error al ejecutar la consulta: \(error.localizedDescription)")
-            return products
-        }
-    }
-    func setOrder(order: PrimaryOrder) {
-        self.primaryOrder = order
-    }
-    func setFilter(filter: ProductsFilterAttributes) {
-        self.filterAttribute = filter
-    }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
             print("No se pudo asingar sucursar default")
@@ -145,9 +120,9 @@ class LocalProductManager: ProductManager {
         }
         self.mainSubsidiaryEntity = subsidiaryEntity
     }
-    func getOrderFilter() -> NSSortDescriptor {
+    func getOrderFilter(order: PrimaryOrder) -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
-        switch primaryOrder {
+        switch order {
         case .nameAsc:
             sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
         case .nameDesc:
@@ -163,9 +138,9 @@ class LocalProductManager: ProductManager {
         }
         return sortDescriptor
     }
-    func getFilterAtribute() -> NSPredicate {
+    func getFilterAtribute(filter: ProductsFilterAttributes) -> NSPredicate {
         var filterAtt = NSPredicate(format: "quantityStock != 0")
-        switch filterAttribute {
+        switch filter {
         case .allProducts:
             filterAtt = NSPredicate(format: "quantityStock != 0")
         case .outOfStock:

@@ -23,7 +23,7 @@ struct AgregarTopBar: View {
                 if agregarViewModel.addProduct() {
                     print("Se agrego un producto exitosamente")
                     //TODO: Cambiar esta funcion al repositorio
-                    carritoCoreDataViewModel.updateCartTotal()
+                    //carritoCoreDataViewModel.updateCartTotal()
                     productViewModel.fetchProducts()
                     agregarViewModel.resetValuesFields()
                     playSound(named: "Success1")

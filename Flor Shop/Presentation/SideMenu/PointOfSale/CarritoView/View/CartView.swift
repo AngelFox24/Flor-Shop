@@ -22,10 +22,9 @@ struct CartView: View {
 
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
-        let carManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
-        let carRepository = CarRepositoryImpl(manager: carManager)
+        let dependencies = Dependencies()
         CartView(selectedTab: .constant(.cart))
-            .environmentObject(CartViewModel(carRepository: carRepository))
+            .environmentObject(dependencies.cartViewModel)
     }
 }
 struct ListCartController: View {

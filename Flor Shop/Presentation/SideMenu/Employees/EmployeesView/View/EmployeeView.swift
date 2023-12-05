@@ -28,12 +28,10 @@ struct EmployeeView: View {
 
 struct EmployeeView_Previews: PreviewProvider {
     static var previews: some View {
-        let employeeManager = LocalEmployeeManager(mainContext: CoreDataProvider.shared.viewContext)
-        let employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
-        let employeeViewModel = EmployeeViewModel(employeeRepository: employeeRepository)
+        let dependencies = Dependencies()
         @State var showMenu: Bool = false
         EmployeeView(isKeyboardVisible: .constant(false),showMenu: $showMenu)
-            .environmentObject(employeeViewModel)
+            .environmentObject(dependencies.employeeViewModel)
     }
 }
 

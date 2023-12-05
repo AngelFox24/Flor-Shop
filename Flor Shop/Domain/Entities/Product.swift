@@ -69,4 +69,7 @@ struct Product: Identifiable {
     static func getDummyProduct() -> Product {
         return Product(id: UUID(), name: "No existe", qty: 0, unitCost: 0, unitPrice: 0, expirationDate: nil, image: ImageUrl.getDummyImage())
     }
+    static func == (lhs: Product, rhs: Product) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
