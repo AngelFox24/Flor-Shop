@@ -13,6 +13,7 @@ protocol SaleManager {
     func getListSales () -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail]
 }
 
 class LocalSaleManager: SaleManager {
@@ -61,6 +62,34 @@ class LocalSaleManager: SaleManager {
             }
         return cart
     }
+    
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail] {
+        var salesDetailList: [SaleDetail] = []
+        guard let _ = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return salesDetailList
+        }
+        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
+        request.fetchLimit = pageSize
+        request.fetchOffset = (page - 1) * pageSize
+        
+        if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
+            let predicate = NSPredicate(format: "toSale == %@", saleEntity)
+            request.predicate = predicate
+        }
+        //Ordenamiento por fecha veremos si es necesario
+        /*
+         let sortDescriptor = getOrderFilter(order: primaryOrder)
+         request.sortDescriptors = [sortDescriptor]
+         */
+        do {
+            salesDetailList = try self.mainContext.fetch(request).mapToSaleDetailList()
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return salesDetailList
+    }
+
     func registerSale(cart: Car?, customer: Customer?) -> Bool {
         var saveChanges: Bool = true
         //Verificamos si existe subisidiaria por defecto
@@ -108,6 +137,7 @@ class LocalSaleManager: SaleManager {
                         newSaleDetailEntity.toSale = newSaleEntity
                         //Eliminamos el detalle del carrito
                         self.mainContext.delete(cartDetailEntity)
+                        print("Se registro una venta: \(productEntity.productName)")
                     } else {
                         saveChanges = false
                     }

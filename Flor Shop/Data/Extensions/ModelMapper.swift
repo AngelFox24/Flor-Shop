@@ -113,6 +113,21 @@ extension Customer {
     }
 }
 
+extension Sale {
+    func toSaleEntity(context: NSManagedObjectContext) -> Tb_Sale? {
+        let filterAtt = NSPredicate(format: "idSale == %@", id.uuidString)
+        let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let saleEntity = try context.fetch(request).first
+            return saleEntity
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+}
+
 extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
         let filterAtt = NSPredicate(format: "imageUrl == %@", imageUrl)
@@ -201,8 +216,21 @@ extension Tb_Customer {
 extension Tb_Sale {
     func toSale() -> Sale {
         return Sale(id: idSale ?? UUID(),
-                    saleDate: saleDate ?? Date(),
+                    saleDate: saleDate ?? Date(), 
+                    saleDetail: toSaleDetail?.compactMap {$0 as? Tb_SaleDetail}.mapToSaleDetailList() ?? [],
                     totalSale: total)
+    }
+}
+
+extension Tb_SaleDetail {
+    func toSaleDetail() -> SaleDetail {
+        return SaleDetail(id: idSaleDetail ?? UUID(),
+                          image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
+                          productName: productName ?? "Desconocido",
+                          unitCost: unitCost,
+                          unitPrice: unitPrice,
+                          quantitySold: Int(quantitySold),
+                          subtotal: subtotal)
     }
 }
 
@@ -227,6 +255,12 @@ extension Tb_CartDetail {
 extension Array where Element == Tb_Product {
     func mapToListProduct() -> [Product] {
         return self.map {$0.toProduct()}
+    }
+}
+
+extension Array where Element == Tb_SaleDetail {
+    func mapToSaleDetailList() -> [SaleDetail] {
+        return self.map {$0.toSaleDetail()}
     }
 }
 

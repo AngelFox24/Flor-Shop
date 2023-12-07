@@ -10,5 +10,6 @@ import Foundation
 struct Sale: Identifiable {
     let id: UUID
     let saleDate: Date
+    let saleDetail: [SaleDetail]
     let totalSale: Double
 }

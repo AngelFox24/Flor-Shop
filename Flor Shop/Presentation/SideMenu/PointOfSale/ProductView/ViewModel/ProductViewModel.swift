@@ -54,6 +54,7 @@ class ProductViewModel: ObservableObject {
             })
             .store(in: &cancellableSet)
     }
+    /*
     func addFilterSuscriber() {
         $filterAttribute
             .sink(receiveValue: { [weak self] (_) in
@@ -72,7 +73,7 @@ class ProductViewModel: ObservableObject {
             })
             .store(in: &cancellableSet)
     }
-    
+    */
     func shouldLoadData(product: Product) -> Bool {
         if self.productsCoreData.isEmpty {
             return false

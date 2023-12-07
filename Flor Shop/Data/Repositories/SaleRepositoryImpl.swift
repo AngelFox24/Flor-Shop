@@ -13,6 +13,7 @@ protocol SaleRepository {
     func getListSales() -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail]
 }
 
 class SaleRepositoryImpl: SaleRepository {
@@ -33,5 +34,9 @@ class SaleRepositoryImpl: SaleRepository {
     }
     func getDefaultSubsidiary() -> Subsidiary? {
         return self.manager.getDefaultSubsidiary()
+    }
+    
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail] {
+        return self.manager.getListSalesDetails(page: page, pageSize: pageSize, sale: sale)
     }
 }

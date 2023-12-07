@@ -49,6 +49,7 @@ struct Dependencies {
     private let getEmployeesUseCase: GetEmployeesUseCase
     private let getCustomersUseCase: GetCustomersUseCase
     private let saveCustomerUseCase: SaveCustomerUseCase
+    private let getSalesDetailsUseCase: GetSalesDetailsUseCase
     
     private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
@@ -88,7 +89,7 @@ struct Dependencies {
         self.getSubsidiaryUseCase = GetSubsidiaryInteractor(employeeRepository: employeeRepository)
         self.getCompanyUseCase = GetCompanyInteractor(subsidiaryRepository: subsidiaryRepository)
         self.setDefaultCompanyUseCase = SetDefaultCompanyInteractor(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository)
-        self.setDefaultSubsidiaryUseCase = SetDefaultSubsidiaryInteractor(productReporsitory: productRepository, employeeRepository: employeeRepository)
+        self.setDefaultSubsidiaryUseCase = SetDefaultSubsidiaryInteractor(productReporsitory: productRepository, employeeRepository: employeeRepository, saleRepository: salesRepository)
         self.setDefaultEmployeeUseCase = SetDefaultEmployeeInteractor(cartRepository: cartRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
@@ -107,6 +108,7 @@ struct Dependencies {
         self.getEmployeesUseCase = GetEmployeesUseCaseInteractor(employeeRepository: employeeRepository)
         self.getCustomersUseCase = GetCustomersInteractor(customerRepository: customerRepository)
         self.saveCustomerUseCase = SaveCustomerInteractor(customerRepository: customerRepository)
+        self.getSalesDetailsUseCase = GetSalesDetailsInteractor(saleRepository: salesRepository)
         
         self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
         self.logInUseCase = LogInInteractor(employeeRepository: employeeRepository, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, getCompanyUseCase: getCompanyUseCase, getSubsidiaryUseCase: getSubsidiaryUseCase)
@@ -116,7 +118,7 @@ struct Dependencies {
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getProductsInCartUseCase: getProductsInCartUseCase, getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, increaceProductInCartUseCase: increaceProductInCartUseCase, decreaceProductInCartUseCase: decreaceProductInCartUseCase)
-        self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase)
+        self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
         //self.companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)

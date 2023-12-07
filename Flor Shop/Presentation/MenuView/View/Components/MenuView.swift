@@ -43,7 +43,7 @@ struct MenuView: View {
                             .disabled(showMenu ? true : false)
                         //.ignoresSafeArea()
                     case .salesTab:
-                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                        SalesView(showMenu: $showMenu)
                             .cornerRadius(showMenu ? 35 : 0)
                             .padding(.top, showMenu ? 0 : 1)
                             .disabled(showMenu ? true : false)

@@ -37,6 +37,8 @@
 		2735768B2B1F83CD00E9CF12 /* GetEmployeesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2735768A2B1F83CD00E9CF12 /* GetEmployeesUseCase.swift */; };
 		2735768D2B1F860D00E9CF12 /* GetCustomersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2735768C2B1F860D00E9CF12 /* GetCustomersUseCase.swift */; };
 		2735768F2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2735768E2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift */; };
+		2735D45D2B21E28000C892AF /* SalesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2735D45C2B21E28000C892AF /* SalesView.swift */; };
+		2735D4602B21EBBE00C892AF /* GetSalesDetailsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2735D45F2B21EBBE00C892AF /* GetSalesDetailsUseCase.swift */; };
 		2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737740D2A97E58F004C0BD1 /* MenuView.swift */; };
 		273774102A980781004C0BD1 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737740F2A980781004C0BD1 /* CustomBackButton.swift */; };
 		2737E57E2AF6FD6900179D51 /* UploadOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737E57D2AF6FD6900179D51 /* UploadOptionsView.swift */; };
@@ -167,6 +169,8 @@
 		2735768A2B1F83CD00E9CF12 /* GetEmployeesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetEmployeesUseCase.swift; sourceTree = "<group>"; };
 		2735768C2B1F860D00E9CF12 /* GetCustomersUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCustomersUseCase.swift; sourceTree = "<group>"; };
 		2735768E2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveCustomerUseCase.swift; sourceTree = "<group>"; };
+		2735D45C2B21E28000C892AF /* SalesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesView.swift; sourceTree = "<group>"; };
+		2735D45F2B21EBBE00C892AF /* GetSalesDetailsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetSalesDetailsUseCase.swift; sourceTree = "<group>"; };
 		2737740D2A97E58F004C0BD1 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		2737740F2A980781004C0BD1 /* CustomBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackButton.swift; sourceTree = "<group>"; };
 		2737E57D2AF6FD6900179D51 /* UploadOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOptionsView.swift; sourceTree = "<group>"; };
@@ -363,6 +367,14 @@
 				273576882B1F72CE00E9CF12 /* GetSalesUseCase.swift */,
 			);
 			path = Sale;
+			sourceTree = "<group>";
+		};
+		2735D45E2B21EB7400C892AF /* SaleDetail */ = {
+			isa = PBXGroup;
+			children = (
+				2735D45F2B21EBBE00C892AF /* GetSalesDetailsUseCase.swift */,
+			);
+			path = SaleDetail;
 			sourceTree = "<group>";
 		};
 		274960A32AD4944F00BC257B /* PaymentView */ = {
@@ -754,6 +766,7 @@
 		27F2F45B2B1DED15003E4197 /* UseCases */ = {
 			isa = PBXGroup;
 			children = (
+				2735D45E2B21EB7400C892AF /* SaleDetail */,
 				273576962B1FAEAC00E9CF12 /* Sale */,
 				273576952B1FAE8C00E9CF12 /* Cart */,
 				273576942B1FAE6C00E9CF12 /* Employee */,
@@ -1068,6 +1081,7 @@
 		27F2F4822B1DF388003E4197 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2735D45C2B21E28000C892AF /* SalesView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1327,6 +1341,7 @@
 				68A4B1102A197BFB00FC8D9D /* ProductRepositoryImpl.swift in Sources */,
 				27C7B9D32A60CEC600CA2818 /* OnboardingView.swift in Sources */,
 				274960A22AD4933000BC257B /* PaymentView.swift in Sources */,
+				2735D45D2B21E28000C892AF /* SalesView.swift in Sources */,
 				27F2F4972B1E14CD003E4197 /* SetDefaultEmployeeUseCase.swift in Sources */,
 				27E9FD372A583AB30070216B /* VersionLockView.swift in Sources */,
 				273576872B1F71F800E9CF12 /* RegisterSaleUseCase.swift in Sources */,
@@ -1359,6 +1374,7 @@
 				2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */,
 				278142082AC333A60093B402 /* CartViews.swift in Sources */,
 				68A4B1092A196B7500FC8D9D /* CoreDataProvider.swift in Sources */,
+				2735D4602B21EBBE00C892AF /* GetSalesDetailsUseCase.swift in Sources */,
 				27F2F48B2B1E0869003E4197 /* CreateCompanyUseCase.swift in Sources */,
 				273576782B1F477B00E9CF12 /* GetProductsInCartUseCase.swift in Sources */,
 			);
