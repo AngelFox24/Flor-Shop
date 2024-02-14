@@ -13,7 +13,7 @@ protocol SaleManager {
     func getListSales () -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
-    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail]
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail]
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
@@ -114,7 +114,6 @@ class LocalSaleManager: SaleManager {
         }
         let startDate = getStartDate(date: date, interval: interval)
         let endDate = getEndDate(date: date, interval: interval)
-        print("Star: \(startDate) End: \(endDate)")
         let request: NSFetchRequest<NSDictionary> = NSFetchRequest(entityName: "Tb_Sale")
         let predicate = NSPredicate(format: "saleDate >= %@ AND saleDate <= %@ AND toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
         request.predicate = predicate
@@ -138,7 +137,6 @@ class LocalSaleManager: SaleManager {
             // Obtiene la suma de valorVenta
             if let firstResult = result.first,
                let salesAmount = firstResult["SalesAmount"] as? Double {
-                print("La suma de Total Ventas dentro del rango de fechas es:", salesAmount)
                 return salesAmount
             } else {
                 print("No se encontraron registros dentro del rango de fechas.")
@@ -157,7 +155,6 @@ class LocalSaleManager: SaleManager {
             
             let startDate = getStartDate(date: date, interval: interval)
             let endDate = getEndDate(date: date, interval: interval)
-            print("Inicio: \(startDate) Fin: \(endDate)")
             
             let request: NSFetchRequest<NSDictionary> = NSFetchRequest(entityName: "Tb_SaleDetail")
             let predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
@@ -166,23 +163,19 @@ class LocalSaleManager: SaleManager {
             let keyPathExpression = NSExpression(forKeyPath: "unitCost")
             let sumExpression = NSExpression(forFunction: "sum:", arguments: [keyPathExpression])
 
-            // Configura una descripción de expresión para la solicitud de suma
             let sumDescription = NSExpressionDescription()
             sumDescription.name = "SalesCost"
             sumDescription.expression = sumExpression
             sumDescription.expressionResultType = .doubleAttributeType
 
-            // Asigna la descripción de expresión al fetchRequest
             request.resultType = .dictionaryResultType
             request.propertiesToFetch = [sumDescription]
 
             do {
                 let result = try self.mainContext.fetch(request)
                 
-                // Obtiene la suma de los costos de venta dentro del rango de fechas
                 if let firstResult = result.first,
                    let salesCost = firstResult["SalesCost"] as? Double {
-                    print("La suma de los costos de venta dentro del rango de fechas es:", salesCost)
                     return salesCost
                 } else {
                     print("No se encontraron registros de detalles de ventas dentro del rango de fechas.")
@@ -194,22 +187,30 @@ class LocalSaleManager: SaleManager {
             }
     }
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return 9.2
+        return 0
     }
-    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail] {
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail] {
         var salesDetailList: [SaleDetail] = []
-        guard let _ = self.mainSubsidiaryEntity else {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
             return salesDetailList
         }
+        
+        let startDate = getStartDate(date: date, interval: interval)
+        let endDate = getEndDate(date: date, interval: interval)
+        
         let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
         request.fetchLimit = pageSize
         request.fetchOffset = (page - 1) * pageSize
         
+        //var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
+        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@", startDate as NSDate, endDate as NSDate)
+        print("Star: \(startDate), End: \(endDate)")
         if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
-            let predicate = NSPredicate(format: "toSale == %@", saleEntity)
-            request.predicate = predicate
+            print("sale exist")
+            predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
         }
+        request.predicate = predicate
         //Ordenamiento por fecha veremos si es necesario
         /*
          let sortDescriptor = getOrderFilter(order: primaryOrder)

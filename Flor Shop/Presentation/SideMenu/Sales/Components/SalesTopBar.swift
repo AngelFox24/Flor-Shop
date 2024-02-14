@@ -40,6 +40,7 @@ struct SalesTopBar: View {
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .diary
                         salesCoreDataViewModel.updateAmountsBar()
+                        salesCoreDataViewModel.fetchSalesDetailsList()
                     }
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.monthly.description)
@@ -53,6 +54,7 @@ struct SalesTopBar: View {
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .monthly
                         salesCoreDataViewModel.updateAmountsBar()
+                        salesCoreDataViewModel.fetchSalesDetailsList()
                     }
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.yearly.description)
@@ -66,6 +68,7 @@ struct SalesTopBar: View {
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .yearly
                         salesCoreDataViewModel.updateAmountsBar()
+                        salesCoreDataViewModel.fetchSalesDetailsList()
                     }
                 })
                 .background(.white)
@@ -176,10 +179,12 @@ struct SalesTopBar: View {
     func nextDate() {
         salesCoreDataViewModel.nextDate()
         salesCoreDataViewModel.updateAmountsBar()
+        salesCoreDataViewModel.fetchSalesDetailsList()
     }
     func previousDate() {
         salesCoreDataViewModel.previousDate()
         salesCoreDataViewModel.updateAmountsBar()
+        salesCoreDataViewModel.fetchSalesDetailsList()
     }
 }
 

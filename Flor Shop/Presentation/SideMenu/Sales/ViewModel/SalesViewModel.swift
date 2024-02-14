@@ -32,12 +32,12 @@ class SalesViewModel: ObservableObject {
     }
     func fetchSalesDetailsList(page: Int = 1) {
         if page == 1 {
-            let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil)
+            let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval)
             lastCarge = newCarge.count
             self.salesDetailsList = newCarge
         } else {
             if lastCarge > 0 {
-                let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil)
+                let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval)
                 lastCarge = newCarge.count
                 self.salesDetailsList.append(contentsOf: newCarge)
             }

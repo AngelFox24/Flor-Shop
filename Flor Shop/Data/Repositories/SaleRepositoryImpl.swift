@@ -13,7 +13,7 @@ protocol SaleRepository {
     func getListSales() -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
-    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail]
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail]
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
@@ -38,8 +38,8 @@ class SaleRepositoryImpl: SaleRepository {
     func getDefaultSubsidiary() -> Subsidiary? {
         return self.manager.getDefaultSubsidiary()
     }
-    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?) -> [SaleDetail] {
-        return self.manager.getListSalesDetails(page: page, pageSize: pageSize, sale: sale)
+    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail] {
+        return self.manager.getListSalesDetails(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval)
     }
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double {
         return self.manager.getSalesAmount(date: date, interval: interval)

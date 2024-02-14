@@ -9,7 +9,7 @@ import Foundation
 
 protocol GetSalesDetailsUseCase {
     
-    func execute(page: Int, sale: Sale?) -> [SaleDetail]
+    func execute(page: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail]
 }
 
 final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
@@ -20,8 +20,8 @@ final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(page: Int, sale: Sale?) -> [SaleDetail] {
+    func execute(page: Int, sale: Sale? = nil, date: Date, interval: SalesDateInterval) -> [SaleDetail] {
         print("SalesDetailsPage: \(page)")
-        return self.saleRepository.getListSalesDetails(page: page, pageSize: 12, sale: sale)
+        return self.saleRepository.getListSalesDetails(page: page, pageSize: 20, sale: sale, date: date, interval: interval)
     }
 }
