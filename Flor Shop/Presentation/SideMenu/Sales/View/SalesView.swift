@@ -13,7 +13,7 @@ struct SalesView: View {
     var backButton: Bool = false
     var body: some View {
         VStack(spacing: 0) {
-            CustomerTopBar(showMenu: $showMenu, backButton: backButton)
+            SalesTopBar(showMenu: $showMenu)
             SalesListController()
         }
         .onAppear {
@@ -29,6 +29,7 @@ struct SalesView_Previews: PreviewProvider {
         let dependencies = Dependencies()
         SalesView(showMenu: .constant(false))
             .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.navManager)
     }
 }

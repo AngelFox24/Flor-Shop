@@ -14,6 +14,7 @@ protocol ProductManager {
     //func filterProducts(word: String) -> [Product]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
+    func getLastUpdated() -> Date?
 }
 
 class LocalProductManager: ProductManager {
@@ -31,6 +32,31 @@ class LocalProductManager: ProductManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func getLastUpdated() -> Date? {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1990, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
+        var listDate: [Date?] = []
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return dateFrom
+        }
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary == %@", subsidiaryEntity)
+        let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        guard let last = listDate[0] else {
+            return dateFrom
+        }
+        return last
     }
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         var productList: [Product] = []

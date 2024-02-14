@@ -8,8 +8,10 @@
 import Foundation
 
 protocol GetSalesUseCase {
-    
     func execute(page: Int) -> [Sale]
+    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
+    func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
 }
 
 final class GetSalesInteractor: GetSalesUseCase {
@@ -22,5 +24,15 @@ final class GetSalesInteractor: GetSalesUseCase {
     
     func execute(page: Int) -> [Sale] {
         return self.saleRepository.getListSales()
+    }
+    
+    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double {
+        return self.saleRepository.getSalesAmount(date: date, interval: interval)
+    }
+    func getCostAmount(date: Date, interval: SalesDateInterval) -> Double {
+        return self.saleRepository.getCostAmount(date: date, interval: interval)
+    }
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
+        return self.saleRepository.getRevenueAmount(date: date, interval: interval)
     }
 }

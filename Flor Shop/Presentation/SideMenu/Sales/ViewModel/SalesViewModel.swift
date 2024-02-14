@@ -10,6 +10,14 @@ import Foundation
 class SalesViewModel: ObservableObject {
     @Published var salesList: [Sale] = []
     @Published var salesDetailsList: [SaleDetail] = []
+    @Published var salesCurrentDateFilter: Date = Date.now
+    @Published var salesDateInterval: SalesDateInterval = .diary
+    @Published var order: SalesOrder = .dateAsc
+    @Published var filterAttribute: SalesFilterAttributes = .byProduct
+    @Published var salesAmount: Double = 0.0
+    @Published var costAmount: Double = 0.0
+    @Published var revenueAmount: Double = 0.0
+    let calendario = Calendar.current
     private var currentPage: Int = 1
     private var lastCarge: Int = 0
     
@@ -52,10 +60,35 @@ class SalesViewModel: ObservableObject {
     func registerSale(cart: Car?, customer: Customer?) -> Bool {
         return self.registerSaleUseCase.execute(cart: cart, customer: customer)
     }
-    
+    func nextDate() {
+        switch salesDateInterval {
+        case .diary:
+            salesCurrentDateFilter = calendario.date(byAdding: .day, value: 1, to: salesCurrentDateFilter)!
+        case .monthly:
+            salesCurrentDateFilter = calendario.date(byAdding: .month, value: 1, to: salesCurrentDateFilter)!
+        case .yearly:
+            salesCurrentDateFilter = calendario.date(byAdding: .year, value: 1, to: salesCurrentDateFilter)!
+        }
+    }
+    func previousDate() {
+        switch salesDateInterval {
+        case .diary:
+            salesCurrentDateFilter = calendario.date(byAdding: .day, value: -1, to: salesCurrentDateFilter)!
+        case .monthly:
+            salesCurrentDateFilter = calendario.date(byAdding: .month, value: -1, to: salesCurrentDateFilter)!
+        case .yearly:
+            salesCurrentDateFilter = calendario.date(byAdding: .year, value: -1, to: salesCurrentDateFilter)!
+        }
+    }
+    func updateAmountsBar() {
+        salesAmount = self.getSalesUseCase.getSalesAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
+        costAmount = self.getSalesUseCase.getCostAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
+        revenueAmount = salesAmount - costAmount
+    }
     func lazyFetchList() {
         if salesList.isEmpty {
             fetchSalesDetailsList()
+            updateAmountsBar()
         }
     }
 }

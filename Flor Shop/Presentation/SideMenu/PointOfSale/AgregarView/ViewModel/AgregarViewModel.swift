@@ -58,6 +58,43 @@ class AgregarViewModel: ObservableObject {
         print("New work")
         editedFields.imageURLEdited = true
     }
+    
+    func loadTestData() {
+        if let path = Bundle.main.path(forResource: "BD_Flor_Shop", ofType: "csv", inDirectory: nil) {
+            do {
+                let content = try String(contentsOfFile: path, encoding: .utf8)
+                let lines = content.components(separatedBy: "\n")
+                var countSucc: Int = 0
+                var countFail: Int = 0
+                for line in lines {
+                    let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    if elements.count != 3 {
+                        print("Count: \(elements.count)")
+                        countFail = countFail + 1
+                        continue
+                    }
+                    guard let price = Double(elements[2]) else {
+                        print("Esta mal?: \(elements[2])")
+                        countFail = countFail + 1
+                        continue
+                    }
+                    let product = Product(id: UUID(), name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0]))
+                    let result = self.saveProductUseCase.execute(product: product)
+                    if result == "Success" {
+                        countSucc = countSucc + 1
+                    } else {
+                        countFail = countFail + 1
+                    }
+                }
+                print("Total: \(lines.count), Success: \(countSucc), Fails: \(countFail)")
+            } catch {
+                print("Error al leer el archivo: \(error)")
+            }
+        } else {
+            print("No se encuentra el archivo")
+        }
+    }
+    
     func createProduct() -> Product? {
         guard let quantityStock = Int(editedFields.quantityStock), let unitCost = Double(editedFields.unitCost), let unitPrice = Double(editedFields.unitPrice) else {
             print("Los valores no se pueden convertir correctamente")

@@ -27,7 +27,7 @@ enum DateStringNameComponent {
     var shortName: String {
         switch self {
         case .day:
-            return "LLL"
+            return "EEE"
         case .month:
             return "MMM"
         }
@@ -35,7 +35,7 @@ enum DateStringNameComponent {
     var longName: String {
         switch self {
         case .day:
-            return "LLLL"
+            return "EEEE"
         case .month:
             return "MMMM"
         }
