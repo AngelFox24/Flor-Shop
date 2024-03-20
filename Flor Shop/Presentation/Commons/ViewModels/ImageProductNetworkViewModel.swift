@@ -18,11 +18,9 @@ class ImageProductNetworkViewModel: ObservableObject {
     var suscriber = Set<AnyCancellable>()
     func getImage(id: UUID, url: URL) {
         if imageProduct != nil { // imagen ya cargada en memoria
-            print("Imagen ya esta cargada para que quieres cargarlo pz")
             return
         } else {
             if let savedImage = loadSavedImage(id: id) {
-                print("Se ha cargado desde local")
                 imageProduct = Image(uiImage: savedImage)
             } else {
                 URLSession.shared.dataTaskPublisher(for: url)
@@ -43,7 +41,6 @@ class ImageProductNetworkViewModel: ObservableObject {
                     }, receiveValue: { image in
                         self.imageProduct = Image(uiImage: image)
                         if self.shouldSaveImage(image: image) {
-                            print("La imagen es aceptada para ser guardada")
                             if self.saveImage(id: id, image: image, url: url.absoluteString) {
                                 } else {
                                     print("Error al guardar imagen, no se pudo reemplazar")
@@ -128,14 +125,12 @@ class ImageProductNetworkViewModel: ObservableObject {
     }
     
     func loadSavedImage(id: UUID) -> UIImage? {
-        print("Se entro a verificar si hay imagen guarda")
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
             return nil
         }
         let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
         let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
         if let imageData = try? Data(contentsOf: fileURL) {
-            print("Se obtuvo la imgen desde el dispositivo \(id.uuidString)")
             print("Ruta de la imagen guardada: \(fileURL.path)")
             return UIImage(data: imageData)
         } else {

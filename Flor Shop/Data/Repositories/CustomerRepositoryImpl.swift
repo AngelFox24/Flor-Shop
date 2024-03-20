@@ -10,7 +10,7 @@ import CoreData
 
 protocol CustomerRepository {
     func addCustomer(customer: Customer) -> String
-    func getCustomers() -> [Customer]
+    func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
     func filterCustomer(word: String) -> [Customer]
@@ -31,8 +31,8 @@ class CustomerRepositoryImpl: CustomerRepository {
         return self.manager.addCustomer(customer: customer)
     }
     //R - Read
-    func getCustomers() -> [Customer] {
-        return self.manager.getCustomers()
+    func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
+        return self.manager.getCustomersList(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)
     }
     //U - Update
     func updateCustomer(customer: Customer) {

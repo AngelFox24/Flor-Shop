@@ -13,7 +13,9 @@ protocol SaleManager {
     func getListSales () -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
-    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail]
+    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
+    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
+    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
@@ -189,7 +191,64 @@ class LocalSaleManager: SaleManager {
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
         return 0
     }
-    func getListSalesDetails(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail] {
+    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
+        var salesDetailList: [SaleDetail] = []
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return salesDetailList
+        }
+        
+        let startDate = getStartDate(date: date, interval: interval)
+        let endDate = getEndDate(date: date, interval: interval)
+        
+        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Tb_SaleDetail")
+        fetchRequest.fetchLimit = pageSize
+        fetchRequest.fetchOffset = (page - 1) * pageSize
+        
+        //var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
+        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
+        print("Star: \(startDate), End: \(endDate)")
+        if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
+            print("sale exist")
+            predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
+        }
+        fetchRequest.predicate = predicate
+        
+        let quantityExpression = NSExpression(forKeyPath: "quantitySold")
+        let subTotalExpression = NSExpression(forKeyPath: "subtotal")
+        
+        let quantityExpressionDescription = NSExpressionDescription()
+        quantityExpressionDescription.name = "totalQuantity"
+        quantityExpressionDescription.expression = quantityExpression
+        quantityExpressionDescription.expressionResultType = .integer32AttributeType
+        
+        let subTotalDescription = NSExpressionDescription()
+        subTotalDescription.name = "totalByProduct"
+        subTotalDescription.expression = subTotalExpression
+        subTotalDescription.expressionResultType = .doubleAttributeType
+        
+        fetchRequest.propertiesToFetch = ["productName", quantityExpressionDescription, subTotalDescription]
+        fetchRequest.resultType = .dictionaryResultType
+        
+        let sortDescriptor = getOrder(order: order)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let results = try self.mainContext.fetch(fetchRequest)
+            return results.compactMap { result in
+                guard let productName = result["productName"] as? String,
+                      let totalQuantity = result["totalQuantity"] as? Int64,
+                      let totalByProduct = result["totalByProduct"] as? Double else {
+                    return nil
+                }
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+            }
+        } catch {
+            print("Error al recuperar datos: \(error.localizedDescription)")
+            return []
+        }
+    }
+    func getListSalesDetailsHistoric2(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
         var salesDetailList: [SaleDetail] = []
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
@@ -204,13 +263,17 @@ class LocalSaleManager: SaleManager {
         request.fetchOffset = (page - 1) * pageSize
         
         //var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
-        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@", startDate as NSDate, endDate as NSDate)
+        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
         print("Star: \(startDate), End: \(endDate)")
         if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
             print("sale exist")
             predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
         }
         request.predicate = predicate
+        
+        
+        let sortDescriptor = getOrder(order: order)
+        request.sortDescriptors = [sortDescriptor]
         //Ordenamiento por fecha veremos si es necesario
         /*
          let sortDescriptor = getOrderFilter(order: primaryOrder)
@@ -223,7 +286,177 @@ class LocalSaleManager: SaleManager {
         }
         return salesDetailList
     }
-
+    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return []
+        }
+        let startDate = getStartDate(date: date, interval: interval)
+        let endDate = getEndDate(date: date, interval: interval)
+        
+        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Tb_SaleDetail")
+        fetchRequest.fetchLimit = pageSize
+        fetchRequest.fetchOffset = (page - 1) * pageSize
+        
+        // Especifica el predicado para filtrar por fecha, sucursal y venta
+        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
+        print("Star: \(startDate), End: \(endDate)")
+        if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
+            predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
+        }
+        fetchRequest.predicate = predicate
+        let quantityExpression = NSExpression(forKeyPath: "quantitySold")
+        let subTotalExpression = NSExpression(forKeyPath: "subtotal")
+        
+        let sumQuantityExpression = NSExpression(forFunction: "sum:", arguments: [quantityExpression])
+        let sumSubTotalExpression = NSExpression(forFunction: "sum:", arguments: [subTotalExpression])
+        
+        let sumQuantityDescription = NSExpressionDescription()
+        sumQuantityDescription.name = "totalQuantity"
+        sumQuantityDescription.expression = sumQuantityExpression
+        sumQuantityDescription.expressionResultType = .integer32AttributeType
+        
+        let sumSubTotalDescription = NSExpressionDescription()
+        sumSubTotalDescription.name = "totalByProduct"
+        sumSubTotalDescription.expression = sumSubTotalExpression
+        sumSubTotalDescription.expressionResultType = .doubleAttributeType
+        
+        fetchRequest.propertiesToGroupBy = ["productName"]
+        fetchRequest.propertiesToFetch = ["productName", sumQuantityDescription, sumSubTotalDescription]
+        fetchRequest.resultType = .dictionaryResultType
+        
+        let sortDescriptor = getOrder(order: order)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let results = try self.mainContext.fetch(fetchRequest)
+            return results.compactMap { result in
+                guard let productName = result["productName"] as? String,
+                      let totalQuantity = result["totalQuantity"] as? Int64,
+                      let totalByProduct = result["totalByProduct"] as? Double else {
+                    return nil
+                }
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+            }
+        } catch {
+            print("Error al recuperar datos: \(error.localizedDescription)")
+            return []
+        }
+    }
+    func completeImageSaleDetail(productName: String) -> ImageUrl? {
+        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
+        let filterAtt = NSPredicate(format: "productName == %@", productName)
+        let sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        request.predicate = filterAtt
+        request.sortDescriptors = [sortDescriptor]
+        do {
+            let saleDetailOut = try self.mainContext.fetch(request).first
+            if let saleDetailNN = saleDetailOut, let image = saleDetailNN.toImageUrl?.toImage() {
+                return image
+            } else {
+                return nil
+            }
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return []
+        }
+        let startDate = getStartDate(date: date, interval: interval)
+        let endDate = getEndDate(date: date, interval: interval)
+        
+        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Tb_SaleDetail")
+        fetchRequest.fetchLimit = pageSize
+        fetchRequest.fetchOffset = (page - 1) * pageSize
+        
+        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
+        if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
+            predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
+        }
+        fetchRequest.predicate = predicate
+        let quantityExpression = NSExpression(forKeyPath: "quantitySold")
+        let subTotalExpression = NSExpression(forKeyPath: "subtotal")
+        
+        let sumQuantityExpression = NSExpression(forFunction: "sum:", arguments: [quantityExpression])
+        let sumSubTotalExpression = NSExpression(forFunction: "sum:", arguments: [subTotalExpression])
+        
+        let sumQuantityDescription = NSExpressionDescription()
+        sumQuantityDescription.name = "totalQuantity"
+        sumQuantityDescription.expression = sumQuantityExpression
+        sumQuantityDescription.expressionResultType = .integer32AttributeType
+        
+        let sumSubTotalDescription = NSExpressionDescription()
+        sumSubTotalDescription.name = "totalByProduct"
+        sumSubTotalDescription.expression = sumSubTotalExpression
+        sumSubTotalDescription.expressionResultType = .doubleAttributeType
+        
+        fetchRequest.propertiesToGroupBy = ["toSale.toCustomer.name", "toSale.toCustomer.lastName"]
+        fetchRequest.propertiesToFetch = ["toSale.toCustomer.name", "toSale.toCustomer.lastName", sumQuantityDescription, sumSubTotalDescription]
+        fetchRequest.resultType = .dictionaryResultType
+        
+        let sortDescriptor = getOrder(order: order)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let results = try self.mainContext.fetch(fetchRequest)
+            return results.compactMap { result in
+                guard let totalQuantity = result["totalQuantity"] as? Int64,
+                      let totalByProduct = result["totalByProduct"] as? Double else {
+                    return nil
+                }
+                guard let customerName = result["toSale.toCustomer.name"] as? String else {
+                    return SaleDetail(id: UUID(), image: ImageUrl.getDummyImage(), productName: "Desconocido", unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                }
+                guard let customerLastName = result ["toSale.toCustomer.lastName"] as? String else {
+                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                }
+                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName + " " + customerLastName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+            }
+        } catch {
+            print("Error al recuperar datos: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    func completeImageCustomer(customerName: String) -> ImageUrl? {
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        let filterAtt = NSPredicate(format: "name == %@", customerName)
+        request.predicate = filterAtt
+        do {
+            let customerOut = try self.mainContext.fetch(request).first
+            if let customerNN = customerOut, let image = customerOut?.toImageUrl?.toImage() {
+                return image
+            } else {
+                return nil
+            }
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+     
+    func getOrder(order: SalesOrder) -> NSSortDescriptor {
+        var sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        switch order {
+        case .dateAsc:
+            sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        case .dateDesc:
+            sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: true)
+        case .quantityAsc:
+            sortDescriptor = NSSortDescriptor(key: "totalQuantity", ascending: true)
+        case .quantityDesc:
+            sortDescriptor = NSSortDescriptor(key: "totalQuantity", ascending: false)
+        case .incomeAsc:
+            sortDescriptor = NSSortDescriptor(key: "totalByProduct", ascending: true)
+        case .incomeDesc:
+            sortDescriptor = NSSortDescriptor(key: "totalByProduct", ascending: false)
+        }
+        return sortDescriptor
+    }
     func registerSale(cart: Car?, customer: Customer?) -> Bool {
         var saveChanges: Bool = true
         //Verificamos si existe subisidiaria por defecto
@@ -252,6 +485,14 @@ class LocalSaleManager: SaleManager {
             newSaleEntity.toEmployee = employeeEntity
             if let customerEntity = customer?.toCustomerEntity(context: self.mainContext) {
                 newSaleEntity.toCustomer = customerEntity
+                customerEntity.lastDatePurchase = Date()
+                if customerEntity.totalDebt == 0.0 {
+                    let calendario = Calendar.current
+                    customerEntity.dateLimit = calendario.date(byAdding: .day, value: 30, to: Date())!
+                    customerEntity.totalDebt = cartEntity.total
+                } else {
+                    customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
+                }
             }
             newSaleEntity.paymentType = "Efectivo"
             newSaleEntity.saleDate = Date()
@@ -271,7 +512,6 @@ class LocalSaleManager: SaleManager {
                         newSaleDetailEntity.toSale = newSaleEntity
                         //Eliminamos el detalle del carrito
                         self.mainContext.delete(cartDetailEntity)
-                        print("Se registro una venta: \(productEntity.productName)")
                     } else {
                         saveChanges = false
                     }

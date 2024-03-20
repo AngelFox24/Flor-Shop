@@ -10,11 +10,8 @@ import SwiftUI
 struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var navManager: NavManager
-    @State private var selectedOrder: CustomerOrder = .nameAsc
-    @State private var selectedFilter: CustomerFilterAttributes = .allCustomers
     let menuOrders: [CustomerOrder] = CustomerOrder.allValues
     let menuFilters: [CustomerFilterAttributes] = CustomerFilterAttributes.allValues
-    @State private var seach: String = ""
     @Binding var showMenu: Bool
     var backButton: Bool = false
     var body: some View {
@@ -49,22 +46,14 @@ struct CustomerTopBar: View {
                         .padding(.vertical, 10)
                         .padding(.leading, 10)
                     // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Cliente", text: $seach)
+                    TextField("Buscar Cliente", text: $customerViewModel.searchWord)
                         .padding(.vertical, 10)
                         .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color("color_primary"))
                         .submitLabel(.search)
-                        .onSubmit {
-                            filtrarProductos(filterWord: seach)
-                        }
                         .disableAutocorrection(true)
                     Button(action: {
-                        seach = ""
-                        selectedOrder = .nameAsc
-                        selectedFilter = .allCustomers
-                        setOrder(order: selectedOrder)
-                        setFilter(filter: selectedFilter)
-                        filtrarProductos(filterWord: seach)
+                        customerViewModel.searchWord = ""
                     }, label: {
                         Image(systemName: "x.circle")
                             .foregroundColor(Color("color_accent"))
@@ -76,13 +65,13 @@ struct CustomerTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 Menu {
-                    Picker("", selection: $selectedOrder) {
+                    Picker("", selection: $customerViewModel.order) {
                         ForEach(menuOrders, id: \.self) {
                             Text($0.longDescription)
                         }
                     }
                     Divider()
-                    Picker("", selection: $selectedFilter) {
+                    Picker("", selection: $customerViewModel.filter) {
                         ForEach(menuFilters, id: \.self) {
                             Text($0.description)
                         }
@@ -92,13 +81,11 @@ struct CustomerTopBar: View {
                         CustomButton3(simbol: "slider.horizontal.3")
                     })
                 }
-                .onChange(of: selectedOrder, perform: { item in
-                    setOrder(order: item)
-                    filtrarProductos(filterWord: seach)
+                .onChange(of: customerViewModel.order, perform: { item in
+                    customerViewModel.fetchListCustomer()
                 })
-                .onChange(of: selectedFilter, perform: { item in
-                    setFilter(filter: item)
-                    filtrarProductos(filterWord: seach)
+                .onChange(of: customerViewModel.filter, perform: { item in
+                    customerViewModel.fetchListCustomer()
                 })
             })
             .padding(.horizontal, 10)
@@ -112,10 +99,6 @@ struct CustomerTopBar: View {
     func setFilter(filter: CustomerFilterAttributes) {
         customerViewModel.setFilter(filter: filter)
         print("Se presiono setFilter")
-    }
-    func filtrarProductos(filterWord: String) {
-        print("Se presiono Buscar Clientes")
-        customerViewModel.filterCustomer(word: filterWord)
     }
 }
 //CustomerSearchTopBar
@@ -141,17 +124,9 @@ struct CustomerTopBarPopUp: View {
                         .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color("color_primary"))
                         .submitLabel(.search)
-                        .onSubmit {
-                            filtrarProductos(filterWord: seach)
-                        }
                         .disableAutocorrection(true)
                     Button(action: {
-                        seach = ""
-                        selectedOrder = .nameAsc
-                        selectedFilter = .allCustomers
-                        setOrder(order: selectedOrder)
-                        setFilter(filter: selectedFilter)
-                        filtrarProductos(filterWord: seach)
+                        customerViewModel.searchWord = ""
                     }, label: {
                         Image(systemName: "x.circle")
                             .foregroundColor(Color("color_accent"))
@@ -185,13 +160,11 @@ struct CustomerTopBarPopUp: View {
                     .background(Color.white)
                     .cornerRadius(15.0)
                 }
-                .onChange(of: selectedOrder, perform: { item in
-                    setOrder(order: item)
-                    filtrarProductos(filterWord: seach)
+                .onChange(of: customerViewModel.order, perform: { item in
+                    customerViewModel.fetchListCustomer()
                 })
-                .onChange(of: selectedFilter, perform: { item in
-                    setFilter(filter: item)
-                    filtrarProductos(filterWord: seach)
+                .onChange(of: customerViewModel.filter, perform: { item in
+                    customerViewModel.fetchListCustomer()
                 })
             })
             .padding(.horizontal, 10)
@@ -205,10 +178,6 @@ struct CustomerTopBarPopUp: View {
     func setFilter(filter: CustomerFilterAttributes) {
         customerViewModel.setFilter(filter: filter)
         print("Se presiono setFilter")
-    }
-    func filtrarProductos(filterWord: String) {
-        print("Se presiono Buscar Clientes")
-        customerViewModel.filterCustomer(word: filterWord)
     }
 }
 /*

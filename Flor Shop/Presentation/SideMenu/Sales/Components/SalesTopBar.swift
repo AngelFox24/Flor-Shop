@@ -80,8 +80,8 @@ struct SalesTopBar: View {
                         }
                     }
                     Divider()
-                    Picker("", selection: $salesCoreDataViewModel.filterAttribute) {
-                        ForEach(SalesFilterAttributes.allValues, id: \.self) {
+                    Picker("", selection: $salesCoreDataViewModel.grouper) {
+                        ForEach(SalesGrouperAttributes.allValues, id: \.self) {
                             Text($0.description)
                         }
                     }
@@ -93,7 +93,7 @@ struct SalesTopBar: View {
                 .onChange(of: salesCoreDataViewModel.order, perform: { item in
                     salesCoreDataViewModel.fetchSalesDetailsList()
                 })
-                .onChange(of: salesCoreDataViewModel.filterAttribute, perform: { item in
+                .onChange(of: salesCoreDataViewModel.grouper, perform: { item in
                     salesCoreDataViewModel.fetchSalesDetailsList()
                 })
             })

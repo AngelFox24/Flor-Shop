@@ -58,8 +58,8 @@ struct PaymentsFields: View {
                             mainIndicatorPrefix: "S/. ",
                             mainIndicator: String(customer.totalDebt),
                             mainIndicatorAlert: false,
-                            secondaryIndicatorSuffix: customer.dateLimit == nil ? nil : " " + String(customer.dateLimit?.getShortNameComponent(dateStringNameComponent: .month) ?? ""),
-                            secondaryIndicator: customer.dateLimit == nil ? nil : String(customer.dateLimit?.getDateComponent(dateComponent: .day) ?? 0),
+                            secondaryIndicatorSuffix: customer.isDateLimitActive ? nil : " " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month)),
+                            secondaryIndicator: customer.isDateLimitActive ? nil : String(customer.dateLimit.getDateComponent(dateComponent: .day)),
                             secondaryIndicatorAlert: false, size: 80)
                         .contextMenu(menuItems: {
                             Button(role: .destructive,action: {

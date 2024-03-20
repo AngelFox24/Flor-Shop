@@ -15,7 +15,9 @@ struct CustomersView: View {
         VStack(spacing: 0) {
             CustomerTopBar(showMenu: $showMenu, backButton: backButton)
             CustomerListController(forSelectCustomer: backButton)
+            //Color("color_accent")
         }
+        //.ignoresSafeArea(.all, edges: .bottom)
         .onAppear {
             customerViewModel.lazyFetchList()
         }
@@ -61,10 +63,10 @@ struct CustomerListController: View {
                                 mainText: customer.name + " " + customer.lastName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(customer.totalDebt),
-                                mainIndicatorAlert: false,
-                                secondaryIndicatorSuffix: customer.dateLimit == nil ? nil : " " + String(customer.dateLimit?.getShortNameComponent(dateStringNameComponent: .month) ?? ""),
-                                secondaryIndicator: customer.dateLimit == nil ? nil : String(customer.dateLimit?.getDateComponent(dateComponent: .day) ?? 0),
-                                secondaryIndicatorAlert: false, size: 80
+                                mainIndicatorAlert: customer.isCreditLimit,
+                                secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                secondaryIndicatorAlert: customer.isDateLimit, size: 80
                             )
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))

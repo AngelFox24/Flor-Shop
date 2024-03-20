@@ -21,10 +21,7 @@ class ProductViewModel: ObservableObject {
     
     init(getProductsUseCase: GetProductsUseCase) {
         self.getProductsUseCase = getProductsUseCase
-        //fetchProducts()
         addSearchTextSuscriber()
-        //addOrderSuscriber()
-        //addFilterSuscriber()
     }
     func fetchProducts(page: Int = 1) {
         if page == 1 {
@@ -54,26 +51,6 @@ class ProductViewModel: ObservableObject {
             })
             .store(in: &cancellableSet)
     }
-    /*
-    func addFilterSuscriber() {
-        $filterAttribute
-            .sink(receiveValue: { [weak self] (_) in
-                guard let self = self else { return }
-                self.currentPage = 1
-                fetchProducts()
-            })
-            .store(in: &cancellableSet)
-    }
-    func addOrderSuscriber() {
-        $primaryOrder
-            .sink(receiveValue: { [weak self] (_) in
-                guard let self = self else { return }
-                self.currentPage = 1
-                fetchProducts()
-            })
-            .store(in: &cancellableSet)
-    }
-    */
     func shouldLoadData(product: Product) -> Bool {
         if self.productsCoreData.isEmpty {
             return false

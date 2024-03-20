@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum CustomerFilterAttributes: CustomStringConvertible, Equatable {
     case allCustomers
@@ -28,6 +29,24 @@ enum CustomerFilterAttributes: CustomStringConvertible, Equatable {
         return [.allCustomers, .onTime, .dueByDate, .excessAmount]
     }
     static func == (lhs: CustomerFilterAttributes, rhs: CustomerFilterAttributes) -> Bool {
+        return lhs.description == rhs.description
+    }
+}
+enum PaymentType: CustomStringConvertible, Equatable {
+    case cash
+    case credit
+    var description: String {
+        switch self {
+        case .cash:
+            return "Efectivo"
+        case .credit:
+            return "Credito"
+        }
+    }
+    static var allValues: [PaymentType] {
+        return [.cash, .credit]
+    }
+    static func == (lhs: PaymentType, rhs: PaymentType) -> Bool {
         return lhs.description == rhs.description
     }
 }
@@ -70,6 +89,44 @@ enum CustomerOrder: CustomStringConvertible, Equatable {
         return nil
     }
     static func == (lhs: CustomerOrder, rhs: CustomerOrder) -> Bool {
-            return lhs.description == rhs.description
+        return lhs.description == rhs.description
+    }
+}
+
+enum CustomerTipeByCredit: CustomStringConvertible, Equatable {
+    case good
+    case regular
+    case bad
+    var description: String {
+        switch self {
+        case .good:
+            return "Buen Pagador"
+        case .regular:
+            return "Regular"
+        case .bad:
+            return "Morador"
         }
+    }
+    var color: Color {
+        switch self {
+        case .good:
+            return .green
+        case .regular:
+            return .yellow
+        case .bad:
+            return .red
+        }
+    }
+    static var allValues: [CustomerTipeByCredit] {
+        return [.good, .regular, .bad]
+    }
+    static func from(description: String) -> CustomerTipeByCredit? {
+        for case let tipo in CustomerTipeByCredit.allValues where tipo.description == description {
+            return tipo
+        }
+        return nil
+    }
+    static func == (lhs: CustomerTipeByCredit, rhs: CustomerTipeByCredit) -> Bool {
+        return lhs.description == rhs.description
+    }
 }

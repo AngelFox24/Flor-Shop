@@ -7,10 +7,10 @@
 
 import Foundation
 
-enum SalesFilterAttributes: CustomStringConvertible, Equatable {
+enum SalesGrouperAttributes: CustomStringConvertible, Equatable {
     case historic
     case byProduct
-    case byEmployee
+    //case byEmployee
     case byCustomer
     var description: String {
         switch self {
@@ -18,16 +18,16 @@ enum SalesFilterAttributes: CustomStringConvertible, Equatable {
             return "Historico"
         case .byProduct:
             return "Por Producto"
-        case .byEmployee:
-            return "Por Empleado"
+        //case .byEmployee:
+            //return "Por Empleado"
         case .byCustomer:
             return "Por Cliente"
         }
     }
-    static var allValues: [SalesFilterAttributes] {
-        return [.historic, .byProduct, .byEmployee, .byCustomer]
+    static var allValues: [SalesGrouperAttributes] {
+        return [.historic, .byProduct, .byCustomer]
     }
-    static func == (lhs: SalesFilterAttributes, rhs: SalesFilterAttributes) -> Bool {
+    static func == (lhs: SalesGrouperAttributes, rhs: SalesGrouperAttributes) -> Bool {
         return lhs.description == rhs.description
     }
 }

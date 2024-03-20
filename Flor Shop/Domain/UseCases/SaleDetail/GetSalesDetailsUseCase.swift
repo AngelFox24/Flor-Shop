@@ -9,7 +9,7 @@ import Foundation
 
 protocol GetSalesDetailsUseCase {
     
-    func execute(page: Int, sale: Sale?, date: Date, interval: SalesDateInterval) -> [SaleDetail]
+    func execute(page: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
 }
 
 final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
@@ -20,8 +20,14 @@ final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(page: Int, sale: Sale? = nil, date: Date, interval: SalesDateInterval) -> [SaleDetail] {
-        print("SalesDetailsPage: \(page)")
-        return self.saleRepository.getListSalesDetails(page: page, pageSize: 20, sale: sale, date: date, interval: interval)
+    func execute(page: Int, sale: Sale? = nil, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
+        switch grouper {
+        case .historic:
+            return self.saleRepository.getListSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        case .byProduct:
+            return self.saleRepository.getListSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        case .byCustomer:
+            return self.saleRepository.getListSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        }
     }
 }

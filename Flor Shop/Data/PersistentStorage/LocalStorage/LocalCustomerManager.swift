@@ -10,7 +10,7 @@ import CoreData
 
 protocol CustomerManager {
     func addCustomer(customer: Customer) -> String
-    func getCustomers() -> [Customer]
+    func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
     func filterCustomer(word: String) -> [Customer]
@@ -63,10 +63,12 @@ class LocalCustomerManager: CustomerManager {
                 newCustomerEntity.toImageUrl = newImage
             }
             newCustomerEntity.active = customer.active
-            newCustomerEntity.creditLimit = customer.creditLimit ?? 0
+            newCustomerEntity.creditLimit = customer.creditLimit
             newCustomerEntity.dateLimit = customer.dateLimit
             newCustomerEntity.phoneNumber = customer.phoneNumber
             newCustomerEntity.totalDebt = 0
+            newCustomerEntity.isDateLimitActive = customer.isDateLimitActive
+            newCustomerEntity.isCreditLimitActive = customer.isCreditLimitActive
             newCustomerEntity.toCompany = companyEntity
             saveData()
             return ""
@@ -82,6 +84,67 @@ class LocalCustomerManager: CustomerManager {
             print("Error fetching. \(error)")
         }
         return customerEntityList.map { $0.toCustomer() }
+    }
+    func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
+        var cutomerList: [Customer] = []
+        guard let companyEntity = self.mainCompanyEntity else {
+            print("No se encontró compañia")
+            return cutomerList
+        }
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        request.fetchLimit = pageSize
+        request.fetchOffset = (page - 1) * pageSize
+        
+        var predicate1 = NSPredicate(format: "toCompany == %@", companyEntity)
+        if seachText != "" {
+            predicate1 = NSPredicate(format: "(name CONTAINS[c] %@ OR lastName CONTAINS[c] %@) AND toCompany == %@", seachText, seachText, companyEntity)
+        }
+        let predicate2 = getFilter(filter: filter)
+        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
+        
+        request.predicate = compoundPredicate
+        let sortDescriptor = getOrder(order: order)
+        request.sortDescriptors = [sortDescriptor]
+        do {
+            cutomerList = try self.mainContext.fetch(request).map{$0.toCustomer()}
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return cutomerList
+    }
+    func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
+        var filterAtt = NSPredicate(format: "active == true")
+        switch filter {
+        case .allCustomers:
+            filterAtt = NSPredicate(format: "active == true")
+        case .onTime:
+            let today = Date()
+            let calendar = Calendar.current
+            let inicioDelDia = calendar.startOfDay(for: today)
+            filterAtt = NSPredicate(format: "dateLimit > %@", inicioDelDia as NSDate)
+        case .dueByDate:
+            let today = Date()
+            let calendar = Calendar.current
+            let inicioDelDia = calendar.startOfDay(for: today)
+            filterAtt = NSPredicate(format: "dateLimit < %@", inicioDelDia as NSDate)
+        case .excessAmount:
+            filterAtt = NSPredicate(format: "totalDebt >= creditLimit")
+        }
+        return filterAtt
+    }
+    func getOrder(order: CustomerOrder) -> NSSortDescriptor {
+        var sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        switch order {
+        case .nameAsc:
+            sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        case .nextDate:
+            sortDescriptor = NSSortDescriptor(key: "dateLimit", ascending: true)
+        case .quantityAsc:
+            sortDescriptor = NSSortDescriptor(key: "totalDebt", ascending: true)
+        case .quantityDesc:
+            sortDescriptor = NSSortDescriptor(key: "totalDebt", ascending: false)
+        }
+        return sortDescriptor
     }
     //U - Update
     func updateCustomer(customer: Customer) {

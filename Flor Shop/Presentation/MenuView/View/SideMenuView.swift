@@ -74,8 +74,16 @@ struct SideMenuView: View {
     @Binding var showMenu: Bool
     var body: some View {
             ZStack {
-                Color(showMenu ? "color_accent" : "color_primary")
-                    .ignoresSafeArea()
+                VStack(spacing: 0, content: {
+                    Color(showMenu ? "color_accent" : "color_primary")
+                    if !showMenu && selectedTab == .pointOfSaleTab {
+                        Color("color_primary")
+                    } else if !showMenu {
+                        Color("color_background")
+                    }
+                })
+                .animation(.easeInOut(duration: 0.5))
+                .ignoresSafeArea()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 15, content: {
                         VStack(alignment: .leading, spacing: 15, content: {

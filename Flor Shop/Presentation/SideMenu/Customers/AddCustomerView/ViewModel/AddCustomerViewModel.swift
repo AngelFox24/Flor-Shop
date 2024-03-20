@@ -26,12 +26,6 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.creditLimitEdited = true
     }
     func editCustomer(customer: Customer) {
-        if let creditLimitUn = customer.creditLimit, let dateLimitUn = customer.dateLimit {
-            fieldsAddCustomer.creditLimit = String(creditLimitUn)
-            fieldsAddCustomer.creditLimitFlag = true
-            fieldsAddCustomer.dateLimit = dateLimitUn
-            fieldsAddCustomer.dateLimitFlag = true
-        }
         fieldsAddCustomer.id = customer.id
         fieldsAddCustomer.name = customer.name
         fieldsAddCustomer.lastname = customer.lastName
@@ -59,7 +53,11 @@ class AddCustomerViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), active: true, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt)
+        guard let creditLimitDouble = Double(fieldsAddCustomer.creditLimit) else {
+            print("Los valores no se pueden convertir correctamente")
+            return nil
+        }
+        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), active: true, creditLimit: creditLimitDouble, isCreditLimit: false, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: Date(), phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
     }
 }
 
@@ -86,10 +84,12 @@ class FieldsAddCustomer {
     var phoneNumber: String = ""
     var phoneNumberEdited: Bool = false
     var totalDebt: String = "0"
+    //TODO: Cambiar de Fecha a dias de Credito, luego calcular fecha
     var dateLimit: Date = Date()
     var dateLimitEdited: Bool = false
     var dateLimitFlag: Bool = false
-    var creditLimit: String = "0"
+    var creditLimit: String = "100"
+    var creditScore: Int = 50
     var creditLimitEdited: Bool = false
     var creditLimitFlag: Bool = false
     var creditLimitError: String {

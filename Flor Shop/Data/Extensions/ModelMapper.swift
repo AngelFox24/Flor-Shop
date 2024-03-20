@@ -207,9 +207,14 @@ extension Tb_Customer {
                         image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
                         active: active,
                         creditLimit: creditLimit,
+                        isCreditLimit: isCreditLimit,
+                        isDateLimit: isDateLimit,
+                        creditScore: Int(creditScore),
                         dateLimit: dateLimit ?? Date(),
                         phoneNumber: phoneNumber ?? "",
-                        totalDebt: totalDebt)
+                        totalDebt: totalDebt,
+                        isCreditLimitActive: isCreditLimitActive,
+                        isDateLimitActive: isDateLimitActive)
     }
 }
 

@@ -21,6 +21,6 @@ final class GetCustomersInteractor: GetCustomersUseCase {
     }
     
     func execute(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int) -> [Customer] {
-        return self.customerRepository.getCustomers()
+        return self.customerRepository.getCustomersList(seachText: seachText, order: order, filter: filter, page: page, pageSize: 20)
     }
 }

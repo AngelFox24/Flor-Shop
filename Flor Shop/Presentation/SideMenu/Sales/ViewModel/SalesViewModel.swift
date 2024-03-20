@@ -8,16 +8,19 @@ import CoreData
 import Foundation
 
 class SalesViewModel: ObservableObject {
-    @Published var salesList: [Sale] = []
     @Published var salesDetailsList: [SaleDetail] = []
+    
+    @Published var order: SalesOrder = .dateAsc
+    @Published var grouper: SalesGrouperAttributes = .byProduct
+    
     @Published var salesCurrentDateFilter: Date = Date.now
     @Published var salesDateInterval: SalesDateInterval = .diary
-    @Published var order: SalesOrder = .dateAsc
-    @Published var filterAttribute: SalesFilterAttributes = .byProduct
+    
     @Published var salesAmount: Double = 0.0
     @Published var costAmount: Double = 0.0
     @Published var revenueAmount: Double = 0.0
-    let calendario = Calendar.current
+    
+    private let calendario = Calendar.current
     private var currentPage: Int = 1
     private var lastCarge: Int = 0
     
@@ -32,12 +35,12 @@ class SalesViewModel: ObservableObject {
     }
     func fetchSalesDetailsList(page: Int = 1) {
         if page == 1 {
-            let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval)
+            let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval, order: order, grouper: grouper)
             lastCarge = newCarge.count
             self.salesDetailsList = newCarge
         } else {
             if lastCarge > 0 {
-                let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval)
+                let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval, order: order, grouper: grouper)
                 lastCarge = newCarge.count
                 self.salesDetailsList.append(contentsOf: newCarge)
             }
@@ -86,7 +89,7 @@ class SalesViewModel: ObservableObject {
         revenueAmount = salesAmount - costAmount
     }
     func lazyFetchList() {
-        if salesList.isEmpty {
+        if salesDetailsList.isEmpty {
             fetchSalesDetailsList()
             updateAmountsBar()
         }
