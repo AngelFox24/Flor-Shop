@@ -1,0 +1,92 @@
+//
+//  CustomerHistoryView.swift
+//  Flor Shop
+//
+//  Created by Angel Curi Laurente on 22/03/24.
+//
+
+import SwiftUI
+struct CustomerHistoryView: View {
+    @EnvironmentObject var salesViewModel: SalesViewModel
+    //@Binding var showMenu: Bool
+    //var backButton: Bool = false
+    var body: some View {
+        VStack(spacing: 0) {
+            CustomerHistoryTopBar()
+            CustomerHistoryViewListController()
+        }
+        /*
+        .onAppear {
+            salesViewModel.lazyFetchList()
+        }
+         */
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+    }
+}
+
+struct CustomerHistoryView_Previews: PreviewProvider {
+    static var previews: some View {
+        let dependencies = Dependencies()
+        CustomerHistoryView()
+            .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.salesViewModel)
+            .environmentObject(dependencies.navManager)
+            .environmentObject(dependencies.cartViewModel)
+            .environmentObject(dependencies.customerHistoryViewModel)
+    }
+}
+struct CustomerHistoryViewListController: View {
+    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
+    @EnvironmentObject var navManager: NavManager
+    var body: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                if customerHistoryViewModel.salesDetail.count == 0 {
+                    VStack {
+                        Image("groundhog_finding")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 300, height: 300)
+                        Text("No hay ventas aún.")
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 20)
+                            .font(.custom("Artifika-Regular", size: 18))
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        ForEach(customerHistoryViewModel.salesDetail) { saleDetail in
+                            CardViewTipe2(
+                                image: saleDetail.image,
+                                topStatusColor: saleDetail.customerTipe.color,
+                                topStatus: customer.customerTipe.description,
+                                mainText: saleDetail.productName,
+                                mainIndicatorPrefix: "S/. ",
+                                mainIndicator: String(saleDetail.subtotal),
+                                mainIndicatorAlert: false,
+                                secondaryIndicatorSuffix: "u",
+                                secondaryIndicator: String(saleDetail.quantitySold),
+                                secondaryIndicatorAlert: false, size: 80
+                            )
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowBackground(Color("color_background"))
+                            .onTapGesture {
+                                
+                            }
+                            .onAppear(perform: {
+                                if customerHistoryViewModel.shouldLoadData(salesDetail: saleDetail) {
+                                    customerHistoryViewModel.fetchNextPage()
+                                }
+                            })
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                }
+            }
+            .padding(.horizontal, 10)
+            .background(Color("color_background"))
+        }
+    }
+}

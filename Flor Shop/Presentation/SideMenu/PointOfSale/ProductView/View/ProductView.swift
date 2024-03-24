@@ -63,6 +63,7 @@ struct ListaControler: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
+                
             List {
                 ForEach(productsCoreDataViewModel.productsCoreData) { producto in
                     CardViewTipe2(image: producto.image, topStatusColor: Color.red, topStatus: nil, mainText: producto.name, mainIndicatorPrefix: "S/. ", mainIndicator: String(producto.unitPrice), mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: String(producto.qty), secondaryIndicatorAlert: false, size: 80)

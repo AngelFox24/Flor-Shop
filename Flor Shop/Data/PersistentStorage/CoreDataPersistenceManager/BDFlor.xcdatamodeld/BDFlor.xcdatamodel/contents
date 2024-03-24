@@ -22,9 +22,11 @@
     </entity>
     <entity name="Tb_Customer" representedClassName=".Tb_Customer" syncable="YES" codeGenerationType="class">
         <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="creditDays" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creditLimit" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creditScore" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="dateLimit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="firstDatePurchaseWithCredit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idCustomer" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isCreditLimit" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isCreditLimitActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>

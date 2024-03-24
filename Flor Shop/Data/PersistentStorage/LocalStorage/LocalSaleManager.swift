@@ -487,9 +487,11 @@ class LocalSaleManager: SaleManager {
                 newSaleEntity.toCustomer = customerEntity
                 customerEntity.lastDatePurchase = Date()
                 if customerEntity.totalDebt == 0.0 {
-                    let calendario = Calendar.current
-                    customerEntity.dateLimit = calendario.date(byAdding: .day, value: 30, to: Date())!
+                    var calendario = Calendar.current
+                    calendario.timeZone = TimeZone(identifier: "UTC")!
+                    customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
                     customerEntity.totalDebt = cartEntity.total
+                    customerEntity.firstDatePurchaseWithCredit = Date()
                 } else {
                     customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
                 }

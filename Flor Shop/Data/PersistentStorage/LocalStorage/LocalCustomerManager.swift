@@ -11,6 +11,7 @@ import CoreData
 protocol CustomerManager {
     func addCustomer(customer: Customer) -> String
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
+    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func updateCustomer(customer: Customer)
     func deleteCustomer(customer: Customer)
     func filterCustomer(word: String) -> [Customer]
@@ -43,9 +44,37 @@ class LocalCustomerManager: CustomerManager {
         guard let companyEntity = self.mainCompanyEntity else {
             return "La hay compañia default"
         }
-        if customer.toCustomerEntity(context: self.mainContext) != nil { //Busqueda por id
-            rollback()
-            return "Cliente ya existe: \(String(describing: customer.name))"
+        if let customerEntity = customer.toCustomerEntity(context: self.mainContext) { //Busqueda por id
+            customerEntity.name = customer.name
+            customerEntity.lastName = customer.lastName
+            customerEntity.creditDays = Int64(customer.creditDays)
+            customerEntity.active = customer.active
+            customerEntity.creditLimit = customer.creditLimit
+            //print("BD isCreditLimitActive Before: \(customerEntity.isCreditLimitActive)")
+            customerEntity.isCreditLimitActive = customer.isCreditLimitActive
+            //print("BD isCreditLimitActive After: \(customerEntity.isCreditLimitActive)")
+            customerEntity.isDateLimitActive = customer.isDateLimitActive
+            customerEntity.phoneNumber = customer.phoneNumber
+            if customer.isDateLimitActive && customerEntity.totalDebt > 0 && customerEntity.firstDatePurchaseWithCredit != nil {
+                var calendar = Calendar.current
+                calendar.timeZone = TimeZone(identifier: "UTC")!
+                customerEntity.dateLimit = calendar.date(byAdding: .day, value: Int(customerEntity.creditDays), to: customerEntity.firstDatePurchaseWithCredit!)!
+                //print("Se actualizo DateLimit en CustomerManager: \(String(describing: customerEntity.dateLimit?.description))")
+                let finalDelDia = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: Date())!
+                customerEntity.isDateLimit = customerEntity.dateLimit ?? Date() < finalDelDia
+                //print("finalDelDia en CustomerManager: \(String(describing: finalDelDia.description))")
+                //print("creditDays en CustomerManager: \(String(describing: customerEntity.creditDays))")
+                //print("firstDatePurchaseWithCredit en CustomerManager: \(String(describing: customerEntity.firstDatePurchaseWithCredit!.description))")
+            }
+            if customerEntity.isCreditLimitActive {
+                print("Entro porque es true")
+                customerEntity.isCreditLimit = customerEntity.totalDebt >= customerEntity.creditLimit
+            } else {
+                customerEntity.isCreditLimit = false
+                print("Se apago el Flag")
+            }
+            saveData()
+            return ""
         } else if customerExist(customer: customer) { //Comprobamos si existe el mismo empleado por otros atributos
             rollback()
             return "Hay otro cliente con el mismo nombre y apellido"
@@ -54,6 +83,7 @@ class LocalCustomerManager: CustomerManager {
             newCustomerEntity.idCustomer = customer.id
             newCustomerEntity.name = customer.name
             newCustomerEntity.lastName = customer.lastName
+            newCustomerEntity.creditDays = Int64(customer.creditDays)
             if let imageEntity = customer.image.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 newCustomerEntity.toImageUrl = imageEntity
             } else { // Si no existe creamos uno nuevo
@@ -64,7 +94,8 @@ class LocalCustomerManager: CustomerManager {
             }
             newCustomerEntity.active = customer.active
             newCustomerEntity.creditLimit = customer.creditLimit
-            newCustomerEntity.dateLimit = customer.dateLimit
+            newCustomerEntity.creditScore = 50
+            newCustomerEntity.dateLimit = Date()
             newCustomerEntity.phoneNumber = customer.phoneNumber
             newCustomerEntity.totalDebt = 0
             newCustomerEntity.isDateLimitActive = customer.isDateLimitActive
@@ -112,6 +143,31 @@ class LocalCustomerManager: CustomerManager {
         }
         return cutomerList
     }
+    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail] {
+        var salesCutomerList: [SaleDetail] = []
+        guard let companyEntity = self.mainCompanyEntity else {
+            print("No se encontró compañia")
+            return salesCutomerList
+        }
+        guard let customerEntity = customer.toCustomerEntity(context: self.mainContext) else {
+            print("No se encontró cliente")
+            return salesCutomerList
+        }
+        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
+        request.fetchLimit = pageSize
+        request.fetchOffset = (page - 1) * pageSize
+        
+        let predicate = NSPredicate(format: "toSale.toCustomer.toCompany == %@ AND toSale.toCustomer == %@", companyEntity, customerEntity)
+        request.predicate = predicate
+        let sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        do {
+            salesCutomerList = try self.mainContext.fetch(request).map{$0.toSaleDetail()}
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        return salesCutomerList
+    }
     func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
         var filterAtt = NSPredicate(format: "active == true")
         switch filter {
@@ -119,12 +175,14 @@ class LocalCustomerManager: CustomerManager {
             filterAtt = NSPredicate(format: "active == true")
         case .onTime:
             let today = Date()
-            let calendar = Calendar.current
+            var calendar = Calendar.current
+            calendar.timeZone = TimeZone(identifier: "UTC")!
             let inicioDelDia = calendar.startOfDay(for: today)
             filterAtt = NSPredicate(format: "dateLimit > %@", inicioDelDia as NSDate)
         case .dueByDate:
             let today = Date()
-            let calendar = Calendar.current
+            var calendar = Calendar.current
+            calendar.timeZone = TimeZone(identifier: "UTC")!
             let inicioDelDia = calendar.startOfDay(for: today)
             filterAtt = NSPredicate(format: "dateLimit < %@", inicioDelDia as NSDate)
         case .excessAmount:

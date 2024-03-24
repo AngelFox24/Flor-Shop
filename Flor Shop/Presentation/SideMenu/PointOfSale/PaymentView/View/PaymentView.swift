@@ -86,11 +86,13 @@ struct PaymentsFields: View {
                     })
                 })
             })
+            /*
             .navigationDestination(for: NavPathsEnum.self, destination: { view in
                 if view == .customerView {
                     CustomersView(showMenu: .constant(false), backButton: true)
                 }
             })
+             */
         })
         .padding(.horizontal, 10)
     }

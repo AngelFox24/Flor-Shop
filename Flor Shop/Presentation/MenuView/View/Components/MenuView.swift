@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MenuView: View {
     @State private var selectedTab: MenuTab = .customersTab
-    @State private var showMenu: Bool = false
+    @Binding var showMenu: Bool
     @Binding var isKeyboardVisible: Bool
     @State private var tabSelected: Tab = .magnifyingglass
     var body: some View {
@@ -73,7 +73,7 @@ struct MenuView: View {
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        MenuView(isKeyboardVisible: .constant(true))
+        MenuView(showMenu: .constant(true), isKeyboardVisible: .constant(true))
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)

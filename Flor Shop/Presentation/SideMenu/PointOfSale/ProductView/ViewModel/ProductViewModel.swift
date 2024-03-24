@@ -13,6 +13,9 @@ class ProductViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var primaryOrder: PrimaryOrder = .nameAsc
     @Published var filterAttribute: ProductsFilterAttributes = .allProducts
+    
+    // TODO: Optimizar Lista
+    //-------------------------
     private var currentPage: Int = 1
     private var lastCarge: Int = 0
     private var cancellableSet = Set<AnyCancellable>()

@@ -50,6 +50,7 @@ struct Dependencies {
     private let getCustomersUseCase: GetCustomersUseCase
     private let saveCustomerUseCase: SaveCustomerUseCase
     private let getSalesDetailsUseCase: GetSalesDetailsUseCase
+    private let getCustomerSalesUseCase: GetCustomerSalesUseCase
     
     private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
@@ -62,13 +63,14 @@ struct Dependencies {
     let salesViewModel: SalesViewModel
     let employeeViewModel: EmployeeViewModel
     let customerViewModel: CustomerViewModel
+    let customerHistoryViewModel: CustomerHistoryViewModel
     //let companyViewModel: CompanyViewModel
     let addCustomerViewModel: AddCustomerViewModel
     let versionCheck: VersionCheck
     let navManager: NavManager
     
     init() {
-        //Managers
+        //MARK: Managers
         self.mainContext = CoreDataProvider.shared.viewContext
         self.companyManager = LocalCompanyManager(mainContext: mainContext)
         self.subsidiaryManager = LocalSubsidiaryManager(mainContext: mainContext)
@@ -109,6 +111,7 @@ struct Dependencies {
         self.getCustomersUseCase = GetCustomersInteractor(customerRepository: customerRepository)
         self.saveCustomerUseCase = SaveCustomerInteractor(customerRepository: customerRepository)
         self.getSalesDetailsUseCase = GetSalesDetailsInteractor(saleRepository: salesRepository)
+        self.getCustomerSalesUseCase = GetCustomerSalesInteractor(customerRepository: customerRepository)
         
         self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
         self.logInUseCase = LogInInteractor(employeeRepository: employeeRepository, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, getCompanyUseCase: getCompanyUseCase, getSubsidiaryUseCase: getSubsidiaryUseCase)
@@ -121,6 +124,7 @@ struct Dependencies {
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
+        self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase)
         //self.companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
         self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase)
         self.versionCheck = VersionCheck()

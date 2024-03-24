@@ -22,7 +22,7 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.nameEdited = true
         fieldsAddCustomer.lastnameEdited = true
         fieldsAddCustomer.phoneNumberEdited = true
-        fieldsAddCustomer.dateLimitEdited = true
+        //fieldsAddCustomer.dateLimitEdited = true
         fieldsAddCustomer.creditLimitEdited = true
     }
     func editCustomer(customer: Customer) {
@@ -31,6 +31,15 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.lastname = customer.lastName
         fieldsAddCustomer.phoneNumber = customer.phoneNumber
         fieldsAddCustomer.totalDebt = String(customer.totalDebt)
+        fieldsAddCustomer.dateLimit = customer.dateLimit
+        fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
+        fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
+        fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
+        print("creditLimitFlag: \(customer.isCreditLimitActive)")
+        fieldsAddCustomer.creditDays = String(customer.creditDays)
+        fieldsAddCustomer.creditScore = customer.creditScore
+        fieldsAddCustomer.creditLimit = String(customer.creditLimit)
+        
     }
     func addCustomer() -> Bool {
         guard let customer = createCustomer() else {
@@ -57,8 +66,31 @@ class AddCustomerViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), active: true, creditLimit: creditLimitDouble, isCreditLimit: false, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: Date(), phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        guard let creditDaysInt = Int(fieldsAddCustomer.creditDays) else {
+            print("Los valores no se pueden convertir correctamente")
+            return nil
+        }
+        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), active: true, creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
     }
+    /*
+    private func calcDateLimit() -> Date {
+        guard let creditDaysInt = Int(fieldsAddCustomer.creditDays) else {
+            return Date()
+        }
+        guard let totalDebtDouble = Double(fieldsAddCustomer.totalDebt) else {
+            return Date()
+        }
+        let calendar = Calendar.current
+        if let futureDate = calendar.date(byAdding: .day, value: creditDaysInt, to: Date()) {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            let formattedDate = dateFormatter.string(from: futureDate)
+            return formattedDate
+        } else {
+            return ""
+        }
+    }
+     */
 }
 
 class FieldsAddCustomer {
@@ -86,10 +118,39 @@ class FieldsAddCustomer {
     var totalDebt: String = "0"
     //TODO: Cambiar de Fecha a dias de Credito, luego calcular fecha
     var dateLimit: Date = Date()
-    var dateLimitEdited: Bool = false
+    var firstDatePurchaseWithCredit: Date?
+    var dateLimitString: String {
+        if creditDaysError == "" {
+            let calendar = Calendar.current
+            if let futureDate = calendar.date(byAdding: .day, value: Int(creditDays) ?? 0, to: firstDatePurchaseWithCredit ?? Date()) {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "dd/MM/yyyy"
+                let formattedDate = dateFormatter.string(from: futureDate)
+                return formattedDate
+            } else {
+                return ""
+            }
+        } else {
+            return ""
+        }
+    }
+    //var dateLimitEdited: Bool = false
     var dateLimitFlag: Bool = false
-    var creditLimit: String = "100"
+    var creditDays: String = "30"
+    var creditDaysEdited: Bool = false
+    var creditDaysFlag: Bool = false
+    var creditDaysError: String {
+        guard let creditDaysInt = Int(creditDays) else {
+            return "Debe ser número entero"
+        }
+        if creditDaysInt <= 0 && creditDaysEdited {
+            return "Debe ser mayor a 0: \(creditDaysEdited)"
+        } else {
+            return ""
+        }
+    }
     var creditScore: Int = 50
+    var creditLimit: String = "100"
     var creditLimitEdited: Bool = false
     var creditLimitFlag: Bool = false
     var creditLimitError: String {

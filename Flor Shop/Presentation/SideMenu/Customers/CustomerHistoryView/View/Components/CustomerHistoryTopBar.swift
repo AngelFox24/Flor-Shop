@@ -1,49 +1,36 @@
 //
-//  CarritoTopBar.swift
+//  CustomerHistoryTopBar.swift
 //  Flor Shop
 //
-//  Created by Angel Curi Laurente on 29/04/23.
+//  Created by Angel Curi Laurente on 22/03/24.
 //
-
 import SwiftUI
 import CoreData
 import AVFoundation
 
-struct CartTopBar: View {
+struct CustomerHistoryTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
-    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
-            HStack{
+            HStack(content: {
                 Button(action: {
-                    navManager.goToCustomerView()
+                    navManager.goToBack()
                 }, label: {
-                    if let customer = carritoCoreDataViewModel.customerInCar {
-                        CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 40)
-                            .contextMenu(menuItems: {
-                                Button(role: .destructive,action: {
-                                    carritoCoreDataViewModel.customerInCar = nil
-                                }, label: {
-                                    Text("Desvincular Cliente")
-                                })
-                            })
-                    } else {
-                        CustomButton3(simbol: "person.crop.circle.badge.plus")
-                    }
+                    CustomButton3()
                 })
                 Spacer()
                 Button(action: {
-                    navManager.goToPaymentView()
+                    customerHistoryViewModel.payTotalAmount()
                     print("Se presiono cobrar")
+                    playSound(named: "Success1")
                 }, label: {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
-                        Text(String(carritoCoreDataViewModel.cartCoreData?.total ?? 0.0))
+                        Text(String(customerHistoryViewModel.customer?.totalDebt ?? 0.0))
                             .font(.custom("Artifika-Regular", size: 20))
                     })
                     .padding(.horizontal, 10)
@@ -52,25 +39,25 @@ struct CartTopBar: View {
                     .background(Color("color_accent"))
                     .cornerRadius(15.0)
                 })
-            }
-            /*
-            .navigationDestination(for: NavPathsEnum.self, destination: { view in
-                if view == .paymentView {
-                    PaymentView()
-                } else if view == .customerView {
-                    CustomersView(showMenu: .constant(false), backButton: true)
+                if let customer = customerHistoryViewModel.customer {
+                    CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 40)
+                        .contextMenu(menuItems: {
+                            Button(role: .destructive,action: {
+                                customerHistoryViewModel.customer = nil
+                            }, label: {
+                                Text("Desvincular Cliente")
+                            })
+                        })
                 } else {
-                    let _ = print("Nose")
+                    CustomButton3(simbol: "person.crop.circle.badge.plus")
                 }
             })
-             */
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
-    
     private func playSound(named fileName: String) {
         var soundURL: URL?
         soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
@@ -86,12 +73,12 @@ struct CartTopBar: View {
         }
     }
 }
-struct CartTopBar_Previews: PreviewProvider {
+struct CustomerHistoryTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        CartTopBar()
+        CustomerHistoryTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.navManager)
+            .environmentObject(dependencies.customerHistoryViewModel)
     }
 }

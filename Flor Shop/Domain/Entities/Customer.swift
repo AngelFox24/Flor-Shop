@@ -15,6 +15,7 @@ struct Customer: Identifiable {
     var active: Bool
     var creditLimit: Double
     var isCreditLimit: Bool
+    var creditDays: Int
     var isDateLimit: Bool
     var creditScore: Int
     var customerTipe: CustomerTipeByCredit {
@@ -27,12 +28,13 @@ struct Customer: Identifiable {
         }
     }
     var dateLimit: Date
+    var firstDatePurchaseWithCredit: Date?
     var phoneNumber: String
     var totalDebt: Double
     var isCreditLimitActive: Bool
     var isDateLimitActive: Bool
     
     static func getDummyCustomer() -> Customer {
-        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: ImageUrl.getDummyImage(), active: true, creditLimit: 12.0, isCreditLimit: false, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53, isCreditLimitActive: false, isDateLimitActive: false)
+        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: ImageUrl.getDummyImage(), active: true, creditLimit: 12.0, isCreditLimit: false, creditDays: 30, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53, isCreditLimitActive: false, isDateLimitActive: false)
     }
 }

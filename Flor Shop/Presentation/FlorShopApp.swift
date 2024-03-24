@@ -30,6 +30,7 @@ struct FlorShopApp: App {
                 .environmentObject(dependencies.customerViewModel)
                 .environmentObject(dependencies.addCustomerViewModel)
                 .environmentObject(dependencies.navManager)
+                .environmentObject(dependencies.customerHistoryViewModel)
         }
     }
 }

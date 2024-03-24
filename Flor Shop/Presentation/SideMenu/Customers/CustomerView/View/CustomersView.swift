@@ -39,6 +39,8 @@ struct CustomerListController: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
+    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
+    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     var forSelectCustomer: Bool = false
     var body: some View {
         ZStack {
@@ -60,6 +62,8 @@ struct CustomerListController: View {
                         ForEach(customerViewModel.customerList) { customer in
                             CardViewTipe2(
                                 image: customer.image,
+                                topStatusColor: customer.customerTipe.color,
+                                topStatus: customer.customerTipe.description,
                                 mainText: customer.name + " " + customer.lastName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(customer.totalDebt),
@@ -75,6 +79,11 @@ struct CustomerListController: View {
                                 if forSelectCustomer {
                                     cartViewModel.customerInCar = customer
                                     navManager.goToBack()
+                                } else {
+                                    //addCustomerViewModel.editCustomer(customer: customer)
+                                    //navManager.goToAddCustomerView()
+                                    customerHistoryViewModel.setCustomerInContext(customer: customer)
+                                    navManager.goToCustomerHistoryView()
                                 }
                             }
                         }
@@ -93,11 +102,13 @@ struct CustomerListController: View {
                     }, label: {
                         CustomButton4(simbol: "plus")
                     })
+                    /*
                     .navigationDestination(for: NavPathsEnum.self, destination: { view in
                         if view == .addCustomerView {
                             AddCustomerView()
                         }
                     })
+                     */
                 })
                 .padding(.trailing, 15)
                 .padding(.bottom, 15)

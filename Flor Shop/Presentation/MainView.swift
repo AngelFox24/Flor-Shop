@@ -12,6 +12,7 @@ struct MainView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var isKeyboardVisible: Bool = false
+    @State private var showMenu: Bool = false
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     var body: some View {
             ZStack {
@@ -29,11 +30,31 @@ struct MainView: View {
                         case .versionOk:
                             //Etapa del LogIn o Registro
                             NavigationStack(path: $navManager.navPaths) {
-                                if logInViewModel.logInStatus == .success {
-                                    MenuView(isKeyboardVisible: $isKeyboardVisible)
-                                } else {
-                                    WelcomeView(isKeyboardVisible: $isKeyboardVisible)
-                                }
+                                ZStack(content: {
+                                    if logInViewModel.logInStatus == .success {
+                                        MenuView(showMenu: $showMenu, isKeyboardVisible: $isKeyboardVisible)
+                                    } else {
+                                        WelcomeView(isKeyboardVisible: $isKeyboardVisible)
+                                    }
+                                })
+                                .navigationDestination(for: NavPathsEnum.self, destination: { viewArc in
+                                    switch viewArc {
+                                    case .loginView:
+                                        LogInView(isKeyboardVisible: $isKeyboardVisible)
+                                    case .registrationView:
+                                        CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
+                                    case .customerView:
+                                        CustomersView(showMenu: $showMenu, backButton: true)
+                                    case .customersForPaymentView:
+                                        CustomersView(showMenu: .constant(false), backButton: true)
+                                    case .addCustomerView:
+                                        AddCustomerView()
+                                    case .paymentView:
+                                        PaymentView()
+                                    case .customerHistoryView:
+                                        CustomerHistoryView()
+                                    }
+                                })
                             }
                             .onChange(of: logInViewModel.logInStatus, perform: { status in
                                 if status == .success {

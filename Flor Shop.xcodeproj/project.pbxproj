@@ -131,6 +131,10 @@
 		27F2F49B2B1E2338003E4197 /* LogInUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F2F49A2B1E2338003E4197 /* LogInUseCase.swift */; };
 		27F2F49E2B1E297D003E4197 /* GetSubsidiaryUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F2F49D2B1E297D003E4197 /* GetSubsidiaryUseCase.swift */; };
 		27F2F4A02B1E2AB2003E4197 /* GetCompanyUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F2F49F2B1E2AB2003E4197 /* GetCompanyUseCase.swift */; };
+		27F321CC2BADF4F200296E50 /* CustomerHistoryTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F321CB2BADF4F200296E50 /* CustomerHistoryTopBar.swift */; };
+		27F321CE2BADF6CE00296E50 /* CustomerHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F321CD2BADF6CE00296E50 /* CustomerHistoryView.swift */; };
+		27F321D02BADFFE100296E50 /* CustomerHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F321CF2BADFFE100296E50 /* CustomerHistoryViewModel.swift */; };
+		27F321D32BAE097500296E50 /* GetCustomerSalesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F321D22BAE097500296E50 /* GetCustomerSalesUseCase.swift */; };
 		27F54F3229FDE5210083B616 /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F3129FDE5210083B616 /* CartView.swift */; };
 		27F54F3429FDE6180083B616 /* CartTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F54F3329FDE6180083B616 /* CartTopBar.swift */; };
 		27F68FBE2AD84EDF00D917FF /* NavManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F68FBD2AD84EDF00D917FF /* NavManager.swift */; };
@@ -259,6 +263,10 @@
 		27F2F49A2B1E2338003E4197 /* LogInUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInUseCase.swift; sourceTree = "<group>"; };
 		27F2F49D2B1E297D003E4197 /* GetSubsidiaryUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetSubsidiaryUseCase.swift; sourceTree = "<group>"; };
 		27F2F49F2B1E2AB2003E4197 /* GetCompanyUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCompanyUseCase.swift; sourceTree = "<group>"; };
+		27F321CB2BADF4F200296E50 /* CustomerHistoryTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerHistoryTopBar.swift; sourceTree = "<group>"; };
+		27F321CD2BADF6CE00296E50 /* CustomerHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerHistoryView.swift; sourceTree = "<group>"; };
+		27F321CF2BADFFE100296E50 /* CustomerHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerHistoryViewModel.swift; sourceTree = "<group>"; };
+		27F321D22BAE097500296E50 /* GetCustomerSalesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCustomerSalesUseCase.swift; sourceTree = "<group>"; };
 		27F54F3129FDE5210083B616 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
 		27F54F3329FDE6180083B616 /* CartTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartTopBar.swift; sourceTree = "<group>"; };
 		27F68FBD2AD84EDF00D917FF /* NavManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavManager.swift; sourceTree = "<group>"; };
@@ -338,6 +346,7 @@
 			children = (
 				2735768C2B1F860D00E9CF12 /* GetCustomersUseCase.swift */,
 				2735768E2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift */,
+				27F321D22BAE097500296E50 /* GetCustomerSalesUseCase.swift */,
 			);
 			path = Customer;
 			sourceTree = "<group>";
@@ -652,7 +661,6 @@
 		27CC2E042A883BA1000EDB64 /* Sales */ = {
 			isa = PBXGroup;
 			children = (
-				2705BC3F2B77D0B400A0CD42 /* Components */,
 				27F2F4832B1DF38C003E4197 /* ViewModel */,
 				27F2F4822B1DF388003E4197 /* View */,
 			);
@@ -664,6 +672,7 @@
 			children = (
 				27F2F4752B1DF282003E4197 /* CustomerView */,
 				27F2F4792B1DF2F5003E4197 /* AddCustomerView */,
+				27F321C72BADE9FA00296E50 /* CustomerHistoryView */,
 			);
 			path = Customers;
 			sourceTree = "<group>";
@@ -1109,6 +1118,7 @@
 		27F2F4822B1DF388003E4197 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2705BC3F2B77D0B400A0CD42 /* Components */,
 				2735D45C2B21E28000C892AF /* SalesView.swift */,
 			);
 			path = View;
@@ -1153,6 +1163,40 @@
 				274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		27F321C72BADE9FA00296E50 /* CustomerHistoryView */ = {
+			isa = PBXGroup;
+			children = (
+				27F321C82BADEA2300296E50 /* ViewModel */,
+				27F321C92BADEA2A00296E50 /* View */,
+			);
+			path = CustomerHistoryView;
+			sourceTree = "<group>";
+		};
+		27F321C82BADEA2300296E50 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				27F321CF2BADFFE100296E50 /* CustomerHistoryViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		27F321C92BADEA2A00296E50 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				27F321CA2BADF4D000296E50 /* Components */,
+				27F321CD2BADF6CE00296E50 /* CustomerHistoryView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		27F321CA2BADF4D000296E50 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				27F321CB2BADF4F200296E50 /* CustomerHistoryTopBar.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		27F68FBC2AD84EC700D917FF /* Navigation */ = {
@@ -1312,6 +1356,7 @@
 				279C649A2A8D89BB003B29BC /* LocalCustomerManager.swift in Sources */,
 				27F2F49B2B1E2338003E4197 /* LogInUseCase.swift in Sources */,
 				27F68FBE2AD84EDF00D917FF /* NavManager.swift in Sources */,
+				27F321D32BAE097500296E50 /* GetCustomerSalesUseCase.swift in Sources */,
 				279C64A02A8D9539003B29BC /* Subsidiary.swift in Sources */,
 				279C64A82A8D9823003B29BC /* SaleDetail.swift in Sources */,
 				279C64962A8D798A003B29BC /* CustomerRepositoryImpl.swift in Sources */,
@@ -1323,6 +1368,7 @@
 				279C64982A8D89A2003B29BC /* LocalEmployeeManager.swift in Sources */,
 				273E638E2A897ACF0048DC44 /* PointOfSaleView.swift in Sources */,
 				273576812B1F4BAE00E9CF12 /* EmptyCartUseCase.swift in Sources */,
+				27F321D02BADFFE100296E50 /* CustomerHistoryViewModel.swift in Sources */,
 				2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */,
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */,
@@ -1339,6 +1385,7 @@
 				279C64A62A8D97E1003B29BC /* Customer.swift in Sources */,
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
 				27C7B9D62A60F99400CA2818 /* OnboardViewModel.swift in Sources */,
+				27F321CC2BADF4F200296E50 /* CustomerHistoryTopBar.swift in Sources */,
 				27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */,
 				2735767D2B1F4A2C00E9CF12 /* DeleteCartDetailUseCase.swift in Sources */,
 				2705BC412B77D0D900A0CD42 /* SalesTopBar.swift in Sources */,
@@ -1389,6 +1436,7 @@
 				27C241FF2A00A89C0045B2A0 /* CartViewModel.swift in Sources */,
 				272066802A094D6A00E0CCA8 /* SalesViewModel.swift in Sources */,
 				2728EAB22A1B0E02002B534A /* Car.swift in Sources */,
+				27F321CE2BADF6CE00296E50 /* CustomerHistoryView.swift in Sources */,
 				272559382A8ACBFF008896C8 /* FirebaseSesionManagement.swift in Sources */,
 				2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */,
 				27A6EF202ACC84C100F4D178 /* Extensions.swift in Sources */,
