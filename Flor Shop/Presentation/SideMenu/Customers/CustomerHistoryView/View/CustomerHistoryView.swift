@@ -59,8 +59,6 @@ struct CustomerHistoryViewListController: View {
                         ForEach(customerHistoryViewModel.salesDetail) { saleDetail in
                             CardViewTipe2(
                                 image: saleDetail.image,
-                                topStatusColor: saleDetail.customerTipe.color,
-                                topStatus: customer.customerTipe.description,
                                 mainText: saleDetail.productName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(saleDetail.subtotal),
