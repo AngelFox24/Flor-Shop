@@ -131,7 +131,7 @@ class ImageProductNetworkViewModel: ObservableObject {
         let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
         let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
         if let imageData = try? Data(contentsOf: fileURL) {
-            print("Ruta de la imagen guardada: \(fileURL.path)")
+            //print("Ruta de la imagen guardada: \(fileURL.path)")
             return UIImage(data: imageData)
         } else {
             print("No se pudo obtener la imagen \(id.uuidString).jpeg")

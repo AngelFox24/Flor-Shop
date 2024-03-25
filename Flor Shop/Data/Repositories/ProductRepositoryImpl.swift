@@ -10,7 +10,7 @@ import CoreData
 
 protocol ProductRepository {
     func saveProduct(product: Product) -> String
-    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product]
+    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     //func filterProducts(word: String) -> [Product]
     //func setOrder(order: PrimaryOrder)
     //func setFilter(filter: ProductsFilterAttributes)
@@ -28,7 +28,7 @@ public class ProductRepositoryImpl: ProductRepository {
         // add to remote logic
         return localManager.saveProduct(product: product)
     }
-    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product] {
+    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         // add to remote logic
         /*
         var products: [Product] = []
@@ -48,7 +48,7 @@ public class ProductRepositoryImpl: ProductRepository {
         dispatchGroup.wait()
         return moviesResult
          */
-        return localManager.getListProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 20)
+        return localManager.getListProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         self.localManager.setDefaultSubsidiary(subsidiary: subsidiary)

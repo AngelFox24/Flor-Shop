@@ -18,7 +18,6 @@ struct CustomAsyncImageView: View {
         self.size = size
         self.imageProductNetwork = imageProductNetwork
         imageProductNetwork.getImage(id: id, url: (((URL(string: urlProducto ) ?? URL(string: "https://falabella.scene7.com/is/image/FalabellaPE/gsc_117581885_1813935_1?wid=1500&hei=1500&qlt=70"))!)))
-        print("Se cargo la imagen en Init")
     }
     var body: some View {
         HStack {

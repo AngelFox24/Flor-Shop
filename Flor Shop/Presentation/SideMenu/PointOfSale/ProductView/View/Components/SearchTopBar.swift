@@ -44,10 +44,6 @@ struct ProductSearchTopBar: View {
                         .disableAutocorrection(true)
                     Button(action: {
                         productsCoreDataViewModel.searchText = ""
-                        //No cambiar muchos atributos Combine
-                        //productsCoreDataViewModel.primaryOrder = .nameAsc
-                        //productsCoreDataViewModel.filterAttribute = .allProducts
-                        //productsCoreDataViewModel.fetchProducts()
                     }, label: {
                         Image(systemName: "x.circle")
                             .foregroundColor(Color("color_accent"))
