@@ -52,8 +52,8 @@ struct PaymentsFields: View {
                     if let customer = cartViewModel.customerInCar {
                         CardViewTipe2(
                             image: customer.image,
-                            topStatusColor: Color.green,
-                            topStatus: "Buen Pagador",
+                            topStatusColor: customer.customerTipe.color,
+                            topStatus: customer.customerTipe.description,
                             mainText: customer.name + " " + customer.lastName,
                             mainIndicatorPrefix: "S/. ",
                             mainIndicator: String(customer.totalDebt),
@@ -77,7 +77,7 @@ struct PaymentsFields: View {
                 }
                 HStack(content: {
                     Spacer()
-                    ForEach(PaymentEnums.allValues, id: \.self, content: { paymentType in
+                    ForEach(PaymentType.allValues, id: \.self, content: { paymentType in
                         CardViewTipe4(icon: paymentType.icon, text: paymentType.description, enable: cartViewModel.paymentType == paymentType)
                             .onTapGesture {
                                 cartViewModel.paymentType = paymentType
@@ -86,13 +86,6 @@ struct PaymentsFields: View {
                     })
                 })
             })
-            /*
-            .navigationDestination(for: NavPathsEnum.self, destination: { view in
-                if view == .customerView {
-                    CustomersView(showMenu: .constant(false), backButton: true)
-                }
-            })
-             */
         })
         .padding(.horizontal, 10)
     }

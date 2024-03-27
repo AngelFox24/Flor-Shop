@@ -9,7 +9,7 @@ import Foundation
 
 protocol RegisterSaleUseCase {
     
-    func execute(cart: Car?, customer: Customer?) -> Bool
+    func execute(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
 }
 
 final class RegisterSaleInteractor: RegisterSaleUseCase {
@@ -20,7 +20,7 @@ final class RegisterSaleInteractor: RegisterSaleUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(cart: Car?, customer: Customer?) -> Bool {
-        return saleRepository.registerSale(cart: cart, customer: customer)
+    func execute(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
+        return saleRepository.registerSale(cart: cart, customer: customer, paymentType: paymentType)
     }
 }

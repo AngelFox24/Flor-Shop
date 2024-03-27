@@ -57,8 +57,13 @@ struct CustomerHistoryViewListController: View {
                 } else {
                     List {
                         ForEach(customerHistoryViewModel.salesDetail) { saleDetail in
+                            let day: String = saleDetail.saleDate.getDateComponent(dateComponent: .day).description
+                            let month: String = saleDetail.saleDate.getShortNameComponent(dateStringNameComponent: .month)
+                            let year: String = saleDetail.saleDate.getDateComponent(dateComponent: .year).description
                             CardViewTipe2(
                                 image: saleDetail.image,
+                                topStatusColor: saleDetail.paymentType == PaymentType.cash ? .green : .red,
+                                topStatus: saleDetail.paymentType == PaymentType.cash ? "Pagado \(day) \(month) \(year)" : "Sin Pagar \(day) \(month) \(year)",
                                 mainText: saleDetail.productName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(saleDetail.subtotal),

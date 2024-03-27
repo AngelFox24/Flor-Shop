@@ -72,11 +72,11 @@ enum PrimaryOrder: CustomStringConvertible, Equatable {
     }
     static func from(description: String) -> PrimaryOrder? {
         for case let tipo in PrimaryOrder.allValues where tipo.description == description {
-                return tipo
+            return tipo
         }
         return nil
     }
     static func == (lhs: PrimaryOrder, rhs: PrimaryOrder) -> Bool {
-            return lhs.description == rhs.description
-        }
+        return lhs.description == rhs.description
+    }
 }

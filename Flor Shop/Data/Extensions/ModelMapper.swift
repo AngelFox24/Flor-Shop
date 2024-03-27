@@ -237,6 +237,8 @@ extension Tb_SaleDetail {
                           unitCost: unitCost,
                           unitPrice: unitPrice,
                           quantitySold: Int(quantitySold),
+                          paymentType: self.toSale?.paymentType == PaymentType.cash.description ? PaymentType.cash : PaymentType.loan,
+                          saleDate: self.toSale?.saleDate ?? Date(),
                           subtotal: subtotal)
     }
 }

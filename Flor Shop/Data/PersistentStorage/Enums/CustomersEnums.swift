@@ -32,24 +32,6 @@ enum CustomerFilterAttributes: CustomStringConvertible, Equatable {
         return lhs.description == rhs.description
     }
 }
-enum PaymentType: CustomStringConvertible, Equatable {
-    case cash
-    case credit
-    var description: String {
-        switch self {
-        case .cash:
-            return "Efectivo"
-        case .credit:
-            return "Credito"
-        }
-    }
-    static var allValues: [PaymentType] {
-        return [.cash, .credit]
-    }
-    static func == (lhs: PaymentType, rhs: PaymentType) -> Bool {
-        return lhs.description == rhs.description
-    }
-}
 enum CustomerOrder: CustomStringConvertible, Equatable {
     case nameAsc
     case nextDate

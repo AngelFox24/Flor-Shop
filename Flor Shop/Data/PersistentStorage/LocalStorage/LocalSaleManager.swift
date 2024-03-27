@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol SaleManager {
-    func registerSale (cart: Car?, customer: Customer?) -> Bool
+    func registerSale (cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
     func getListSales () -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
@@ -227,7 +227,7 @@ class LocalSaleManager: SaleManager {
         subTotalDescription.expression = subTotalExpression
         subTotalDescription.expressionResultType = .doubleAttributeType
         
-        fetchRequest.propertiesToFetch = ["productName", quantityExpressionDescription, subTotalDescription]
+        fetchRequest.propertiesToFetch = ["productName", "toSale.paymentType", "toSale.saleDate", quantityExpressionDescription, subTotalDescription]
         fetchRequest.resultType = .dictionaryResultType
         
         let sortDescriptor = getOrder(order: order)
@@ -241,7 +241,11 @@ class LocalSaleManager: SaleManager {
                       let totalByProduct = result["totalByProduct"] as? Double else {
                     return nil
                 }
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                
+                let paymentType: PaymentType = PaymentType.from(description: result["toSale.paymentType"] as? String ?? "")
+                let saleDate: Date = result["toSale.saleDate"] as? Date ?? Date()
+                
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: paymentType, saleDate: saleDate, subtotal: totalByProduct)
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -286,6 +290,7 @@ class LocalSaleManager: SaleManager {
         }
         return salesDetailList
     }
+    
     func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
@@ -336,13 +341,14 @@ class LocalSaleManager: SaleManager {
                       let totalByProduct = result["totalByProduct"] as? Double else {
                     return nil
                 }
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
             return []
         }
     }
+    
     func completeImageSaleDetail(productName: String) -> ImageUrl? {
         let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
         let filterAtt = NSPredicate(format: "productName == %@", productName)
@@ -361,6 +367,7 @@ class LocalSaleManager: SaleManager {
             return nil
         }
     }
+    
     func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
@@ -406,15 +413,16 @@ class LocalSaleManager: SaleManager {
             return results.compactMap { result in
                 guard let totalQuantity = result["totalQuantity"] as? Int64,
                       let totalByProduct = result["totalByProduct"] as? Double else {
+                    //Si sale error en el return es porque hay error en los return de abajo
                     return nil
                 }
                 guard let customerName = result["toSale.toCustomer.name"] as? String else {
-                    return SaleDetail(id: UUID(), image: ImageUrl.getDummyImage(), productName: "Desconocido", unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                    return SaleDetail(id: UUID(), image: ImageUrl.getDummyImage(), productName: "Desconocido", unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
                 }
                 guard let customerLastName = result ["toSale.toCustomer.lastName"] as? String else {
-                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
                 }
-                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName + " " + customerLastName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName + " " + customerLastName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -457,7 +465,8 @@ class LocalSaleManager: SaleManager {
         }
         return sortDescriptor
     }
-    func registerSale(cart: Car?, customer: Customer?) -> Bool {
+    
+    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
         var saveChanges: Bool = true
         //Verificamos si existe subisidiaria por defecto
         guard let defaultSubsidiaryEntity = self.mainSubsidiaryEntity else {
@@ -493,10 +502,12 @@ class LocalSaleManager: SaleManager {
                     customerEntity.totalDebt = cartEntity.total
                     customerEntity.firstDatePurchaseWithCredit = Date()
                 } else {
-                    customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
+                    if paymentType == .loan {
+                        customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
+                    }
                 }
             }
-            newSaleEntity.paymentType = "Efectivo"
+            newSaleEntity.paymentType = paymentType.description
             newSaleEntity.saleDate = Date()
             newSaleEntity.total = cartEntity.total
             //Agregamos detalles a la venta
@@ -533,6 +544,7 @@ class LocalSaleManager: SaleManager {
         }
         return saveChanges
     }
+    
     private func reduceStock(cartDetailEntity: Tb_CartDetail) -> Bool {
         guard let productEntity = cartDetailEntity.toProduct else {
             print("Detalle no contiene producto")

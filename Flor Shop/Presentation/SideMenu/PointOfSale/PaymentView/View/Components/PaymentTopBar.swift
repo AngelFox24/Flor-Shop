@@ -26,7 +26,7 @@ struct PaymentTopBar: View {
                 })
                 Spacer()
                 Button(action: {
-                    if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar) {
+                    if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar, paymentType: carritoCoreDataViewModel.paymentType) {
                         carritoCoreDataViewModel.fetchCart()
                         productsCoreDataViewModel.fetchProducts()
                         playSound(named: "Success1")

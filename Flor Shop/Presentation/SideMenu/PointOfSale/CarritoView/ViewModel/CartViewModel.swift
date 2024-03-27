@@ -11,7 +11,7 @@ class CartViewModel: ObservableObject {
     @Published var cartCoreData: Car?
     @Published var cartDetailCoreData: [CartDetail] = []
     @Published var customerInCar: Customer?
-    @Published var paymentType: PaymentEnums = .cash
+    @Published var paymentType: PaymentType = .cash
     private let getProductsInCartUseCase: GetProductsInCartUseCase
     private let getCartUseCase: GetCartUseCase
     private let deleteCartDetailUseCase: DeleteCartDetailUseCase

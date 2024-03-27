@@ -14,6 +14,8 @@ struct SaleDetail: Identifiable {
     var unitCost: Double
     var unitPrice: Double
     var quantitySold: Int
+    var paymentType: PaymentType
+    var saleDate: Date
     var subtotal: Double
     
     static func == (lhs: SaleDetail, rhs: SaleDetail) -> Bool {
