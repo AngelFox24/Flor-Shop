@@ -72,25 +72,9 @@ class AddCustomerViewModel: ObservableObject {
         }
         return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), active: true, creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
     }
-    /*
-    private func calcDateLimit() -> Date {
-        guard let creditDaysInt = Int(fieldsAddCustomer.creditDays) else {
-            return Date()
-        }
-        guard let totalDebtDouble = Double(fieldsAddCustomer.totalDebt) else {
-            return Date()
-        }
-        let calendar = Calendar.current
-        if let futureDate = calendar.date(byAdding: .day, value: creditDaysInt, to: Date()) {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd/MM/yyyy"
-            let formattedDate = dateFormatter.string(from: futureDate)
-            return formattedDate
-        } else {
-            return ""
-        }
+    func releaseResources() {
+        self.fieldsAddCustomer = FieldsAddCustomer()
     }
-     */
 }
 
 class FieldsAddCustomer {

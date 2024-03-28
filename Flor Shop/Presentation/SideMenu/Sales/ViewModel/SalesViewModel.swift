@@ -88,6 +88,19 @@ class SalesViewModel: ObservableObject {
         costAmount = self.getSalesUseCase.getCostAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
         revenueAmount = salesAmount - costAmount
     }
+    func releaseResources() {
+        self.salesDetailsList = []
+        
+        self.order = .dateAsc
+        self.grouper = .byProduct
+        
+        self.salesCurrentDateFilter = Date.now
+        self.salesDateInterval = .diary
+        
+        self.salesAmount = 0.0
+        self.costAmount = 0.0
+        self.revenueAmount = 0.0
+    }
     func lazyFetchList() {
         if salesDetailsList.isEmpty {
             fetchSalesDetailsList()

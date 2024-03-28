@@ -102,7 +102,15 @@ class ProductViewModel: ObservableObject {
             }
         }
     }
-    
+    func releaseResources() {
+        self.productsCoreData = []
+        //self.searchText = ""
+        //self.primaryOrder = .nameAsc
+        //self.filterAttribute: ProductsFilterAttributes = .allProducts
+        self.deleteCount = 0
+        self.currentPagesInScreen = []
+        self.lastCarge = 0
+    }
     func lazyFetchProducts() {
         if productsCoreData.isEmpty {
             fetchProducts()

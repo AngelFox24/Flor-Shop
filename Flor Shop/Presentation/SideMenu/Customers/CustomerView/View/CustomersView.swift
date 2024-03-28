@@ -15,11 +15,12 @@ struct CustomersView: View {
         VStack(spacing: 0) {
             CustomerTopBar(showMenu: $showMenu, backButton: backButton)
             CustomerListController(forSelectCustomer: backButton)
-            //Color("color_accent")
         }
-        //.ignoresSafeArea(.all, edges: .bottom)
         .onAppear {
             customerViewModel.lazyFetchList()
+        }
+        .onDisappear {
+            customerViewModel.releaseResources()
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)

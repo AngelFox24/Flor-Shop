@@ -15,11 +15,9 @@ struct CustomerHistoryView: View {
             CustomerHistoryTopBar()
             CustomerHistoryViewListController()
         }
-        /*
-        .onAppear {
-            salesViewModel.lazyFetchList()
+        .onDisappear {
+            salesViewModel.releaseResources()
         }
-         */
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }

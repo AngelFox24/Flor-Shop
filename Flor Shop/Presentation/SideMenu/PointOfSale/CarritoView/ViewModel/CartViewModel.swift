@@ -62,6 +62,12 @@ class CartViewModel: ObservableObject {
         self.decreaceProductInCartUseCase.execute(cartDetail: cartDetail)
         fetchCart()
     }
+    func releaseResources() {
+        self.cartCoreData = nil
+        self.cartDetailCoreData = []
+        self.customerInCar = nil
+        self.paymentType = .cash
+    }
     func lazyFetchCart() {
         if cartDetailCoreData.isEmpty {
             fetchCart()

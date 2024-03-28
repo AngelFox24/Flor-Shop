@@ -58,6 +58,11 @@ class CustomerViewModel: ObservableObject {
     func setFilter(filter: CustomerFilterAttributes) {
         self.filter = filter
     }
+    func releaseResources() {
+        self.customerList = []
+        self.currentPage = 1
+        self.lastCarge = 0
+    }
     func lazyFetchList() {
         if customerList.isEmpty {
             fetchListCustomer()

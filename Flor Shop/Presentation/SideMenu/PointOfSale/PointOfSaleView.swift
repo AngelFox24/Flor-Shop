@@ -32,6 +32,10 @@ struct PointOfSaleView: View {
             productsCoreDataViewModel.lazyFetchProducts()
             carritoCoreDataViewModel.lazyFetchCart()
         }
+        .onDisappear{
+            productsCoreDataViewModel.releaseResources()
+            carritoCoreDataViewModel.releaseResources()
+        }
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {

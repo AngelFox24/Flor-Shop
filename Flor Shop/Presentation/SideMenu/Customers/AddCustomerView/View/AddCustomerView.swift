@@ -89,5 +89,8 @@ struct AddCustomerFields : View {
         })
         .padding(.horizontal, 10)
         .scrollDismissesKeyboard(.immediately)
+        .onDisappear {
+            addCustomerViewModel.releaseResources()
+        }
     }
 }
