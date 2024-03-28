@@ -24,9 +24,14 @@ struct CustomerHistoryTopBar: View {
                 })
                 Spacer()
                 Button(action: {
-                    customerHistoryViewModel.payTotalAmount()
                     print("Se presiono cobrar")
-                    playSound(named: "Success1")
+                    if customerHistoryViewModel.payTotalAmount() {
+                        customerHistoryViewModel.updateData()
+                        playSound(named: "Success1")
+                    } else {
+                        customerHistoryViewModel.updateData()
+                        playSound(named: "Fail1")
+                    }
                 }, label: {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))

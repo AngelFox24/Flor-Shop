@@ -79,6 +79,7 @@
 		279C64A42A8D977C003B29BC /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279C64A32A8D977C003B29BC /* Employee.swift */; };
 		279C64A62A8D97E1003B29BC /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279C64A52A8D97E1003B29BC /* Customer.swift */; };
 		279C64A82A8D9823003B29BC /* SaleDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279C64A72A8D9823003B29BC /* SaleDetail.swift */; };
+		279D1FB32BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */; };
 		279EF9D52A9124C500F97CB1 /* AgregarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279EF9D42A9124C500F97CB1 /* AgregarView.swift */; };
 		279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */; };
 		27A6EF202ACC84C100F4D178 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A6EF1F2ACC84C100F4D178 /* Extensions.swift */; };
@@ -220,6 +221,7 @@
 		279C64A32A8D977C003B29BC /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
 		279C64A52A8D97E1003B29BC /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		279C64A72A8D9823003B29BC /* SaleDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleDetail.swift; sourceTree = "<group>"; };
+		279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayClientDebtUseCase.swift; sourceTree = "<group>"; };
 		279EF9D42A9124C500F97CB1 /* AgregarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarView.swift; sourceTree = "<group>"; };
 		279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuncOpenGoogle.swift; sourceTree = "<group>"; };
 		27A6EF1F2ACC84C100F4D178 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -390,6 +392,7 @@
 			children = (
 				273576862B1F71F800E9CF12 /* RegisterSaleUseCase.swift */,
 				273576882B1F72CE00E9CF12 /* GetSalesUseCase.swift */,
+				279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */,
 			);
 			path = Sale;
 			sourceTree = "<group>";
@@ -1393,6 +1396,7 @@
 				27CC2DFF2A881BA1000EDB64 /* LogInView.swift in Sources */,
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
 				273576892B1F72CE00E9CF12 /* GetSalesUseCase.swift in Sources */,
+				279D1FB32BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift in Sources */,
 				274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */,
 				68D990C52A1AE98A00A3A393 /* ModelMapper.swift in Sources */,
 				27F2F4902B1E0E82003E4197 /* CreateEmployeeUseCase.swift in Sources */,

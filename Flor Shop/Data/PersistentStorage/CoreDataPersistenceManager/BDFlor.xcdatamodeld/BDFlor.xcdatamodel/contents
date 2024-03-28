@@ -79,7 +79,6 @@
     </entity>
     <entity name="Tb_Sale" representedClassName=".Tb_Sale" syncable="YES" codeGenerationType="class">
         <attribute name="idSale" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="paid" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="paymentType" attributeType="String"/>
         <attribute name="saleDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="total" attributeType="Double" usesScalarValueType="YES"/>

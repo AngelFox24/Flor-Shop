@@ -15,9 +15,13 @@ class CustomerHistoryViewModel: ObservableObject {
     private var lastCarge: Int = 0
     
     private let getCustomerSalesUseCase: GetCustomerSalesUseCase
+    private let getCustomersUseCase: GetCustomersUseCase
+    private let payClientDebtUseCase: PayClientDebtUseCase
     
-    init(getCustomerSalesUseCase: GetCustomerSalesUseCase) {
+    init(getCustomerSalesUseCase: GetCustomerSalesUseCase, getCustomersUseCase: GetCustomersUseCase, payClientDebtUseCase: PayClientDebtUseCase) {
         self.getCustomerSalesUseCase = getCustomerSalesUseCase
+        self.getCustomersUseCase = getCustomersUseCase
+        self.payClientDebtUseCase = payClientDebtUseCase
     }
     // MARK: CRUD Core Data
     func fetchCustomerSalesDetail(page: Int = 1) {
@@ -35,8 +39,11 @@ class CustomerHistoryViewModel: ObservableObject {
             }
         }
     }
-    func payTotalAmount() {
-        
+    func payTotalAmount() -> Bool{
+        guard let customerNN = customer else {
+            return false
+        }
+        return self.payClientDebtUseCase.total(customer: customerNN)
     }
     func setCustomerInContext(customer: Customer) {
         self.customer = customer
@@ -54,26 +61,18 @@ class CustomerHistoryViewModel: ObservableObject {
             return salesDetail == last
         }
     }
-    /*
-    func emptyCart () {
-        self.emptyCartUseCase.execute()
-        fetchCart()
+    func releaseResources() {
+        self.customer = nil
+        self.salesDetail = []
     }
-    /*
-    func updateCartTotal() {
-        self.cartRepository.updateCartTotal()
-        fetchCart()
+    func updateData() {
+        guard let customerNN = customer else {
+            return
+        }
+        self.customer = self.getCustomersUseCase.getCustomer(customer: customerNN)
+        self.salesDetail = []
+        lazyFetch()
     }
-     */
-    func increaceProductAmount(cartDetail: CartDetail) {
-        self.increaceProductInCartUseCase.execute(cartDetail: cartDetail)
-        fetchCart()
-    }
-    func decreceProductAmount(cartDetail: CartDetail) {
-        self.decreaceProductInCartUseCase.execute(cartDetail: cartDetail)
-        fetchCart()
-    }
-     */
     func lazyFetch() {
         if salesDetail.isEmpty {
             fetchCustomerSalesDetail()

@@ -19,6 +19,7 @@ protocol CustomerRepository {
     func setFilter(filter: CustomerFilterAttributes)
     func setDefaultCompany(company: Company)
     func getDefaultCompany() -> Company?
+    func getCustomer(customer: Customer) -> Customer?
 }
 
 class CustomerRepositoryImpl: CustomerRepository {
@@ -37,6 +38,9 @@ class CustomerRepositoryImpl: CustomerRepository {
     }
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail] {
         return self.manager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
+    }
+    func getCustomer(customer: Customer) -> Customer? {
+        return self.manager.getCustomer(customer: customer)
     }
     //U - Update
     func updateCustomer(customer: Customer) {

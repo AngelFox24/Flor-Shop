@@ -10,6 +10,7 @@ import CoreData
 
 protocol SaleManager {
     func registerSale (cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
+    func payClientTotalDebt(customer: Customer) -> Bool
     func getListSales () -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
@@ -66,6 +67,78 @@ class LocalSaleManager: SaleManager {
                 print("Error fetching. \(error)")
             }
         return cart
+    }
+    func payClientTotalDebt(customer: Customer) -> Bool {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return false
+        }
+        let totalDebtDB: Double = getTotalDebtByCustomer(customer: customer)
+        if totalDebtDB == customer.totalDebt && totalDebtDB != 0 {
+            guard let customerEntity = customer.toCustomerEntity(context: self.mainContext) else {
+                print("No se encontró sucursal")
+                return false
+            }
+            let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
+            let predicate = NSPredicate(format: "paymentType == %@ AND toSubsidiary == %@ AND toCustomer == %@", PaymentType.loan.description, subsidiaryEntity, customerEntity)
+            request.predicate = predicate
+            do {
+                let salesDetailList = try self.mainContext.fetch(request)
+                for saleDetail in salesDetailList {
+                    saleDetail.paymentType = PaymentType.cash.description
+                }
+                customerEntity.totalDebt = 0
+                saveData()
+                return true
+            } catch let error {
+                print("Error fetching. \(error)")
+                rollback()
+                return false
+            }
+        } else {
+            print("El monto de deuda en la vista: \(customer.totalDebt) no coincide con la BD: \(totalDebtDB)")
+            return false
+        }
+    }
+    func getTotalDebtByCustomer(customer: Customer) -> Double {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return 0
+        }
+        guard let customerEntity = customer.toCustomerEntity(context: self.mainContext) else {
+            print("No se encontró sucursal")
+            return 0
+        }
+        let request = NSFetchRequest<NSDictionary>(entityName: "Tb_Sale")
+        let predicate = NSPredicate(format: "paymentType == %@ AND toSubsidiary == %@ AND toCustomer == %@", PaymentType.loan.description, subsidiaryEntity, customerEntity)
+        request.predicate = predicate
+        
+        let keyPathExpression = NSExpression(forKeyPath: "total")
+        let sumExpression = NSExpression(forFunction: "sum:", arguments: [keyPathExpression])
+        
+        let sumDescription = NSExpressionDescription()
+        sumDescription.name = "TotalDebt"
+        sumDescription.expression = sumExpression
+        sumDescription.expressionResultType = .doubleAttributeType
+        
+        request.resultType = .dictionaryResultType
+        request.propertiesToFetch = [sumDescription]
+        
+        do {
+            let result = try self.mainContext.fetch(request)
+            
+            // Obtiene la suma de valorVenta
+            if let firstResult = result.first,
+               let totalDebt = firstResult["TotalDebt"] as? Double {
+                return totalDebt
+            } else {
+                print("No se encontraron registros de este cliente")
+                return 0
+            }
+        } catch {
+            print("Error al obtener registros del Cliente: \(error)")
+            return 0
+        }
     }
     private func getStartDate(date: Date, interval: SalesDateInterval) -> Date {
         var calendar = Calendar.current
@@ -192,10 +265,9 @@ class LocalSaleManager: SaleManager {
         return 0
     }
     func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        var salesDetailList: [SaleDetail] = []
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
-            return salesDetailList
+            return []
         }
         
         let startDate = getStartDate(date: date, interval: interval)
@@ -290,7 +362,6 @@ class LocalSaleManager: SaleManager {
         }
         return salesDetailList
     }
-    
     func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
@@ -348,7 +419,6 @@ class LocalSaleManager: SaleManager {
             return []
         }
     }
-    
     func completeImageSaleDetail(productName: String) -> ImageUrl? {
         let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
         let filterAtt = NSPredicate(format: "productName == %@", productName)
@@ -367,7 +437,6 @@ class LocalSaleManager: SaleManager {
             return nil
         }
     }
-    
     func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
@@ -429,7 +498,6 @@ class LocalSaleManager: SaleManager {
             return []
         }
     }
-    
     func completeImageCustomer(customerName: String) -> ImageUrl? {
         let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
         let filterAtt = NSPredicate(format: "name == %@", customerName)
@@ -446,7 +514,6 @@ class LocalSaleManager: SaleManager {
             return nil
         }
     }
-     
     func getOrder(order: SalesOrder) -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
         switch order {
@@ -465,7 +532,6 @@ class LocalSaleManager: SaleManager {
         }
         return sortDescriptor
     }
-    
     func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
         var saveChanges: Bool = true
         //Verificamos si existe subisidiaria por defecto
@@ -544,7 +610,6 @@ class LocalSaleManager: SaleManager {
         }
         return saveChanges
     }
-    
     private func reduceStock(cartDetailEntity: Tb_CartDetail) -> Bool {
         guard let productEntity = cartDetailEntity.toProduct else {
             print("Detalle no contiene producto")

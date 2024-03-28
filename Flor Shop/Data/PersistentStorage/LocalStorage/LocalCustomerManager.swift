@@ -19,6 +19,7 @@ protocol CustomerManager {
     func setFilter(filter: CustomerFilterAttributes)
     func setDefaultCompany(company: Company)
     func getDefaultCompany() -> Company?
+    func getCustomer(customer: Customer) -> Customer?
 }
 
 class LocalCustomerManager: CustomerManager {
@@ -115,6 +116,13 @@ class LocalCustomerManager: CustomerManager {
             print("Error fetching. \(error)")
         }
         return customerEntityList.map { $0.toCustomer() }
+    }
+    func getCustomer(customer: Customer) -> Customer? {
+        if let customerNN = customer.toCustomerEntity(context: self.mainContext) {
+            return customerNN.toCustomer()
+        } else {
+            return nil
+        }
     }
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
         var cutomerList: [Customer] = []
