@@ -12,6 +12,16 @@ class CartViewModel: ObservableObject {
     @Published var cartDetailCoreData: [CartDetail] = []
     @Published var customerInCar: Customer?
     @Published var paymentType: PaymentType = .cash
+    var paymentTypes: [PaymentType] {
+        guard let customer = customerInCar else {
+            return [.cash]
+        }
+        if customer.isCreditLimitActive || customer.isDateLimitActive {
+            return PaymentType.allValues
+        } else {
+            return [.cash]
+        }
+    }
     private let getProductsInCartUseCase: GetProductsInCartUseCase
     private let getCartUseCase: GetCartUseCase
     private let deleteCartDetailUseCase: DeleteCartDetailUseCase

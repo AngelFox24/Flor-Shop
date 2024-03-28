@@ -28,14 +28,6 @@ struct PointOfSaleView: View {
                 CustomTabBar(selectedTab: $tabSelected)
             }
         }
-        .onAppear {
-            productsCoreDataViewModel.lazyFetchProducts()
-            carritoCoreDataViewModel.lazyFetchCart()
-        }
-        .onDisappear{
-            productsCoreDataViewModel.releaseResources()
-            carritoCoreDataViewModel.releaseResources()
-        }
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {

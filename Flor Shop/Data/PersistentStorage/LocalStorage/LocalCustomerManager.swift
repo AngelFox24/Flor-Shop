@@ -33,7 +33,7 @@ class LocalCustomerManager: CustomerManager {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
+            print("Error al guardar en LocalCustomerManager: \(error)")
         }
     }
     func rollback() {
@@ -48,7 +48,7 @@ class LocalCustomerManager: CustomerManager {
             customerEntity.name = customer.name
             customerEntity.lastName = customer.lastName
             customerEntity.creditDays = Int64(customer.creditDays)
-            customerEntity.active = customer.active
+            //customerEntity.creditActive = customer.creditActive
             customerEntity.creditLimit = customer.creditLimit
             //print("BD isCreditLimitActive Before: \(customerEntity.isCreditLimitActive)")
             customerEntity.isCreditLimitActive = customer.isCreditLimitActive
@@ -92,7 +92,7 @@ class LocalCustomerManager: CustomerManager {
                 newImage.imageUrl = customer.image.imageUrl
                 newCustomerEntity.toImageUrl = newImage
             }
-            newCustomerEntity.active = customer.active
+            //newCustomerEntity.creditActive = customer.creditActive
             newCustomerEntity.creditLimit = customer.creditLimit
             newCustomerEntity.creditScore = 50
             newCustomerEntity.dateLimit = Date()
@@ -169,10 +169,10 @@ class LocalCustomerManager: CustomerManager {
         return salesCutomerList
     }
     func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
-        var filterAtt = NSPredicate(format: "active == true")
+        var filterAtt = NSPredicate(format: "name != ''")
         switch filter {
         case .allCustomers:
-            filterAtt = NSPredicate(format: "active == true")
+            filterAtt = NSPredicate(format: "name != ''")
         case .onTime:
             let today = Date()
             var calendar = Calendar.current

@@ -21,7 +21,6 @@
         <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_Customer" representedClassName=".Tb_Customer" syncable="YES" codeGenerationType="class">
-        <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="creditDays" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creditLimit" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creditScore" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>

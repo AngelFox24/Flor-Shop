@@ -11,6 +11,7 @@ import AVFoundation
 struct CustomerHistoryTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
+    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
@@ -40,14 +41,12 @@ struct CustomerHistoryTopBar: View {
                     .cornerRadius(15.0)
                 })
                 if let customer = customerHistoryViewModel.customer {
-                    CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 40)
-                        .contextMenu(menuItems: {
-                            Button(role: .destructive,action: {
-                                customerHistoryViewModel.customer = nil
-                            }, label: {
-                                Text("Desvincular Cliente")
-                            })
-                        })
+                    Button(action: {
+                        addCustomerViewModel.editCustomer(customer: customer)
+                        navManager.goToAddCustomerView()
+                    }, label: {
+                        CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 40)
+                    })
                 } else {
                     CustomButton3(simbol: "person.crop.circle.badge.plus")
                 }

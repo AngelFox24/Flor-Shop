@@ -205,7 +205,6 @@ extension Tb_Customer {
                         name: name ?? "",
                         lastName: lastName ?? "",
                         image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
-                        active: active,
                         creditLimit: creditLimit,
                         isCreditLimit: isCreditLimit,
                         creditDays: Int(creditDays),

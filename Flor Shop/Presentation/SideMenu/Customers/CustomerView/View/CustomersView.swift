@@ -99,17 +99,11 @@ struct CustomerListController: View {
                 HStack(content: {
                     Spacer()
                     Button(action: {
+                        addCustomerViewModel.releaseResources()
                         navManager.goToAddCustomerView()
                     }, label: {
                         CustomButton4(simbol: "plus")
                     })
-                    /*
-                    .navigationDestination(for: NavPathsEnum.self, destination: { view in
-                        if view == .addCustomerView {
-                            AddCustomerView()
-                        }
-                    })
-                     */
                 })
                 .padding(.trailing, 15)
                 .padding(.bottom, 15)

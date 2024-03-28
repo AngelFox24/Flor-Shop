@@ -9,12 +9,16 @@ import SwiftUI
 import CoreData
 
 struct CartView: View {
+    @EnvironmentObject var cartViewModel: CartViewModel
     @Binding var selectedTab: Tab
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 CartTopBar()
                 ListCartController(selectedTab: $selectedTab)
+            }
+            .onAppear {
+                cartViewModel.lazyFetchCart()
             }
         }
     }

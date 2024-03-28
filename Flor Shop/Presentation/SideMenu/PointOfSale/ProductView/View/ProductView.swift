@@ -10,6 +10,7 @@ import CoreData
 import AVFoundation
 
 struct ProductView: View {
+    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
@@ -17,6 +18,12 @@ struct ProductView: View {
             VStack(spacing: 0) {
                 ProductSearchTopBar(showMenu: $showMenu)
                 ListaControler(selectedTab: $selectedTab)
+            }
+            .onAppear {
+                productsCoreDataViewModel.lazyFetchProducts()
+            }
+            .onDisappear {
+                productsCoreDataViewModel.releaseResources()
             }
         }
     }

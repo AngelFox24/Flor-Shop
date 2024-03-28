@@ -77,7 +77,7 @@ struct PaymentsFields: View {
                 }
                 HStack(content: {
                     Spacer()
-                    ForEach(PaymentType.allValues, id: \.self, content: { paymentType in
+                    ForEach(cartViewModel.paymentTypes, id: \.self, content: { paymentType in
                         CardViewTipe4(icon: paymentType.icon, text: paymentType.description, enable: cartViewModel.paymentType == paymentType)
                             .onTapGesture {
                                 cartViewModel.paymentType = paymentType

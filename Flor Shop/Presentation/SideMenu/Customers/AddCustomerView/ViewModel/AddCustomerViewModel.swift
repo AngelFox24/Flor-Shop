@@ -35,7 +35,6 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
         fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
         fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
-        print("creditLimitFlag: \(customer.isCreditLimitActive)")
         fieldsAddCustomer.creditDays = String(customer.creditDays)
         fieldsAddCustomer.creditScore = customer.creditScore
         fieldsAddCustomer.creditLimit = String(customer.creditLimit)
@@ -70,7 +69,7 @@ class AddCustomerViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), active: true, creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
     }
     func releaseResources() {
         self.fieldsAddCustomer = FieldsAddCustomer()
