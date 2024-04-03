@@ -17,7 +17,7 @@ struct MainView: View {
     @AppStorage("userOrEmail") var userOrEmail: String?
     @AppStorage("password") var password: String?
     var body: some View {
-            ZStack {
+        VStack(spacing: 0, content: {
                 VStack(spacing: 0) {
                     if !hasShownOnboarding {
                         OnboardingView(onAction: {
@@ -91,7 +91,7 @@ struct MainView: View {
                     CustomHideKeyboard()
                     //.padding(.bottom, 12)
                 }
-            }
+            })
         //}
     }
 }

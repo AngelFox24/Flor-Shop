@@ -11,7 +11,7 @@ struct CustomHideKeyboard: View {
     var body: some View {
         ZStack {
             VStack {
-                Spacer()
+                //Spacer()
                 HStack {
                     Spacer()
                     Button(action: {
