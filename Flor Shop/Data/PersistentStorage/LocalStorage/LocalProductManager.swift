@@ -15,6 +15,7 @@ protocol ProductManager {
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
     func getLastUpdated() -> Date?
+    func releaseResourses()
 }
 
 class LocalProductManager: ProductManager {
@@ -32,6 +33,9 @@ class LocalProductManager: ProductManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func releaseResourses() {
+        self.mainSubsidiaryEntity = nil
     }
     func getLastUpdated() -> Date? {
         let calendar = Calendar(identifier: .gregorian)
@@ -93,6 +97,7 @@ class LocalProductManager: ProductManager {
         if let productInContext = product.toProductEntity(context: mainContext) { //Existe este producto, vamos a actualizarlo
             print("Se encontro producto, lo vamos a actualizar")
             productInContext.productName = product.name
+            productInContext.active = product.active
             productInContext.quantityStock = Int64(product.qty)
             productInContext.unitCost = product.unitCost
             productInContext.expirationDate = product.expirationDate
@@ -108,6 +113,7 @@ class LocalProductManager: ProductManager {
                 let newProduct = Tb_Product(context: mainContext)
                 newProduct.idProduct = product.id
                 newProduct.productName = product.name
+                newProduct.active = product.active
                 newProduct.quantityStock = Int64(product.qty)
                 newProduct.unitCost = product.unitCost
                 newProduct.unitPrice = product.unitPrice

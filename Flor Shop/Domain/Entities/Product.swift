@@ -16,6 +16,7 @@ extension Double {
 
 struct Product: Identifiable {
     var id: UUID
+    var active: Bool
     var name: String
     var qty: Int
     var unitCost: Double
@@ -25,8 +26,9 @@ struct Product: Identifiable {
     var profitMargin: Double
     var keyWords: String
     var image: ImageUrl
-    init(id: UUID, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, image: ImageUrl) {
+    init(id: UUID, active: Bool, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, image: ImageUrl) {
         self.id = id
+        self.active = active
         self.name = name
         self.qty = Int(qty)
         self.unitCost = unitCost
@@ -67,7 +69,7 @@ struct Product: Identifiable {
         return true
     }
     static func getDummyProduct() -> Product {
-        return Product(id: UUID(), name: "No existe", qty: 0, unitCost: 0, unitPrice: 0, expirationDate: nil, image: ImageUrl.getDummyImage())
+        return Product(id: UUID(), active: true, name: "No existe", qty: 0, unitCost: 0, unitPrice: 0, expirationDate: nil, image: ImageUrl.getDummyImage())
     }
     static func == (lhs: Product, rhs: Product) -> Bool {
         return lhs.id == rhs.id

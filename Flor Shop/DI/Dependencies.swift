@@ -55,6 +55,7 @@ struct Dependencies {
     
     private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
+    private let logOutUseCase: LogOutUseCase
     //ViewModels
     let logInViewModel: LogInViewModel
     let registrationViewModel: RegistrationViewModel
@@ -117,8 +118,9 @@ struct Dependencies {
         
         self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
         self.logInUseCase = LogInInteractor(employeeRepository: employeeRepository, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, getCompanyUseCase: getCompanyUseCase, getSubsidiaryUseCase: getSubsidiaryUseCase)
+        self.logOutUseCase = LogOutInteractor(setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase)
         //MARK: ViewModels
-        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase)
+        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
         self.registrationViewModel = RegistrationViewModel(registerUserUseCase: registerUserUseCase)
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)

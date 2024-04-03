@@ -14,9 +14,7 @@ struct AgregarViewPopoverHelp: View {
             Button(action: {
                 isPopoverPresented.toggle()
             }, label: {
-                Image(systemName: "questionmark.circle")
-                    .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 35))
+                CustomButton3(simbol: "questionmark")
             })
             .sheet(isPresented: $isPopoverPresented) {
                 VStack(spacing: 0) {

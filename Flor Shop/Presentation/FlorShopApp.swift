@@ -31,6 +31,18 @@ struct FlorShopApp: App {
                 .environmentObject(dependencies.addCustomerViewModel)
                 .environmentObject(dependencies.navManager)
                 .environmentObject(dependencies.customerHistoryViewModel)
+            /*
+                .onAppear {
+                    Task {
+                        do {
+                            print("Se optimizara las imagenes")
+                            try await resizeImagesInDefaultDirectory(maxWidth: 200, maxHeight: 200)
+                        } catch {
+                            print("Error al redimensionar las imágenes: \(error)")
+                        }
+                    }
+                }
+            */
         }
     }
 }

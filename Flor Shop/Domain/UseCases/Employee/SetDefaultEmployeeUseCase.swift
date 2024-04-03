@@ -9,6 +9,7 @@ import Foundation
 
 protocol SetDefaultEmployeeUseCase {
     func execute(employee: Employee)
+    func releaseResourses()
 }
 
 final class SetDefaultEmployeeInteractor: SetDefaultEmployeeUseCase {
@@ -23,5 +24,9 @@ final class SetDefaultEmployeeInteractor: SetDefaultEmployeeUseCase {
         self.cartRepository.setDefaultEmployee(employee: employee)
         // Creamos un carrito si no existe
         self.cartRepository.createCart()
+    }
+    
+    func releaseResourses() {
+        self.cartRepository.releaseResourses()
     }
 }

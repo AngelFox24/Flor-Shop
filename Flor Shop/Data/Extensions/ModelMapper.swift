@@ -175,6 +175,7 @@ extension Tb_ImageUrl {
 extension Tb_Product {
     func toProduct() -> Product {
         return Product(id: idProduct ?? UUID(),
+                       active: active,
                        name: productName ?? "",
                        qty: Int(quantityStock),
                        unitCost: unitCost,

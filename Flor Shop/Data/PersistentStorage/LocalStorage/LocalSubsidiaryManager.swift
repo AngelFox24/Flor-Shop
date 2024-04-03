@@ -17,6 +17,7 @@ protocol SubsidiaryManager {
     func setDefaultSubsidiaryCompany(employee: Employee)
     func getCompany(subsidiary: Subsidiary) -> Company?
     func getDefaultCompany() -> Company?
+    func releaseResourses()
 }
 
 class LocalSubsidiaryManager: SubsidiaryManager {
@@ -55,6 +56,9 @@ class LocalSubsidiaryManager: SubsidiaryManager {
             saveData()
             return true
         }
+    }
+    func releaseResourses() {
+        self.mainCompanyEntity = nil
     }
     //R - Read
     func getSubsidiaries() -> [Subsidiary] {

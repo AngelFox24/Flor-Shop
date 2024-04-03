@@ -20,6 +20,7 @@ protocol CarRepository {
     func createCart()
     func setDefaultEmployee(employee: Employee)
     func getDefaultEmployee() -> Employee?
+    func releaseResourses()
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -60,5 +61,8 @@ class CarRepositoryImpl: CarRepository {
     }
     func getDefaultEmployee() -> Employee? {
         return self.manager.getDefaultEmployee()
+    }
+    func releaseResourses() {
+        self.manager.releaseResourses()
     }
 }

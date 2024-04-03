@@ -16,6 +16,7 @@ protocol ProductRepository {
     //func setFilter(filter: ProductsFilterAttributes)
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
+    func releaseResourses()
 }
 
 public class ProductRepositoryImpl: ProductRepository {
@@ -55,5 +56,8 @@ public class ProductRepositoryImpl: ProductRepository {
     }
     func getDefaultSubsidiary() -> Subsidiary? {
         return self.localManager.getDefaultSubsidiary()
+    }
+    func releaseResourses() {
+        self.localManager.releaseResourses()
     }
 }

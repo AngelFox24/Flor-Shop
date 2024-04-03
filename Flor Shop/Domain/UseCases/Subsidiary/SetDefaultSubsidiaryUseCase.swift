@@ -9,6 +9,7 @@ import Foundation
 
 protocol SetDefaultSubsidiaryUseCase {
     func execute(subsidiary: Subsidiary)
+    func releaseResources()
 }
 
 final class SetDefaultSubsidiaryInteractor: SetDefaultSubsidiaryUseCase {
@@ -27,5 +28,11 @@ final class SetDefaultSubsidiaryInteractor: SetDefaultSubsidiaryUseCase {
         self.productReporsitory.setDefaultSubsidiary(subsidiary: subsidiary)
         self.employeeRepository.setDefaultSubsidiary(subsidiary: subsidiary)
         self.saleRepository.setDefaultSubsidiary(subsidiary: subsidiary)
+    }
+    
+    func releaseResources() {
+        self.productReporsitory.releaseResourses()
+        self.employeeRepository.releaseResourses()
+        self.saleRepository.releaseResourses()
     }
 }

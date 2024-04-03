@@ -15,6 +15,7 @@ protocol CompanyManager {
     func deleteCompany(company: Company)
     func setDefaultCompany(company: Company)
     func setDefaultCompany(employee: Employee)
+    func releaseResourses()
 }
 
 class LocalCompanyManager: CompanyManager {
@@ -32,6 +33,9 @@ class LocalCompanyManager: CompanyManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func releaseResourses() {
+        self.mainCompanyEntity = nil
     }
     func setDefaultCompany(company: Company) {
         guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {

@@ -35,7 +35,7 @@ struct CustomTabBar: View {
     var body: some View {
         ZStack {
             VStack {
-                Spacer()
+                //Spacer()
                 HStack {
                     ForEach(Tab.allCases, id: \.rawValue) { tab in
                         VStack {

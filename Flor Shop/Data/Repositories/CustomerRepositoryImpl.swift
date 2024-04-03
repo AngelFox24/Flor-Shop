@@ -20,6 +20,7 @@ protocol CustomerRepository {
     func setDefaultCompany(company: Company)
     func getDefaultCompany() -> Company?
     func getCustomer(customer: Customer) -> Customer?
+    func releaseResourses()
 }
 
 class CustomerRepositoryImpl: CustomerRepository {
@@ -64,5 +65,8 @@ class CustomerRepositoryImpl: CustomerRepository {
     }
     func getDefaultCompany() -> Company? {
         return self.manager.getDefaultCompany()
+    }
+    func releaseResourses() {
+        self.manager.releaseResourses()
     }
 }

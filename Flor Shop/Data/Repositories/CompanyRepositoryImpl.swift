@@ -15,6 +15,7 @@ protocol CompanyRepository {
     func deleteCompany(company: Company)
     func setDefaultCompany(employee: Employee)
     func setDefaultCompany(company: Company)
+    func releaseResourses()
 }
 
 class CompanyRepositoryImpl: CompanyRepository {
@@ -44,5 +45,8 @@ class CompanyRepositoryImpl: CompanyRepository {
     }
     func setDefaultCompany(company: Company) {
         self.manager.setDefaultCompany(company: company)
+    }
+    func releaseResourses() {
+        self.manager.releaseResourses()
     }
 }

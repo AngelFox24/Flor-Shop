@@ -16,9 +16,11 @@ class LogInViewModel: ObservableObject {
     @Published var logInStatus: LogInStatus = .fail
     @Published var logInFields: LogInFields = LogInFields()
     private let logInUseCase: LogInUseCase
+    private let logOutUseCase: LogOutUseCase
     
-    init(logInUseCase: LogInUseCase) {
+    init(logInUseCase: LogInUseCase, logOutUseCase: LogOutUseCase) {
         self.logInUseCase = logInUseCase
+        self.logOutUseCase = logOutUseCase
     }
     
     func fieldsTrue() {
@@ -28,6 +30,10 @@ class LogInViewModel: ObservableObject {
     }
     func logIn() {
         self.logInStatus = self.logInUseCase.execute(email: logInFields.userOrEmail, password: logInFields.password)
+    }
+    func logOut() {
+        self.logInStatus = .fail
+        self.logOutUseCase.execute()
     }
     func checkDBIntegrity() {
         /*

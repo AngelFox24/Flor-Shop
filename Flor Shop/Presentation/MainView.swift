@@ -14,6 +14,8 @@ struct MainView: View {
     @State private var isKeyboardVisible: Bool = false
     @State private var showMenu: Bool = false
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
+    @AppStorage("userOrEmail") var userOrEmail: String?
+    @AppStorage("password") var password: String?
     var body: some View {
             ZStack {
                 VStack(spacing: 0) {
@@ -35,6 +37,13 @@ struct MainView: View {
                                         MenuView(showMenu: $showMenu, isKeyboardVisible: $isKeyboardVisible)
                                     } else {
                                         WelcomeView(isKeyboardVisible: $isKeyboardVisible)
+                                            .onAppear(perform: {
+                                                if let user = userOrEmail, let password = password {
+                                                    logInViewModel.logInFields.userOrEmail = user
+                                                    logInViewModel.logInFields.password = password
+                                                    logInViewModel.logIn()
+                                                }
+                                            })
                                     }
                                 })
                                 .navigationDestination(for: NavPathsEnum.self, destination: { viewArc in
@@ -59,6 +68,8 @@ struct MainView: View {
                             .onChange(of: logInViewModel.logInStatus, perform: { status in
                                 if status == .success {
                                     navManager.popToRoot()
+                                    userOrEmail = logInViewModel.logInFields.userOrEmail
+                                    password = logInViewModel.logInFields.password
                                 }
                             })
                         case .unowned:

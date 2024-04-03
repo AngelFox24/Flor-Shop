@@ -20,6 +20,7 @@ protocol SaleManager {
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
+    func releaseResourses()
 }
 
 class LocalSaleManager: SaleManager {
@@ -37,6 +38,9 @@ class LocalSaleManager: SaleManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func releaseResourses() {
+        self.mainSubsidiaryEntity = nil
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {

@@ -17,6 +17,7 @@ protocol SubsidiaryRepository {
     func setDefaultSubsidiaryCompany(employee: Employee)
     func getDefaulCompany() -> Company?
     func getCompany(subsidiary: Subsidiary) -> Company?
+    func releaseResourses()
 }
 
 class SubsidiaryRepositoryImpl: SubsidiaryRepository {
@@ -52,5 +53,8 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository {
     }
     func getDefaulCompany() -> Company? {
         return self.manager.getDefaultCompany()
+    }
+    func releaseResourses() {
+        self.manager.releaseResourses()
     }
 }

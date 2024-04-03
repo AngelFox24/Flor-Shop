@@ -24,8 +24,8 @@ struct AgregarTopBar: View {
                     print("Se agrego un producto exitosamente")
                     //TODO: Cambiar esta funcion al repositorio
                     //carritoCoreDataViewModel.updateCartTotal()
-                    productViewModel.fetchProducts()
                     agregarViewModel.resetValuesFields()
+                    //agregarViewModel.fieldsFalse()
                     playSound(named: "Success1")
                 } else {
                     agregarViewModel.fieldsTrue()
@@ -36,7 +36,7 @@ struct AgregarTopBar: View {
             }, label: {
                 CustomButton1(text: "Guardar")
             })
-            .alert(agregarViewModel.editedFields.errorBD, isPresented: $showingErrorAlert, actions: {})
+            .alert(agregarViewModel.errorBD, isPresented: $showingErrorAlert, actions: {})
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
@@ -61,6 +61,8 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
+        let dependencies = Dependencies()
         AgregarTopBar()
+            .environmentObject(dependencies.agregarViewModel)
     }
 }

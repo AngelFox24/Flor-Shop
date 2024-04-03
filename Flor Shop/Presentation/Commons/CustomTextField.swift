@@ -14,6 +14,7 @@ struct CustomTextField: View {
     @FocusState var isTextFieldFocused
     var disable: Bool = false
     var onSubmit: (() -> Void)?
+    var onUnFocused: (() -> Void)?
     var keyboardType: UIKeyboardType = .default
     var disableAutocorrection: Bool = true
     var body: some View {
@@ -34,8 +35,10 @@ struct CustomTextField: View {
                                 isTextFieldFocused = true
                             }
                             .onChange(of: value, perform: {text in
-                                if text != "" {
-                                    edited = true
+                                if isTextFieldFocused {
+                                    if text != "" {
+                                        edited = true
+                                    }
                                 }
                             })
                             .onSubmit({
@@ -43,11 +46,16 @@ struct CustomTextField: View {
                                     onSubmit?()
                                 }
                             })
+                            .onChange(of: isTextFieldFocused, perform: {focus in
+                                if focus == false {
+                                    print("Se ejecuta UnFocused")
+                                    onUnFocused?()
+                                }
+                            })
                             .disabled(disable)
                         if isTextFieldFocused {
                             Button(action: {
                                 if isTextFieldFocused {
-                                    print("Limpiamos \(title)")
                                     value.removeAll()
                                 } else if !disable {
                                     isTextFieldFocused = true
@@ -83,6 +91,7 @@ struct CustomTextField: View {
         }
     }
 }
+/*
 struct CustomText: View {
     var title: String = "Campo"
     var value: String = "Texto"
@@ -114,14 +123,14 @@ struct CustomText: View {
         }
     }
 }
-
+*/
 struct CustomTextField_Previews: PreviewProvider {
     static var previews: some View {
         @State var dato: String = "Prueba"
         HStack(spacing: 6) {
             //CustomTextField(title: "Nombre del producto",value: $dato ,edited: .constant(false), keyboardType: .numberPad)
             CustomTextField(value: $dato, edited: .constant(false), disable: false, keyboardType: .numberPad)
-            CustomText(title: "Nombre", value: "", disable: true)
+            //CustomText(title: "Nombre", value: "", disable: true)
             //CustomTextField(edited: .constant(false))
         }
         //.frame(maxHeight: .infinity)

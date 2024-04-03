@@ -53,7 +53,7 @@ struct CamposProductoAgregar: View {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()
-                    AsyncImage(url: URL(string: agregarViewModel.editedFields.imageUrl )) { phase in
+                    AsyncImage(url: URL(string: agregarViewModel.imageUrl )) { phase in
                         switch phase {
                         case .empty:
                             CardViewPlaceHolder2(size: sizeCampo)
@@ -73,43 +73,11 @@ struct CamposProductoAgregar: View {
                 }
                 VStack {
                     HStack {
-                        // El texto hace que tenga una separacion mayor del elemento
                         HStack {
-                            CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.editedFields.productName, edited: $agregarViewModel.editedFields.productEdited)
-                        }
-                        Button(action: {
-                            print("Se presiono Buscar Imagen")
-                            if agregarViewModel.editedFields.productName != "" {
-                                openGoogleImageSearch(nombre: agregarViewModel.editedFields.productName)
-                            }
-                        }, label: {
-                            Text("Buscar Imagen")
-                                .foregroundColor(.black)
-                                .font(.custom("Artifika-Regular", size: 16))
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 5)
-                                .background(Color("color_secondary"))
-                                .cornerRadius(10)
-                        })
-                    }
-                    if agregarViewModel.editedFields.productError != "" {
-                        ErrorMessageText(message: agregarViewModel.editedFields.productError)
-                            .padding(.top, 6)
-                    }
-                }
-                .listRowBackground(Color("color_background"))
-                .listRowSeparator(.hidden)
-                VStack {
-                    HStack {
-                        HStack {
-                            HStack {
-                                CustomTextField(title: "URL de la Imagen" ,value: $agregarViewModel.editedFields.imageUrl, edited: $agregarViewModel.editedFields.imageURLEdited)
-                            }
-                            Spacer()
                             Button(action: {
-                                print("Se presiono Pegar Imagen")
-                                if agregarViewModel.editedFields.productName != "" {
-                                    agregarViewModel.editedFields.imageUrl = pasteFromClipboard()
+                                if agregarViewModel.productName != "" {
+                                    agregarViewModel.imageUrl = pasteFromClipboard()
+                                    print("Se pego imagen: \(agregarViewModel.imageUrl.description)")
                                 } else {
                                     agregarViewModel.urlEdited()
                                 }
@@ -124,35 +92,72 @@ struct CamposProductoAgregar: View {
                             })
                         }
                     }
-                    if !agregarViewModel.isURLValid() && agregarViewModel.editedFields.productName != "" && agregarViewModel.editedFields.imageURLEdited {
+                    if !agregarViewModel.isURLValid() && agregarViewModel.productName != "" && agregarViewModel.imageURLEdited {
                         ErrorMessageText(message: "Pega la imagen copiada")
                             .padding(.top, 6)
-                    } else if !agregarViewModel.isURLValid() && agregarViewModel.editedFields.imageURLEdited {
+                    } else if !agregarViewModel.isURLValid() && agregarViewModel.imageURLEdited {
                         ErrorMessageText(message: "Ingresa un nombre de producto")
                             .padding(.top, 6)
                     }
                 }
                 VStack {
                     HStack {
-                        CustomTextField(title: "Cantidad" ,value: $agregarViewModel.editedFields.quantityStock, edited: $agregarViewModel.editedFields.quantityEdited, keyboardType: .numberPad)
-                        CustomTextField(title: "Costo Unitario" ,value: $agregarViewModel.editedFields.unitCost, edited: $agregarViewModel.editedFields.unitCostEdited, keyboardType: .decimalPad)
+                        // El texto hace que tenga una separacion mayor del elemento
+                        HStack {
+                            CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.productName, edited: $agregarViewModel.productEdited)
+                        }
+                        Button(action: {
+                            print("Se presiono Buscar Imagen")
+                            if agregarViewModel.productName != "" {
+                                openGoogleImageSearch(nombre: agregarViewModel.productName)
+                            }
+                        }, label: {
+                            Text("Buscar Imagen")
+                                .foregroundColor(.black)
+                                .font(.custom("Artifika-Regular", size: 16))
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 5)
+                                .background(Color("color_secondary"))
+                                .cornerRadius(10)
+                        })
                     }
-                    if agregarViewModel.editedFields.quantityError != "" {
-                        ErrorMessageText(message: agregarViewModel.editedFields.quantityError)
-                            .padding(.top, 18)
-                    }
-                    if agregarViewModel.editedFields.unitCostError != "" {
-                        ErrorMessageText(message: agregarViewModel.editedFields.unitCostError)
+                    if agregarViewModel.productError != "" {
+                        ErrorMessageText(message: agregarViewModel.productError)
                             .padding(.top, 6)
                     }
                 }
                 VStack {
                     HStack {
-                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.editedFields.profitMargin), edited: .constant(false), disable: true)
-                        CustomTextField(title: "Precio de Venta" ,value: $agregarViewModel.editedFields.unitPrice, edited: $agregarViewModel.editedFields.unitPriceEdited, keyboardType: .decimalPad)
+                        HStack {
+                            CustomTextField(title: "Disponible" ,value: .constant(agregarViewModel.active ? "Activo" : "Inactivo"), edited: .constant(false), disable: true)
+                        }
+                        Toggle("", isOn: $agregarViewModel.active)
+                            .labelsHidden()
+                            .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
+                            .padding(.horizontal, 5)
                     }
-                    if agregarViewModel.editedFields.unitPriceError != "" {
-                        ErrorMessageText(message: agregarViewModel.editedFields.unitPriceError)
+                }
+                VStack {
+                    HStack {
+                        CustomTextField(title: "Cantidad" ,value: $agregarViewModel.quantityStock, edited: $agregarViewModel.quantityEdited, keyboardType: .numberPad)
+                        CustomTextField(title: "Costo Unitario" ,value: $agregarViewModel.unitCost, edited: $agregarViewModel.unitCostEdited, keyboardType: .decimalPad)
+                    }
+                    if agregarViewModel.quantityError != "" {
+                        ErrorMessageText(message: agregarViewModel.quantityError)
+                            .padding(.top, 18)
+                    }
+                    if agregarViewModel.unitCostError != "" {
+                        ErrorMessageText(message: agregarViewModel.unitCostError)
+                            .padding(.top, 6)
+                    }
+                }
+                VStack {
+                    HStack {
+                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.profitMargin), edited: .constant(false), disable: true)
+                        CustomTextField(title: "Precio de Venta" ,value: $agregarViewModel.unitPrice, edited: $agregarViewModel.unitPriceEdited, keyboardType: .decimalPad)
+                    }
+                    if agregarViewModel.unitPriceError != "" {
+                        ErrorMessageText(message: agregarViewModel.unitPriceError)
                             .padding(.top, 6)
                     }
                 }

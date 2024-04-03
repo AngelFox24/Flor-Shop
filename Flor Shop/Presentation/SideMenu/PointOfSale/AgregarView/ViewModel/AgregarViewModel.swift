@@ -10,24 +10,110 @@ import CoreGraphics
 import ImageIO
 
 class AgregarViewModel: ObservableObject {
-    @Published var editedFields: FieldEditTemporal = FieldEditTemporal()
+    @Published var productId: UUID?
+    @Published var active: Bool = true
+    @Published var productName: String = ""
+    @Published var productEdited: Bool = false
+    var productError: String {
+        if productName == "" && productEdited {
+            return "Nombre de producto no válido"
+        } else {
+            return ""
+        }
+    }
+    @Published var expirationDate: Date?
+    @Published var expirationDateEdited: Bool = false
+    @Published var quantityStock: String = "0"
+    @Published var quantityEdited: Bool = false
+    var quantityError: String {
+        guard let quantityInt = Int(quantityStock) else {
+            return "Cantidad debe ser número entero"
+        }
+        if quantityInt < 0 && quantityEdited {
+            return "Cantidad debe ser mayor a 0: \(quantityEdited)"
+        } else {
+            return ""
+        }
+    }
+    @Published var imageUrl: String = ""
+    @Published var imageURLEdited: Bool = false
+    @Published var imageURLError: String = ""
+    @Published var unitCost: String = "0"
+    @Published var unitCostEdited: Bool = false
+    var unitCostError: String {
+        guard let unitCostDouble = Double(unitCost) else {
+            return "Costo debe ser número decimal o entero"
+        }
+        if unitCostDouble <= 0.0 && unitCostEdited {
+            return "Costo debe ser mayor a 0: \(unitCostEdited)"
+        } else {
+            return ""
+        }
+    }
+    @Published var profitMarginEdited: Bool = false
+    @Published var unitPrice: String = "0"
+    @Published var unitPriceEdited: Bool = false
+    var unitPriceError: String {
+        guard let unitPriceDouble = Double(unitPrice) else {
+            return "Precio debe ser número decimal o entero"
+        }
+        if unitPriceDouble <= 0.0 && unitPriceEdited {
+            return "Precio debe ser mayor a 0: \(unitPriceEdited)"
+        } else {
+            return ""
+        }
+    }
+    var profitMargin: String {
+            guard let unitCost = Double(unitCost), let unitPrice = Double(unitPrice) else {
+                return "0 %"
+            }
+            if ((unitPrice - unitCost) > 0.0) && (unitPrice > 0) && (unitCost > 0) {
+                return String(Int(((unitPrice - unitCost) / unitCost) * 100)) + " %"
+            } else {
+                return "0 %"
+            }
+    }
+    @Published var errorBD: String = ""
+    
     private let saveProductUseCase: SaveProductUseCase
+    
     init(saveProductUseCase: SaveProductUseCase) {
         self.saveProductUseCase = saveProductUseCase
     }
+    //MARK: Funciones
     func resetValuesFields() {
-        editedFields = FieldEditTemporal()
+        fieldsFalse()
+        self.productId = nil
+        self.active = true
+        self.productName = ""
+        self.expirationDate = nil
+        self.quantityStock = "0"
+        self.imageUrl = ""
+        self.imageURLError = ""
+        self.unitCost = "0"
+        self.unitPrice = "0"
+        self.errorBD = ""
     }
     func fieldsTrue() {
         print("All value true")
-        editedFields.productEdited = true
-        editedFields.expirationDateEdited = true
-        editedFields.quantityEdited = true
-        editedFields.imageURLEdited = true
-        editedFields.imageURLError = ""
-        editedFields.unitCostEdited = true
-        editedFields.profitMarginEdited = true
-        editedFields.unitPriceEdited = true
+        self.productEdited = true
+        self.active = true
+        self.expirationDateEdited = true
+        self.quantityEdited = true
+        self.imageURLEdited = true
+        self.unitCostEdited = true
+        self.profitMarginEdited = true
+        self.unitPriceEdited = true
+    }
+    func fieldsFalse() {
+        print("All value false")
+        self.productEdited = false
+        self.expirationDateEdited = false
+        self.quantityEdited = false
+        self.imageURLEdited = false
+        self.unitCostEdited = false
+        self.profitMarginEdited = false
+        self.unitPriceEdited = false
     }
     func addProduct() -> Bool {
         guard let product = createProduct() else {
@@ -41,22 +127,21 @@ class AgregarViewModel: ObservableObject {
             return true
         } else {
             print(result)
-            editedFields.errorBD = result
+            self.errorBD = result
             return false
         }
     }
     func editProduct(product: Product) {
-        editedFields.productId = product.id
-        editedFields.productName = product.name
-        editedFields.imageUrl = product.image.imageUrl
-        editedFields.quantityStock = String(product.qty)
-        editedFields.unitCost = String(product.unitCost)
-        editedFields.unitPrice = String(product.unitPrice)
-        editedFields.errorBD = ""
+        self.productId = product.id
+        self.productName = product.name
+        self.imageUrl = product.image.imageUrl
+        self.quantityStock = String(product.qty)
+        self.unitCost = String(product.unitCost)
+        self.unitPrice = String(product.unitPrice)
+        self.errorBD = ""
     }
     func urlEdited() {
-        print("New work")
-        editedFields.imageURLEdited = true
+        self.imageURLEdited = true
     }
     
     func loadTestData() {
@@ -78,7 +163,7 @@ class AgregarViewModel: ObservableObject {
                         countFail = countFail + 1
                         continue
                     }
-                    let product = Product(id: UUID(), name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0]))
+                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0]))
                     let result = self.saveProductUseCase.execute(product: product)
                     if result == "Success" {
                         countSucc = countSucc + 1
@@ -96,29 +181,33 @@ class AgregarViewModel: ObservableObject {
     }
     
     func createProduct() -> Product? {
-        guard let quantityStock = Int(editedFields.quantityStock), let unitCost = Double(editedFields.unitCost), let unitPrice = Double(editedFields.unitPrice) else {
+        guard let quantityStock = Int(self.quantityStock), let unitCost = Double(self.unitCost), let unitPrice = Double(self.unitPrice) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Product(id: editedFields.productId ?? UUID(), name: editedFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: editedFields.expirationDate, image: ImageUrl(id: UUID(), imageUrl: editedFields.imageUrl))
+        return Product(id: self.productId ?? UUID(), active: self.active, name: self.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.expirationDate, image: ImageUrl(id: UUID(), imageUrl: self.imageUrl))
     }
     func isProductNameValid() -> Bool {
-        return !editedFields.productName.trimmingCharacters(in: .whitespaces).isEmpty
+        return !self.productName.trimmingCharacters(in: .whitespaces).isEmpty
     }
     func isQuantityValid() -> Bool {
-        guard let quantityStock = Int(editedFields.quantityStock) else {
+        guard let quantityStock = Int(self.quantityStock) else {
             return false
         }
-        return quantityStock < 0 ? false : true
+        if quantityStock < 0 {
+            return false
+        } else {
+            return true
+        }
     }
     func isUnitCostValid() -> Bool {
-        guard let unitCost = Double(editedFields.unitCost) else {
+        guard let unitCost = Double(self.unitCost) else {
             return false
         }
         return unitCost < 0.0 ? false : true
     }
     func isUnitPriceValid() -> Bool {
-        guard let unitPrice = Double(editedFields.unitPrice) else {
+        guard let unitPrice = Double(self.unitPrice) else {
             return false
         }
         return unitPrice < 0.0 ? false : true
@@ -127,7 +216,7 @@ class AgregarViewModel: ObservableObject {
         return true
     }
     func isURLValid() -> Bool {
-        guard URL(string: editedFields.imageUrl) != nil else {
+        guard URL(string: self.imageUrl) != nil else {
             return false
         }
         return true
@@ -167,73 +256,5 @@ class AgregarViewModel: ObservableObject {
             completion(true)
         }
         task.resume()
-    }
-}
-
-class FieldEditTemporal {
-    var productId: UUID?
-    var errorBD: String = ""
-    var productName: String = ""
-    var productEdited: Bool = false
-    var productError: String {
-        print("editedP: \(productEdited)")
-        if productName == "" && productEdited {
-            return "Nombre de producto no válido"
-        } else {
-            return ""
-        }
-    }
-    var expirationDate: Date?
-    var expirationDateEdited: Bool = false
-    var quantityStock: String = "0"
-    var quantityEdited: Bool = false
-    var quantityError: String {
-        guard let quantityStockInt = Int(quantityStock) else {
-            return "Debe ser número entero"
-        }
-        if quantityStockInt <= 0 && unitCostEdited {
-            return "Debe ser mayor a 0: \(unitCostEdited)"
-        } else {
-            return ""
-        }
-    }
-    var imageUrl: String = ""
-    var imageURLEdited: Bool = false
-    var imageURLError: String = ""
-    var unitCost: String = "0"
-    var unitCostEdited: Bool = false
-    var unitCostError: String {
-        guard let unitCostDouble = Double(unitCost) else {
-            return "Debe ser número decimal o entero"
-        }
-        if unitCostDouble <= 0.0 && unitCostEdited {
-            return "Debe ser mayor a 0: \(unitCostEdited)"
-        } else {
-            return ""
-        }
-    }
-    var profitMarginEdited: Bool = false
-    var unitPrice: String = "0"
-    var unitPriceEdited: Bool = false
-    var unitPriceError: String {
-        guard let unitPriceDouble = Double(unitPrice) else {
-            return "Debe ser número decimal o entero"
-        }
-        if unitPriceDouble <= 0.0 && unitPriceEdited {
-            return "Debe ser mayor a 0: \(unitPriceEdited)"
-        } else {
-            return ""
-        }
-    }
-    var profitMargin: String {
-            guard let unitCost = Double(unitCost), let unitPrice = Double(unitPrice) else {
-                return "0"
-            }
-            print("Se llamo a la propiedad calculada")
-            if ((unitPrice - unitCost) > 0.0) && (unitPrice > 0) && (unitCost > 0) {
-                return String(Int(((unitPrice - unitCost) / unitCost) * 100))
-            } else {
-                return "0"
-            }
     }
 }

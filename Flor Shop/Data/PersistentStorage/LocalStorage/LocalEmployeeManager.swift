@@ -19,6 +19,7 @@ protocol EmployeeManager {
     func getEmployeeSubsidiary() -> Subsidiary?
     func getSubsidiary(employee: Employee) -> Subsidiary?
     func getDefaultSubsidiary() -> Subsidiary?
+    func releaseResourses()
 }
 
 class LocalEmployeeManager: EmployeeManager {
@@ -43,6 +44,9 @@ class LocalEmployeeManager: EmployeeManager {
             return
         }
         self.mainSubsidiaryEntity = subsidiaryEntity
+    }
+    func releaseResourses() {
+        self.mainSubsidiaryEntity = nil
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {

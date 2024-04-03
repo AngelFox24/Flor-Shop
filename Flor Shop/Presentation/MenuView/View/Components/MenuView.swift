@@ -11,6 +11,10 @@ struct MenuView: View {
     @State private var selectedTab: MenuTab = .customersTab
     @Binding var showMenu: Bool
     @Binding var isKeyboardVisible: Bool
+    @EnvironmentObject var logInViewModel: LogInViewModel
+    @EnvironmentObject var navManager: NavManager
+    @AppStorage("userOrEmail") var userOrEmail: String?
+    @AppStorage("password") var password: String?
     @State private var tabSelected: Tab = .magnifyingglass
     var body: some View {
         ZStack {
@@ -58,10 +62,16 @@ struct MenuView: View {
                             .padding(.top, showMenu ? 0 : 1)
                             .disabled(showMenu ? true : false)
                     case .logOut:
-                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                        LockScreenView()
                             .cornerRadius(showMenu ? 35 : 0)
                             .padding(.top, showMenu ? 0 : 1)
                             .disabled(showMenu ? true : false)
+                            .onAppear(perform: {
+                                userOrEmail = nil
+                                password = nil
+                                logInViewModel.logOut()
+                                navManager.popToRoot()
+                            })
                     }
             }
             .scaleEffect(showMenu ? 0.84 : 1)
@@ -74,6 +84,7 @@ struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
         MenuView(showMenu: .constant(true), isKeyboardVisible: .constant(true))
+            .environmentObject(dependencies.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)

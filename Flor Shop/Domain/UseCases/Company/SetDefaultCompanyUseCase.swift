@@ -9,6 +9,7 @@ import Foundation
 
 protocol SetDefaultCompanyUseCase {
     func execute(company: Company)
+    func releaseResources()
 }
 
 final class SetDefaultCompanyInteractor: SetDefaultCompanyUseCase {
@@ -27,5 +28,11 @@ final class SetDefaultCompanyInteractor: SetDefaultCompanyUseCase {
         self.companyRepository.setDefaultCompany(company: company)
         self.subsidiaryRepository.setDefaultCompany(company: company)
         self.customerRepository.setDefaultCompany(company: company)
+    }
+    
+    func releaseResources() {
+        self.companyRepository.releaseResourses()
+        self.subsidiaryRepository.releaseResourses()
+        self.customerRepository.releaseResourses()
     }
 }

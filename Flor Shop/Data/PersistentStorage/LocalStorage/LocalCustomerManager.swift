@@ -20,6 +20,7 @@ protocol CustomerManager {
     func setDefaultCompany(company: Company)
     func getDefaultCompany() -> Company?
     func getCustomer(customer: Customer) -> Customer?
+    func releaseResourses()
 }
 
 class LocalCustomerManager: CustomerManager {
@@ -39,6 +40,9 @@ class LocalCustomerManager: CustomerManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func releaseResourses() {
+        self.mainCompanyEntity = nil
     }
     //C - Create
     func addCustomer(customer: Customer) -> String {

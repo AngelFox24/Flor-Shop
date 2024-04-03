@@ -20,6 +20,7 @@ protocol CartManager {
     func createCart()
     func setDefaultEmployee(employee: Employee)
     func getDefaultEmployee() -> Employee?
+    func releaseResourses()
 }
 
 class LocalCartManager: CartManager {
@@ -57,6 +58,9 @@ class LocalCartManager: CartManager {
             self.mainEmployeeEntity?.toCart = newCart
             saveData()
         }
+    }
+    func releaseResourses() {
+        self.mainEmployeeEntity = nil
     }
     func getCart() -> Car? {
         print("Se llamo a getCart en LocalCartManager")

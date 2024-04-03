@@ -42,6 +42,8 @@ final class LogInInteractor: LogInUseCase {
                     print("ok company")
                     //setDefaultCompany(company: company)
                     self.setDefaultCompanyUseCase.execute(company: company)
+                    //MARK: Remember Session
+                    
                     status = .success
                 } else {
                     print("Nok company")

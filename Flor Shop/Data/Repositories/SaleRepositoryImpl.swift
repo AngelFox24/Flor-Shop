@@ -20,6 +20,7 @@ protocol SaleRepository {
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
+    func releaseResourses()
 }
 
 class SaleRepositoryImpl: SaleRepository {
@@ -61,5 +62,8 @@ class SaleRepositoryImpl: SaleRepository {
     }
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
         return self.manager.getRevenueAmount(date: date, interval: interval)
+    }
+    func releaseResourses() {
+        self.manager.releaseResourses()
     }
 }

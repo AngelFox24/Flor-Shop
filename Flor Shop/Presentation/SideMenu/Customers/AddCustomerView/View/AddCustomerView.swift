@@ -63,7 +63,7 @@ struct AddCustomerFields : View {
                     CustomTextField(title: "Deuda Total" ,value: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
                 })
                 HStack(content: {
-                    CustomText(title: "Fecha Límite" ,value: addCustomerViewModel.fieldsAddCustomer.dateLimitString, disable: true)
+                    CustomTextField(title: "Fecha Límite" ,value: .constant(addCustomerViewModel.fieldsAddCustomer.dateLimitString), edited: .constant(false), disable: true)
                     CustomTextField(title: "Días de Crédito" ,value: $addCustomerViewModel.fieldsAddCustomer.creditDays, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.dateLimitFlag, keyboardType: .numberPad)
                     Toggle("", isOn: $addCustomerViewModel.fieldsAddCustomer.dateLimitFlag)
                         .labelsHidden()

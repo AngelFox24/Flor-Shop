@@ -14,7 +14,7 @@ struct PointOfSaleView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     var body: some View {
-        ZStack {
+        VStack(spacing: 0, content: {
             VStack(spacing: 0, content: {
                 if tabSelected == .plus {
                     AgregarView()
@@ -27,12 +27,12 @@ struct PointOfSaleView: View {
             if !isKeyboardVisible {
                 CustomTabBar(selectedTab: $tabSelected)
             }
-        }
+        })
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var isKeyboardVisible: Bool = true
+        @State var isKeyboardVisible: Bool = false
         @State var showMenu: Bool = false
         
         let dependencies = Dependencies()
