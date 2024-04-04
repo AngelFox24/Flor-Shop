@@ -29,7 +29,7 @@ struct AddCustomerTopBar: View {
                     if addCustomerViewModel.addCustomer() {
                         print("Se agrego un cliente exitosamente")
                         //TODO: Cambiar esta funcion al repositorio
-                        customerViewModel.fetchListCustomer()
+                        customerViewModel.releaseResources()
                         addCustomerViewModel.resetValuesFields()
                         playSound(named: "Success1")
                         navManager.goToBack()

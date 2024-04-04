@@ -83,7 +83,19 @@ struct ListaControler: View {
                             }
                     }
                     ForEach(productsCoreDataViewModel.productsCoreData) { producto in
-                        CardViewTipe2(image: producto.image, topStatusColor: Color.red, topStatus: nil, mainText: producto.name, mainIndicatorPrefix: "S/. ", mainIndicator: String(producto.unitPrice), mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: String(producto.qty), secondaryIndicatorAlert: false, size: 80)
+                        CardViewTipe2(
+                            id: producto.image.id,
+                            url: producto.image.imageUrl,
+                            topStatusColor: Color.red,
+                            topStatus: nil,
+                            mainText: producto.name,
+                            mainIndicatorPrefix: "S/. ",
+                            mainIndicator: String(producto.unitPrice),
+                            mainIndicatorAlert: false,
+                            secondaryIndicatorSuffix: " u",
+                            secondaryIndicator: String(producto.qty),
+                            secondaryIndicatorAlert: false, size: 80
+                        )
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                             .listRowBackground(Color("color_background"))

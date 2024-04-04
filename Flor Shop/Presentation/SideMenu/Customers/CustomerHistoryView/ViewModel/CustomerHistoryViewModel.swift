@@ -62,7 +62,7 @@ class CustomerHistoryViewModel: ObservableObject {
         }
     }
     func releaseResources() {
-        self.customer = nil
+        //self.customer = nil
         self.salesDetail = []
     }
     func updateData() {

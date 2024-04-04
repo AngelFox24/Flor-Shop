@@ -59,9 +59,9 @@ struct CardViewTipe1: View {
         .cornerRadius(15)
     }
 }
-
 struct CardViewTipe2: View {
-    var image: ImageUrl?
+    var id: UUID?
+    var url: String?
     var topStatusColor: Color?
     var topStatus: String?
     var mainText: String
@@ -75,7 +75,7 @@ struct CardViewTipe2: View {
     var body: some View {
         VStack{
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(id: image?.id, urlProducto: image?.imageUrl, size: size)
+                CustomAsyncImageView(id: id, urlProducto: url, size: size)
                 VStack(spacing: 2) {
                     if let topStatusUnwrap = topStatus, let topStatusColorUnwrap = topStatusColor {
                         HStack{
@@ -284,14 +284,20 @@ struct CardViewPlaceHolder1: View {
 }
 
 struct CardViewPlaceHolder2: View {
-    var text: String = "Agregar Imagen"
+    var text: String = "Sin Imagen"
     let size: CGFloat
     var body: some View {
         VStack(spacing: 4, content: {
             Image(systemName: "photo.on.rectangle.angled")
+                .resizable()
+                .scaledToFill()
+                .padding(.horizontal, 20)
                 .font(.system(size: 55))
             Text(text)
-                .font(.custom("Artifika-Regular", size: 18))
+                .font(.system(size: 30)) // Tamaño de fuente inicial
+                .minimumScaleFactor(0.3) // Factor de escala mínimo (la fuente puede reducirse hasta la mitad de su tamaño original)
+                .lineLimit(1)
+                .padding(.horizontal, 5)
                 .multilineTextAlignment(.center)
         })
         .padding(.vertical, 10)
@@ -307,7 +313,7 @@ struct CardViews_Previews: PreviewProvider {
         let dependencies = Dependencies()
         VStack(spacing: 10, content: {
             CardViewTipe1(image: ImageUrl.getDummyImage(), topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
-            CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
+            CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
             let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), active: true, name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU")))

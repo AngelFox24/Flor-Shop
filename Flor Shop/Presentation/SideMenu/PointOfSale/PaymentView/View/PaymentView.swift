@@ -51,7 +51,8 @@ struct PaymentsFields: View {
                 VStack(content: {
                     if let customer = cartViewModel.customerInCar {
                         CardViewTipe2(
-                            image: customer.image,
+                            id: customer.image?.id,
+                            url: customer.image?.imageUrl,
                             topStatusColor: customer.customerTipe.color,
                             topStatus: customer.customerTipe.description,
                             mainText: customer.name + " " + customer.lastName,

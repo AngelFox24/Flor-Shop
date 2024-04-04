@@ -59,6 +59,7 @@ class CustomerViewModel: ObservableObject {
         self.filter = filter
     }
     func releaseResources() {
+        print("Se elimino los customers de la lista")
         self.customerList = []
         self.currentPage = 1
         self.lastCarge = 0

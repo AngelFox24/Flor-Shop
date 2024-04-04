@@ -36,6 +36,24 @@ struct CustomersView_Previews: PreviewProvider {
     }
 }
 
+struct CardViewTipe2_2: View {
+    var id: UUID?
+    var url: String?
+    //var topStatusColor: Color?
+    //var topStatus: String?
+    //var mainText: String
+    //var mainIndicatorPrefix: String?
+    //var mainIndicator: String
+    //var mainIndicatorAlert: Bool
+    //var secondaryIndicatorSuffix: String?
+    //var secondaryIndicator: String?
+    //var secondaryIndicatorAlert: Bool
+    let size: CGFloat
+    var body: some View {
+            CustomAsyncImageView(id: id, urlProducto: url, size: size)
+    }
+}
+
 struct CustomerListController: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var cartViewModel: CartViewModel
@@ -61,9 +79,28 @@ struct CustomerListController: View {
                 } else {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
-                            let _ = print("\(customer.image?.id)")
+                            CustomAsyncImageView(
+                                id: customer.image?.id,
+                                urlProducto: customer.image?.imageUrl,
+                                size: 80
+                            )
+                            CardViewTipe2_2(
+                                id: customer.image?.id,
+                                url: customer.image?.imageUrl,
+                                //topStatusColor: customer.customerTipe.color,
+                                //topStatus: customer.customerTipe.description,
+                                //mainText: customer.name + " " + customer.lastName,
+                                //mainIndicatorPrefix: "S/. ",
+                                //mainIndicator: String(customer.totalDebt),
+                                //mainIndicatorAlert: customer.isCreditLimit,
+                                //secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                //secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                //secondaryIndicatorAlert: customer.isDateLimit,
+                                size: 80
+                            )
                             CardViewTipe2(
-                                image: customer.image,
+                                id: customer.image?.id,
+                                url: customer.image?.imageUrl,
                                 topStatusColor: customer.customerTipe.color,
                                 topStatus: customer.customerTipe.description,
                                 mainText: customer.name + " " + customer.lastName,
@@ -87,6 +124,9 @@ struct CustomerListController: View {
                                     customerHistoryViewModel.setCustomerInContext(customer: customer)
                                     navManager.goToCustomerHistoryView()
                                 }
+                            }
+                            .onAppear {
+                                let _ = print("\(customer.image?.id)")
                             }
                         }
                     }

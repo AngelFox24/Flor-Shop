@@ -23,7 +23,7 @@ struct CartTopBar: View {
                     navManager.goToCustomerView()
                 }, label: {
                     if let customer = carritoCoreDataViewModel.customerInCar, let image = customer.image {
-                        CustomAsyncImageView(id: customer.id, urlProducto: image.imageUrl, size: 40)
+                        CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: 40)
                             .contextMenu(menuItems: {
                                 Button(role: .destructive,action: {
                                     carritoCoreDataViewModel.customerInCar = nil

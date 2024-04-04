@@ -21,8 +21,11 @@ class ImageProductNetworkViewModel: ObservableObject {
             return
         } else {
             if let savedImage = loadSavedImage(id: id) {
+                imageProduct = nil
                 imageProduct = Image(uiImage: savedImage)
+                print("Se reemplazo la imagen")
             } else if let url = url {
+                print("Se intenta descragar imagen de Int")
                 URLSession.shared.dataTaskPublisher(for: url)
                     .tryMap { data, _ in
                         guard let image = UIImage(data: data) else {
@@ -40,6 +43,7 @@ class ImageProductNetworkViewModel: ObservableObject {
                         }
                     }, receiveValue: { image in
                         self.imageProduct = Image(uiImage: image)
+                        print("Se asigno la imagen luego de guardarla")
                         if self.shouldSaveImage(image: image) {
                             if ImageProductNetworkViewModel.saveImage(id: id, image: image) {
                                 } else {
@@ -48,6 +52,8 @@ class ImageProductNetworkViewModel: ObservableObject {
                         }
                     })
                     .store(in: &suscriber)
+            } else {
+                print("que raiozs")
             }
         }
     }
@@ -84,7 +90,7 @@ class ImageProductNetworkViewModel: ObservableObject {
         let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
         let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
         if let imageData = try? Data(contentsOf: fileURL) {
-            //print("Ruta de la imagen guardada: \(fileURL.path)")
+            print("Ruta de la imagen guardada: \(fileURL.path)")
             return UIImage(data: imageData)
         } else {
             print("No se pudo obtener la imagen \(id.uuidString).jpeg")

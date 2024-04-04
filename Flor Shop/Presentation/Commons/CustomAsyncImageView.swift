@@ -18,9 +18,14 @@ struct CustomAsyncImageView: View {
         self.urlProducto = urlProducto
         self.size = size
         self.imageProductNetwork = imageProductNetwork
-        if let idIma = id {
-            imageProductNetwork.getImage(id: idIma, url: nil)
+        guard let idNN = id else {
+            return
         }
+        guard let urlNN = urlProducto, let trueUrl = URL(string: urlNN) else {
+            imageProductNetwork.getImage(id: idNN, url: nil)
+            return
+        }
+        imageProductNetwork.getImage(id: idNN, url: trueUrl)
     }
     var body: some View {
         HStack {
@@ -31,6 +36,7 @@ struct CustomAsyncImageView: View {
                     .frame(width: size, height: size)
                     .cornerRadius(15.0)
             } else {
+                /*
                 VStack {
                     Image(systemName: "photo.on.rectangle.angled")
                         .resizable()
@@ -49,6 +55,8 @@ struct CustomAsyncImageView: View {
                 .frame(width: size, height: size)
                 .background(Color("color_background"))
                 .cornerRadius(15.0)
+                */
+                CardViewPlaceHolder2(size: size)
             }
         }
     }
