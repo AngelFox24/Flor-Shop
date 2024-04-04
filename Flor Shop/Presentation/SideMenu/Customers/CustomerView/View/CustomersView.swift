@@ -61,6 +61,7 @@ struct CustomerListController: View {
                 } else {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
+                            let _ = print("\(customer.image?.id)")
                             CardViewTipe2(
                                 image: customer.image,
                                 topStatusColor: customer.customerTipe.color,

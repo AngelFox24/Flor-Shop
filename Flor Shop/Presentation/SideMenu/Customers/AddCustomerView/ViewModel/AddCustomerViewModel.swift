@@ -25,11 +25,13 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer = FieldsAddCustomer()
     }
     private func setImage(from selection: PhotosPickerItem?) {
+        print("Se intenta guardar imagen")
         guard let selection else {return}
         Task {
             do {
                 let data = try await selection.loadTransferable(type: Data.self)
                 guard let data, let uiImage = UIImage(data: data) else {
+                    print("Imagen vacia")
                     return
                 }
                 //selectedImage = uiImage
@@ -40,9 +42,11 @@ class AddCustomerViewModel: ObservableObject {
                         isPresented = false
                     }
                 } else {
-                    let _ = ImageProductNetworkViewModel.saveImage(id: UUID(), image: uiImage)
+                    let idIM = UUID()
+                    let _ = ImageProductNetworkViewModel.saveImage(id: idIM, image: uiImage)
                     await MainActor.run {
                         isPresented = false
+                        fieldsAddCustomer.idImage = idIM
                     }
                 }
             } catch {
@@ -60,7 +64,7 @@ class AddCustomerViewModel: ObservableObject {
     }
     func editCustomer(customer: Customer) {
         fieldsAddCustomer.id = customer.id
-        fieldsAddCustomer.idImage = customer.image.id
+        fieldsAddCustomer.idImage = customer.image?.id
         fieldsAddCustomer.name = customer.name
         fieldsAddCustomer.lastname = customer.lastName
         fieldsAddCustomer.phoneNumber = customer.phoneNumber
@@ -103,7 +107,12 @@ class AddCustomerViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        guard let idImage = fieldsAddCustomer.idImage else {
+            print("El id de imagen es vacio")
+            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        }
+        print("Se guarda imagen del cliente")
+        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl(id: idImage, imageUrl: ""), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
     }
     func releaseResources() {
         self.fieldsAddCustomer = FieldsAddCustomer()

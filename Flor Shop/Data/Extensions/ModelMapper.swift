@@ -130,7 +130,7 @@ extension Sale {
 
 extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
-        let filterAtt = NSPredicate(format: "imageUrl == %@", imageUrl)
+        let filterAtt = NSPredicate(format: "idImageUrl == %@", id.uuidString)
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
         request.predicate = filterAtt
         do {
@@ -205,7 +205,7 @@ extension Tb_Customer {
         return Customer(id: idCustomer ?? UUID(),
                         name: name ?? "",
                         lastName: lastName ?? "",
-                        image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
+                        image: toImageUrl?.toImage(),
                         creditLimit: creditLimit,
                         isCreditLimit: isCreditLimit,
                         creditDays: Int(creditDays),

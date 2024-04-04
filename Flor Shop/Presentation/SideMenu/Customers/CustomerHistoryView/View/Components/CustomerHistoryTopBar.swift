@@ -50,7 +50,7 @@ struct CustomerHistoryTopBar: View {
                         addCustomerViewModel.editCustomer(customer: customer)
                         navManager.goToAddCustomerView()
                     }, label: {
-                        CustomAsyncImageView(id: customer.id, urlProducto: customer.image.imageUrl, size: 40)
+                        CustomAsyncImageView(id: customer.image?.id, urlProducto: customer.image?.imageUrl, size: 40)
                     })
                 } else {
                     CustomButton3(simbol: "person.crop.circle.badge.plus")

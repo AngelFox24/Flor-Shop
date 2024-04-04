@@ -89,13 +89,13 @@ class LocalCustomerManager: CustomerManager {
             newCustomerEntity.name = customer.name
             newCustomerEntity.lastName = customer.lastName
             newCustomerEntity.creditDays = Int64(customer.creditDays)
-            if let imageEntity = customer.image.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            if let imageNN = customer.image, let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 newCustomerEntity.toImageUrl = imageEntity
             } else { // Si no existe creamos uno nuevo
                 let newImage = Tb_ImageUrl(context: self.mainContext)
-                newImage.idImageUrl = customer.image.id
-                newImage.imageUrl = customer.image.imageUrl
-                newCustomerEntity.toImageUrl = newImage
+                //newImage.idImageUrl = customer.image.id
+                //newImage.imageUrl = customer.image.imageUrl
+                newCustomerEntity.toImageUrl = customer.image?.toImageUrlEntity(context: self.mainContext)
             }
             //newCustomerEntity.creditActive = customer.creditActive
             newCustomerEntity.creditLimit = customer.creditLimit

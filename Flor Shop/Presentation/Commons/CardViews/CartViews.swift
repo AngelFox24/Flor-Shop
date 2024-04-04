@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CardViewTipe1: View {
     //No se declara modelos de datos de capa vista porque se reutilizara para varias vistas
-    let image: ImageUrl
+    let image: ImageUrl?
     let topStatusColor: Color
     let topStatus: String
     let mainText: String
@@ -18,7 +18,7 @@ struct CardViewTipe1: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: size)
+                CustomAsyncImageView(id: image?.id, urlProducto: image?.imageUrl, size: size)
                 VStack(spacing: 2) {
                     HStack{
                         topStatusColor
@@ -61,7 +61,7 @@ struct CardViewTipe1: View {
 }
 
 struct CardViewTipe2: View {
-    var image: ImageUrl
+    var image: ImageUrl?
     var topStatusColor: Color?
     var topStatus: String?
     var mainText: String
@@ -75,7 +75,7 @@ struct CardViewTipe2: View {
     var body: some View {
         VStack{
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: size)
+                CustomAsyncImageView(id: image?.id, urlProducto: image?.imageUrl, size: size)
                 VStack(spacing: 2) {
                     if let topStatusUnwrap = topStatus, let topStatusColorUnwrap = topStatusColor {
                         HStack{

@@ -11,7 +11,7 @@ struct Customer: Identifiable {
     var id: UUID
     var name: String
     var lastName: String
-    var image: ImageUrl
+    var image: ImageUrl?
     var creditLimit: Double
     var isCreditLimit: Bool
     var creditDays: Int
