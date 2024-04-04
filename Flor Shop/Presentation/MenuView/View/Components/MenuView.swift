@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MenuView: View {
-    @State private var selectedTab: MenuTab = .customersTab
+    @State private var selectedTab: MenuTab = .pointOfSaleTab
     @Binding var showMenu: Bool
     @Binding var isKeyboardVisible: Bool
     @EnvironmentObject var logInViewModel: LogInViewModel

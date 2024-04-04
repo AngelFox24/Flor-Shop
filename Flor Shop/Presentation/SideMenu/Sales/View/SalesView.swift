@@ -61,7 +61,7 @@ struct SalesListController: View {
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(saleDetail.subtotal),
                                 mainIndicatorAlert: false,
-                                secondaryIndicatorSuffix: "u",
+                                secondaryIndicatorSuffix: " u",
                                 secondaryIndicator: String(saleDetail.quantitySold),
                                 secondaryIndicatorAlert: false, size: 80
                             )

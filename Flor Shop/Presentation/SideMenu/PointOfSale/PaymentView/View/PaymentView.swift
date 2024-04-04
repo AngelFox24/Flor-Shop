@@ -57,10 +57,11 @@ struct PaymentsFields: View {
                             mainText: customer.name + " " + customer.lastName,
                             mainIndicatorPrefix: "S/. ",
                             mainIndicator: String(customer.totalDebt),
-                            mainIndicatorAlert: false,
-                            secondaryIndicatorSuffix: customer.isDateLimitActive ? nil : " " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month)),
-                            secondaryIndicator: customer.isDateLimitActive ? nil : String(customer.dateLimit.getDateComponent(dateComponent: .day)),
-                            secondaryIndicatorAlert: false, size: 80)
+                            mainIndicatorAlert: customer.isCreditLimit,
+                            secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                            secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                            secondaryIndicatorAlert: customer.isDateLimit, size: 80
+                        )
                         .contextMenu(menuItems: {
                             Button(role: .destructive,action: {
                                 cartViewModel.customerInCar = nil

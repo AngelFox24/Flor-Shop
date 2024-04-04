@@ -27,15 +27,18 @@ class ProductViewModel: ObservableObject {
         addSearchTextSuscriber()
     }
     func fetchProducts(page: Int = 1, nextPage: Bool = true) {
-        let productsNewCarge = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
-        lastCarge = productsNewCarge.count
-        if lastCarge > 0 {
-            if nextPage {
-                self.currentPagesInScreen.append([page, lastCarge])
-                self.productsCoreData.append(contentsOf: productsNewCarge)
-            } else {
-                self.currentPagesInScreen.insert(contentsOf: [[page, lastCarge]], at: 0)
-                self.productsCoreData.insert(contentsOf: productsNewCarge, at: 0)
+        let pages = currentPagesInScreen.map { $0[0] }
+        if !pages.contains(page) {
+            let productsNewCarge = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
+            lastCarge = productsNewCarge.count
+            if lastCarge > 0 {
+                if nextPage {
+                    self.currentPagesInScreen.append([page, lastCarge])
+                    self.productsCoreData.append(contentsOf: productsNewCarge)
+                } else {
+                    self.currentPagesInScreen.insert(contentsOf: [[page, lastCarge]], at: 0)
+                    self.productsCoreData.insert(contentsOf: productsNewCarge, at: 0)
+                }
             }
         }
     }
@@ -43,7 +46,6 @@ class ProductViewModel: ObservableObject {
         guard let firstCharge = self.currentPagesInScreen.first?[1] else { return }
         guard let lastPage = self.currentPagesInScreen.last?[0] else { return }
         fetchProducts(page: lastPage + 1)
-        print("fetchNextPage: \(lastPage + 1)")
         if lastCarge > 0 {
             if self.currentPagesInScreen.count > self.maxPagesToLoad {
                 self.deleteCount = self.deleteCount + firstCharge
@@ -60,12 +62,10 @@ class ProductViewModel: ObservableObject {
         guard let firstPage = self.currentPagesInScreen.first?[0] else { return }
         guard let lastCharge = self.currentPagesInScreen.last?[1] else { return }
         let previousPage = firstPage - 1
-        print("fetchPreviousPage: \(previousPage)")
         if previousPage >= 1 {
             fetchProducts(page: previousPage, nextPage: false)
             if lastCarge > 0 {
                 if self.currentPagesInScreen.count > self.maxPagesToLoad {
-                    print("Se borrara espacios: \(self.deleteCount - firstCharge)")
                     self.deleteCount = self.deleteCount - firstCharge
                     self.productsCoreData.removeLast(lastCharge)
                     self.currentPagesInScreen.removeLast()
@@ -95,7 +95,6 @@ class ProductViewModel: ObservableObject {
             guard let lastProduct = self.productsCoreData.last else { return }
             guard let firstProduct = self.productsCoreData.first else { return }
             if product == lastProduct {
-                print("fetchNextPage")
                 fetchNextPage()
             } else if product == firstProduct {
                 fetchPreviousPage()

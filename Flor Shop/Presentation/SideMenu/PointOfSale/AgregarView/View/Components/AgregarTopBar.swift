@@ -21,17 +21,12 @@ struct AgregarTopBar: View {
             Spacer()
             Button(action: {
                 if agregarViewModel.addProduct() {
-                    print("Se agrego un producto exitosamente")
-                    //TODO: Cambiar esta funcion al repositorio
-                    //carritoCoreDataViewModel.updateCartTotal()
+                    productViewModel.releaseResources()
                     agregarViewModel.resetValuesFields()
-                    //agregarViewModel.fieldsFalse()
                     playSound(named: "Success1")
                 } else {
-                    agregarViewModel.fieldsTrue()
                     playSound(named: "Fail1")
-                    print("No se pudo agregar correctamente")
-                    showingErrorAlert = true
+                    showingErrorAlert = agregarViewModel.errorBD == "" ? false : true
                 }
             }, label: {
                 CustomButton1(text: "Guardar")

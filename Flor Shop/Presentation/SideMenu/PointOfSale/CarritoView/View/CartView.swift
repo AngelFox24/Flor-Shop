@@ -18,7 +18,6 @@ struct CartView: View {
                 ListCartController(selectedTab: $selectedTab)
             }
             .onAppear {
-                cartViewModel.releaseResources()
                 cartViewModel.lazyFetchCart()
             }
         }

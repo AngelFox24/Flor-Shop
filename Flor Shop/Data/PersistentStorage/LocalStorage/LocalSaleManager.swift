@@ -77,6 +77,9 @@ class LocalSaleManager: SaleManager {
             print("No se encontró sucursal")
             return false
         }
+        if customer.totalDebt <= 0 {
+            return false
+        }
         let totalDebtDB: Double = getTotalDebtByCustomer(customer: customer)
         if totalDebtDB == customer.totalDebt && totalDebtDB != 0 {
             guard let customerEntity = customer.toCustomerEntity(context: self.mainContext) else {
@@ -92,6 +95,7 @@ class LocalSaleManager: SaleManager {
                     saleDetail.paymentType = PaymentType.cash.description
                 }
                 customerEntity.totalDebt = 0
+                customerEntity.isCreditLimit = false
                 saveData()
                 return true
             } catch let error {
@@ -574,6 +578,11 @@ class LocalSaleManager: SaleManager {
                 } else {
                     if paymentType == .loan {
                         customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
+                        if customerEntity.totalDebt > customerEntity.creditLimit {
+                            customerEntity.isCreditLimit = true
+                        } else {
+                            customerEntity.isCreditLimit = false
+                        }
                     }
                 }
             }

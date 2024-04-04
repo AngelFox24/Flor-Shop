@@ -92,10 +92,13 @@ struct CamposProductoAgregar: View {
                             })
                         }
                     }
-                    if !agregarViewModel.isURLValid() && agregarViewModel.productName != "" && agregarViewModel.imageURLEdited {
+                    if agregarViewModel.imageURLError != "" {
+                        ErrorMessageText(message: agregarViewModel.imageURLError)
+                            .padding(.top, 6)
+                    } else if agregarViewModel.productName != "" && agregarViewModel.imageURLEdited {
                         ErrorMessageText(message: "Pega la imagen copiada")
                             .padding(.top, 6)
-                    } else if !agregarViewModel.isURLValid() && agregarViewModel.imageURLEdited {
+                    } else if agregarViewModel.imageURLEdited {
                         ErrorMessageText(message: "Ingresa un nombre de producto")
                             .padding(.top, 6)
                     }

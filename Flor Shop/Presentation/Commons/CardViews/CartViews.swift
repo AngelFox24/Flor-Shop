@@ -17,7 +17,7 @@ struct CardViewTipe1: View {
     let size: CGFloat
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
+            HStack(spacing: 0, content: {
                 CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: size)
                 VStack(spacing: 2) {
                     HStack{
@@ -44,6 +44,7 @@ struct CardViewTipe1: View {
                     }
                 }
                 .padding(.vertical, 6)
+                .padding(.horizontal, 8)
                 HStack{
                     Image(systemName: "chevron.backward")
                         .foregroundColor(Color("color_accent"))
@@ -51,7 +52,7 @@ struct CardViewTipe1: View {
                         .rotationEffect(.degrees(180))
                         .padding(.horizontal, 12)
                 }
-            }
+            })
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(.white)
         }
@@ -72,8 +73,8 @@ struct CardViewTipe2: View {
     var secondaryIndicatorAlert: Bool
     let size: CGFloat
     var body: some View {
-        VStack {
-            HStack {
+        VStack{
+            HStack(spacing: 0, content: {
                 CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: size)
                 VStack(spacing: 2) {
                     if let topStatusUnwrap = topStatus, let topStatusColorUnwrap = topStatusColor {
@@ -83,7 +84,7 @@ struct CardViewTipe2: View {
                                 .cornerRadius(15)
                             Text(topStatusUnwrap)
                                 .foregroundColor(.black)
-                                .font(.custom("Artifika-Regular", size: 9))
+                                .font(.custom("Artifika-Regular", size: 11))
                             Spacer()
                         }
                     }
@@ -107,7 +108,7 @@ struct CardViewTipe2: View {
                                 }
                             }
                             .padding(.vertical, 2)
-                            .padding(.horizontal, 10)
+                            .padding(.horizontal, 8)
                             .background(secondaryIndicatorAlert ? Color(.red) : Color("color_secondary"))
                             .cornerRadius(20)
                             Spacer()
@@ -115,6 +116,7 @@ struct CardViewTipe2: View {
                     }
                 }
                 .padding(.vertical, 6)
+                .padding(.horizontal, 8)
                 VStack {
                     HStack(spacing: 0) {
                         if let mainIndicatorPrefixUnwrap = mainIndicatorPrefix {
@@ -132,7 +134,7 @@ struct CardViewTipe2: View {
                     .cornerRadius(20)
                 }
                 .padding(.horizontal, 10)
-            }
+            })
             .frame(maxWidth: .infinity, maxHeight: size)
             .background(.white)
         }
@@ -305,7 +307,7 @@ struct CardViews_Previews: PreviewProvider {
         let dependencies = Dependencies()
         VStack(spacing: 10, content: {
             CardViewTipe1(image: ImageUrl.getDummyImage(), topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
-            CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "9", secondaryIndicatorAlert: true, size: 80)
+            CardViewTipe2(image: ImageUrl.getDummyImage(), topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
             let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
             let cartRepository = CarRepositoryImpl(manager: cartManager)
             let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), active: true, name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU")))

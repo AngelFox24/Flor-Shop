@@ -7,7 +7,7 @@
 
 import SwiftUI
 struct CustomerHistoryView: View {
-    @EnvironmentObject var customerViewModel: CustomerViewModel
+    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     //@Binding var showMenu: Bool
     //var backButton: Bool = false
     var body: some View {
@@ -16,7 +16,7 @@ struct CustomerHistoryView: View {
             CustomerHistoryViewListController()
         }
         .onDisappear {
-            customerViewModel.releaseResources()
+            customerHistoryViewModel.releaseResources()
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
