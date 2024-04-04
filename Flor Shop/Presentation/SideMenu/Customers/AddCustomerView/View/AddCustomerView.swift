@@ -8,12 +8,20 @@
 import SwiftUI
 
 struct AddCustomerView: View {
+    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     var body: some View {
-        VStack(spacing: 0) {
-            AddCustomerTopBar()
-            AddCustomerFields()
-        }
-        .background(Color("color_background"))
+        
+        ZStack(content: {
+            VStack(spacing: 0) {
+                AddCustomerTopBar()
+                AddCustomerFields(isPresented: $addCustomerViewModel.isPresented)
+            }
+            .background(Color("color_background"))
+            .blur(radius: addCustomerViewModel.isPresented ? 2 : 0)
+            if addCustomerViewModel.isPresented {
+                SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented,selectionImage: $addCustomerViewModel.selectionImage)
+            }
+        })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
@@ -29,6 +37,7 @@ struct AddCustomerView_Previews: PreviewProvider {
 
 struct AddCustomerFields : View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
+    @Binding var isPresented: Bool
     var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(content: {
@@ -36,12 +45,24 @@ struct AddCustomerFields : View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        
+                        withAnimation(.easeIn) {
+                            isPresented = true
+                        }
                     }, label: {
-                        CardViewPlaceHolder2(size: sizeCampo)
+                        VStack(content: {
+                            CustomAsyncImageView(id: addCustomerViewModel.fieldsAddCustomer.id, urlProducto: nil, size: sizeCampo)
+                        })
                     })
+                    .disabled(isPresented ? true : false)
                     Spacer()
                 }
+                /*
+                .onChange(of: addCustomerViewModel.fieldsAddCustomer.id) { id in
+                    withAnimation(.easeOut) {
+                        isPresented = false
+                    }
+                }
+                 */
                 HStack {
                     // El texto hace que tenga una separacion mayor del elemento
                     CustomTextField(title: "Nombre" ,value: $addCustomerViewModel.fieldsAddCustomer.name, edited: $addCustomerViewModel.fieldsAddCustomer.nameEdited)

@@ -6,9 +6,16 @@
 //
 
 import Foundation
+import _PhotosUI_SwiftUI
 
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
+    @Published var isPresented: Bool = false
+    @Published var selectionImage: PhotosPickerItem? = nil {
+        didSet{
+            setImage(from: selectionImage)
+        }
+    }
     let saveCustomerUseCase: SaveCustomerUseCase
     
     init(saveCustomerUseCase: SaveCustomerUseCase) {
@@ -16,6 +23,32 @@ class AddCustomerViewModel: ObservableObject {
     }
     func resetValuesFields() {
         fieldsAddCustomer = FieldsAddCustomer()
+    }
+    private func setImage(from selection: PhotosPickerItem?) {
+        guard let selection else {return}
+        Task {
+            do {
+                let data = try await selection.loadTransferable(type: Data.self)
+                guard let data, let uiImage = UIImage(data: data) else {
+                    return
+                }
+                //selectedImage = uiImage
+                //TODO: Save image with id
+                if let idNN = self.fieldsAddCustomer.idImage {
+                    let _ = ImageProductNetworkViewModel.saveImage(id: idNN, image: uiImage)
+                    await MainActor.run {
+                        isPresented = false
+                    }
+                } else {
+                    let _ = ImageProductNetworkViewModel.saveImage(id: UUID(), image: uiImage)
+                    await MainActor.run {
+                        isPresented = false
+                    }
+                }
+            } catch {
+                print("Error: \(error)")
+            }
+        }
     }
     func fieldsTrue() {
         print("All value true")
@@ -27,6 +60,7 @@ class AddCustomerViewModel: ObservableObject {
     }
     func editCustomer(customer: Customer) {
         fieldsAddCustomer.id = customer.id
+        fieldsAddCustomer.idImage = customer.image.id
         fieldsAddCustomer.name = customer.name
         fieldsAddCustomer.lastname = customer.lastName
         fieldsAddCustomer.phoneNumber = customer.phoneNumber
@@ -78,6 +112,7 @@ class AddCustomerViewModel: ObservableObject {
 
 class FieldsAddCustomer {
     var id: UUID?
+    var idImage: UUID?
     var name: String = ""
     var nameEdited: Bool = false
     var nameError: String {
