@@ -37,13 +37,13 @@ class AddCustomerViewModel: ObservableObject {
                 //selectedImage = uiImage
                 //TODO: Save image with id
                 if let idNN = self.fieldsAddCustomer.idImage {
-                    let _ = ImageProductNetworkViewModel.saveImage(id: idNN, image: uiImage)
+                    let _ = ImageNetworkViewModel.saveImage(id: idNN, image: uiImage)
                     await MainActor.run {
                         isPresented = false
                     }
                 } else {
                     let idIM = UUID()
-                    let _ = ImageProductNetworkViewModel.saveImage(id: idIM, image: uiImage)
+                    let _ = ImageNetworkViewModel.saveImage(id: idIM, image: uiImage)
                     await MainActor.run {
                         isPresented = false
                         fieldsAddCustomer.idImage = idIM

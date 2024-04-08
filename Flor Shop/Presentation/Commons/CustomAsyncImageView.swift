@@ -12,60 +12,33 @@ struct CustomAsyncImageView: View {
     //let id: UUID?
     let urlProducto: String?
     let size: CGFloat
-    @ObservedObject var imageProductNetwork = ImageProductNetworkViewModel()
-    init(id: UUID?, urlProducto: String?, size: CGFloat, imageProductNetwork: ImageProductNetworkViewModel = ImageProductNetworkViewModel()) {
-        self.id = id
-        self.urlProducto = urlProducto
-        self.size = size
-        self.imageProductNetwork = imageProductNetwork
-        guard let idNN = id else {
-            return
-        }
-        guard let urlNN = urlProducto, let trueUrl = URL(string: urlNN) else {
-            imageProductNetwork.getImage(id: idNN, url: nil)
-            return
-        }
-        imageProductNetwork.getImage(id: idNN, url: trueUrl)
-    }
+    @StateObject var imageViewModel = ImageNetworkViewModel()
     var body: some View {
         HStack {
-            if let imageC = imageProductNetwork.imageProduct {
+            if let imageC = imageViewModel.imageProduct {
                 imageC
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: size, height: size)
                     .cornerRadius(15.0)
             } else {
-                /*
-                VStack {
-                    Image(systemName: "photo.on.rectangle.angled")
-                        .resizable()
-                        .scaledToFill()
-                        .padding(.horizontal, 20)
-                        .font(.system(size: 98))
-                    Spacer()
-                    Text("Empty Image")
-                        .font(.system(size: 30)) // Tamaño de fuente inicial
-                        .minimumScaleFactor(0.5) // Factor de escala mínimo (la fuente puede reducirse hasta la mitad de su tamaño original)
-                        .lineLimit(1)
-                        .padding(.horizontal, 5)
-                }
-                .foregroundColor(.black)
-                .padding(.vertical, 25)
-                .frame(width: size, height: size)
-                .background(Color("color_background"))
-                .cornerRadius(15.0)
-                */
                 CardViewPlaceHolder2(size: size)
             }
         }
+        .onAppear(perform: {
+            Task {
+                self.imageViewModel.isLoading = true
+                await imageViewModel.loadImage(id: id, url: urlProducto)
+                self.imageViewModel.isLoading = false
+            }
+        })
     }
 }
 
 struct CustomAsyncImageView_Previews: PreviewProvider {
     //let id: UUID? = UUID()
     static var previews: some View {
-        CustomAsyncImageView(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), urlProducto: nil, size: 100)
+        CustomAsyncImageView(id: UUID(uuidString: "D2A8F862-AEB8-4A17-B08B-2FEDDCB0B123") ?? UUID(), urlProducto: "https://falabella.scene7.com/is/image/FalabellaPE/18846925_1?wid=1500&hei=1500&qlt=70", size: 100)
         //CustomAsyncImageView(id: .constant(id), urlProducto: .constant(nil), size: 100)
     }
 }
