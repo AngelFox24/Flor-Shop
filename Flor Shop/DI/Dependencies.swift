@@ -18,6 +18,7 @@ struct Dependencies {
     private let productManager: LocalProductManager
     private let cartManager: LocalCartManager
     private let saleManager: LocalSaleManager
+    let imageManager: ImageManager
     //Repositorios
     private let companyRepository: CompanyRepositoryImpl
     private let subsidiaryRepository: SubsidiaryRepositoryImpl
@@ -81,6 +82,7 @@ struct Dependencies {
         self.productManager = LocalProductManager(mainContext: mainContext)
         self.cartManager = LocalCartManager(mainContext: mainContext)
         self.saleManager = LocalSaleManager(mainContext: mainContext)
+        self.imageManager = LocalImageManager(mainContext: mainContext)
         //MARK: Repositorios
         self.companyRepository = CompanyRepositoryImpl(manager: companyManager)
         self.subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
