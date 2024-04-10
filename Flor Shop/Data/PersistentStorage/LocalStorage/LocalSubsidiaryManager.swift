@@ -51,7 +51,7 @@ class LocalSubsidiaryManager: SubsidiaryManager {
             let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
             newSubsidiaryEntity.idSubsidiary = subsidiary.id
             newSubsidiaryEntity.name = subsidiary.name
-            newSubsidiaryEntity.toImageUrl = subsidiary.image.toImageUrlEntity(context: self.mainContext) ?? ImageUrl.getDummyImage().toImageUrlEntity(context: self.mainContext)
+            newSubsidiaryEntity.toImageUrl = subsidiary.image?.toImageUrlEntity(context: self.mainContext)
             newSubsidiaryEntity.toCompany = companyEntity
             saveData()
             return true

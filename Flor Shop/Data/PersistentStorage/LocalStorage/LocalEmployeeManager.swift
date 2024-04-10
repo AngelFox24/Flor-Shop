@@ -76,13 +76,15 @@ class LocalEmployeeManager: EmployeeManager {
             newEmployeeEntity.role = employee.role
             newEmployeeEntity.active = employee.active
             newEmployeeEntity.toSubsidiary = self.mainSubsidiaryEntity
-            if let imageEntity = employee.image.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            if let imageEntity = employee.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 newEmployeeEntity.toImageUrl = imageEntity
             } else { // Si no existe creamos uno nuevo
-                let newImage = Tb_ImageUrl(context: self.mainContext)
-                newImage.idImageUrl = employee.image.id
-                newImage.imageUrl = employee.image.imageUrl
-                newEmployeeEntity.toImageUrl = newImage
+                if let imageCl = employee.image {
+                    let newImage = Tb_ImageUrl(context: self.mainContext)
+                    newImage.idImageUrl = imageCl.id
+                    newImage.imageUrl = imageCl.imageUrl
+                    newEmployeeEntity.toImageUrl = newImage
+                }
             }
             saveData()
             return true

@@ -26,18 +26,4 @@ class LocalImageManager: ImageManager {
     func rollback() {
         self.mainContext.rollback()
     }
-    //C - Create
-    func createImage(image: ImageUrl) -> ImageUrl {
-        return ImageUrl.getDummyImage()
-    }
-    //R - Read
-    func getImage(image: ImageUrl) -> ImageUrl {
-        return ImageUrl.getDummyImage()
-    }
-    //U - Update
-    func updateImage(image: ImageUrl) {
-    }
-    //D - Delete
-    func deleteImage(image: ImageUrl) {
-    }
 }

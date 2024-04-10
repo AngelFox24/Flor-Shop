@@ -34,6 +34,6 @@ struct Customer: Identifiable {
     var isDateLimitActive: Bool
     
     static func getDummyCustomer() -> Customer {
-        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: ImageUrl.getDummyImage(), creditLimit: 12.0, isCreditLimit: false, creditDays: 30, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53, isCreditLimitActive: false, isDateLimitActive: false)
+        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: nil, creditLimit: 12.0, isCreditLimit: false, creditDays: 30, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53, isCreditLimitActive: false, isDateLimitActive: false)
     }
 }

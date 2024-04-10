@@ -56,8 +56,8 @@ struct SalesListController: View {
                     List {
                         ForEach(salesViewModel.salesDetailsList) { saleDetail in
                             CardViewTipe2(
-                                id: saleDetail.image.id,
-                                url: saleDetail.image.imageUrl,
+                                id: saleDetail.image?.id,
+                                url: saleDetail.image?.imageUrl,
                                 mainText: saleDetail.productName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(saleDetail.subtotal),

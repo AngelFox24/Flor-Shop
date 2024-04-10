@@ -59,8 +59,8 @@ struct CustomerHistoryViewListController: View {
                             let month: String = saleDetail.saleDate.getShortNameComponent(dateStringNameComponent: .month)
                             let year: String = saleDetail.saleDate.getDateComponent(dateComponent: .year).description
                             CardViewTipe2(
-                                id: saleDetail.image.id,
-                                url: saleDetail.image.imageUrl,
+                                id: saleDetail.image?.id,
+                                url: saleDetail.image?.imageUrl,
                                 topStatusColor: saleDetail.paymentType == PaymentType.cash ? .green : .red,
                                 topStatus: saleDetail.paymentType == PaymentType.cash ? "Pagado \(day) \(month) \(year)" : "Sin Pagar \(day) \(month) \(year)",
                                 mainText: saleDetail.productName,

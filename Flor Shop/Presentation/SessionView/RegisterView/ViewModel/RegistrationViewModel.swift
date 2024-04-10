@@ -25,8 +25,8 @@ class RegistrationViewModel: ObservableObject {
     }
     func registerUser() -> Bool {
         let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
-        let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: ImageUrl.getDummyImage())
-        let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: ImageUrl.getDummyImage(), active: true, phoneNumber: "")
+        let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: nil)
+        let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: nil, active: true, phoneNumber: "")
         return self.registerUserUseCase.execute(company: companyRegistration, subsidiary: subsidiaryRegistration, employee: userRegistration)
     }
 }

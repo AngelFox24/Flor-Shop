@@ -162,7 +162,7 @@ extension Tb_Subsidiary {
     func toSubsidiary() -> Subsidiary {
         return Subsidiary(id: idSubsidiary ?? UUID(),
                           name: name ?? "",
-                          image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage())
+                          image: toImageUrl?.toImage())
     }
 }
 
@@ -181,7 +181,7 @@ extension Tb_Product {
                        unitCost: unitCost,
                        unitPrice: unitPrice,
                        expirationDate: expirationDate ?? Date(),
-                       image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage())
+                       image: toImageUrl?.toImage())
         
     }
 }
@@ -194,7 +194,7 @@ extension Tb_Employee {
                         email: email ?? "",
                         lastName: lastName ?? "",
                         role: role ?? "",
-                        image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
+                        image: toImageUrl?.toImage(),
                         active: active,
                         phoneNumber: phoneNumber ?? "")
     }
@@ -232,7 +232,7 @@ extension Tb_Sale {
 extension Tb_SaleDetail {
     func toSaleDetail() -> SaleDetail {
         return SaleDetail(id: idSaleDetail ?? UUID(),
-                          image: toImageUrl?.toImage() ?? ImageUrl.getDummyImage(),
+                          image: toImageUrl?.toImage(),
                           productName: productName ?? "Desconocido",
                           unitCost: unitCost,
                           unitPrice: unitPrice,

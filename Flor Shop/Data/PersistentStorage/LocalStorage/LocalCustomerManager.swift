@@ -71,6 +71,18 @@ class LocalCustomerManager: CustomerManager {
                 //print("creditDays en CustomerManager: \(String(describing: customerEntity.creditDays))")
                 //print("firstDatePurchaseWithCredit en CustomerManager: \(String(describing: customerEntity.firstDatePurchaseWithCredit!.description))")
             }
+            if let imageNN = customer.image, let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                print("Imagen Editada y Reutilizada")
+                customerEntity.toImageUrl = imageEntity
+            } else { // Si no existe creamos uno nuevo
+                if let image = customer.image {
+                    print("Imagen Editada y Nueva")
+                    let newImage = Tb_ImageUrl(context: self.mainContext)
+                    newImage.idImageUrl = image.id
+                    newImage.imageUrl = image.imageUrl
+                    customerEntity.toImageUrl = newImage
+                }
+            }
             if customerEntity.isCreditLimitActive {
                 print("Entro porque es true")
                 customerEntity.isCreditLimit = customerEntity.totalDebt >= customerEntity.creditLimit
@@ -92,10 +104,12 @@ class LocalCustomerManager: CustomerManager {
             if let imageNN = customer.image, let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 newCustomerEntity.toImageUrl = imageEntity
             } else { // Si no existe creamos uno nuevo
-                let newImage = Tb_ImageUrl(context: self.mainContext)
-                //newImage.idImageUrl = customer.image.id
-                //newImage.imageUrl = customer.image.imageUrl
-                newCustomerEntity.toImageUrl = customer.image?.toImageUrlEntity(context: self.mainContext)
+                if let image = customer.image {
+                    let newImage = Tb_ImageUrl(context: self.mainContext)
+                    newImage.idImageUrl = image.id
+                    newImage.imageUrl = image.imageUrl
+                    newCustomerEntity.toImageUrl = newImage
+                }
             }
             //newCustomerEntity.creditActive = customer.creditActive
             newCustomerEntity.creditLimit = customer.creditLimit

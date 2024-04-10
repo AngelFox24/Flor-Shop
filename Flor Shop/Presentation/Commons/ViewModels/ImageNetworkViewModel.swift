@@ -11,8 +11,6 @@ import ImageIO
 import CoreGraphics
 import MobileCoreServices
 import UniformTypeIdentifiers
-//import UniformTypeIdentifiers
-//import MobileCoreServices
 
 class ImageNetworkViewModel: ObservableObject {
     
@@ -24,7 +22,7 @@ class ImageNetworkViewModel: ObservableObject {
             return
         }
         //Fijarse si hay en local
-        if let savedImage = loadSavedImage(id: idNN) {
+        if let savedImage = ImageNetworkViewModel.loadSavedImage(id: idNN) {
             await MainActor.run {
                 self.imageProduct = Image(uiImage: savedImage)
             }
@@ -149,7 +147,7 @@ class ImageNetworkViewModel: ObservableObject {
         return savedImage
     }
     
-    func loadSavedImage(id: UUID) -> UIImage? {
+    static func loadSavedImage(id: UUID) -> UIImage? {
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
             return nil
         }

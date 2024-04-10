@@ -11,6 +11,7 @@ import _PhotosUI_SwiftUI
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
     @Published var isPresented: Bool = false
+    @Published var selectedImage: UIImage?
     @Published var selectionImage: PhotosPickerItem? = nil {
         didSet{
             setImage(from: selectionImage)
@@ -21,11 +22,7 @@ class AddCustomerViewModel: ObservableObject {
     init(saveCustomerUseCase: SaveCustomerUseCase) {
         self.saveCustomerUseCase = saveCustomerUseCase
     }
-    func resetValuesFields() {
-        fieldsAddCustomer = FieldsAddCustomer()
-    }
     private func setImage(from selection: PhotosPickerItem?) {
-        print("Se intenta guardar imagen")
         guard let selection else {return}
         Task {
             do {
@@ -36,18 +33,9 @@ class AddCustomerViewModel: ObservableObject {
                 }
                 //selectedImage = uiImage
                 //TODO: Save image with id
-                if let idNN = self.fieldsAddCustomer.idImage {
-                    let _ = ImageNetworkViewModel.saveImage(id: idNN, image: uiImage)
-                    await MainActor.run {
-                        isPresented = false
-                    }
-                } else {
-                    let idIM = UUID()
-                    let _ = ImageNetworkViewModel.saveImage(id: idIM, image: uiImage)
-                    await MainActor.run {
-                        isPresented = false
-                        fieldsAddCustomer.idImage = idIM
-                    }
+                await MainActor.run {
+                    isPresented = false
+                    selectedImage = uiImage
                 }
             } catch {
                 print("Error: \(error)")
@@ -63,8 +51,12 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.creditLimitEdited = true
     }
     func editCustomer(customer: Customer) {
+        if let imageId = customer.image?.id {
+            self.selectedImage = ImageNetworkViewModel.loadSavedImage(id: imageId)
+            fieldsAddCustomer.idImage = imageId
+            print("Se agrego el id correctamente")
+        }
         fieldsAddCustomer.id = customer.id
-        fieldsAddCustomer.idImage = customer.image?.id
         fieldsAddCustomer.name = customer.name
         fieldsAddCustomer.lastname = customer.lastName
         fieldsAddCustomer.phoneNumber = customer.phoneNumber
@@ -86,7 +78,7 @@ class AddCustomerViewModel: ObservableObject {
         let result = self.saveCustomerUseCase.execute(customer: customer)
         if result == "" {
             print("Se añadio correctamente")
-            resetValuesFields()
+            releaseResources()
             return true
         } else {
             print(result)
@@ -107,15 +99,27 @@ class AddCustomerViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        guard let idImage = fieldsAddCustomer.idImage else {
-            print("El id de imagen es vacio")
-            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl.getDummyImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: saveSelectedImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+    }
+    func saveSelectedImage() -> ImageUrl? {
+        guard let image = self.selectedImage else {
+            return nil
         }
-        print("Se guarda imagen del cliente")
-        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: ImageUrl(id: idImage, imageUrl: ""), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        guard let idImage = fieldsAddCustomer.idImage else {
+            print("Se crea nuevo id")
+            let newIdImage = UUID()
+            ImageNetworkViewModel.saveImage(id: newIdImage, image: image)
+            return ImageUrl(id: newIdImage, imageUrl: "")
+        }
+        print("Se usa el mismo id")
+        ImageNetworkViewModel.saveImage(id: idImage, image: image)
+        return ImageUrl(id: idImage, imageUrl: "")
     }
     func releaseResources() {
-        self.fieldsAddCustomer = FieldsAddCustomer()
+        self.selectedImage = nil
+        self.selectionImage = nil
+        self.isPresented = false
+        fieldsAddCustomer = FieldsAddCustomer()
     }
 }
 

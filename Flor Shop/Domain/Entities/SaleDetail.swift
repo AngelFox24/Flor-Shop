@@ -9,7 +9,7 @@ import Foundation
 
 struct SaleDetail: Identifiable {
     var id: UUID
-    var image: ImageUrl
+    var image: ImageUrl?
     var productName: String
     var unitCost: Double
     var unitPrice: Double

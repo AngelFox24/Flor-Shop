@@ -25,8 +25,8 @@ struct Product: Identifiable {
     var totalCost: Double
     var profitMargin: Double
     var keyWords: String
-    var image: ImageUrl
-    init(id: UUID, active: Bool, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, image: ImageUrl) {
+    var image: ImageUrl?
+    init(id: UUID, active: Bool, name: String, qty: Int, unitCost: Double, unitPrice: Double, expirationDate: Date?, image: ImageUrl?) {
         self.id = id
         self.active = active
         self.name = name
@@ -69,7 +69,7 @@ struct Product: Identifiable {
         return true
     }
     static func getDummyProduct() -> Product {
-        return Product(id: UUID(), active: true, name: "No existe", qty: 0, unitCost: 0, unitPrice: 0, expirationDate: nil, image: ImageUrl.getDummyImage())
+        return Product(id: UUID(), active: true, name: "No existe", qty: 0, unitCost: 0, unitPrice: 0, expirationDate: nil, image: nil)
     }
     static func == (lhs: Product, rhs: Product) -> Bool {
         return lhs.id == rhs.id

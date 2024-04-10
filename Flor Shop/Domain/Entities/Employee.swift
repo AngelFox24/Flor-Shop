@@ -14,7 +14,7 @@ struct Employee: Identifiable {
     var email: String
     var lastName: String
     var role: String
-    var image: ImageUrl
+    var image: ImageUrl?
     var active: Bool
     var phoneNumber: String
 }

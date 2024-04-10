@@ -37,7 +37,6 @@ struct AddCustomerView_Previews: PreviewProvider {
 
 struct AddCustomerFields : View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @State var toggle: Bool = true
     @Binding var isPresented: Bool
     var sizeCampo: CGFloat = 150
     var body: some View {
@@ -51,20 +50,18 @@ struct AddCustomerFields : View {
                         }
                     }, label: {
                         VStack(content: {
-                            if toggle {
-                                CustomAsyncImageView(id: addCustomerViewModel.fieldsAddCustomer.idImage, urlProducto: nil, size: sizeCampo)
+                            if let imageC = addCustomerViewModel.selectedImage {
+                                Image(uiImage: imageC)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: sizeCampo, height: sizeCampo)
+                                    .cornerRadius(15.0)
                             } else {
-                                CustomAsyncImageView(id: addCustomerViewModel.fieldsAddCustomer.idImage, urlProducto: nil, size: sizeCampo)
+                                CardViewPlaceHolder2(size: sizeCampo)
                             }
                         })
                     })
-                    .disabled(isPresented ? true : false)
                     Spacer()
-                }
-                .onChange(of: isPresented) { iss in
-                    withAnimation(.easeOut) {
-                        toggle.toggle()
-                    }
                 }
                 HStack {
                     // El texto hace que tenga una separacion mayor del elemento

@@ -84,8 +84,8 @@ struct ListaControler: View {
                     }
                     ForEach(productsCoreDataViewModel.productsCoreData) { producto in
                         CardViewTipe2(
-                            id: producto.image.id,
-                            url: producto.image.imageUrl,
+                            id: producto.image?.id,
+                            url: producto.image?.imageUrl,
                             topStatusColor: Color.red,
                             topStatus: nil,
                             mainText: producto.name,

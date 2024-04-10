@@ -27,16 +27,11 @@ struct AddCustomerTopBar: View {
                 Spacer()
                 Button(action: {
                     if addCustomerViewModel.addCustomer() {
-                        print("Se agrego un cliente exitosamente")
-                        //TODO: Cambiar esta funcion al repositorio
-                        customerViewModel.releaseResources()
-                        addCustomerViewModel.resetValuesFields()
                         playSound(named: "Success1")
                         navManager.goToBack()
                     } else {
                         addCustomerViewModel.fieldsTrue()
                         playSound(named: "Fail1")
-                        print("No se pudo agregar correctamente")
                         showingErrorAlert = true
                     }
                 }, label: {

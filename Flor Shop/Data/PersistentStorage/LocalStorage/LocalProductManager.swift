@@ -102,7 +102,7 @@ class LocalProductManager: ProductManager {
             productInContext.unitCost = product.unitCost
             productInContext.expirationDate = product.expirationDate
             productInContext.unitPrice = product.unitPrice
-            productInContext.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
+            productInContext.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
             saveData()
             return "Success"
         } else {
@@ -119,7 +119,7 @@ class LocalProductManager: ProductManager {
                 newProduct.unitPrice = product.unitPrice
                 newProduct.expirationDate = product.expirationDate
                 newProduct.toSubsidiary = subsidiaryEntity
-                newProduct.toImageUrl = product.image.toImageUrlEntity(context: self.mainContext)
+                newProduct.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
                 saveData()
                 return "Success"
             } else {

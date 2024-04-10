@@ -135,7 +135,7 @@ class AgregarViewModel: ObservableObject {
     func editProduct(product: Product) {
         self.productId = product.id
         self.productName = product.name
-        self.imageUrl = product.image.imageUrl
+        self.imageUrl = product.image?.imageUrl ?? ""
         self.quantityStock = String(product.qty)
         self.unitCost = String(product.unitCost)
         self.unitPrice = String(product.unitPrice)

@@ -325,7 +325,7 @@ class LocalSaleManager: SaleManager {
                 let paymentType: PaymentType = PaymentType.from(description: result["toSale.paymentType"] as? String ?? "")
                 let saleDate: Date = result["toSale.saleDate"] as? Date ?? Date()
                 
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: paymentType, saleDate: saleDate, subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: paymentType, saleDate: saleDate, subtotal: totalByProduct)
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -420,7 +420,7 @@ class LocalSaleManager: SaleManager {
                       let totalByProduct = result["totalByProduct"] as? Double else {
                     return nil
                 }
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName) ?? ImageUrl.getDummyImage(), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -494,12 +494,12 @@ class LocalSaleManager: SaleManager {
                     return nil
                 }
                 guard let customerName = result["toSale.toCustomer.name"] as? String else {
-                    return SaleDetail(id: UUID(), image: ImageUrl.getDummyImage(), productName: "Desconocido", unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                    return SaleDetail(id: UUID(), image: nil, productName: "Desconocido", unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
                 }
                 guard let customerLastName = result ["toSale.toCustomer.lastName"] as? String else {
-                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
                 }
-                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName) ?? ImageUrl.getDummyImage(), productName: customerName + " " + customerLastName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName + " " + customerLastName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")

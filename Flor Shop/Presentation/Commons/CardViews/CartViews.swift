@@ -152,7 +152,7 @@ struct CardViewTipe3: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                CustomAsyncImageView(id: cartDetail.product.image.id, urlProducto: cartDetail.product.image.imageUrl, size: size)
+                CustomAsyncImageView(id: cartDetail.product.image?.id, urlProducto: cartDetail.product.image?.imageUrl, size: size)
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)
@@ -312,7 +312,7 @@ struct CardViews_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
         VStack(spacing: 10, content: {
-            CardViewTipe1(image: ImageUrl.getDummyImage(), topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
+            CardViewTipe1(image: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
             CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
             let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
             let cartRepository = CarRepositoryImpl(manager: cartManager)
