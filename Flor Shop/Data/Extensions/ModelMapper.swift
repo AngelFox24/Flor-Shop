@@ -130,19 +130,13 @@ extension Sale {
 
 extension ImageUrl {
     func toImageUrlEntity(context: NSManagedObjectContext) -> Tb_ImageUrl? {
-        let filterAtt = NSPredicate(format: "idImageUrl == %@", id.uuidString)
+        let filterAtt = NSPredicate(format: "(imageUrl == %@ AND imageUrl != '' AND imageUrl != nil) OR (imageHash == %@ AND imageHash != '' AND imageHash != nil)", imageUrl, imageHash)
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
         request.predicate = filterAtt
         do {
             let imageUrlEntity = try context.fetch(request).first
-            if let image = imageUrlEntity {
-                return image
-            } else {
-                let newImage = Tb_ImageUrl(context: context)
-                newImage.idImageUrl = id
-                newImage.imageUrl = imageUrl
-                return newImage
-            }
+            print("CoreData Extract Id: \(String(describing: imageUrlEntity?.idImageUrl?.uuidString)) Hash: \(String(describing: imageUrlEntity?.imageHash))")
+            return imageUrlEntity
         } catch let error {
             print("Error fetching. \(error)")
             return nil
@@ -168,7 +162,7 @@ extension Tb_Subsidiary {
 
 extension Tb_ImageUrl {
     func toImage() -> ImageUrl {
-        return ImageUrl(id: idImageUrl ?? UUID(), imageUrl: imageUrl ?? "")
+        return ImageUrl(id: idImageUrl ?? UUID(), imageUrl: imageUrl ?? "", imageHash: imageHash ?? "")
     }
 }
 

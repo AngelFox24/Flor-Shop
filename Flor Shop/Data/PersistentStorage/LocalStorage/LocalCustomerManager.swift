@@ -71,15 +71,16 @@ class LocalCustomerManager: CustomerManager {
                 //print("creditDays en CustomerManager: \(String(describing: customerEntity.creditDays))")
                 //print("firstDatePurchaseWithCredit en CustomerManager: \(String(describing: customerEntity.firstDatePurchaseWithCredit!.description))")
             }
-            if let imageNN = customer.image, let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                print("Imagen Editada y Reutilizada")
-                customerEntity.toImageUrl = imageEntity
-            } else { // Si no existe creamos uno nuevo
-                if let image = customer.image {
-                    print("Imagen Editada y Nueva")
+            if let imageNN = customer.image {
+                if let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                    print("Cliente Antiguo Imagen Editada y Reutilizada Id: \(imageEntity.idImageUrl?.uuidString) Hash: \(imageEntity.imageHash)")
+                    customerEntity.toImageUrl = imageEntity
+                } else {
                     let newImage = Tb_ImageUrl(context: self.mainContext)
-                    newImage.idImageUrl = image.id
-                    newImage.imageUrl = image.imageUrl
+                    newImage.idImageUrl = imageNN.id
+                    newImage.imageUrl = imageNN.imageUrl
+                    newImage.imageHash = imageNN.imageHash
+                    print("Se guardo el hash: \(imageNN.imageHash)")
                     customerEntity.toImageUrl = newImage
                 }
             }
@@ -101,13 +102,16 @@ class LocalCustomerManager: CustomerManager {
             newCustomerEntity.name = customer.name
             newCustomerEntity.lastName = customer.lastName
             newCustomerEntity.creditDays = Int64(customer.creditDays)
-            if let imageNN = customer.image, let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                newCustomerEntity.toImageUrl = imageEntity
-            } else { // Si no existe creamos uno nuevo
-                if let image = customer.image {
+            if let imageNN = customer.image {
+                if let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                    print("Nuevo Cliente Imagen Editada y Reutilizada Id: \(imageEntity.idImageUrl?.uuidString) Hash: \(imageEntity.imageHash)")
+                    newCustomerEntity.toImageUrl = imageEntity
+                } else {
                     let newImage = Tb_ImageUrl(context: self.mainContext)
-                    newImage.idImageUrl = image.id
-                    newImage.imageUrl = image.imageUrl
+                    newImage.idImageUrl = imageNN.id
+                    newImage.imageUrl = imageNN.imageUrl
+                    newImage.imageHash = imageNN.imageHash
+                    print("Se guardo el hash: \(imageNN.imageHash)")
                     newCustomerEntity.toImageUrl = newImage
                 }
             }

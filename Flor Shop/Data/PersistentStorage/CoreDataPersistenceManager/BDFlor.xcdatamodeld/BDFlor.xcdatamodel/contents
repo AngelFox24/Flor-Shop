@@ -56,6 +56,7 @@
     </entity>
     <entity name="Tb_ImageUrl" representedClassName=".Tb_ImageUrl" syncable="YES" codeGenerationType="class">
         <attribute name="idImageUrl" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageHash" optional="YES" attributeType="String"/>
         <attribute name="imageUrl" attributeType="String"/>
         <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toImageUrl" inverseEntity="Tb_Customer"/>
         <relationship name="toEmployee" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toImageUrl" inverseEntity="Tb_Employee"/>

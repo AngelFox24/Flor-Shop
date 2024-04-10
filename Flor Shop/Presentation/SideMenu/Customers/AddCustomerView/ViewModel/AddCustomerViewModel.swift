@@ -108,12 +108,12 @@ class AddCustomerViewModel: ObservableObject {
         guard let idImage = fieldsAddCustomer.idImage else {
             print("Se crea nuevo id")
             let newIdImage = UUID()
-            ImageNetworkViewModel.saveImage(id: newIdImage, image: image)
-            return ImageUrl(id: newIdImage, imageUrl: "")
+            let imageHash = ImageNetworkViewModel.saveImage(id: newIdImage, image: image)
+            return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
         }
         print("Se usa el mismo id")
-        ImageNetworkViewModel.saveImage(id: idImage, image: image)
-        return ImageUrl(id: idImage, imageUrl: "")
+        let imageHash = ImageNetworkViewModel.saveImage(id: idImage, image: image)
+        return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
     }
     func releaseResources() {
         self.selectedImage = nil

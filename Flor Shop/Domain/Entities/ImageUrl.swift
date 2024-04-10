@@ -10,4 +10,5 @@ import Foundation
 struct ImageUrl: Identifiable {
     var id: UUID
     var imageUrl: String
+    var imageHash: String
 }

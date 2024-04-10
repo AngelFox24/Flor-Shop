@@ -164,7 +164,7 @@ class AgregarViewModel: ObservableObject {
                         countFail = countFail + 1
                         continue
                     }
-                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0]))
+                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0], imageHash: ""))
                     let result = self.saveProductUseCase.execute(product: product)
                     if result == "Success" {
                         countSucc = countSucc + 1
@@ -187,7 +187,7 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
         if isErrorsEmpty() {
-            return Product(id: self.productId ?? UUID(), active: self.active, name: self.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.expirationDate, image: ImageUrl(id: UUID(), imageUrl: self.imageUrl))
+            return Product(id: self.productId ?? UUID(), active: self.active, name: self.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.expirationDate, image: ImageUrl(id: UUID(), imageUrl: self.imageUrl, imageHash: ""))
         } else {
             return nil
         }

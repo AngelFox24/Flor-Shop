@@ -316,7 +316,7 @@ struct CardViews_Previews: PreviewProvider {
             CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
             let cartManager = LocalCartManager(mainContext: CoreDataProvider.shared.viewContext)
             let cartRepository = CarRepositoryImpl(manager: cartManager)
-            let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), active: true, name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU")))
+            let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), active: true, name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU", imageHash: "")))
             CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
                 .environmentObject(dependencies.cartViewModel)
             CardViewTipe4(icon: "plus", text: "Puerco")

@@ -11,6 +11,7 @@ import ImageIO
 import CoreGraphics
 import MobileCoreServices
 import UniformTypeIdentifiers
+import CommonCrypto
 
 class ImageNetworkViewModel: ObservableObject {
     
@@ -105,17 +106,17 @@ class ImageNetworkViewModel: ObservableObject {
         }
     }
     @discardableResult
-    static func saveImage(id: UUID, image: UIImage, resize: Bool = true) -> Bool {
-        var savedImage = false
+    static func saveImage(id: UUID, image: UIImage, resize: Bool = true) -> String {
+        var imageHash = ""
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            return false
+            return imageHash
         }
         let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
         do {
             try FileManager.default.createDirectory(at: imagesDirectory, withIntermediateDirectories: true, attributes: nil)
         } catch {
             print("Error al crear el directorio de imágenes: \(error)")
-            return false
+            return imageHash
         }
         let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
         if let data = image.jpegData(compressionQuality: 1.0) {
@@ -123,9 +124,11 @@ class ImageNetworkViewModel: ObservableObject {
                 if resize {
                     let dataOp = ImageNetworkViewModel.resizeImage(data: data, maxWidth: 200, maxHeight: 200)
                     if let dataOpNN = dataOp {
+                        imageHash = ImageNetworkViewModel.generarHash(data: dataOpNN)
                         try dataOpNN.write(to: fileURL)
                     } else {
                         if ImageNetworkViewModel.shouldSaveImage(imageData: data) {
+                            imageHash = ImageNetworkViewModel.generarHash(data: data)
                             try data.write(to: fileURL)
                         } else {
                             print("La imagen es muy grande para ser guardada")
@@ -133,18 +136,29 @@ class ImageNetworkViewModel: ObservableObject {
                     }
                 } else {
                     if ImageNetworkViewModel.shouldSaveImage(imageData: data) {
+                        imageHash = ImageNetworkViewModel.generarHash(data: data)
                         try data.write(to: fileURL)
                     } else {
                         print("La imagen es muy grande para ser guardada")
                     }
                 }
                 print("Se guardo la imagen correctamente")
-                savedImage = true
             } catch {
                 print("Error al guardar la imagen: \(error)")
             }
         }
-        return savedImage
+        return imageHash
+    }
+    
+    static func generarHash(data: Data) -> String {
+        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        data.withUnsafeBytes {
+            _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
+        }
+        let hashData = Data(hash)
+        let hashString = hashData.map { String(format: "%02hhx", $0) }.joined()
+        print("Se genero hash: \(hashString)")
+        return hashString
     }
     
     static func loadSavedImage(id: UUID) -> UIImage? {
