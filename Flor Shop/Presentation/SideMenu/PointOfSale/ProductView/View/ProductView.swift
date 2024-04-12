@@ -83,6 +83,7 @@ struct ListaControler: View {
                             }
                     }
                     ForEach(productsCoreDataViewModel.productsCoreData) { producto in
+                        let _ = print("CardView2: \(producto.image?.imageUrl)")
                         CardViewTipe2(
                             id: producto.image?.id,
                             url: producto.image?.imageUrl,
@@ -121,6 +122,7 @@ struct ListaControler: View {
                                 .tint(Color("color_accent"))
                             }
                             .onAppear(perform: {
+                                print("Aparece item con Id: \(producto.id)")
                                 productsCoreDataViewModel.shouldLoadData(product: producto)
                             })
                     }

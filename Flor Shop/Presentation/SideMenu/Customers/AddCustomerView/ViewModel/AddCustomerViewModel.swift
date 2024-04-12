@@ -18,9 +18,13 @@ class AddCustomerViewModel: ObservableObject {
         }
     }
     let saveCustomerUseCase: SaveCustomerUseCase
+    let loadSavedImageUseCase: LoadSavedImageUseCase
+    let saveImageUseCase: SaveImageUseCase
     
-    init(saveCustomerUseCase: SaveCustomerUseCase) {
+    init(saveCustomerUseCase: SaveCustomerUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase) {
         self.saveCustomerUseCase = saveCustomerUseCase
+        self.loadSavedImageUseCase = loadSavedImageUseCase
+        self.saveImageUseCase = saveImageUseCase
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
@@ -52,7 +56,7 @@ class AddCustomerViewModel: ObservableObject {
     }
     func editCustomer(customer: Customer) {
         if let imageId = customer.image?.id {
-            self.selectedImage = ImageNetworkViewModel.loadSavedImage(id: imageId)
+            self.selectedImage = self.loadSavedImageUseCase.execute(id: imageId)
             fieldsAddCustomer.idImage = imageId
             print("Se agrego el id correctamente")
         }
@@ -108,11 +112,11 @@ class AddCustomerViewModel: ObservableObject {
         guard let idImage = fieldsAddCustomer.idImage else {
             print("Se crea nuevo id")
             let newIdImage = UUID()
-            let imageHash = ImageNetworkViewModel.saveImage(id: newIdImage, image: image)
+            let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: image, resize: true)
             return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
         }
         print("Se usa el mismo id")
-        let imageHash = ImageNetworkViewModel.saveImage(id: idImage, image: image)
+        let imageHash = self.saveImageUseCase.execute(id: idImage, image: image, resize: true)
         return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
     }
     func releaseResources() {

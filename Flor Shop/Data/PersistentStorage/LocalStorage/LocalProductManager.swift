@@ -102,7 +102,18 @@ class LocalProductManager: ProductManager {
             productInContext.unitCost = product.unitCost
             productInContext.expirationDate = product.expirationDate
             productInContext.unitPrice = product.unitPrice
-            productInContext.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
+            if let imageNN = product.image {
+                if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                    productInContext.toImageUrl = imageEntity
+                } else {
+                    let newImage = Tb_ImageUrl(context: self.mainContext)
+                    newImage.idImageUrl = imageNN.id
+                    newImage.imageUrl = imageNN.imageUrl
+                    newImage.imageHash = imageNN.imageHash
+                    productInContext.toImageUrl = newImage
+                }
+            }
+            //productInContext.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
             saveData()
             return "Success"
         } else {
@@ -119,7 +130,18 @@ class LocalProductManager: ProductManager {
                 newProduct.unitPrice = product.unitPrice
                 newProduct.expirationDate = product.expirationDate
                 newProduct.toSubsidiary = subsidiaryEntity
-                newProduct.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
+                if let imageNN = product.image {
+                    if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                        newProduct.toImageUrl = imageEntity
+                    } else {
+                        let newImage = Tb_ImageUrl(context: self.mainContext)
+                        newImage.idImageUrl = imageNN.id
+                        newImage.imageUrl = imageNN.imageUrl
+                        newImage.imageHash = imageNN.imageHash
+                        newProduct.toImageUrl = newImage
+                    }
+                }
+                //newProduct.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
                 saveData()
                 return "Success"
             } else {

@@ -1,5 +1,5 @@
 //
-//  ImageNetworkViewModel.swift
+//  ImageViewModel.swift
 //  Flor Shop
 //
 //  Created by Angel Curi Laurente on 19/04/23.
@@ -7,45 +7,61 @@
 
 import Foundation
 import SwiftUI
-import ImageIO
-import CoreGraphics
-import MobileCoreServices
-import UniformTypeIdentifiers
-import CommonCrypto
+import CoreData
 
-class ImageNetworkViewModel: ObservableObject {
+class ImageViewModel: ObservableObject {
     
-    @Published var imageProduct: Image?
+    @Published var image: Image?
     @Published var isLoading: Bool = false
     
-    func loadImage(id: UUID?, url: String?) async {
-        guard let idNN = id else {
-            return
-        }
+    //Managers
+    private let mainContext: NSManagedObjectContext
+    private let imageManager: ImageManager
+    //Repositories
+    private let imageRepository: ImageRepositoryImpl
+    //UseCases
+    private let deleteUnusedImagesUseCase: DeleteUnusedImagesUseCase
+    private let loadSavedImageUseCase: LoadSavedImageUseCase
+    private let downloadImageUseCase: DownloadImageUseCase
+    private let saveImageUseCase: SaveImageUseCase
+    
+    init() {
+        self.mainContext = CoreDataProvider.shared.viewContext
+        
+        self.imageManager = LocalImageManager(mainContext: self.mainContext)
+        self.imageRepository = ImageRepositoryImpl(manager: self.imageManager)
+        self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: self.imageRepository)
+        self.loadSavedImageUseCase = LoadSavedImageInteractor(imageRepository: self.imageRepository)
+        self.downloadImageUseCase = DownloadImageInteractor(imageRepository: self.imageRepository)
+        self.saveImageUseCase = SaveImageInteractor(imageRepository: self.imageRepository)
+    }
+    
+    func loadImage(id: UUID, url: String?) async {
+        print("Se intenta cargar imagen \(id)")
         //Fijarse si hay en local
-        if let savedImage = ImageNetworkViewModel.loadSavedImage(id: idNN) {
+        if let savedImage = self.loadSavedImageUseCase.execute(id: id) {
             await MainActor.run {
-                self.imageProduct = Image(uiImage: savedImage)
+                print("Se carga imagen local")
+                self.image = Image(uiImage: savedImage)
             }
         } else {
             //Sino descargar
             guard let urlNN = url, let urlT = URL(string: urlNN) else {
                 return
             }
-            let data = await downloadImage(url: urlT)
-            guard let dataNN = data else {
-                return
-            }
-            let dataOp = ImageNetworkViewModel.resizeImage(data: dataNN, maxWidth: 200, maxHeight: 200)
-            if let dataOpNN = dataOp, let uiImageNN = UIImage(data: dataOpNN) {
-                let imageNN = Image(uiImage: uiImageNN)
+            print("Se intenta descargar imagen")
+            let imageOp = await self.downloadImageUseCase.execute(url: urlT)
+            //let dataOp = ImageViewModel.resizeImage(data: dataNN, maxWidth: 200, maxHeight: 200)
+            if let uiImageNN = imageOp {
                 await MainActor.run {
-                    self.imageProduct = imageNN
+                    print("Se carga imagen descargada")
+                    self.image = Image(uiImage: uiImageNN)
                 }
-                ImageNetworkViewModel.saveImage(id: idNN, image: uiImageNN)
+                self.saveImageUseCase.execute(id: id, image: uiImageNN, resize: false)
             }
         }
     }
+    /*
     static func resizeImage(data: Data, maxWidth: CGFloat, maxHeight: CGFloat) -> Data? {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
               let image = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
@@ -94,6 +110,8 @@ class ImageNetworkViewModel: ObservableObject {
         
         return resizedData as Data
     }
+     */
+    /*
     func downloadImage(url: URL) async -> Data? {
         do {
             let request = URLRequest(url: url)
@@ -105,6 +123,8 @@ class ImageNetworkViewModel: ObservableObject {
             return nil
         }
     }
+     */
+    /*
     @discardableResult
     static func saveImage(id: UUID, image: UIImage, resize: Bool = true) -> String {
         var imageHash = ""
@@ -122,21 +142,21 @@ class ImageNetworkViewModel: ObservableObject {
         if let data = image.jpegData(compressionQuality: 1.0) {
             do {
                 if resize {
-                    let dataOp = ImageNetworkViewModel.resizeImage(data: data, maxWidth: 200, maxHeight: 200)
+                    let dataOp = ImageViewModel.resizeImage(data: data, maxWidth: 200, maxHeight: 200)
                     if let dataOpNN = dataOp {
-                        imageHash = ImageNetworkViewModel.generarHash(data: dataOpNN)
+                        imageHash = ImageViewModel.generarHash(data: dataOpNN)
                         try dataOpNN.write(to: fileURL)
                     } else {
-                        if ImageNetworkViewModel.shouldSaveImage(imageData: data) {
-                            imageHash = ImageNetworkViewModel.generarHash(data: data)
+                        if ImageViewModel.shouldSaveImage(imageData: data) {
+                            imageHash = ImageViewModel.generarHash(data: data)
                             try data.write(to: fileURL)
                         } else {
                             print("La imagen es muy grande para ser guardada")
                         }
                     }
                 } else {
-                    if ImageNetworkViewModel.shouldSaveImage(imageData: data) {
-                        imageHash = ImageNetworkViewModel.generarHash(data: data)
+                    if ImageViewModel.shouldSaveImage(imageData: data) {
+                        imageHash = ImageViewModel.generarHash(data: data)
                         try data.write(to: fileURL)
                     } else {
                         print("La imagen es muy grande para ser guardada")
@@ -149,7 +169,8 @@ class ImageNetworkViewModel: ObservableObject {
         }
         return imageHash
     }
-    
+    */
+    /*
     static func generarHash(data: Data) -> String {
         var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
         data.withUnsafeBytes {
@@ -160,7 +181,8 @@ class ImageNetworkViewModel: ObservableObject {
         print("Se genero hash: \(hashString)")
         return hashString
     }
-    
+     */
+    /*
     static func loadSavedImage(id: UUID) -> UIImage? {
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
             return nil
@@ -175,6 +197,8 @@ class ImageNetworkViewModel: ObservableObject {
         }
         return nil
     }
+     */
+    /*
     func deleteImage(id: UUID) {
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
             return
@@ -203,4 +227,5 @@ class ImageNetworkViewModel: ObservableObject {
         print("La imagen es valida para ser guardada \(imageSizeInPixels.description) ----- \(imageSizeInKB.description)")
         return true
     }
+     */
 }

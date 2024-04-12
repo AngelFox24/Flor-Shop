@@ -27,6 +27,7 @@ struct Dependencies {
     private let productRepository: ProductRepositoryImpl
     private let cartRepository: CarRepositoryImpl
     private let salesRepository: SaleRepositoryImpl
+    private let imageRepository: ImageRepositoryImpl
     //UseCases
     private let getSubsidiaryUseCase: GetSubsidiaryUseCase
     private let getCompanyUseCase: GetCompanyUseCase
@@ -53,6 +54,10 @@ struct Dependencies {
     private let getSalesDetailsUseCase: GetSalesDetailsUseCase
     private let getCustomerSalesUseCase: GetCustomerSalesUseCase
     private let payClientDebtUseCase: PayClientDebtUseCase
+    private let deleteUnusedImagesUseCase: DeleteUnusedImagesUseCase
+    private let loadSavedImageUseCase: LoadSavedImageUseCase
+    private let downloadImageUseCase: DownloadImageUseCase
+    private let saveImageUseCase: SaveImageUseCase
     
     private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
@@ -91,6 +96,7 @@ struct Dependencies {
         self.productRepository = ProductRepositoryImpl(manager: productManager)
         self.cartRepository = CarRepositoryImpl(manager: cartManager)
         self.salesRepository = SaleRepositoryImpl(manager: saleManager)
+        self.imageRepository = ImageRepositoryImpl(manager: imageManager)
         //MARK: UseCases
         self.getSubsidiaryUseCase = GetSubsidiaryInteractor(employeeRepository: employeeRepository)
         self.getCompanyUseCase = GetCompanyInteractor(subsidiaryRepository: subsidiaryRepository)
@@ -117,6 +123,10 @@ struct Dependencies {
         self.getSalesDetailsUseCase = GetSalesDetailsInteractor(saleRepository: salesRepository)
         self.getCustomerSalesUseCase = GetCustomerSalesInteractor(customerRepository: customerRepository)
         self.payClientDebtUseCase = PayClientDebtInteractor(saleRepository: salesRepository)
+        self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
+        self.loadSavedImageUseCase = LoadSavedImageInteractor(imageRepository: imageRepository)
+        self.downloadImageUseCase = DownloadImageInteractor(imageRepository: imageRepository)
+        self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         
         self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
         self.logInUseCase = LogInInteractor(employeeRepository: employeeRepository, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, getCompanyUseCase: getCompanyUseCase, getSubsidiaryUseCase: getSubsidiaryUseCase)
@@ -132,7 +142,7 @@ struct Dependencies {
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
         //self.companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
-        self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase)
+        self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase)
         self.versionCheck = VersionCheck()
         self.navManager = NavManager()
     }

@@ -9,13 +9,12 @@ import SwiftUI
 
 struct CustomAsyncImageView: View {
     let id: UUID?
-    //let id: UUID?
     let urlProducto: String?
     let size: CGFloat
-    @StateObject var imageViewModel = ImageNetworkViewModel()
+    @StateObject var imageViewModel = ImageViewModel()
     var body: some View {
         HStack {
-            if let imageC = imageViewModel.imageProduct {
+            if let imageC = imageViewModel.image {
                 imageC
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -27,9 +26,13 @@ struct CustomAsyncImageView: View {
         }
         .onAppear(perform: {
             Task {
-                self.imageViewModel.isLoading = true
-                await imageViewModel.loadImage(id: id, url: urlProducto)
-                self.imageViewModel.isLoading = false
+                print("Se carga task: \(id)")
+                if let idNN = id {
+                    print("Se carga NN: \(idNN)")
+                    self.imageViewModel.isLoading = true
+                    await imageViewModel.loadImage(id: idNN, url: urlProducto)
+                    self.imageViewModel.isLoading = false
+                }
             }
         })
     }
