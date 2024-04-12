@@ -63,7 +63,8 @@ enum MenuTab: String, CaseIterable {
         }
     }
     static func navTabs() -> [MenuTab] {
-        return [.pointOfSaleTab, .salesTab, .customersTab, .employeesTab, .settingsTab]
+        //return [.pointOfSaleTab, .salesTab, .customersTab, .employeesTab, .settingsTab]
+        return [.pointOfSaleTab, .salesTab, .customersTab]
     }
 }
 

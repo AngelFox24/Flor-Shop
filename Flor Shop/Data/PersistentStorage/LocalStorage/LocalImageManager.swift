@@ -239,19 +239,6 @@ class LocalImageManager: ImageManager {
         print("Se genero hash: \(hashString)")
         return hashString
     }
-    func deleteImage(id: UUID) {
-        guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            return
-        }
-        let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
-        let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
-        do {
-            try FileManager.default.removeItem(at: fileURL)
-            print("Se eliminó la imagen con el ID \(id.uuidString)")
-        } catch {
-            print("Error al eliminar la imagen con el ID \(id.uuidString): \(error.localizedDescription)")
-        }
-    }
     func shouldSaveImage(imageData: Data) -> Bool {
         guard let uiImage = UIImage(data: imageData) else {
             return false

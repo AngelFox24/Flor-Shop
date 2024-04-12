@@ -26,9 +26,7 @@ struct CustomAsyncImageView: View {
         }
         .onAppear(perform: {
             Task {
-                print("Se carga task: \(id)")
                 if let idNN = id {
-                    print("Se carga NN: \(idNN)")
                     self.imageViewModel.isLoading = true
                     await imageViewModel.loadImage(id: idNN, url: urlProducto)
                     self.imageViewModel.isLoading = false
