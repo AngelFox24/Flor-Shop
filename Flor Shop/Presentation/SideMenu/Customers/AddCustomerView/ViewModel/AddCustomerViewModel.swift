@@ -11,6 +11,7 @@ import _PhotosUI_SwiftUI
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
     @Published var isPresented: Bool = false
+    @Published var isLoading: Bool = false
     @Published var selectedImage: UIImage?
     @Published var selectionImage: PhotosPickerItem? = nil {
         didSet{
@@ -28,6 +29,7 @@ class AddCustomerViewModel: ObservableObject {
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
+        self.isLoading = true
         Task {
             do {
                 let data = try await selection.loadTransferable(type: Data.self)
@@ -45,6 +47,7 @@ class AddCustomerViewModel: ObservableObject {
                 print("Error: \(error)")
             }
         }
+        self.isLoading = false
     }
     func fieldsTrue() {
         print("All value true")
@@ -74,7 +77,8 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.creditLimit = String(customer.creditLimit)
         
     }
-    func addCustomer() -> Bool {
+    func addCustomer() async -> Bool {
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let customer = createCustomer() else {
             print("No se pudo crear Cliente")
             return false
@@ -82,11 +86,13 @@ class AddCustomerViewModel: ObservableObject {
         let result = self.saveCustomerUseCase.execute(customer: customer)
         if result == "" {
             print("Se añadio correctamente")
-            releaseResources()
+            await releaseResources()
             return true
         } else {
             print(result)
-            fieldsAddCustomer.errorBD = result
+            await MainActor.run {
+                fieldsAddCustomer.errorBD = result
+            }
             return false
         }
     }
@@ -119,11 +125,13 @@ class AddCustomerViewModel: ObservableObject {
         let imageHash = self.saveImageUseCase.execute(id: idImage, image: image, resize: true)
         return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
     }
-    func releaseResources() {
-        self.selectedImage = nil
-        self.selectionImage = nil
-        self.isPresented = false
-        fieldsAddCustomer = FieldsAddCustomer()
+    func releaseResources() async {
+        await MainActor.run {
+            self.selectedImage = nil
+            self.selectionImage = nil
+            self.isPresented = false
+            fieldsAddCustomer = FieldsAddCustomer()
+        }
     }
 }
 

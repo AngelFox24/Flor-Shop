@@ -10,7 +10,6 @@ import SwiftUI
 struct AddCustomerView: View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     var body: some View {
-        
         ZStack(content: {
             VStack(spacing: 0) {
                 AddCustomerTopBar()
@@ -20,6 +19,9 @@ struct AddCustomerView: View {
             .blur(radius: addCustomerViewModel.isPresented ? 2 : 0)
             if addCustomerViewModel.isPresented {
                 SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented,selectionImage: $addCustomerViewModel.selectionImage)
+            }
+            if addCustomerViewModel.isLoading {
+                LoadingView()
             }
         })
         .navigationBarTitleDisplayMode(.inline)
@@ -111,7 +113,9 @@ struct AddCustomerFields : View {
         .padding(.horizontal, 10)
         .scrollDismissesKeyboard(.immediately)
         .onDisappear {
-            addCustomerViewModel.releaseResources()
+            Task {
+                await addCustomerViewModel.releaseResources()
+            }
         }
     }
 }

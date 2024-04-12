@@ -121,7 +121,9 @@ struct CustomerListController: View {
                 HStack(content: {
                     Spacer()
                     Button(action: {
-                        addCustomerViewModel.releaseResources()
+                        Task {
+                            await addCustomerViewModel.releaseResources()
+                        }
                         navManager.goToAddCustomerView()
                     }, label: {
                         CustomButton4(simbol: "plus")
