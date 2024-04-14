@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var logInViewModel: LogInViewModel
+    @EnvironmentObject var registrationViewModel: RegistrationViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var isKeyboardVisible: Bool = false
     @State private var showMenu: Bool = false
@@ -41,6 +42,14 @@ struct MainView: View {
                                                 if let user = userOrEmail, let password = password {
                                                     logInViewModel.logInFields.userOrEmail = user
                                                     logInViewModel.logInFields.password = password
+                                                    logInViewModel.logIn()
+                                                } else {
+                                                    let reg = registrationViewModel.registerUser()
+                                                    print("\(reg)")
+                                                    logInViewModel.logInFields.userOrEmail = registrationViewModel.registrationFields.email
+                                                    logInViewModel.logInFields.password = registrationViewModel.registrationFields.password
+                                                    print("User: \(registrationViewModel.registrationFields.email)")
+                                                    print("Pass: \(registrationViewModel.registrationFields.password)")
                                                     logInViewModel.logIn()
                                                 }
                                             })

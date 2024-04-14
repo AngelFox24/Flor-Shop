@@ -31,7 +31,7 @@ class RegistrationViewModel: ObservableObject {
     }
 }
 class RegistrationFields {
-    var email: String = "curilaurente@gmail.com"
+    var email: String = "user001@gmail.com"
     var emailEdited: Bool = false
     var emailError: String {
         if email == "" && emailEdited {
@@ -40,7 +40,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var user: String = "Mrfox"
+    var user: String = "user001"
     var userEdited: Bool = false
     var userError: String {
         if user == "" && userEdited {
@@ -49,7 +49,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var password: String = "pro"
+    var password: String = "1234"
     var passwordEdited: Bool = false
     var passwordError: String {
         if self.password == "" && self.passwordEdited {
@@ -71,12 +71,12 @@ class RegistrationFields {
     var companyRUCEdited: Bool = false
     var companyRUCError: String {
         if self.companyRUC == "" && self.companyRUCEdited {
-            return "Pon algo pz"
+            return "RUC"
         } else {
             return ""
         }
     }
-    var managerName: String = "Angel"
+    var managerName: String = "Manager"
     var managerNameEdited: Bool = false
     var managerNameError: String {
         if self.managerName == "" && self.managerNameEdited {
@@ -85,7 +85,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var managerLastName: String = "Curi Laurente"
+    var managerLastName: String = "Last Name Manager"
     var managerLastNameEdited: Bool = false
     var managerLastNameError: String {
         if self.managerLastName == "" && self.managerLastNameEdited {

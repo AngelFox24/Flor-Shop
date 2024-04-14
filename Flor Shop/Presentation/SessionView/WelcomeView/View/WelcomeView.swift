@@ -43,15 +43,6 @@ struct WelcomeView: View {
                         .foregroundColor(Color(.black))
                 })
             }
-            /*
-            .navigationDestination(for: NavPathsEnum.self, destination: { view in
-                if view == .loginView {
-                    LogInView(isKeyboardVisible: $isKeyboardVisible)
-                } else if view == .registrationView {
-                    CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
-                }
-            })
-            */
             Spacer()
         }
         .background(Color("color_primary"))

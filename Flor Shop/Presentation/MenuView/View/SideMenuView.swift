@@ -99,10 +99,12 @@ struct SideMenuView: View {
                                 Text("Flor Shop")
                                     .font(.custom("Artifika-Regular", size: 30))
                                     .foregroundColor(Color(.white))
+                                /*
                                 Text("View Profile")
                                     .font(.custom("Artifika-Regular", size: 15))
                                     .foregroundColor(Color(.white))
                                     .opacity(0.7)
+                                 */
                             })
                         })
                         .padding(.leading, 15)
@@ -113,7 +115,7 @@ struct SideMenuView: View {
                         })
                         Spacer()
                         VStack(alignment: .leading, spacing: 5, content: {
-                            TabButton(tab: MenuTab.logOut, selectedTab: $selectedTab, showMenu: $showMenu)
+                            //TabButton(tab: MenuTab.logOut, selectedTab: $selectedTab, showMenu: $showMenu)
                             Text("App Version 2.0.0")
                                 .font(.caption)
                                 .fontWeight(.semibold)

@@ -36,17 +36,20 @@ final class RegisterUserInteractor: RegisterUserUseCase {
                 self.setDefaultSubsidiaryUseCase.execute(subsidiary: subsidiary)
                 if self.createEmployeeUseCase.execute(employee: employee) {
                     self.setDefaultEmployeeUseCase.execute(employee: employee)
+                    print("Register Ok")
                     return true
                 } else {
-                    //registrationFields.errorRegistration = "Empleado ya existe en la BD"
+                    print("Empleado ya existe en la BD")
                     return false
                 }
             } else {
                 //registrationFields.errorRegistration = "Sucursal ya existe en la BD"
+                print("Sucursal ya existe en la BD")
                 return false
             }
         } else {
             //registrationFields.errorRegistration = "Compañia ya existe en la BD"
+            print("Compañia ya existe en la BD")
             return false
         }
     }
