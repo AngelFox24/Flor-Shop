@@ -9,6 +9,9 @@ import PhotosUI
 
 struct SourceSelecctionView: View {
     @Binding var isPresented: Bool
+    var photoPicker: Bool = true
+    var fromInternet: Bool = true
+    var fromInternetAction: (() -> Void)?
     @Binding var selectionImage: PhotosPickerItem?
     var body: some View {
         if isPresented {
@@ -25,33 +28,37 @@ struct SourceSelecctionView: View {
                     Spacer()
                         .opacity(0.2)
                     VStack {
-                        PhotosPicker(selection: $selectionImage, matching: .images, label: {
-                            HStack(content: {
-                                Image(systemName: "photo")
-                                    .foregroundStyle(Color.blue)
-                                    .font(.custom("Artifika-Regular", size: 25))
-                                    .padding(.horizontal, 5)
-                                Text("Galería de Fotos")
-                                    .foregroundStyle(Color.black)
-                                Spacer()
+                        if photoPicker {
+                            PhotosPicker(selection: $selectionImage, matching: .images, label: {
+                                HStack(content: {
+                                    Image(systemName: "photo")
+                                        .foregroundStyle(Color.blue)
+                                        .font(.custom("Artifika-Regular", size: 25))
+                                        .padding(.horizontal, 5)
+                                    Text("Galería de Fotos")
+                                        .foregroundStyle(Color.black)
+                                    Spacer()
+                                })
+                                .padding(.all, 15)
                             })
-                            .padding(.all, 15)
-                        })
-                        Button(action: {
-                                print("wow")
-                        }, label: {
-                            HStack(content: {
-                                Image(systemName: "globe.americas.fill")
-                                    .foregroundStyle(Color.blue)
-                                    .font(.custom("Artifika-Regular", size: 25))
-                                    .blur(radius: 0)
-                                    .padding(.horizontal, 8)
-                                Text("Internet")
-                                    .foregroundStyle(Color.black)
-                                Spacer()
+                        }
+                        if fromInternet {
+                            Button(action: {
+                                fromInternetAction?()
+                            }, label: {
+                                HStack(content: {
+                                    Image(systemName: "globe.americas.fill")
+                                        .foregroundStyle(Color.blue)
+                                        .font(.custom("Artifika-Regular", size: 25))
+                                        .blur(radius: 0)
+                                        .padding(.horizontal, 8)
+                                    Text("Internet")
+                                        .foregroundStyle(Color.black)
+                                    Spacer()
+                                })
+                                .padding(.all, 15)
                             })
-                            .padding(.all, 15)
-                        })
+                        }
                     }
                     .background(Color.white)
                     .cornerRadius(15)

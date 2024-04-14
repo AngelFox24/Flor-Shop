@@ -18,7 +18,7 @@ struct AddCustomerView: View {
             .background(Color("color_background"))
             .blur(radius: addCustomerViewModel.isPresented ? 2 : 0)
             if addCustomerViewModel.isPresented {
-                SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented,selectionImage: $addCustomerViewModel.selectionImage)
+                SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented, fromInternet: false, selectionImage: $addCustomerViewModel.selectionImage)
             }
             if addCustomerViewModel.isLoading {
                 LoadingView()

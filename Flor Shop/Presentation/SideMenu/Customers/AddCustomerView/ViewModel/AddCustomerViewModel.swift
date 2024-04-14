@@ -10,8 +10,8 @@ import _PhotosUI_SwiftUI
 
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
-    @Published var isPresented: Bool = false
     @Published var isLoading: Bool = false
+    @Published var isPresented: Bool = false
     @Published var selectedImage: UIImage?
     @Published var selectionImage: PhotosPickerItem? = nil {
         didSet{

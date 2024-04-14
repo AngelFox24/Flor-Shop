@@ -83,7 +83,7 @@ struct ListaControler: View {
                             }
                     }
                     ForEach(productsCoreDataViewModel.productsCoreData) { producto in
-                        let _ = print("CardView2: \(producto.image?.imageUrl)")
+                        let _ = print("CardView2: \(producto.image?.id)")
                         CardViewTipe2(
                             id: producto.image?.id,
                             url: producto.image?.imageUrl,
@@ -97,37 +97,38 @@ struct ListaControler: View {
                             secondaryIndicator: String(producto.qty),
                             secondaryIndicatorAlert: false, size: 80
                         )
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
-                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                Button(action: {
-                                    if agregarProductoACarrito(producto: producto) {
-                                        playSound(named: "Success1")
-                                    } else {
-                                        playSound(named: "Fail1")
-                                    }
-                                }, label: {
-                                    Image(systemName: "cart")
-                                })
-                                .tint(Color("color_accent"))
-                            }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(action: {
-                                    editProduct(product: producto)
-                                    selectedTab = .plus
-                                }, label: {
-                                    Image(systemName: "pencil")
-                                })
-                                .tint(Color("color_accent"))
-                            }
-                            .onAppear(perform: {
-                                print("Aparece item con Id: \(producto.id)")
-                                productsCoreDataViewModel.shouldLoadData(product: producto)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                        .listRowBackground(Color("color_background"))
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button(action: {
+                                if agregarProductoACarrito(producto: producto) {
+                                    playSound(named: "Success1")
+                                } else {
+                                    playSound(named: "Fail1")
+                                }
+                            }, label: {
+                                Image(systemName: "cart")
                             })
+                            .tint(Color("color_accent"))
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(action: {
+                                editProduct(product: producto)
+                                selectedTab = .plus
+                            }, label: {
+                                Image(systemName: "pencil")
+                            })
+                            .tint(Color("color_accent"))
+                        }
+                        .onAppear(perform: {
+                            print("Aparece item con Id: \(producto.id)")
+                            productsCoreDataViewModel.shouldLoadData(product: producto)
+                        })
                     }
                 }
                 .listStyle(PlainListStyle())
+                .background(Color("color_background"))
             }
         }
     }

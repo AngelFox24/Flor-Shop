@@ -8,15 +8,24 @@
 import SwiftUI
 
 struct AgregarView: View {
-    //@State var editedFields = AgregarViewModel()
+    @EnvironmentObject var agregarViewModel: AgregarViewModel
     var body: some View {
-        NavigationView {
+        ZStack(content: {
             VStack(spacing: 0) {
                 AgregarTopBar()
-                CamposProductoAgregar()
+                CamposProductoAgregar(isPresented: $agregarViewModel.isPresented)
             }
             .background(Color("color_background"))
-        }
+            .blur(radius: agregarViewModel.isPresented ? 2 : 0)
+            if agregarViewModel.isPresented {
+                SourceSelecctionView(isPresented: $agregarViewModel.isPresented, fromInternetAction: agregarViewModel.findProductNameOnInternet, selectionImage: $agregarViewModel.selectionImage)
+            }
+            if agregarViewModel.isLoading {
+                LoadingView()
+            }
+        })
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -38,6 +47,7 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
+    @Binding var isPresented: Bool
     var sizeCampo: CGFloat = 150
     var body: some View {
         //List(content: {
@@ -53,34 +63,43 @@ struct CamposProductoAgregar: View {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()
-                    AsyncImage(url: URL(string: agregarViewModel.imageUrl )) { phase in
-                        switch phase {
-                        case .empty:
-                            CardViewPlaceHolder2(size: sizeCampo)
-                        case .success(let returnetImage):
-                            returnetImage
+                    Button(action: {
+                        withAnimation(.easeIn) {
+                            isPresented = true
+                        }
+                    }, label: {
+                        if let imageC = agregarViewModel.selectedLocalImage {
+                            Image(uiImage: imageC)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: sizeCampo, height: sizeCampo)
-                                .cornerRadius(20.0)
-                        case .failure:
-                            CardViewPlaceHolder2(text: "Fallo en Carga", size: sizeCampo)
-                        default:
-                            CardViewPlaceHolder2(text: "Error", size: sizeCampo)
+                                .cornerRadius(15.0)
+                        } else {
+                            AsyncImage(url: URL(string: agregarViewModel.imageUrl )) { phase in
+                                switch phase {
+                                case .empty:
+                                    CardViewPlaceHolder2(size: sizeCampo)
+                                case .success(let returnetImage):
+                                    returnetImage
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: sizeCampo, height: sizeCampo)
+                                        .cornerRadius(20.0)
+                                case .failure:
+                                    CardViewPlaceHolder2(text: "Fallo en Carga", size: sizeCampo)
+                                default:
+                                    CardViewPlaceHolder2(text: "Error", size: sizeCampo)
+                                }
+                            }
                         }
-                    }
+                    })
                     Spacer()
                 }
                 VStack {
                     HStack {
                         HStack {
                             Button(action: {
-                                if agregarViewModel.productName != "" {
-                                    agregarViewModel.imageUrl = pasteFromClipboard()
-                                    print("Se pego imagen: \(agregarViewModel.imageUrl.description)")
-                                } else {
-                                    agregarViewModel.urlEdited()
-                                }
+                                agregarViewModel.pasteFromInternet()
                             }, label: {
                                 Text("Pegar Imagen")
                                     .foregroundColor(.black)
@@ -111,9 +130,7 @@ struct CamposProductoAgregar: View {
                         }
                         Button(action: {
                             print("Se presiono Buscar Imagen")
-                            if agregarViewModel.productName != "" {
-                                openGoogleImageSearch(nombre: agregarViewModel.productName)
-                            }
+                                agregarViewModel.findProductNameOnInternet()
                         }, label: {
                             Text("Buscar Imagen")
                                 .foregroundColor(.black)

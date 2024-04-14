@@ -134,7 +134,7 @@ struct Dependencies {
         //MARK: ViewModels
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
         self.registrationViewModel = RegistrationViewModel(registerUserUseCase: registerUserUseCase)
-        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase)
+        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getProductsInCartUseCase: getProductsInCartUseCase, getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, increaceProductInCartUseCase: increaceProductInCartUseCase, decreaceProductInCartUseCase: decreaceProductInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)

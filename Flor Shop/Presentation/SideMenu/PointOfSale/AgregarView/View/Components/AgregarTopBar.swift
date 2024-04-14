@@ -20,13 +20,17 @@ struct AgregarTopBar: View {
             AgregarViewPopoverHelp()
             Spacer()
             Button(action: {
-                if agregarViewModel.addProduct() {
-                    productViewModel.releaseResources()
-                    agregarViewModel.resetValuesFields()
-                    playSound(named: "Success1")
-                } else {
-                    playSound(named: "Fail1")
-                    showingErrorAlert = agregarViewModel.errorBD == "" ? false : true
+                Task {
+                    agregarViewModel.isLoading = true
+                    if await agregarViewModel.addProduct() {
+                        productViewModel.releaseResources()
+                        agregarViewModel.resetValuesFields()
+                        playSound(named: "Success1")
+                    } else {
+                        playSound(named: "Fail1")
+                        showingErrorAlert = agregarViewModel.errorBD == "" ? false : true
+                    }
+                    agregarViewModel.isLoading = false
                 }
             }, label: {
                 CustomButton1(text: "Guardar")

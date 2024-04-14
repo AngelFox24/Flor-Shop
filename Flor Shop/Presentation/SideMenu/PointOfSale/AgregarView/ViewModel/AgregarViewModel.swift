@@ -6,10 +6,20 @@
 //
 
 import Foundation
+import SwiftUI
 import CoreGraphics
 import ImageIO
+import _PhotosUI_SwiftUI
 
 class AgregarViewModel: ObservableObject {
+    @Published var isLoading: Bool = false
+    @Published var isPresented: Bool = false
+    @Published var selectedLocalImage: UIImage?
+    @Published var selectionImage: PhotosPickerItem? = nil {
+        didSet{
+            setImage(from: selectionImage)
+        }
+    }
     @Published var productId: UUID?
     @Published var active: Bool = true
     @Published var productName: String = ""
@@ -35,6 +45,7 @@ class AgregarViewModel: ObservableObject {
             return ""
         }
     }
+    @Published var idImage: UUID?
     @Published var imageUrl: String = ""
     @Published var imageURLEdited: Bool = false
     @Published var imageURLError: String = ""
@@ -76,12 +87,19 @@ class AgregarViewModel: ObservableObject {
     @Published var errorBD: String = ""
     
     private let saveProductUseCase: SaveProductUseCase
+    let loadSavedImageUseCase: LoadSavedImageUseCase
+    let saveImageUseCase: SaveImageUseCase
     
-    init(saveProductUseCase: SaveProductUseCase) {
+    init(saveProductUseCase: SaveProductUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase) {
         self.saveProductUseCase = saveProductUseCase
+        self.loadSavedImageUseCase = loadSavedImageUseCase
+        self.saveImageUseCase = saveImageUseCase
     }
     //MARK: Funciones
     func resetValuesFields() {
+        self.selectedLocalImage = nil
+        self.selectionImage = nil
+        self.isPresented = false
         fieldsFalse()
         self.productId = nil
         self.active = true
@@ -93,6 +111,47 @@ class AgregarViewModel: ObservableObject {
         self.unitCost = "0"
         self.unitPrice = "0"
         self.errorBD = ""
+    }
+    private func setImage(from selection: PhotosPickerItem?) {
+        guard let selection else {return}
+        self.isLoading = true
+        Task {
+            do {
+                let data = try await selection.loadTransferable(type: Data.self)
+                guard let data, let uiImage = UIImage(data: data) else {
+                    print("Imagen vacia")
+                    return
+                }
+                //selectedImage = uiImage
+                //TODO: Save image with id
+                await MainActor.run {
+                    isPresented = false
+                    selectedLocalImage = uiImage
+                }
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+        self.isLoading = false
+    }
+    func findProductNameOnInternet() {
+        if self.productName != "" {
+            openGoogleImageSearch(nombre: self.productName)
+            self.isPresented = false
+        } else {
+            self.productEdited = true
+            self.isPresented = false
+        }
+    }
+    func pasteFromInternet() {
+        print("Se ejecuta pegar")
+        if self.productName != "" {
+            self.selectedLocalImage = nil
+            self.imageUrl = pasteFromClipboard()
+            print("Se pego imagen: \(self.imageUrl.description)")
+        } else {
+            self.productEdited = true
+        }
     }
     func fieldsTrue() {
         print("All value true")
@@ -115,8 +174,11 @@ class AgregarViewModel: ObservableObject {
         self.profitMarginEdited = false
         self.unitPriceEdited = false
     }
-    func addProduct() -> Bool {
-        fieldsTrue()
+    func addProduct() async -> Bool {
+        await MainActor.run {
+            fieldsTrue()
+        }
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let product = createProduct() else {
             print("No se pudo crear producto")
             return false
@@ -124,15 +186,24 @@ class AgregarViewModel: ObservableObject {
         let result = self.saveProductUseCase.execute(product: product)
         if result == "Success" {
             print("Se añadio correctamente")
-            resetValuesFields()
+            await MainActor.run {
+                resetValuesFields()
+            }
             return true
         } else {
             print(result)
-            self.errorBD = result
+            await MainActor.run {
+                self.errorBD = result
+            }
             return false
         }
     }
     func editProduct(product: Product) {
+        if let imageId = product.image?.id {
+            self.selectedLocalImage = self.loadSavedImageUseCase.execute(id: imageId)
+            self.idImage = imageId
+            print("Se agrego el id correctamente")
+        }
         self.productId = product.id
         self.productName = product.name
         self.imageUrl = product.image?.imageUrl ?? ""
@@ -140,9 +211,6 @@ class AgregarViewModel: ObservableObject {
         self.unitCost = String(product.unitCost)
         self.unitPrice = String(product.unitPrice)
         self.errorBD = ""
-    }
-    func urlEdited() {
-        self.imageURLEdited = true
     }
     
     func loadTestData() {
@@ -187,7 +255,24 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
         if isErrorsEmpty() {
-            return Product(id: self.productId ?? UUID(), active: self.active, name: self.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.expirationDate, image: ImageUrl(id: UUID(), imageUrl: self.imageUrl, imageHash: ""))
+            return Product(id: self.productId ?? UUID(), active: self.active, name: self.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.expirationDate, image: saveSelectedImage())
+        } else {
+            return nil
+        }
+    }
+    func saveSelectedImage() -> ImageUrl? {
+        if let imageLocal = self.selectedLocalImage {
+            guard let idImage = self.idImage else {
+                print("Se crea nuevo id")
+                let newIdImage = UUID()
+                let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: imageLocal, resize: true)
+                return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
+            }
+            print("Se usa el mismo id")
+            let imageHash = self.saveImageUseCase.execute(id: idImage, image: imageLocal, resize: true)
+            return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
+        } else if self.imageUrl != "" {
+            return ImageUrl(id: UUID(), imageUrl: self.imageUrl, imageHash: "")
         } else {
             return nil
         }
