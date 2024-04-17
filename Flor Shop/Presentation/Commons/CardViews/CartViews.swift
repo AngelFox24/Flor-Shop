@@ -75,7 +75,6 @@ struct CardViewTipe2: View {
     var body: some View {
         VStack{
             HStack(spacing: 0, content: {
-                let _ = print("CardView: \(id)")
                 CustomAsyncImageView(id: id, urlProducto: url, size: size)
                 VStack(spacing: 2) {
                     if let topStatusUnwrap = topStatus, let topStatusColorUnwrap = topStatusColor {

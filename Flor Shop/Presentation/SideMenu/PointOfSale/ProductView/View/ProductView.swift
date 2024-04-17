@@ -83,7 +83,6 @@ struct ListaControler: View {
                             }
                     }
                     ForEach(productsCoreDataViewModel.productsCoreData) { producto in
-                        let _ = print("CardView2: \(producto.image?.id)")
                         CardViewTipe2(
                             id: producto.image?.id,
                             url: producto.image?.imageUrl,

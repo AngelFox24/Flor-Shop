@@ -156,7 +156,6 @@ class AgregarViewModel: ObservableObject {
     func fieldsTrue() {
         print("All value true")
         self.productEdited = true
-        self.active = true
         self.expirationDateEdited = true
         self.quantityEdited = true
         self.imageURLEdited = true
@@ -205,6 +204,7 @@ class AgregarViewModel: ObservableObject {
             print("Se agrego el id correctamente")
         }
         self.productId = product.id
+        self.active = product.active
         self.productName = product.name
         self.imageUrl = product.image?.imageUrl ?? ""
         self.quantityStock = String(product.qty)

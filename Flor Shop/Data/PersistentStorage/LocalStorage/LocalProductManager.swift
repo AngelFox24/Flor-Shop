@@ -98,6 +98,7 @@ class LocalProductManager: ProductManager {
             print("Se encontro producto, lo vamos a actualizar")
             productInContext.productName = product.name
             productInContext.active = product.active
+            print("Active: \(product.active)")
             productInContext.quantityStock = Int64(product.qty)
             productInContext.unitCost = product.unitCost
             productInContext.expirationDate = product.expirationDate
@@ -125,6 +126,7 @@ class LocalProductManager: ProductManager {
                 newProduct.idProduct = product.id
                 newProduct.productName = product.name
                 newProduct.active = product.active
+                print("Active: \(product.active)")
                 newProduct.quantityStock = Int64(product.qty)
                 newProduct.unitCost = product.unitCost
                 newProduct.unitPrice = product.unitPrice
@@ -196,11 +198,11 @@ class LocalProductManager: ProductManager {
         var filterAtt = NSPredicate(format: "quantityStock != 0")
         switch filter {
         case .allProducts:
-            filterAtt = NSPredicate(format: "quantityStock != 0")
+            filterAtt = NSPredicate(format: "quantityStock != 0 AND active == true")
         case .outOfStock:
             filterAtt = NSPredicate(format: "quantityStock == 0")
         case .productWithdrawn:
-            filterAtt = NSPredicate(format: "quantityStock == 0")
+            filterAtt = NSPredicate(format: "active == false")
         }
         return filterAtt
     }

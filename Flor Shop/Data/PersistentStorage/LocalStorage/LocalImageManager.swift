@@ -118,6 +118,8 @@ class LocalImageManager: ImageManager {
         let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
         if let imageData = try? Data(contentsOf: fileURL) {
             print("Ruta de la imagen guardada: \(fileURL.path)")
+            print("Se carga desde local")
+            extractMetadata(from: imageData)
             return UIImage(data: imageData)
         } else {
             print("No se pudo obtener la imagen \(id.uuidString).jpeg")
@@ -137,6 +139,21 @@ class LocalImageManager: ImageManager {
             print("Error al descargar la imagen: \(error)")
             return nil
         }
+    }
+    func extractMetadata(from imageData: Data) -> [CFString: Any]? {
+        guard let image = UIImage(data: imageData) else {
+            return nil
+        }
+        guard let imageData = image.jpegData(compressionQuality: 1.0) as CFData?,
+              let source = CGImageSourceCreateWithData(imageData, nil) else {
+            return nil
+        }
+
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
+            return nil
+        }
+        print("Properties: \(properties)")
+        return properties
     }
     func resizeImage(data: Data, maxWidth: CGFloat, maxHeight: CGFloat) -> Data? {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
@@ -180,11 +197,108 @@ class LocalImageManager: ImageManager {
         let dest = CGImageDestinationCreateWithData(resizedData, UTType.jpeg.identifier as CFString, 1, nil)
         guard let destination = dest else { return nil }
         // Configurar opciones para eliminar los metadatos
-        let options: [CFString: Any] = [kCGImageDestinationLossyCompressionQuality: 0.7, kCGImageDestinationMetadata: false]
+        let options: [CFString: Any] = [kCGImageDestinationLossyCompressionQuality: 0.7, kCGImageDestinationMetadata: true]
         CGImageDestinationAddImage(destination, newImage, options as CFDictionary)
         CGImageDestinationFinalize(destination)
         
         return resizedData as Data
+    }
+    /*
+    func resizeImage(data: Data, maxWidth: CGFloat, maxHeight: CGFloat) -> Data? {
+        guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
+              let image = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
+            return nil
+        }
+        
+        let width = CGFloat(image.width)
+        let height = CGFloat(image.height)
+        
+        var newSize = CGSize(width: width, height: height)
+        
+        if width > maxWidth || height > maxHeight {
+            let aspectRatio = width / height
+            if width > height {
+                newSize.width = maxWidth
+                newSize.height = maxWidth / aspectRatio
+            } else {
+                newSize.height = maxHeight
+                newSize.width = maxHeight * aspectRatio
+            }
+        } else {
+            return data
+        }
+        
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        guard let context = CGContext(data: nil, width: Int(newSize.width), height: Int(newSize.height), bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else {
+            return nil
+        }
+        
+        context.interpolationQuality = .high
+        
+        // Conservar la orientación de la imagen original
+        let originalOrientation = extractOrientation(from: data) ?? 1
+        context.rotate(by: CGFloat(rotationAngle(forOrientation: originalOrientation)))
+        
+        context.draw(image, in: CGRect(origin: .zero, size: newSize))
+        
+        guard let newImage = context.makeImage() else {
+            return nil
+        }
+        
+        let resizedImageData = CFDataCreateMutable(nil, 0)
+        guard let resizedData = resizedImageData else { return nil }
+        let dest = CGImageDestinationCreateWithData(resizedData, UTType.jpeg.identifier as CFString, 1, nil)
+        guard let destination = dest else { return nil }
+        
+        // Configurar opciones para eliminar los metadatos
+        let options: [CFString: Any] = [kCGImageDestinationLossyCompressionQuality: 0.7, kCGImageDestinationMetadata: true]
+        CGImageDestinationAddImage(destination, newImage, options as CFDictionary)
+        CGImageDestinationFinalize(destination)
+        
+        return resizedData as Data
+    }
+
+    // Función para obtener el ángulo de rotación correspondiente a la orientación de la imagen
+    func rotationAngle(forOrientation orientation: Int) -> Double {
+        switch orientation {
+        case 1:
+            return 0
+        case 3:
+            return .pi
+        case 6:
+            return .pi / 2
+        case 8:
+            return -.pi / 2
+        default:
+            return 0
+        }
+    }
+     */
+    func extractOrientation(from imageData: Data) -> Int? {
+        guard let source = CGImageSourceCreateWithData(imageData as CFData, nil),
+              let metaData = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+              let tiffData = metaData[kCGImagePropertyTIFFDictionary as String] as? [String: Any],
+              let orientation = tiffData[kCGImagePropertyTIFFOrientation as String] as? Int else {
+            return nil
+        }
+        return orientation
+    }
+    // Función para editar la orientación de una imagen en los metadatos Exif
+    func editOrientation(imageData: inout Data, newOrientation: Int) {
+        guard let source = CGImageSourceCreateWithData(imageData as CFData, nil),
+              let sourceType = CGImageSourceGetType(source),
+              let mutableData = CFDataCreateMutableCopy(nil, 0, imageData as CFData),
+              let destination = CGImageDestinationCreateWithData(mutableData, sourceType, 1, nil) else {
+            return
+        }
+        
+        let options = [kCGImagePropertyOrientation: NSNumber(value: newOrientation)]
+        
+        CGImageDestinationAddImageFromSource(destination, source, 0, options as CFDictionary)
+        CGImageDestinationFinalize(destination)
+        
+        imageData = mutableData as Data
     }
     func saveImage(id: UUID, image: UIImage, resize: Bool = true) -> String {
         var imageHash = ""
@@ -203,12 +317,17 @@ class LocalImageManager: ImageManager {
             do {
                 if resize {
                     let dataOp = resizeImage(data: data, maxWidth: 200, maxHeight: 200)
-                    if let dataOpNN = dataOp {
+                    if var dataOpNN = dataOp {
                         imageHash = generarHash(data: dataOpNN)
+                        if let originalOrientationNN = extractOrientation(from: data) {
+                            editOrientation(imageData: &dataOpNN, newOrientation: originalOrientationNN)
+                        }
                         try dataOpNN.write(to: fileURL)
                     } else {
                         if shouldSaveImage(imageData: data) {
                             imageHash = generarHash(data: data)
+                            print("Se guarda en local sin optimizar")
+                            extractMetadata(from: data)
                             try data.write(to: fileURL)
                         } else {
                             print("La imagen es muy grande para ser guardada")
@@ -217,6 +336,8 @@ class LocalImageManager: ImageManager {
                 } else {
                     if shouldSaveImage(imageData: data) {
                         imageHash = generarHash(data: data)
+                        print("Se guarda en local sin optimizar")
+                        extractMetadata(from: data)
                         try data.write(to: fileURL)
                     } else {
                         print("La imagen es muy grande para ser guardada")

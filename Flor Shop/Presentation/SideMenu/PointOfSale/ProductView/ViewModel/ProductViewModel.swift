@@ -26,6 +26,16 @@ class ProductViewModel: ObservableObject {
         self.getProductsUseCase = getProductsUseCase
         addSearchTextSuscriber()
     }
+    func addSearchTextSuscriber() {
+        $searchText
+            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                guard let self = self else { return }
+                releaseResources()
+                fetchProducts()
+            })
+            .store(in: &cancellableSet)
+    }
     func fetchProducts(page: Int = 1, nextPage: Bool = true) {
         let pages = currentPagesInScreen.map { $0[0] }
         if !pages.contains(page) {
@@ -77,16 +87,6 @@ class ProductViewModel: ObservableObject {
         print("CurrentPagesInScreen: \(currentPagesInScreen.description)")
         print("CurrentPagesInScreenCount: \(currentPagesInScreen.count.description)")
         print("ProductsCoreData: \(productsCoreData.count.description)")
-    }
-    func addSearchTextSuscriber() {
-        $searchText
-            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                //self.currentPage = 1
-                fetchProducts()
-            })
-            .store(in: &cancellableSet)
     }
     func shouldLoadData(product: Product) {
         if self.productsCoreData.isEmpty {

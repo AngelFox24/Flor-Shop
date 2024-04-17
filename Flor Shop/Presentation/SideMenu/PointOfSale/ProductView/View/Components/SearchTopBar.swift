@@ -72,9 +72,11 @@ struct ProductSearchTopBar: View {
                     })
                 }
                 .onChange(of: productsCoreDataViewModel.primaryOrder, perform: { item in
+                    productsCoreDataViewModel.releaseResources()
                     productsCoreDataViewModel.fetchProducts()
                 })
                 .onChange(of: productsCoreDataViewModel.filterAttribute, perform: { item in
+                    productsCoreDataViewModel.releaseResources()
                     productsCoreDataViewModel.fetchProducts()
                 })
             })

@@ -82,8 +82,10 @@ struct CustomerListController: View {
                             CardViewTipe2(
                                 id: customer.image?.id,
                                 url: customer.image?.imageUrl,
-                                topStatusColor: customer.customerTipe.color,
-                                topStatus: customer.customerTipe.description,
+                                //topStatusColor: customer.customerTipe.color,
+                                //topStatus: customer.customerTipe.description,
+                                topStatusColor: nil,
+                                topStatus: nil,
                                 mainText: customer.name + " " + customer.lastName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(customer.totalDebt),
@@ -105,9 +107,6 @@ struct CustomerListController: View {
                                     customerHistoryViewModel.setCustomerInContext(customer: customer)
                                     navManager.goToCustomerHistoryView()
                                 }
-                            }
-                            .onAppear {
-                                let _ = print("\(customer.image?.id)")
                             }
                         }
                     }
