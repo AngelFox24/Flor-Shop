@@ -5,7 +5,7 @@ Flor Shop es una App gratuita para **[iOS]** que se ha desarrollado para ayudar 
 ### Requisitos mínimos
 [![Swift](https://img.shields.io/badge/Swift-5-orange.svg?longCache=true&style=popout-square)](https://swift.org)
 [![Xcode](https://img.shields.io/badge/Xcode-12.5-blue.svg?longCache=true&style=popout-square)](https://developer.apple.com/xcode)
-[![iOS](https://img.shields.io/badge/iOS-15-red.svg?longCache=true&style=popout-square)](https://www.apple.com/es/ios)
+[![iOS](https://img.shields.io/badge/iOS-16-red.svg?longCache=true&style=popout-square)](https://www.apple.com/es/ios)
 
 * Por razones de seguridad debes añadir tu propio fichero de configuración de Firebase `GoogleService-Info.plist` con Realtime Database activo.
 * Es suficiente con ejecutar el archivo `Flor Shop.xcodeproj` en Xcode.
