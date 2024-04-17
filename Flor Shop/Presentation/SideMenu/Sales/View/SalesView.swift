@@ -19,6 +19,9 @@ struct SalesView: View {
         .onAppear {
             salesViewModel.lazyFetchList()
         }
+        .onDisappear(perform: {
+            salesViewModel.releaseResources()
+        })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }

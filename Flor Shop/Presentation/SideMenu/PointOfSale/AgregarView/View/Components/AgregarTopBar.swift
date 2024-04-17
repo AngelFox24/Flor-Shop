@@ -13,11 +13,25 @@ struct AgregarTopBar: View {
     @EnvironmentObject var productViewModel: ProductViewModel
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @Binding var showMenu: Bool
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
     var body: some View {
         HStack {
-            AgregarViewPopoverHelp()
+            Button(action: {
+                withAnimation(.spring()){
+                    showMenu.toggle()
+                }
+            }, label: {
+                HStack {
+                    Image("logo")
+                        .resizable()
+                        .scaledToFit()
+                }
+                .background(Color("colorlaunchbackground"))
+                .cornerRadius(10)
+                .frame(width: 40, height: 40)
+            })
             Spacer()
             Button(action: {
                 Task {
@@ -35,6 +49,7 @@ struct AgregarTopBar: View {
             }, label: {
                 CustomButton1(text: "Guardar")
             })
+            AgregarViewPopoverHelp()
             .alert(agregarViewModel.errorBD, isPresented: $showingErrorAlert, actions: {})
         }
         .frame(maxWidth: .infinity)
@@ -61,7 +76,7 @@ struct AgregarTopBar: View {
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        AgregarTopBar()
+        AgregarTopBar(showMenu: .constant(false))
             .environmentObject(dependencies.agregarViewModel)
     }
 }

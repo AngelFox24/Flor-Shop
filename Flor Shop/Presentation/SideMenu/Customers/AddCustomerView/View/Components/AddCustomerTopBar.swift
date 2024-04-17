@@ -27,16 +27,16 @@ struct AddCustomerTopBar: View {
                 Spacer()
                 Button(action: {
                     Task {
-                            addCustomerViewModel.isLoading = true
+                        addCustomerViewModel.isLoading = true
                         if await addCustomerViewModel.addCustomer() {
                             playSound(named: "Success1")
                             navManager.goToBack()
                         } else {
                             addCustomerViewModel.fieldsTrue()
                             playSound(named: "Fail1")
-                            showingErrorAlert = true
+                            showingErrorAlert = addCustomerViewModel.fieldsAddCustomer.errorBD == "" ? false : true
                         }
-                            addCustomerViewModel.isLoading = false
+                        addCustomerViewModel.isLoading = false
                     }
                 }, label: {
                     CustomButton1(text: "Guardar")

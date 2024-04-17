@@ -64,13 +64,18 @@ struct ListaControler: View {
                     }, label: {
                         CustomButton1(text: "Agregar")
                     })
+                    /*
                     Button(action: {
                         agregarViewModel.loadTestData()
                     }, label: {
                         CustomButton1(text: "Data de Prueba")
                     })
+                     */
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onAppear {
+                    productsCoreDataViewModel.lazyFetchProducts()
+                }
             } else {
                 List {
                     ForEach(0 ..< productsCoreDataViewModel.deleteCount, id: \.self) { _ in

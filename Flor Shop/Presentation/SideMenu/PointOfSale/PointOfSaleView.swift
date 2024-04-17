@@ -17,11 +17,11 @@ struct PointOfSaleView: View {
         VStack(spacing: 0, content: {
             VStack(spacing: 0, content: {
                 if tabSelected == .plus {
-                    AgregarView()
+                    AgregarView(showMenu: $showMenu)
                 } else if tabSelected == .magnifyingglass {
                     ProductView(selectedTab: $tabSelected, showMenu: $showMenu)
                 } else if tabSelected == .cart {
-                    CartView(selectedTab: $tabSelected)
+                    CartView(selectedTab: $tabSelected, showMenu: $showMenu)
                 }
             })
             if !isKeyboardVisible {

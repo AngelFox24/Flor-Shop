@@ -278,11 +278,6 @@ class AgregarViewModel: ObservableObject {
         }
     }
     func isErrorsEmpty() -> Bool {
-        //let validationResult = validateImageURL()
-        //print("Terminó la validación: \(validationResult)")
-        //self.imageURLError = validationResult
-        //print("Se ejecuta la verificación de errores")
-        
         let isEmpty = self.productError.isEmpty &&
                       self.imageURLError.isEmpty &&
                       self.errorBD.isEmpty &&
@@ -325,37 +320,5 @@ class AgregarViewModel: ObservableObject {
             return false
         }
         return true
-    }
-    func validateImageURL() async -> String {
-        let maxSizeInKB: Int = 10
-        let maxResolutionInMP: Int = 10
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        guard let url = URL(string: self.imageUrl) else {
-            return "La URL de la imagen no es válida"
-        }
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let mimeType = response.mimeType, mimeType.hasPrefix("image") else {
-                return "No es una imagen"
-            }
-            
-            let fileSize = data.count
-            if fileSize > maxSizeInKB * 1024 {
-                return "La imagen es demasiado pesada"
-            }
-            
-            if let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
-               let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
-               let pixelWidth = properties[kCGImagePropertyPixelWidth] as? Int,
-               let pixelHeight = properties[kCGImagePropertyPixelHeight] as? Int {
-                let megapixels = (pixelWidth * pixelHeight) / (1_000_000)
-                if megapixels > maxResolutionInMP {
-                    return "La imagen es muy grande"
-                }
-            }
-        } catch {
-            return "Ocurrio un error al validar la imagen"
-        }
-        return ""
     }
 }

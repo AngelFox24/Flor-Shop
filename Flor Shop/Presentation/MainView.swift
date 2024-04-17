@@ -87,8 +87,7 @@ struct MainView: View {
                     }
                 }
                 .onAppear {
-                    //versionCheck.checkAppVersion()
-                    // checkForPermission()
+                    versionCheck.checkAppVersion()
                     NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                         isKeyboardVisible = true
                     }
@@ -98,7 +97,6 @@ struct MainView: View {
                 }
                 if isKeyboardVisible {
                     CustomHideKeyboard()
-                    //.padding(.bottom, 12)
                 }
             })
         //}

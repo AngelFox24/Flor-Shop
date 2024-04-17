@@ -15,25 +15,24 @@ struct CartTopBar: View {
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var navManager: NavManager
+    @Binding var showMenu: Bool
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
             HStack{
                 Button(action: {
-                    navManager.goToCustomerView()
-                }, label: {
-                    if let customer = carritoCoreDataViewModel.customerInCar, let image = customer.image {
-                        CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: 40)
-                            .contextMenu(menuItems: {
-                                Button(role: .destructive,action: {
-                                    carritoCoreDataViewModel.customerInCar = nil
-                                }, label: {
-                                    Text("Desvincular Cliente")
-                                })
-                            })
-                    } else {
-                        CustomButton3(simbol: "person.crop.circle.badge.plus")
+                    withAnimation(.spring()){
+                        showMenu.toggle()
                     }
+                }, label: {
+                    HStack {
+                        Image("logo")
+                            .resizable()
+                            .scaledToFit()
+                    }
+                    .background(Color("colorlaunchbackground"))
+                    .cornerRadius(10)
+                    .frame(width: 40, height: 40)
                 })
                 Spacer()
                 Button(action: {
@@ -52,18 +51,23 @@ struct CartTopBar: View {
                     .background(Color("color_accent"))
                     .cornerRadius(15.0)
                 })
+                Button(action: {
+                    navManager.goToCustomerView()
+                }, label: {
+                    if let customer = carritoCoreDataViewModel.customerInCar, let image = customer.image {
+                        CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: 40)
+                            .contextMenu(menuItems: {
+                                Button(role: .destructive,action: {
+                                    carritoCoreDataViewModel.customerInCar = nil
+                                }, label: {
+                                    Text("Desvincular Cliente")
+                                })
+                            })
+                    } else {
+                        CustomButton3(simbol: "person.crop.circle.badge.plus")
+                    }
+                })
             }
-            /*
-            .navigationDestination(for: NavPathsEnum.self, destination: { view in
-                if view == .paymentView {
-                    PaymentView()
-                } else if view == .customerView {
-                    CustomersView(showMenu: .constant(false), backButton: true)
-                } else {
-                    let _ = print("Nose")
-                }
-            })
-             */
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
@@ -89,7 +93,7 @@ struct CartTopBar: View {
 struct CartTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        CartTopBar()
+        CartTopBar(showMenu: .constant(false))
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.navManager)

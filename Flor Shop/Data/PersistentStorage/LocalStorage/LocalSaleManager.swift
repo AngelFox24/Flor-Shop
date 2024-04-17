@@ -573,16 +573,14 @@ class LocalSaleManager: SaleManager {
                     var calendario = Calendar.current
                     calendario.timeZone = TimeZone(identifier: "UTC")!
                     customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
-                    customerEntity.totalDebt = cartEntity.total
-                    customerEntity.firstDatePurchaseWithCredit = Date()
-                } else {
-                    if paymentType == .loan {
-                        customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
-                        if customerEntity.totalDebt > customerEntity.creditLimit {
-                            customerEntity.isCreditLimit = true
-                        } else {
-                            customerEntity.isCreditLimit = false
-                        }
+                }
+                if paymentType == .loan {
+                    customerEntity.firstDatePurchaseWithCredit = customerEntity.totalDebt == 0 ? Date() : customerEntity.firstDatePurchaseWithCredit
+                    customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
+                    if customerEntity.totalDebt > customerEntity.creditLimit {
+                        customerEntity.isCreditLimit = true
+                    } else {
+                        customerEntity.isCreditLimit = false
                     }
                 }
             }

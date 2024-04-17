@@ -78,6 +78,9 @@ class AddCustomerViewModel: ObservableObject {
         
     }
     func addCustomer() async -> Bool {
+        await MainActor.run {
+            fieldsTrue()
+        }
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let customer = createCustomer() else {
             print("No se pudo crear Cliente")
@@ -109,7 +112,20 @@ class AddCustomerViewModel: ObservableObject {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: saveSelectedImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        if isErrorsEmpty() {
+            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: saveSelectedImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+        } else {
+            return nil
+        }
+    }
+    func isErrorsEmpty() -> Bool {
+        let isEmpty = self.fieldsAddCustomer.nameError.isEmpty &&
+        self.fieldsAddCustomer.lastnameError.isEmpty &&
+        self.fieldsAddCustomer.errorBD.isEmpty &&
+        self.fieldsAddCustomer.creditDaysError.isEmpty &&
+        self.fieldsAddCustomer.creditLimitError.isEmpty
+        
+        return isEmpty
     }
     func saveSelectedImage() -> ImageUrl? {
         guard let image = self.selectedImage else {

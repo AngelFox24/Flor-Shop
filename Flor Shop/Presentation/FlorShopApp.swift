@@ -12,7 +12,7 @@ import Firebase
 @main
 struct FlorShopApp: App {
     init() {
-        //FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
+        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
     var body: some Scene {
         WindowGroup {
@@ -33,12 +33,8 @@ struct FlorShopApp: App {
                 .environmentObject(dependencies.customerHistoryViewModel)
                 .onAppear {
                     Task(priority: .background, operation: {
-                        //do {
-                            print("Se optimizara las imagenes")
-                            await dependencies.imageManager.deleteUnusedImages()
-                        //} catch {
-                          //  print("Error al redimensionar las imágenes: \(error)")
-                        //}
+                        print("Se optimizara las imagenes")
+                        await dependencies.imageManager.deleteUnusedImages()
                     })
                 }
         }

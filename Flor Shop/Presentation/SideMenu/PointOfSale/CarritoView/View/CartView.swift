@@ -11,10 +11,11 @@ import CoreData
 struct CartView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @Binding var selectedTab: Tab
+    @Binding var showMenu: Bool
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                CartTopBar()
+                CartTopBar(showMenu: $showMenu)
                 ListCartController(selectedTab: $selectedTab)
             }
             .onAppear {
@@ -27,7 +28,7 @@ struct CartView: View {
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        CartView(selectedTab: .constant(.cart))
+        CartView(selectedTab: .constant(.cart), showMenu: .constant(false))
             .environmentObject(dependencies.cartViewModel)
     }
 }

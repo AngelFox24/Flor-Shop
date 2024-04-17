@@ -9,10 +9,11 @@ import SwiftUI
 
 struct AgregarView: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
+    @Binding var showMenu: Bool
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
-                AgregarTopBar()
+                AgregarTopBar(showMenu: $showMenu)
                 CamposProductoAgregar(isPresented: $agregarViewModel.isPresented)
             }
             .background(Color("color_background"))
@@ -32,7 +33,7 @@ struct AgregarView: View {
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        AgregarView()
+        AgregarView(showMenu: .constant(false))
             .environmentObject(dependencies.agregarViewModel)
     }
 }
