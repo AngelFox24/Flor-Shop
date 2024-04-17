@@ -64,8 +64,8 @@ struct CustomTextField: View {
                                 Image(systemName: "x.circle")
                                     .foregroundColor(Color("color_accent"))
                                     .font(.custom("Artifika-Regular", size: 16))
-                                    .padding(.horizontal, 2)
-                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 12)
                                     //.opacity(isTextFieldFocused ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.4), value: isTextFieldFocused)
                             })
@@ -91,39 +91,6 @@ struct CustomTextField: View {
         }
     }
 }
-/*
-struct CustomText: View {
-    var title: String = "Campo"
-    var value: String = "Texto"
-    var disable: Bool = false
-    var body: some View {
-        HStack {
-            ZStack {
-                    HStack(spacing: 0) {
-                        Text(value)
-                            .foregroundColor(.black)
-                            .font(.custom("Artifika-Regular", size: 20))
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                            .padding(.all, 5)
-                            .foregroundColor(.black)
-                            .padding(.vertical, value == "" ? 10 : 4)
-                    }
-                    .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
-                    .cornerRadius(8)
-                    Text(title)
-                        .font(.custom("Artifika-Regular", size: 14))
-                        .padding(.horizontal, 8)
-                        .foregroundColor(.black)
-                        .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
-                        .cornerRadius(5)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .offset(y: -22)
-            }
-        }
-    }
-}
-*/
 struct CustomTextField_Previews: PreviewProvider {
     static var previews: some View {
         @State var dato: String = "Prueba"
@@ -133,7 +100,7 @@ struct CustomTextField_Previews: PreviewProvider {
             //CustomText(title: "Nombre", value: "", disable: true)
             //CustomTextField(edited: .constant(false))
         }
-        //.frame(maxHeight: .infinity)
-        .background(Color("color_background"))
+        .frame(maxHeight: .infinity)
+        .background(Color("color_accent"))
     }
 }
