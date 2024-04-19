@@ -18,20 +18,7 @@ struct AgregarTopBar: View {
     @State private var showingErrorAlert = false
     var body: some View {
         HStack {
-            Button(action: {
-                withAnimation(.spring()){
-                    showMenu.toggle()
-                }
-            }, label: {
-                HStack {
-                    Image("logo")
-                        .resizable()
-                        .scaledToFit()
-                }
-                .background(Color("colorlaunchbackground"))
-                .cornerRadius(10)
-                .frame(width: 40, height: 40)
-            })
+            CustomButton5(showMenu: $showMenu)
             Spacer()
             Button(action: {
                 Task {
