@@ -93,7 +93,7 @@ struct AddCustomerFields : View {
                         .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
                         .padding(.horizontal, 5)
                 })
-                Text("* La Fecha Límite de calcula desde el primer consumo a crédito del cliente y se reinicia cuando paga el total del crédito.")
+                Text("* La Fecha Límite se calcula desde el primer consumo a crédito del cliente y se reinicia cuando paga el total del crédito.")
                     .font(.custom("Artifika-Regular", size: 12))
                     .foregroundColor(.black)
                     .opacity(0.8)

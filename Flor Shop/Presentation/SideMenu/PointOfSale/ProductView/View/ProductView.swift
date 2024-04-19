@@ -64,14 +64,11 @@ struct ListaControler: View {
                     }, label: {
                         CustomButton1(text: "Agregar")
                     })
-                    /*
                     Button(action: {
                         agregarViewModel.loadTestData()
                     }, label: {
                         CustomButton1(text: "Data de Prueba")
-                    })
-                     */
-                }
+                    })                }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onAppear {
                     productsCoreDataViewModel.lazyFetchProducts()

@@ -60,14 +60,62 @@ struct CustomButton4: View {
             .cornerRadius(30)
     }
 }
+struct CustomButton5: View {
+    @State private var isScaled = false
+    @Binding var showMenu: Bool
+    @AppStorage("hasShownSideBar") private var hasShownSideBar: Bool = false
+    var body: some View {
+        ZStack(content: {
+            Button(action: {
+                withAnimation(.spring()){
+                    showMenu.toggle()
+                    if !hasShownSideBar {
+                        hasShownSideBar = true
+                    }
+                }
+            }, label: {
+                HStack {
+                    Image("logo")
+                        .resizable()
+                        .scaledToFit()
+                }
+                .background(Color("colorlaunchbackground"))
+                .cornerRadius(10)
+                .frame(width: 40, height: 40)
+            })
+            if !hasShownSideBar {
+                VStack(alignment: .center, spacing: 0, content: {
+                    Spacer()
+                    HStack(content: {
+                        Spacer()
+                        Color.yellow
+                            .frame(width: 7, height: 7)
+                            .cornerRadius(5, isEnabled: true)
+                            .padding(.horizontal, 4)
+                            .scaleEffect(isScaled ? 1.5 : 1.0)
+                            .onAppear {
+                                withAnimation(Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                                    self.isScaled.toggle()
+                                }
+                            }
+                    })
+                    .padding(.vertical, 4)
+                })
+                .frame(width: 40, height: 40)
+            }
+        })
+    }
+}
 
 struct CustomButtons_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 5, content: {
-            CustomButton1(text: "Limpiar")
-            CustomButton2(text: "Limpiar")
-            CustomButton3(simbol: "chevron.backward")
-            CustomButton4(simbol: "plus")
+            //CustomButton1(text: "Limpiar")
+            //CustomButton2(text: "Limpiar")
+            //CustomButton3(simbol: "chevron.backward")
+            //CustomButton4(simbol: "plus")
+            CustomButton5(showMenu: .constant(false))
+                .scaleEffect(3.0)
         })
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.gray)

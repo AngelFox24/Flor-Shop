@@ -65,15 +65,33 @@ struct CustomerTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 Menu {
-                    Picker("", selection: $customerViewModel.order) {
-                        ForEach(menuOrders, id: \.self) {
-                            Text($0.longDescription)
+//                    Picker("", selection: $customerViewModel.order) {
+//                        ForEach(menuOrders, id: \.self) {
+//                            Text($0.longDescription)
+//                        }
+//                    }
+//                    Divider()
+//                    Picker("", selection: $customerViewModel.filter) {
+//                        ForEach(menuFilters, id: \.self) {
+//                            Text($0.description)
+//                        }
+//                    }
+                    Section("Ordenamiento") {
+                        ForEach(menuOrders, id: \.self) { orden in
+                            Button {
+                                customerViewModel.order = orden
+                            } label: {
+                                Label(orden.longDescription, systemImage: customerViewModel.order == orden ? "checkmark" : "")
+                            }
                         }
                     }
-                    Divider()
-                    Picker("", selection: $customerViewModel.filter) {
-                        ForEach(menuFilters, id: \.self) {
-                            Text($0.description)
+                    Section("Filtros") {
+                        ForEach(menuFilters, id: \.self) { filter in
+                            Button {
+                                customerViewModel.filter = filter
+                            } label: {
+                                Label(filter.description, systemImage: customerViewModel.filter == filter ? "checkmark" : "")
+                            }
                         }
                     }
                 } label: {

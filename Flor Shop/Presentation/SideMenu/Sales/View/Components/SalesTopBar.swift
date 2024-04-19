@@ -74,15 +74,33 @@ struct SalesTopBar: View {
                 .background(.white)
                 .cornerRadius(15)
                 Menu {
-                    Picker("", selection: $salesCoreDataViewModel.order) {
-                        ForEach(SalesOrder.allValues, id: \.self) {
-                            Text($0.longDescription)
+                    //                    Picker("", selection: $salesCoreDataViewModel.order) {
+                    //                        ForEach(SalesOrder.allValues, id: \.self) {
+                    //                            Text($0.longDescription)
+                    //                        }
+                    //                    }
+                    //                    Divider()
+                    //                    Picker("", selection: $salesCoreDataViewModel.grouper) {
+                    //                        ForEach(SalesGrouperAttributes.allValues, id: \.self) {
+                    //                            Text($0.description)
+                    //                        }
+                    //                    }
+                    Section("Ordenamiento") {
+                        ForEach(SalesOrder.allValues, id: \.self) { orden in
+                            Button {
+                                salesCoreDataViewModel.order = orden
+                            } label: {
+                                Label(orden.longDescription, systemImage: salesCoreDataViewModel.order == orden ? "checkmark" : "")
+                            }
                         }
                     }
-                    Divider()
-                    Picker("", selection: $salesCoreDataViewModel.grouper) {
-                        ForEach(SalesGrouperAttributes.allValues, id: \.self) {
-                            Text($0.description)
+                    Section("Agrupamiento") {
+                        ForEach(SalesGrouperAttributes.allValues, id: \.self) { grouper in
+                            Button {
+                                salesCoreDataViewModel.grouper = grouper
+                            } label: {
+                                Label(grouper.description, systemImage: salesCoreDataViewModel.grouper == grouper ? "checkmark" : "")
+                            }
                         }
                     }
                 } label: {

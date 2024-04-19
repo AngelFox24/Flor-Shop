@@ -15,20 +15,7 @@ struct ProductSearchTopBar: View {
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
-                Button(action: {
-                    withAnimation(.spring()){
-                        showMenu.toggle()
-                    }
-                }, label: {
-                    HStack {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                    .background(Color("colorlaunchbackground"))
-                    .cornerRadius(10)
-                    .frame(width: 40, height: 40)
-                })
+                CustomButton5(showMenu: $showMenu)
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color("color_accent"))
@@ -55,21 +42,26 @@ struct ProductSearchTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 Menu {
-                    Picker("", selection: $productsCoreDataViewModel.primaryOrder) {
-                        ForEach(menuOrders, id: \.self) {
-                            Text($0.longDescription)
+                    Section("Ordenamiento") {
+                        ForEach(menuOrders, id: \.self) { orden in
+                            Button {
+                                productsCoreDataViewModel.primaryOrder = orden
+                            } label: {
+                                Label(orden.longDescription, systemImage: productsCoreDataViewModel.primaryOrder == orden ? "checkmark" : "")
+                            }
                         }
                     }
-                    Divider()
-                    Picker("", selection: $productsCoreDataViewModel.filterAttribute) {
-                        ForEach(menuFilters, id: \.self) {
-                            Text($0.description)
+                    Section("Filtros") {
+                        ForEach(menuFilters, id: \.self) { filtro in
+                            Button {
+                                productsCoreDataViewModel.filterAttribute = filtro
+                            } label: {
+                                Label(filtro.description, systemImage: productsCoreDataViewModel.filterAttribute == filtro ? "checkmark" : "")
+                            }
                         }
                     }
                 } label: {
-                    Button(action: {}, label: {
-                        CustomButton3(simbol: "slider.horizontal.3")
-                    })
+                    CustomButton3(simbol: "slider.horizontal.3")
                 }
                 .onChange(of: productsCoreDataViewModel.primaryOrder, perform: { item in
                     productsCoreDataViewModel.releaseResources()
@@ -91,7 +83,10 @@ struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
         @State var showMenu: Bool = false
-        ProductSearchTopBar(showMenu: $showMenu)
-            .environmentObject(dependencies.productsViewModel)
+        VStack (content: {
+            ProductSearchTopBar(showMenu: $showMenu)
+                .environmentObject(dependencies.productsViewModel)
+            Spacer()
+        })
     }
 }

@@ -20,20 +20,7 @@ struct CartTopBar: View {
     var body: some View {
         HStack {
             HStack{
-                Button(action: {
-                    withAnimation(.spring()){
-                        showMenu.toggle()
-                    }
-                }, label: {
-                    HStack {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                    .background(Color("colorlaunchbackground"))
-                    .cornerRadius(10)
-                    .frame(width: 40, height: 40)
-                })
+                CustomButton5(showMenu: $showMenu)
                 Spacer()
                 Button(action: {
                     navManager.goToPaymentView()
