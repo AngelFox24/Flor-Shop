@@ -68,7 +68,8 @@ struct ListaControler: View {
 //                        agregarViewModel.loadTestData()
 //                    }, label: {
 //                        CustomButton1(text: "Data de Prueba")
-//                    })                }
+//                    })
+                }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onAppear {
                     productsCoreDataViewModel.lazyFetchProducts()
