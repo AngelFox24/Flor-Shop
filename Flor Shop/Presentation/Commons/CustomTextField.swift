@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CustomTextField: View {
+    var placeHolder: String = ""
     var title: String = "Campo"
     @Binding var value: String
     @Binding var edited: Bool
@@ -21,7 +22,7 @@ struct CustomTextField: View {
         HStack {
             ZStack {
                     HStack(spacing: 0) {
-                        TextField("", text: $value)
+                        TextField(placeHolder, text: $value)
                             .focused($isTextFieldFocused)
                             .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 20))

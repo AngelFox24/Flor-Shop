@@ -154,8 +154,8 @@ struct CamposProductoAgregar: View {
                 }
                 VStack {
                     HStack {
-                        CustomTextField(title: "Cantidad" ,value: $agregarViewModel.quantityStock, edited: $agregarViewModel.quantityEdited, keyboardType: .numberPad)
-                        CustomTextField(title: "Costo Unitario" ,value: $agregarViewModel.unitCost, edited: $agregarViewModel.unitCostEdited, keyboardType: .decimalPad)
+                        CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.quantityStock, edited: $agregarViewModel.quantityEdited, keyboardType: .numberPad)
+                        CustomTextField(placeHolder: "0", title: "Costo Unitario" ,value: $agregarViewModel.unitCost, edited: $agregarViewModel.unitCostEdited, keyboardType: .decimalPad)
                     }
                     if agregarViewModel.quantityError != "" {
                         ErrorMessageText(message: agregarViewModel.quantityError)
@@ -169,7 +169,7 @@ struct CamposProductoAgregar: View {
                 VStack {
                     HStack {
                         CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.profitMargin), edited: .constant(false), disable: true)
-                        CustomTextField(title: "Precio de Venta" ,value: $agregarViewModel.unitPrice, edited: $agregarViewModel.unitPriceEdited, keyboardType: .decimalPad)
+                        CustomTextField(placeHolder: "0", title: "Precio de Venta" ,value: $agregarViewModel.unitPrice, edited: $agregarViewModel.unitPriceEdited, keyboardType: .decimalPad)
                     }
                     if agregarViewModel.unitPriceError != "" {
                         ErrorMessageText(message: agregarViewModel.unitPriceError)

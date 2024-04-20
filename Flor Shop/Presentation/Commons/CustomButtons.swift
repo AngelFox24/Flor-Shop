@@ -90,7 +90,7 @@ struct CustomButton5: View {
                         Spacer()
                         Color.yellow
                             .frame(width: 7, height: 7)
-                            .cornerRadius(5, isEnabled: true)
+                            .cornerRadius(5)
                             .padding(.horizontal, 4)
                             .scaleEffect(isScaled ? 1.5 : 1.0)
                             .onAppear {

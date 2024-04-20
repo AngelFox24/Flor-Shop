@@ -33,14 +33,18 @@ class AgregarViewModel: ObservableObject {
     }
     @Published var expirationDate: Date?
     @Published var expirationDateEdited: Bool = false
-    @Published var quantityStock: String = "0"
+    @Published var quantityStock: String = ""
     @Published var quantityEdited: Bool = false
     var quantityError: String {
-        guard let quantityInt = Int(quantityStock) else {
-            return "Cantidad debe ser número entero"
-        }
-        if quantityInt < 0 && quantityEdited {
-            return "Cantidad debe ser mayor a 0: \(quantityEdited)"
+        if quantityEdited {
+            guard let quantityInt = Int(quantityStock) else {
+                return "Cantidad debe ser número entero"
+            }
+            if quantityInt < 0 && quantityEdited {
+                return "Cantidad debe ser mayor a 0"
+            } else {
+                return ""
+            }
         } else {
             return ""
         }
@@ -49,27 +53,35 @@ class AgregarViewModel: ObservableObject {
     @Published var imageUrl: String = ""
     @Published var imageURLEdited: Bool = false
     @Published var imageURLError: String = ""
-    @Published var unitCost: String = "0"
+    @Published var unitCost: String = ""
     @Published var unitCostEdited: Bool = false
     var unitCostError: String {
-        guard let unitCostDouble = Double(unitCost) else {
-            return "Costo debe ser número decimal o entero"
-        }
-        if unitCostDouble <= 0.0 && unitCostEdited {
-            return "Costo debe ser mayor a 0: \(unitCostEdited)"
+        if unitCostEdited {
+            guard let unitCostDouble = Double(unitCost) else {
+                return "Costo debe ser número decimal o entero"
+            }
+            if unitCostDouble <= 0.0 && unitCostEdited {
+                return "Costo debe ser mayor a 0"
+            } else {
+                return ""
+            }
         } else {
             return ""
         }
     }
     @Published var profitMarginEdited: Bool = false
-    @Published var unitPrice: String = "0"
+    @Published var unitPrice: String = ""
     @Published var unitPriceEdited: Bool = false
     var unitPriceError: String {
-        guard let unitPriceDouble = Double(unitPrice) else {
-            return "Precio debe ser número decimal o entero"
-        }
-        if unitPriceDouble <= 0.0 && unitPriceEdited {
-            return "Precio debe ser mayor a 0: \(unitPriceEdited)"
+        if unitPriceEdited {
+            guard let unitPriceDouble = Double(unitPrice) else {
+                return "Precio debe ser número decimal o entero"
+            }
+            if unitPriceDouble <= 0.0 {
+                return "Precio debe ser mayor a 0"
+            } else {
+                return ""
+            }
         } else {
             return ""
         }
