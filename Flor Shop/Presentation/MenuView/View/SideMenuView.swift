@@ -116,7 +116,7 @@ struct SideMenuView: View {
                         Spacer()
                         VStack(alignment: .leading, spacing: 5, content: {
                             //TabButton(tab: MenuTab.logOut, selectedTab: $selectedTab, showMenu: $showMenu)
-                            Text("App Version 2.0.0")
+                            Text("App Version 2.0.3")
                                 .font(.caption)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white)
