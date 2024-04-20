@@ -117,11 +117,11 @@ class AgregarViewModel: ObservableObject {
         self.active = true
         self.productName = ""
         self.expirationDate = nil
-        self.quantityStock = "0"
+        self.quantityStock = ""
         self.imageUrl = ""
         self.imageURLError = ""
-        self.unitCost = "0"
-        self.unitPrice = "0"
+        self.unitCost = ""
+        self.unitPrice = ""
         self.errorBD = ""
     }
     private func setImage(from selection: PhotosPickerItem?) {
