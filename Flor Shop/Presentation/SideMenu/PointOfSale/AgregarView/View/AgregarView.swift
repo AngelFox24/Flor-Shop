@@ -21,7 +21,7 @@ struct AgregarView: View {
             if agregarViewModel.agregarFields.isPresented {
                 SourceSelecctionView(isPresented: $agregarViewModel.agregarFields.isPresented, fromInternetAction: agregarViewModel.findProductNameOnInternet, selectionImage: $agregarViewModel.agregarFields.selectionImage)
             }
-            if agregarViewModel.agregarFields.isLoading {
+            if agregarViewModel.isLoading {
                 LoadingView()
             }
         })

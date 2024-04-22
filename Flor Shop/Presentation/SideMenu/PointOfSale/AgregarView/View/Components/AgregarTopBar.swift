@@ -22,7 +22,7 @@ struct AgregarTopBar: View {
             Spacer()
             Button(action: {
                 Task {
-                    agregarViewModel.agregarFields.isLoading = true
+                    agregarViewModel.isLoading = true
                     if await agregarViewModel.addProduct() {
                         agregarViewModel.releaseResources()
                         playSound(named: "Success1")
@@ -30,7 +30,7 @@ struct AgregarTopBar: View {
                         playSound(named: "Fail1")
                         showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
                     }
-                    agregarViewModel.agregarFields.isLoading = false
+                    agregarViewModel.isLoading = false
                 }
             }, label: {
                 CustomButton1(text: "Guardar")

@@ -12,6 +12,7 @@ import _PhotosUI_SwiftUI
 class AgregarViewModel: ObservableObject {
     
     @Published var agregarFields = AgregarFields()
+    @Published var isLoading: Bool = false
     
     private let saveProductUseCase: SaveProductUseCase
     let loadSavedImageUseCase: LoadSavedImageUseCase
@@ -150,7 +151,6 @@ class AgregarViewModel: ObservableObject {
 }
 //MARK: Fields
 class AgregarFields {
-    var isLoading: Bool = false
     var isPresented: Bool = false
     var selectedLocalImage: UIImage?
     var selectionImage: PhotosPickerItem? = nil {
@@ -238,7 +238,6 @@ class AgregarFields {
     
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
-        self.isLoading = true
         Task {
             do {
                 let data = try await selection.loadTransferable(type: Data.self)
@@ -256,7 +255,6 @@ class AgregarFields {
                 print("Error: \(error)")
             }
         }
-        self.isLoading = false
     }
     
     func fieldsTrue() {
