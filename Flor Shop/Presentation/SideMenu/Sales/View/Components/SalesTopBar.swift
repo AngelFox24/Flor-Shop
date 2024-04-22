@@ -11,7 +11,7 @@ struct SalesTopBar: View {
     @EnvironmentObject var salesCoreDataViewModel: SalesViewModel
     @Binding var showMenu: Bool
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack(spacing: 10, content: {
                 Button(action: {
                     withAnimation(.spring()){
@@ -74,17 +74,6 @@ struct SalesTopBar: View {
                 .background(.white)
                 .cornerRadius(15)
                 Menu {
-                    //                    Picker("", selection: $salesCoreDataViewModel.order) {
-                    //                        ForEach(SalesOrder.allValues, id: \.self) {
-                    //                            Text($0.longDescription)
-                    //                        }
-                    //                    }
-                    //                    Divider()
-                    //                    Picker("", selection: $salesCoreDataViewModel.grouper) {
-                    //                        ForEach(SalesGrouperAttributes.allValues, id: \.self) {
-                    //                            Text($0.description)
-                    //                        }
-                    //                    }
                     Section("Ordenamiento") {
                         ForEach(SalesOrder.allValues, id: \.self) { orden in
                             Button {
@@ -117,14 +106,28 @@ struct SalesTopBar: View {
             })
             .padding(.horizontal, 10)
             HStack(content: {
+                HStack(spacing: 0, content: {
+                    Text("Hoy")
+                        .foregroundColor(Color("color_accent"))
+                        .font(.custom("Artifika-Regular", size: 13))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 6)
+                        .background {
+                            Color(.white)
+                        }
+                        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 10, height: 10)))
+                })
+                .opacity(0)
+                .disabled(true)
+                Spacer()
                 Image(systemName: "chevron.backward")
                     .frame(width: 50, height: 30)
                     .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 20))
+                    .font(.custom("Artifika-Regular", size: 24))
+                    .padding(.vertical, 5)
                     .onTapGesture {
                         previousDate()
                     }
-                Spacer()
                 switch salesCoreDataViewModel.salesDateInterval {
                 case .diary:
                     HStack(content: {
@@ -133,33 +136,50 @@ struct SalesTopBar: View {
                         Text(salesCoreDataViewModel.salesCurrentDateFilter.getShortNameComponent(dateStringNameComponent: .month).capitalized + ".")
                     })
                     .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 15))
+                    .font(.custom("Artifika-Regular", size: 16))
                 case .monthly:
                     HStack(content: {
                         Text(salesCoreDataViewModel.salesCurrentDateFilter.getShortNameComponent(dateStringNameComponent: .month).capitalized + ".")
                         Text(String(salesCoreDataViewModel.salesCurrentDateFilter.getDateComponent(dateComponent: .year)))
                     })
                     .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 15))
+                    .font(.custom("Artifika-Regular", size: 16))
                 case .yearly:
                     HStack(content: {
                         Text(String(salesCoreDataViewModel.salesCurrentDateFilter.getDateComponent(dateComponent: .year)))
                     })
                     .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 15))
+                    .font(.custom("Artifika-Regular", size: 16))
                 }
-                Spacer()
                 Image(systemName: "chevron.backward")
                     .frame(width: 50, height: 30)
                     .rotationEffect(.degrees(180))
                     .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 20))
+                    .font(.custom("Artifika-Regular", size: 24))
+                    .padding(.vertical, 5)
                     .onTapGesture {
                         nextDate()
                     }
+                Spacer()
+                HStack(spacing: 0, content: {
+                    Text("Hoy")
+                        .foregroundColor(Color("color_accent"))
+                        .font(.custom("Artifika-Regular", size: 16))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 6)
+                        .background {
+                            Color(.white)
+                        }
+                        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 10, height: 10)))
+                })
+                .onTapGesture(perform: {
+                    salesCoreDataViewModel.salesCurrentDateFilter = Date()
+                    salesCoreDataViewModel.updateAmountsBar()
+                    salesCoreDataViewModel.fetchSalesDetailsList()
+                })
             })
             .padding(.horizontal, 10)
-            HStack(content: {
+            HStack(spacing: 0, content: {
                 VStack(spacing: 2, content: {
                     Text("Ventas")
                         .font(.custom("Artifika-Regular", size: 13))
@@ -210,7 +230,10 @@ struct SalesTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
         @State var showMenu: Bool = false
-        SalesTopBar(showMenu: $showMenu)
-            .environmentObject(dependencies.salesViewModel)
+        VStack(spacing: 0, content: {
+            SalesTopBar(showMenu: $showMenu)
+                .environmentObject(dependencies.salesViewModel)
+            Spacer()
+        })
     }
 }

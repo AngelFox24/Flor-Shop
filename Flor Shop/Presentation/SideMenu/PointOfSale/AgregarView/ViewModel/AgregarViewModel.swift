@@ -7,96 +7,11 @@
 
 import Foundation
 import SwiftUI
-import CoreGraphics
-import ImageIO
 import _PhotosUI_SwiftUI
 
 class AgregarViewModel: ObservableObject {
-    @Published var isLoading: Bool = false
-    @Published var isPresented: Bool = false
-    @Published var selectedLocalImage: UIImage?
-    @Published var selectionImage: PhotosPickerItem? = nil {
-        didSet{
-            setImage(from: selectionImage)
-        }
-    }
-    @Published var productId: UUID?
-    @Published var active: Bool = true
-    @Published var productName: String = ""
-    @Published var productEdited: Bool = false
-    var productError: String {
-        if productName == "" && productEdited {
-            return "Nombre de producto no válido"
-        } else {
-            return ""
-        }
-    }
-    @Published var expirationDate: Date?
-    @Published var expirationDateEdited: Bool = false
-    @Published var quantityStock: String = ""
-    @Published var quantityEdited: Bool = false
-    var quantityError: String {
-        if quantityEdited {
-            guard let quantityInt = Int(quantityStock) else {
-                return "Cantidad debe ser número entero"
-            }
-            if quantityInt < 0 && quantityEdited {
-                return "Cantidad debe ser mayor a 0"
-            } else {
-                return ""
-            }
-        } else {
-            return ""
-        }
-    }
-    @Published var idImage: UUID?
-    @Published var imageUrl: String = ""
-    @Published var imageURLEdited: Bool = false
-    @Published var imageURLError: String = ""
-    @Published var unitCost: String = ""
-    @Published var unitCostEdited: Bool = false
-    var unitCostError: String {
-        if unitCostEdited {
-            guard let unitCostDouble = Double(unitCost) else {
-                return "Costo debe ser número decimal o entero"
-            }
-            if unitCostDouble <= 0.0 && unitCostEdited {
-                return "Costo debe ser mayor a 0"
-            } else {
-                return ""
-            }
-        } else {
-            return ""
-        }
-    }
-    @Published var profitMarginEdited: Bool = false
-    @Published var unitPrice: String = ""
-    @Published var unitPriceEdited: Bool = false
-    var unitPriceError: String {
-        if unitPriceEdited {
-            guard let unitPriceDouble = Double(unitPrice) else {
-                return "Precio debe ser número decimal o entero"
-            }
-            if unitPriceDouble <= 0.0 {
-                return "Precio debe ser mayor a 0"
-            } else {
-                return ""
-            }
-        } else {
-            return ""
-        }
-    }
-    var profitMargin: String {
-            guard let unitCost = Double(unitCost), let unitPrice = Double(unitPrice) else {
-                return "0 %"
-            }
-            if ((unitPrice - unitCost) > 0.0) && (unitPrice > 0) && (unitCost > 0) {
-                return String(Int(((unitPrice - unitCost) / unitCost) * 100)) + " %"
-            } else {
-                return "0 %"
-            }
-    }
-    @Published var errorBD: String = ""
+    
+    @Published var agregarFields = AgregarFields()
     
     private let saveProductUseCase: SaveProductUseCase
     let loadSavedImageUseCase: LoadSavedImageUseCase
@@ -107,87 +22,32 @@ class AgregarViewModel: ObservableObject {
         self.loadSavedImageUseCase = loadSavedImageUseCase
         self.saveImageUseCase = saveImageUseCase
     }
-    //MARK: Funciones
-    func resetValuesFields() {
-        self.selectedLocalImage = nil
-        self.selectionImage = nil
-        self.isPresented = false
-        fieldsFalse()
-        self.productId = nil
-        self.active = true
-        self.productName = ""
-        self.expirationDate = nil
-        self.quantityStock = ""
-        self.imageUrl = ""
-        self.imageURLError = ""
-        self.unitCost = ""
-        self.unitPrice = ""
-        self.errorBD = ""
-    }
-    private func setImage(from selection: PhotosPickerItem?) {
-        guard let selection else {return}
-        self.isLoading = true
-        Task {
-            do {
-                let data = try await selection.loadTransferable(type: Data.self)
-                guard let data, let uiImage = UIImage(data: data) else {
-                    print("Imagen vacia")
-                    return
-                }
-                //selectedImage = uiImage
-                //TODO: Save image with id
-                await MainActor.run {
-                    isPresented = false
-                    selectedLocalImage = uiImage
-                }
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        self.isLoading = false
+    //MARK: Funtions
+    func releaseResources() {
+        self.agregarFields = AgregarFields()
     }
     func findProductNameOnInternet() {
-        if self.productName != "" {
-            openGoogleImageSearch(nombre: self.productName)
-            self.isPresented = false
+        if self.agregarFields.productName != "" {
+            openGoogleImageSearch(nombre: self.agregarFields.productName)
+            self.agregarFields.isPresented = false
         } else {
-            self.productEdited = true
-            self.isPresented = false
+            self.agregarFields.productEdited = true
+            self.agregarFields.isPresented = false
         }
     }
     func pasteFromInternet() {
         print("Se ejecuta pegar")
-        if self.productName != "" {
-            self.selectedLocalImage = nil
-            self.imageUrl = pasteFromClipboard()
-            print("Se pego imagen: \(self.imageUrl.description)")
+        if self.agregarFields.productName != "" {
+            self.agregarFields.selectedLocalImage = nil
+            self.agregarFields.imageUrl = pasteFromClipboard()
+            print("Se pego imagen: \(self.agregarFields.imageUrl.description)")
         } else {
-            self.productEdited = true
+            self.agregarFields.productEdited = true
         }
-    }
-    func fieldsTrue() {
-        print("All value true")
-        self.productEdited = true
-        self.expirationDateEdited = true
-        self.quantityEdited = true
-        self.imageURLEdited = true
-        self.unitCostEdited = true
-        self.profitMarginEdited = true
-        self.unitPriceEdited = true
-    }
-    func fieldsFalse() {
-        print("All value false")
-        self.productEdited = false
-        self.expirationDateEdited = false
-        self.quantityEdited = false
-        self.imageURLEdited = false
-        self.unitCostEdited = false
-        self.profitMarginEdited = false
-        self.unitPriceEdited = false
     }
     func addProduct() async -> Bool {
         await MainActor.run {
-            fieldsTrue()
+            agregarFields.fieldsTrue()
         }
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let product = createProduct() else {
@@ -198,33 +58,60 @@ class AgregarViewModel: ObservableObject {
         if result == "Success" {
             print("Se añadio correctamente")
             await MainActor.run {
-                resetValuesFields()
+                releaseResources()
             }
             return true
         } else {
             print(result)
             await MainActor.run {
-                self.errorBD = result
+                self.agregarFields.errorBD = result
             }
             return false
         }
     }
     func editProduct(product: Product) {
         if let imageId = product.image?.id {
-            self.selectedLocalImage = self.loadSavedImageUseCase.execute(id: imageId)
-            self.idImage = imageId
+            self.agregarFields.selectedLocalImage = self.loadSavedImageUseCase.execute(id: imageId)
+            self.agregarFields.idImage = imageId
             print("Se agrego el id correctamente")
         }
-        self.productId = product.id
-        self.active = product.active
-        self.productName = product.name
-        self.imageUrl = product.image?.imageUrl ?? ""
-        self.quantityStock = String(product.qty)
-        self.unitCost = String(product.unitCost)
-        self.unitPrice = String(product.unitPrice)
-        self.errorBD = ""
+        self.agregarFields.productId = product.id
+        self.agregarFields.active = product.active
+        self.agregarFields.productName = product.name
+        self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
+        self.agregarFields.quantityStock = String(product.qty)
+        self.agregarFields.unitCost = String(product.unitCost)
+        self.agregarFields.unitPrice = String(product.unitPrice)
+        self.agregarFields.errorBD = ""
     }
-    
+    func createProduct() -> Product? {
+        guard let quantityStock = Int(self.agregarFields.quantityStock), let unitCost = Double(self.agregarFields.unitCost), let unitPrice = Double(self.agregarFields.unitPrice) else {
+            print("Los valores no se pueden convertir correctamente")
+            return nil
+        }
+        if agregarFields.isErrorsEmpty() {
+            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.agregarFields.expirationDate, image: saveSelectedImage())
+        } else {
+            return nil
+        }
+    }
+    func saveSelectedImage() -> ImageUrl? {
+        if let imageLocal = self.agregarFields.selectedLocalImage {
+            guard let idImage = self.agregarFields.idImage else {
+                print("Se crea nuevo id")
+                let newIdImage = UUID()
+                let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: imageLocal, resize: true)
+                return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
+            }
+            print("Se usa el mismo id")
+            let imageHash = self.saveImageUseCase.execute(id: idImage, image: imageLocal, resize: true)
+            return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
+        } else if self.agregarFields.imageUrl != "" {
+            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: "")
+        } else {
+            return nil
+        }
+    }
     func loadTestData() {
         if let path = Bundle.main.path(forResource: "BD_Flor_Shop", ofType: "csv", inDirectory: nil) {
             do {
@@ -260,35 +147,128 @@ class AgregarViewModel: ObservableObject {
             print("No se encuentra el archivo")
         }
     }
-    
-    func createProduct() -> Product? {
-        guard let quantityStock = Int(self.quantityStock), let unitCost = Double(self.unitCost), let unitPrice = Double(self.unitPrice) else {
-            print("Los valores no se pueden convertir correctamente")
-            return nil
-        }
-        if isErrorsEmpty() {
-            return Product(id: self.productId ?? UUID(), active: self.active, name: self.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.expirationDate, image: saveSelectedImage())
-        } else {
-            return nil
+}
+//MARK: Fields
+class AgregarFields {
+    var isLoading: Bool = false
+    var isPresented: Bool = false
+    var selectedLocalImage: UIImage?
+    var selectionImage: PhotosPickerItem? = nil {
+        didSet{
+            setImage(from: selectionImage)
         }
     }
-    func saveSelectedImage() -> ImageUrl? {
-        if let imageLocal = self.selectedLocalImage {
-            guard let idImage = self.idImage else {
-                print("Se crea nuevo id")
-                let newIdImage = UUID()
-                let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: imageLocal, resize: true)
-                return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
+    var productId: UUID?
+    var active: Bool = true
+    var productName: String = ""
+    var productEdited: Bool = false
+    var productError: String {
+        if productName == "" && productEdited {
+            return "Nombre de producto no válido"
+        } else {
+            return ""
+        }
+    }
+    var expirationDate: Date?
+    var expirationDateEdited: Bool = false
+    var quantityStock: String = ""
+    var quantityEdited: Bool = false
+    var quantityError: String {
+        if quantityEdited {
+            guard let quantityInt = Int(quantityStock) else {
+                return "Cantidad debe ser número entero"
             }
-            print("Se usa el mismo id")
-            let imageHash = self.saveImageUseCase.execute(id: idImage, image: imageLocal, resize: true)
-            return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
-        } else if self.imageUrl != "" {
-            return ImageUrl(id: UUID(), imageUrl: self.imageUrl, imageHash: "")
+            if quantityInt < 0 && quantityEdited {
+                return "Cantidad debe ser mayor a 0"
+            } else {
+                return ""
+            }
         } else {
-            return nil
+            return ""
         }
     }
+    var idImage: UUID?
+    var imageUrl: String = ""
+    var imageURLEdited: Bool = false
+    var imageURLError: String = ""
+    var unitCost: String = ""
+    var unitCostEdited: Bool = false
+    var unitCostError: String {
+        if unitCostEdited {
+            guard let unitCostDouble = Double(unitCost) else {
+                return "Costo debe ser número decimal o entero"
+            }
+            if unitCostDouble <= 0.0 && unitCostEdited {
+                return "Costo debe ser mayor a 0"
+            } else {
+                return ""
+            }
+        } else {
+            return ""
+        }
+    }
+    var profitMarginEdited: Bool = false
+    var unitPrice: String = ""
+    var unitPriceEdited: Bool = false
+    var unitPriceError: String {
+        if unitPriceEdited {
+            guard let unitPriceDouble = Double(unitPrice) else {
+                return "Precio debe ser número decimal o entero"
+            }
+            if unitPriceDouble <= 0.0 {
+                return "Precio debe ser mayor a 0"
+            } else {
+                return ""
+            }
+        } else {
+            return ""
+        }
+    }
+    var profitMargin: String {
+            guard let unitCost = Double(unitCost), let unitPrice = Double(unitPrice) else {
+                return "0 %"
+            }
+            if ((unitPrice - unitCost) > 0.0) && (unitPrice > 0) && (unitCost > 0) {
+                return String(Int(((unitPrice - unitCost) / unitCost) * 100)) + " %"
+            } else {
+                return "0 %"
+            }
+    }
+    var errorBD: String = ""
+    
+    private func setImage(from selection: PhotosPickerItem?) {
+        guard let selection else {return}
+        self.isLoading = true
+        Task {
+            do {
+                let data = try await selection.loadTransferable(type: Data.self)
+                guard let data, let uiImage = UIImage(data: data) else {
+                    print("Imagen vacia")
+                    return
+                }
+                //selectedImage = uiImage
+                //TODO: Save image with id
+                await MainActor.run {
+                    isPresented = false
+                    selectedLocalImage = uiImage
+                }
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+        self.isLoading = false
+    }
+    
+    func fieldsTrue() {
+        self.productEdited = true
+        self.expirationDateEdited = true
+        self.quantityEdited = true
+        self.imageURLEdited = true
+        self.unitCostEdited = true
+        self.profitMarginEdited = true
+        self.unitPriceEdited = true
+    }
+    
     func isErrorsEmpty() -> Bool {
         let isEmpty = self.productError.isEmpty &&
                       self.imageURLError.isEmpty &&
@@ -298,39 +278,5 @@ class AgregarViewModel: ObservableObject {
                       self.unitPriceError.isEmpty
         
         return isEmpty
-    }
-    func isProductNameValid() -> Bool {
-        return !self.productName.trimmingCharacters(in: .whitespaces).isEmpty
-    }
-    func isQuantityValid() -> Bool {
-        guard let quantityStock = Int(self.quantityStock) else {
-            return false
-        }
-        if quantityStock < 0 {
-            return false
-        } else {
-            return true
-        }
-    }
-    func isUnitCostValid() -> Bool {
-        guard let unitCost = Double(self.unitCost) else {
-            return false
-        }
-        return unitCost < 0.0 ? false : true
-    }
-    func isUnitPriceValid() -> Bool {
-        guard let unitPrice = Double(self.unitPrice) else {
-            return false
-        }
-        return unitPrice < 0.0 ? false : true
-    }
-    func isExpirationDateValid() -> Bool {
-        return true
-    }
-    func isURLValid() -> Bool {
-        guard URL(string: self.imageUrl) != nil else {
-            return false
-        }
-        return true
     }
 }

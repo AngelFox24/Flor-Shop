@@ -14,14 +14,14 @@ struct AgregarView: View {
         ZStack(content: {
             VStack(spacing: 0) {
                 AgregarTopBar(showMenu: $showMenu)
-                CamposProductoAgregar(isPresented: $agregarViewModel.isPresented)
+                CamposProductoAgregar(isPresented: $agregarViewModel.agregarFields.isPresented)
             }
             .background(Color("color_background"))
-            .blur(radius: agregarViewModel.isPresented ? 2 : 0)
-            if agregarViewModel.isPresented {
-                SourceSelecctionView(isPresented: $agregarViewModel.isPresented, fromInternetAction: agregarViewModel.findProductNameOnInternet, selectionImage: $agregarViewModel.selectionImage)
+            .blur(radius: agregarViewModel.agregarFields.isPresented ? 2 : 0)
+            if agregarViewModel.agregarFields.isPresented {
+                SourceSelecctionView(isPresented: $agregarViewModel.agregarFields.isPresented, fromInternetAction: agregarViewModel.findProductNameOnInternet, selectionImage: $agregarViewModel.agregarFields.selectionImage)
             }
-            if agregarViewModel.isLoading {
+            if agregarViewModel.agregarFields.isLoading {
                 LoadingView()
             }
         })
@@ -69,14 +69,14 @@ struct CamposProductoAgregar: View {
                             isPresented = true
                         }
                     }, label: {
-                        if let imageC = agregarViewModel.selectedLocalImage {
+                        if let imageC = agregarViewModel.agregarFields.selectedLocalImage {
                             Image(uiImage: imageC)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: sizeCampo, height: sizeCampo)
                                 .cornerRadius(15.0)
                         } else {
-                            AsyncImage(url: URL(string: agregarViewModel.imageUrl )) { phase in
+                            AsyncImage(url: URL(string: agregarViewModel.agregarFields.imageUrl )) { phase in
                                 switch phase {
                                 case .empty:
                                     CardViewPlaceHolder2(size: sizeCampo)
@@ -112,8 +112,8 @@ struct CamposProductoAgregar: View {
                             })
                         }
                     }
-                    if agregarViewModel.imageURLError != "" {
-                        ErrorMessageText(message: agregarViewModel.imageURLError)
+                    if agregarViewModel.agregarFields.imageURLError != "" {
+                        ErrorMessageText(message: agregarViewModel.agregarFields.imageURLError)
                             .padding(.top, 6)
                     }
                 }
@@ -121,7 +121,7 @@ struct CamposProductoAgregar: View {
                     HStack {
                         // El texto hace que tenga una separacion mayor del elemento
                         HStack {
-                            CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.productName, edited: $agregarViewModel.productEdited)
+                            CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
                         }
                         Button(action: {
                             print("Se presiono Buscar Imagen")
@@ -136,17 +136,17 @@ struct CamposProductoAgregar: View {
                                 .cornerRadius(10)
                         })
                     }
-                    if agregarViewModel.productError != "" {
-                        ErrorMessageText(message: agregarViewModel.productError)
+                    if agregarViewModel.agregarFields.productError != "" {
+                        ErrorMessageText(message: agregarViewModel.agregarFields.productError)
                             .padding(.top, 6)
                     }
                 }
                 VStack {
                     HStack {
                         HStack {
-                            CustomTextField(title: "Disponible" ,value: .constant(agregarViewModel.active ? "Activo" : "Inactivo"), edited: .constant(false), disable: true)
+                            CustomTextField(title: "Disponible" ,value: .constant(agregarViewModel.agregarFields.active ? "Activo" : "Inactivo"), edited: .constant(false), disable: true)
                         }
-                        Toggle("", isOn: $agregarViewModel.active)
+                        Toggle("", isOn: $agregarViewModel.agregarFields.active)
                             .labelsHidden()
                             .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
                             .padding(.horizontal, 5)
@@ -154,25 +154,25 @@ struct CamposProductoAgregar: View {
                 }
                 VStack {
                     HStack {
-                        CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.quantityStock, edited: $agregarViewModel.quantityEdited, keyboardType: .numberPad)
-                        CustomTextField(placeHolder: "0", title: "Costo Unitario" ,value: $agregarViewModel.unitCost, edited: $agregarViewModel.unitCostEdited, keyboardType: .decimalPad)
+                        CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
+                        CustomTextField(placeHolder: "0", title: "Costo Unitario" ,value: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited, keyboardType: .decimalPad)
                     }
-                    if agregarViewModel.quantityError != "" {
-                        ErrorMessageText(message: agregarViewModel.quantityError)
+                    if agregarViewModel.agregarFields.quantityError != "" {
+                        ErrorMessageText(message: agregarViewModel.agregarFields.quantityError)
                             .padding(.top, 18)
                     }
-                    if agregarViewModel.unitCostError != "" {
-                        ErrorMessageText(message: agregarViewModel.unitCostError)
+                    if agregarViewModel.agregarFields.unitCostError != "" {
+                        ErrorMessageText(message: agregarViewModel.agregarFields.unitCostError)
                             .padding(.top, 6)
                     }
                 }
                 VStack {
                     HStack {
-                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.profitMargin), edited: .constant(false), disable: true)
-                        CustomTextField(placeHolder: "0", title: "Precio de Venta" ,value: $agregarViewModel.unitPrice, edited: $agregarViewModel.unitPriceEdited, keyboardType: .decimalPad)
+                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.agregarFields.profitMargin), edited: .constant(false), disable: true)
+                        CustomTextField(placeHolder: "0", title: "Precio de Venta" ,value: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited, keyboardType: .decimalPad)
                     }
-                    if agregarViewModel.unitPriceError != "" {
-                        ErrorMessageText(message: agregarViewModel.unitPriceError)
+                    if agregarViewModel.agregarFields.unitPriceError != "" {
+                        ErrorMessageText(message: agregarViewModel.agregarFields.unitPriceError)
                             .padding(.top, 6)
                     }
                 }

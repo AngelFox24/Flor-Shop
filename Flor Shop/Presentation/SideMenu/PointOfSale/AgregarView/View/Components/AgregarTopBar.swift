@@ -10,7 +10,7 @@ import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
-    @EnvironmentObject var productViewModel: ProductViewModel
+    //@EnvironmentObject var productViewModel: ProductViewModel
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @Binding var showMenu: Bool
@@ -22,22 +22,21 @@ struct AgregarTopBar: View {
             Spacer()
             Button(action: {
                 Task {
-                    agregarViewModel.isLoading = true
+                    agregarViewModel.agregarFields.isLoading = true
                     if await agregarViewModel.addProduct() {
-                        productViewModel.releaseResources()
-                        agregarViewModel.resetValuesFields()
+                        agregarViewModel.releaseResources()
                         playSound(named: "Success1")
                     } else {
                         playSound(named: "Fail1")
-                        showingErrorAlert = agregarViewModel.errorBD == "" ? false : true
+                        showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
                     }
-                    agregarViewModel.isLoading = false
+                    agregarViewModel.agregarFields.isLoading = false
                 }
             }, label: {
                 CustomButton1(text: "Guardar")
             })
             AgregarViewPopoverHelp()
-            .alert(agregarViewModel.errorBD, isPresented: $showingErrorAlert, actions: {})
+                .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
