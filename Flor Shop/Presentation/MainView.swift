@@ -99,7 +99,6 @@ struct MainView: View {
                     CustomHideKeyboard()
                 }
             })
-        //}
     }
 }
 
@@ -110,6 +109,7 @@ struct MainView_Previews: PreviewProvider {
         MainView()
             .environmentObject(dependencies.logInViewModel)
             .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.versionCheck)
             .environmentObject(dependencies.registrationViewModel)
             .environmentObject(dependencies.navManager)

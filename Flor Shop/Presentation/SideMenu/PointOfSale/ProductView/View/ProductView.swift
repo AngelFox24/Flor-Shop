@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreData
 import AVFoundation
+import StoreKit
 
 struct ProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
@@ -43,6 +44,8 @@ struct ListaControler: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
+    @Environment(\.requestReview) var requestReview
     @State private var audioPlayer: AVAudioPlayer?
     @State var unitPoint: UnitPoint = .bottom
     @State var lastIndex: Int = 0
@@ -126,6 +129,10 @@ struct ListaControler: View {
                         .onAppear(perform: {
                             print("Aparece item con Id: \(producto.id)")
                             productsCoreDataViewModel.shouldLoadData(product: producto)
+                            if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
+                                requestReview()
+                                isRequested20AppRatingReview = false
+                            }
                         })
                     }
                 }
