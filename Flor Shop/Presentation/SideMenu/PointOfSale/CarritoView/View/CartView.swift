@@ -13,7 +13,7 @@ struct CartView: View {
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
-        NavigationView {
+        //NavigationView {
             VStack(spacing: 0) {
                 CartTopBar(showMenu: $showMenu)
                 ListCartController(selectedTab: $selectedTab)
@@ -21,7 +21,7 @@ struct CartView: View {
             .onAppear {
                 cartViewModel.lazyFetchCart()
             }
-        }
+        //}
     }
 }
 

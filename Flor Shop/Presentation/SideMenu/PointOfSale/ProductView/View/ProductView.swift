@@ -15,7 +15,7 @@ struct ProductView: View {
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
-        NavigationView {
+        //NavigationView {
             VStack(spacing: 0) {
                 ProductSearchTopBar(showMenu: $showMenu)
                 ListaControler(selectedTab: $selectedTab)
@@ -26,7 +26,7 @@ struct ProductView: View {
             .onDisappear {
                 productsCoreDataViewModel.releaseResources()
             }
-        }
+        //}
     }
 }
 
