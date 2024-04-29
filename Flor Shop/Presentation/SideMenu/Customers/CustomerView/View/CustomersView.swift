@@ -114,7 +114,7 @@ struct CustomerListController: View {
                                 topStatus: nil,
                                 mainText: customer.name + " " + customer.lastName,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(customer.totalDebt),
+                                mainIndicator: String(format: "%.2f", customer.totalDebt),
                                 mainIndicatorAlert: customer.isCreditLimit,
                                 secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
                                 secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,

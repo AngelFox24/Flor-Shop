@@ -65,7 +65,7 @@ struct CustomerHistoryViewListController: View {
                                 topStatus: saleDetail.paymentType == PaymentType.cash ? "Pagado \(day) \(month) \(year)" : "Sin Pagar \(day) \(month) \(year)",
                                 mainText: saleDetail.productName,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(saleDetail.subtotal),
+                                mainIndicator: String(format: "%.2f", saleDetail.subtotal),
                                 mainIndicatorAlert: false,
                                 secondaryIndicatorSuffix: "u",
                                 secondaryIndicator: String(saleDetail.quantitySold),

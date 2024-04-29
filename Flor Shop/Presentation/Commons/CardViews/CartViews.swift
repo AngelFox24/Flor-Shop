@@ -208,7 +208,7 @@ struct CardViewTipe3: View {
                     HStack(spacing: 0) {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 14))
-                        Text(String(cartDetail.product.unitPrice))
+                        Text(String(format: "%.2f", cartDetail.product.unitPrice))
                             .font(.custom("Artifika-Regular", size: 16))
                     }
                     .padding(.vertical, 6)
