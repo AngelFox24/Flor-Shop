@@ -15,18 +15,16 @@ struct ProductView: View {
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
-        //NavigationView {
-            VStack(spacing: 0) {
-                ProductSearchTopBar(showMenu: $showMenu)
-                ListaControler(selectedTab: $selectedTab)
-            }
-            .onAppear {
-                productsCoreDataViewModel.lazyFetchProducts()
-            }
-            .onDisappear {
-                productsCoreDataViewModel.releaseResources()
-            }
-        //}
+        VStack(spacing: 0) {
+            ProductSearchTopBar(showMenu: $showMenu)
+            ListaControler(selectedTab: $selectedTab)
+        }
+        .onAppear {
+            productsCoreDataViewModel.lazyFetchProducts()
+        }
+        .onDisappear {
+            productsCoreDataViewModel.releaseResources()
+        }
     }
 }
 
@@ -74,6 +72,7 @@ struct ListaControler: View {
                     })
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color("color_background"))
                 .onAppear {
                     productsCoreDataViewModel.lazyFetchProducts()
                 }
@@ -136,6 +135,7 @@ struct ListaControler: View {
                         })
                     }
                 }
+                .padding(.horizontal, 10)
                 .listStyle(PlainListStyle())
                 .background(Color("color_background"))
             }

@@ -493,8 +493,8 @@
 				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
 				27C7B9D12A60CEB400CA2818 /* Onboarding */,
 				27CC2DFB2A881B4B000EDB64 /* SessionView */,
-				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27F2F4692B1DF00E003E4197 /* MenuView */,
+				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27C241F52A0088A70045B2A0 /* Commons */,
 			);
 			path = Presentation;

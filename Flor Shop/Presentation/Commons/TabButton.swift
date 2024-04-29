@@ -29,7 +29,7 @@ struct TabButton: View {
             .foregroundColor(selectedTab == tab ? Color("color_accent") : Color(.white))
             .padding(.vertical, 12)
             .padding(.horizontal, 10)
-            .frame(maxWidth: getRect().width - 170, alignment: .leading)
+            .frame(maxWidth: getRect().width - 200, alignment: .leading)
             .background(
                 ZStack {
                     if selectedTab == tab {

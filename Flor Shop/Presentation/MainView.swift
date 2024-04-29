@@ -112,6 +112,7 @@ struct MainView_Previews: PreviewProvider {
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.versionCheck)
             .environmentObject(dependencies.registrationViewModel)
+            .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.navManager)
     }
 }

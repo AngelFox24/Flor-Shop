@@ -34,38 +34,20 @@ struct MenuView: View {
                         .offset(x: showMenu ? -50 : 0)
                         .padding(.vertical, 60)
                 }
+                VStack(spacing: 0, content: {
                     switch selectedTab {
                     case .pointOfSaleTab:
                         PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                            .cornerRadius(showMenu ? 35 : 0)
-                            .padding(.top, showMenu ? 0 : 1)
-                            .disabled(showMenu ? true : false)
                     case .salesTab:
                         SalesView(showMenu: $showMenu)
-                            .cornerRadius(showMenu ? 35 : 0)
-                            .padding(.top, showMenu ? 0 : 1)
-                            .disabled(showMenu ? true : false)
                     case .customersTab:
                         CustomersView(showMenu: $showMenu)
-                            .cornerRadius(showMenu ? 35 : 0)
-                            .padding(.top, showMenu ? 0 : 1)
-                            .disabled(showMenu ? true : false)
-                        
                     case .employeesTab:
                         EmployeeView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                            .cornerRadius(showMenu ? 35 : 0)
-                            .padding(.top, showMenu ? 0 : 1)
-                            .disabled(showMenu ? true : false)
                     case .settingsTab:
                         PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
-                            .cornerRadius(showMenu ? 35 : 0)
-                            .padding(.top, showMenu ? 0 : 1)
-                            .disabled(showMenu ? true : false)
                     case .logOut:
                         LockScreenView()
-                            .cornerRadius(showMenu ? 35 : 0)
-                            .padding(.top, showMenu ? 0 : 1)
-                            .disabled(showMenu ? true : false)
                             .onAppear(perform: {
                                 userOrEmail = nil
                                 password = nil
@@ -73,9 +55,10 @@ struct MenuView: View {
                                 navManager.popToRoot()
                             })
                     }
+                })
             }
             .scaleEffect(showMenu ? 0.84 : 1)
-            .offset(x: showMenu ? getRect().width - 120 : 0)
+            .offset(x: showMenu ? getRect().width - 180 : 0)
         }
     }
 }
@@ -83,12 +66,14 @@ struct MenuView: View {
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        MenuView(showMenu: .constant(true), isKeyboardVisible: .constant(true))
+        @State var showMenu: Bool = false
+        MenuView(showMenu: $showMenu, isKeyboardVisible: .constant(false))
             .environmentObject(dependencies.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.employeeViewModel)
+            .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.versionCheck)
     }
