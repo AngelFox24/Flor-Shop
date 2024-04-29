@@ -105,6 +105,7 @@ struct SalesListController: View {
                         })
                     }
                 }
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
                 .listStyle(PlainListStyle())
             }
         }

@@ -42,7 +42,7 @@ struct AddCustomerFields : View {
     @Binding var isPresented: Bool
     var sizeCampo: CGFloat = 150
     var body: some View {
-        ScrollView(content: {
+        ScrollView(.vertical, showsIndicators: false, content: {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()
@@ -71,7 +71,7 @@ struct AddCustomerFields : View {
                 }
                 if addCustomerViewModel.fieldsAddCustomer.nameError != "" {
                     ErrorMessageText(message: addCustomerViewModel.fieldsAddCustomer.nameError)
-                        //.padding(.top, 6)
+                    //.padding(.top, 6)
                 }
                 HStack {
                     // El texto hace que tenga una separacion mayor del elemento
@@ -79,7 +79,7 @@ struct AddCustomerFields : View {
                 }
                 if addCustomerViewModel.fieldsAddCustomer.lastnameError != "" {
                     ErrorMessageText(message: addCustomerViewModel.fieldsAddCustomer.lastnameError)
-                        //.padding(.top, 6)
+                    //.padding(.top, 6)
                 }
                 HStack(content: {
                     CustomTextField(title: "Móvil" ,value: $addCustomerViewModel.fieldsAddCustomer.phoneNumber, edited: $addCustomerViewModel.fieldsAddCustomer.phoneNumberEdited, keyboardType: .numberPad)

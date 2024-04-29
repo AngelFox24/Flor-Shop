@@ -60,7 +60,7 @@ struct CamposProductoAgregar: View {
          - Necesita especificar PlainListStyle
             .listStyle(PlainListStyle())
          */
-        ScrollView(content: {
+        ScrollView(.vertical, showsIndicators: false, content: {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()

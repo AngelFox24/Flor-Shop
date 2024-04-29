@@ -136,6 +136,7 @@ struct CustomerListController: View {
                             }
                         }
                     }
+                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
                 }
             }

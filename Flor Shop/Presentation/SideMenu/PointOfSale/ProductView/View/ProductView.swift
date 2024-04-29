@@ -135,6 +135,7 @@ struct ListaControler: View {
                         })
                     }
                 }
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
                 .padding(.horizontal, 10)
                 .listStyle(PlainListStyle())
                 .background(Color("color_background"))

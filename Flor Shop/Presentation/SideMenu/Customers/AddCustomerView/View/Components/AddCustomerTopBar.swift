@@ -13,6 +13,7 @@ import AVFoundation
 struct AddCustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
+    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
@@ -29,6 +30,7 @@ struct AddCustomerTopBar: View {
                     Task {
                         addCustomerViewModel.isLoading = true
                         if await addCustomerViewModel.addCustomer() {
+                            customerHistoryViewModel.updateData()
                             playSound(named: "Success1")
                             navManager.goToBack()
                         } else {
