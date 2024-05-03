@@ -65,7 +65,6 @@
 		2752129E2BC96AF2005E2016 /* LoadSavedImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2752129D2BC96AF2005E2016 /* LoadSavedImageUseCase.swift */; };
 		275212A02BC96C9A005E2016 /* DownloadImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2752129F2BC96C9A005E2016 /* DownloadImageUseCase.swift */; };
 		275212A22BC970A1005E2016 /* SaveImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275212A12BC970A1005E2016 /* SaveImageUseCase.swift */; };
-		276289202BE1868500A05CB9 /* BD_Flor_Shop.csv in Resources */ = {isa = PBXBuildFile; fileRef = 2762891F2BE1868500A05CB9 /* BD_Flor_Shop.csv */; };
 		2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2776A2EF2A86F35500410674 /* ProductsEnums.swift */; };
 		2777D77C2B1EF408003C2FCA /* SaveProductUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2777D77B2B1EF408003C2FCA /* SaveProductUseCase.swift */; };
 		278142082AC333A60093B402 /* CartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278142072AC333A60093B402 /* CartViews.swift */; };
@@ -215,7 +214,6 @@
 		2752129D2BC96AF2005E2016 /* LoadSavedImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadSavedImageUseCase.swift; sourceTree = "<group>"; };
 		2752129F2BC96C9A005E2016 /* DownloadImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadImageUseCase.swift; sourceTree = "<group>"; };
 		275212A12BC970A1005E2016 /* SaveImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveImageUseCase.swift; sourceTree = "<group>"; };
-		2762891F2BE1868500A05CB9 /* BD_Flor_Shop.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BD_Flor_Shop.csv; sourceTree = "<group>"; };
 		2776A2EF2A86F35500410674 /* ProductsEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsEnums.swift; sourceTree = "<group>"; };
 		2777D77B2B1EF408003C2FCA /* SaveProductUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveProductUseCase.swift; sourceTree = "<group>"; };
 		278142072AC333A60093B402 /* CartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViews.swift; sourceTree = "<group>"; };
@@ -552,7 +550,6 @@
 		2777DB162B55CF2700F6CAC3 /* TestData */ = {
 			isa = PBXGroup;
 			children = (
-				2762891F2BE1868500A05CB9 /* BD_Flor_Shop.csv */,
 			);
 			path = TestData;
 			sourceTree = "<group>";
@@ -1385,7 +1382,6 @@
 				274CE29E29E6D793007C703D /* Assets.xcassets in Resources */,
 				27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */,
 				27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */,
-				276289202BE1868500A05CB9 /* BD_Flor_Shop.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1668,7 +1664,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1703,7 +1699,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

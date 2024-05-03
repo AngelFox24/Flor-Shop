@@ -166,7 +166,7 @@ class LocalImageManager: ImageManager {
         do {
             let request = URLRequest(url: url)
             let (data, _) = try await URLSession.shared.data(for: request)
-            let dataOptimized = try resizeImage(data: data, maxWidth: 200, maxHeight: 200)
+            let dataOptimized = resizeImage(data: data, maxWidth: 200, maxHeight: 200)
             guard let dataOp = dataOptimized else {
                 return nil
             }

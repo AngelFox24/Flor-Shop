@@ -12,7 +12,7 @@ import Firebase
 @main
 struct FlorShopApp: App {
     init() {
-        //FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
+        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
     var body: some Scene {
         WindowGroup {

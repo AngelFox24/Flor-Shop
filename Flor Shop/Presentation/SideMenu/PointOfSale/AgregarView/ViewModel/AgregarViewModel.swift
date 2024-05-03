@@ -96,25 +96,6 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
     }
-    /*
-    func saveSelectedImage() -> ImageUrl? {
-        if let imageLocal = self.agregarFields.selectedLocalImage {
-            guard let idImage = self.agregarFields.idImage else {
-                print("Se crea nuevo id")
-                let newIdImage = UUID()
-                let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: imageLocal, resize: true)
-                return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
-            }
-            print("Se usa el mismo id")
-            let imageHash = self.saveImageUseCase.execute(id: idImage, image: imageLocal, resize: true)
-            return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
-        } else if self.agregarFields.imageUrl != "" {
-            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: "")
-        } else {
-            return nil
-        }
-    }
-     */
     func getImageIfExist() -> ImageUrl? {
         if let imageLocal = self.agregarFields.selectedLocalImage {
             return self.saveImageUseCase.execute(idImage: UUID(), image: imageLocal)
@@ -124,42 +105,42 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
     }
-    func loadTestData() {
-        if let path = Bundle.main.path(forResource: "BD_Flor_Shop", ofType: "csv", inDirectory: nil) {
-            do {
-                let content = try String(contentsOfFile: path, encoding: .utf8)
-                let lines = content.components(separatedBy: "\n")
-                var countSucc: Int = 0
-                var countFail: Int = 0
-                for line in lines {
-                    let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                    if elements.count != 3 {
-                        print("Count: \(elements.count)")
-                        countFail = countFail + 1
-                        continue
-                    }
-                    guard let price = Double(elements[2].replacingOccurrences(of: ",", with: "")) else {
-                        print("Esta mal?: \(elements[2])")
-                        countFail = countFail + 1
-                        continue
-                    }
-                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0], imageHash: ""))
-                    let result = self.saveProductUseCase.execute(product: product)
-                    if result == "Success" {
-                        countSucc = countSucc + 1
-                    } else {
-                        print("Error: \(result)")
-                        countFail = countFail + 1
-                    }
-                }
-                print("Total: \(lines.count), Success: \(countSucc), Fails: \(countFail)")
-            } catch {
-                print("Error al leer el archivo: \(error)")
-            }
-        } else {
-            print("No se encuentra el archivo")
-        }
-    }
+//    func loadTestData() {
+//        if let path = Bundle.main.path(forResource: "BD_Flor_Shop", ofType: "csv", inDirectory: nil) {
+//            do {
+//                let content = try String(contentsOfFile: path, encoding: .utf8)
+//                let lines = content.components(separatedBy: "\n")
+//                var countSucc: Int = 0
+//                var countFail: Int = 0
+//                for line in lines {
+//                    let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+//                    if elements.count != 3 {
+//                        print("Count: \(elements.count)")
+//                        countFail = countFail + 1
+//                        continue
+//                    }
+//                    guard let price = Double(elements[2].replacingOccurrences(of: ",", with: "")) else {
+//                        print("Esta mal?: \(elements[2])")
+//                        countFail = countFail + 1
+//                        continue
+//                    }
+//                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0], imageHash: ""))
+//                    let result = self.saveProductUseCase.execute(product: product)
+//                    if result == "Success" {
+//                        countSucc = countSucc + 1
+//                    } else {
+//                        print("Error: \(result)")
+//                        countFail = countFail + 1
+//                    }
+//                }
+//                print("Total: \(lines.count), Success: \(countSucc), Fails: \(countFail)")
+//            } catch {
+//                print("Error al leer el archivo: \(error)")
+//            }
+//        } else {
+//            print("No se encuentra el archivo")
+//        }
+//    }
 }
 //MARK: Fields
 class AgregarFields {

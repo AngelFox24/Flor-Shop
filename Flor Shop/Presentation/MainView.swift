@@ -87,7 +87,7 @@ struct MainView: View {
                     }
                 }
                 .onAppear {
-                    //versionCheck.checkAppVersion()
+                    versionCheck.checkAppVersion()
                     NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                         isKeyboardVisible = true
                     }

@@ -512,7 +512,7 @@ class LocalSaleManager: SaleManager {
         request.predicate = filterAtt
         do {
             let customerOut = try self.mainContext.fetch(request).first
-            if let customerNN = customerOut, let image = customerOut?.toImageUrl?.toImage() {
+            if let image = customerOut?.toImageUrl?.toImage() {
                 return image
             } else {
                 return nil
