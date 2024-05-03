@@ -22,7 +22,7 @@ struct PointOfSaleView: View {
             VStack(spacing: 0, content: {
                 switch tabSelected {
                 case .plus:
-                    AgregarView(showMenu: $showMenu)
+                    AgregarView(selectedTab: $tabSelected, showMenu: $showMenu)
                 case .magnifyingglass:
                     ProductView(selectedTab: $tabSelected, showMenu: $showMenu)
                 case .cart:

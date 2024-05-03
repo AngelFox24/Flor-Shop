@@ -49,7 +49,7 @@ struct ListaControler: View {
     @State var lastIndex: Int = 0
     @Binding var selectedTab: Tab
     var body: some View {
-        VStack(spacing: 0) {
+        HStack(spacing: 0) {
             if productsCoreDataViewModel.productsCoreData.count == 0 {
                 VStack {
                     Image("groundhog_finding")
@@ -77,70 +77,80 @@ struct ListaControler: View {
                     productsCoreDataViewModel.lazyFetchProducts()
                 }
             } else {
-                List {
-                    ForEach(0 ..< productsCoreDataViewModel.deleteCount, id: \.self) { _ in
-                        let _ = print("Spacios: \(productsCoreDataViewModel.deleteCount.description)")
-                        Spacer()
-                            .frame(maxWidth: .infinity, minHeight: 80)
-                            .onAppear {
-                                productsCoreDataViewModel.releaseResources()
-                                productsCoreDataViewModel.lazyFetchProducts()
-                            }
-                    }
-                    ForEach(productsCoreDataViewModel.productsCoreData) { producto in
-                        CardViewTipe2(
-                            id: producto.image?.id,
-                            url: producto.image?.imageUrl,
-                            topStatusColor: Color.red,
-                            topStatus: nil,
-                            mainText: producto.name,
-                            mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(format: "%.2f", producto.unitPrice),
-                            mainIndicatorAlert: false,
-                            secondaryIndicatorSuffix: " u",
-                            secondaryIndicator: String(producto.qty),
-                            secondaryIndicatorAlert: false, size: 80
-                        )
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                        .listRowBackground(Color("color_background"))
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button(action: {
-                                if agregarProductoACarrito(producto: producto) {
-                                    playSound(named: "Success1")
-                                } else {
-                                    playSound(named: "Fail1")
+                SideSwipeView(swipeDirection: .right, swipeAction: goToEditProduct)
+                HStack(spacing: 0, content: {
+                    List {
+                        ForEach(0 ..< productsCoreDataViewModel.deleteCount, id: \.self) { _ in
+                            let _ = print("Spacios: \(productsCoreDataViewModel.deleteCount.description)")
+                            Spacer()
+                                .frame(maxWidth: .infinity, minHeight: 80)
+                                .onAppear {
+                                    productsCoreDataViewModel.releaseResources()
+                                    productsCoreDataViewModel.lazyFetchProducts()
                                 }
-                            }, label: {
-                                Image(systemName: "cart")
-                            })
-                            .tint(Color("color_accent"))
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(action: {
-                                editProduct(product: producto)
-                                selectedTab = .plus
-                            }, label: {
-                                Image(systemName: "pencil")
-                            })
-                            .tint(Color("color_accent"))
-                        }
-                        .onAppear(perform: {
-                            print("Aparece item con Id: \(producto.id)")
-                            productsCoreDataViewModel.shouldLoadData(product: producto)
-                            if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
-                                requestReview()
-                                isRequested20AppRatingReview = false
+                        ForEach(productsCoreDataViewModel.productsCoreData) { producto in
+                            CardViewTipe2(
+                                id: producto.image?.id,
+                                url: producto.image?.imageUrl,
+                                topStatusColor: Color.red,
+                                topStatus: nil,
+                                mainText: producto.name,
+                                mainIndicatorPrefix: "S/. ",
+                                mainIndicator: String(format: "%.2f", producto.unitPrice),
+                                mainIndicatorAlert: false,
+                                secondaryIndicatorSuffix: " u",
+                                secondaryIndicator: String(producto.qty),
+                                secondaryIndicatorAlert: false, size: 80
+                            )
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowBackground(Color("color_background"))
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                Button(action: {
+                                    if agregarProductoACarrito(producto: producto) {
+                                        playSound(named: "Success1")
+                                    } else {
+                                        playSound(named: "Fail1")
+                                    }
+                                }, label: {
+                                    Image(systemName: "cart")
+                                })
+                                .tint(Color("color_accent"))
                             }
-                        })
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(action: {
+                                    editProduct(product: producto)
+                                    selectedTab = .plus
+                                }, label: {
+                                    Image(systemName: "pencil")
+                                })
+                                .tint(Color("color_accent"))
+                            }
+                            .onAppear(perform: {
+                                print("Aparece item con Id: \(producto.id)")
+                                productsCoreDataViewModel.shouldLoadData(product: producto)
+                                if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
+                                    requestReview()
+                                    isRequested20AppRatingReview = false
+                                }
+                            })
+                        }
                     }
-                }
-                .scrollIndicators(ScrollIndicatorVisibility.hidden)
-                .padding(.horizontal, 10)
-                .listStyle(PlainListStyle())
-                .background(Color("color_background"))
+                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
+//                    .padding(.horizontal, 10)
+                    .listStyle(PlainListStyle())
+                })
+                SideSwipeView(swipeDirection: .left, swipeAction: goToCart)
             }
         }
+        .background(Color("color_background"))
+    }
+    func goToEditProduct() {
+        selectedTab = .plus
+    }
+    func goToCart() {
+        selectedTab = .cart
     }
     func editProduct(product: Product) {
         agregarViewModel.editProduct(product: product)

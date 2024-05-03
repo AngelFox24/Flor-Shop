@@ -16,7 +16,7 @@ struct CartView: View {
         //NavigationView {
             VStack(spacing: 0) {
                 CartTopBar(showMenu: $showMenu)
-                ListCartController(selectedTab: $selectedTab)
+                ListCartController(showMenu: $showMenu, selectedTab: $selectedTab)
             }
             .onAppear {
                 cartViewModel.lazyFetchCart()
@@ -34,6 +34,8 @@ struct CartView_Previews: PreviewProvider {
 }
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var navManager: NavManager
+    @Binding var showMenu: Bool
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
@@ -55,29 +57,38 @@ struct ListCartController: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List {
-                    ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
-                        //Enviar CartDeail en vez de product al increace o decrece
-                        CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive, action: {
-                                    deleteCartDetail(cartDetail: cartDetail)
-                                }, label: {
-                                    Image(systemName: "trash")
-                                })
-                                .tint(Color("color_accent"))
-                            }
+                HStack(spacing: 0, content: {
+                    SideSwipeView(swipeDirection: .right, swipeAction: goToProductsList)
+                    List {
+                        ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
+                            //Enviar CartDeail en vez de product al increace o decrece
+                            CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                                .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                                .listRowBackground(Color("color_background"))
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive, action: {
+                                        deleteCartDetail(cartDetail: cartDetail)
+                                    }, label: {
+                                        Image(systemName: "trash")
+                                    })
+                                    .tint(Color("color_accent"))
+                                }
+                        }
+                        .listRowSeparator(.hidden)
                     }
-                    .listRowSeparator(.hidden)
-                }
-                .scrollIndicators(ScrollIndicatorVisibility.hidden)
-                .listStyle(PlainListStyle())
+                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                    .listStyle(PlainListStyle())
+                    SideSwipeView(swipeDirection: .left, swipeAction: goToPay)
+                })
             }
         }
-        .padding(.horizontal, 10)
         .background(Color("color_background"))
+    }
+    func goToProductsList() {
+        selectedTab = .magnifyingglass
+    }
+    func goToPay() {
+        navManager.goToPaymentView()
     }
     func deleteCartDetail(cartDetail: CartDetail) {
         cartViewModel.deleteCartDetail(cartDetail: cartDetail)
