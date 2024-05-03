@@ -113,7 +113,7 @@ class AddCustomerViewModel: ObservableObject {
             return nil
         }
         if isErrorsEmpty() {
-            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: saveSelectedImage(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: getImageIfExist(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
         } else {
             return nil
         }
@@ -127,6 +127,7 @@ class AddCustomerViewModel: ObservableObject {
         
         return isEmpty
     }
+    /*
     func saveSelectedImage() -> ImageUrl? {
         guard let image = self.selectedImage else {
             return nil
@@ -140,6 +141,13 @@ class AddCustomerViewModel: ObservableObject {
         print("Se usa el mismo id")
         let imageHash = self.saveImageUseCase.execute(id: idImage, image: image, resize: true)
         return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
+    }
+     */
+    func getImageIfExist() -> ImageUrl? {
+        guard let image = self.selectedImage else {
+            return nil
+        }
+        return self.saveImageUseCase.execute(idImage: UUID(), image: image)
     }
     func releaseResources() async {
         await MainActor.run {

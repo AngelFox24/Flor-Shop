@@ -91,11 +91,12 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
         if agregarFields.isErrorsEmpty() {
-            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.agregarFields.expirationDate, image: saveSelectedImage())
+            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.agregarFields.expirationDate, image: getImageIfExist())
         } else {
             return nil
         }
     }
+    /*
     func saveSelectedImage() -> ImageUrl? {
         if let imageLocal = self.agregarFields.selectedLocalImage {
             guard let idImage = self.agregarFields.idImage else {
@@ -107,6 +108,16 @@ class AgregarViewModel: ObservableObject {
             print("Se usa el mismo id")
             let imageHash = self.saveImageUseCase.execute(id: idImage, image: imageLocal, resize: true)
             return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
+        } else if self.agregarFields.imageUrl != "" {
+            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: "")
+        } else {
+            return nil
+        }
+    }
+     */
+    func getImageIfExist() -> ImageUrl? {
+        if let imageLocal = self.agregarFields.selectedLocalImage {
+            return self.saveImageUseCase.execute(idImage: UUID(), image: imageLocal)
         } else if self.agregarFields.imageUrl != "" {
             return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: "")
         } else {
@@ -127,7 +138,7 @@ class AgregarViewModel: ObservableObject {
                         countFail = countFail + 1
                         continue
                     }
-                    guard let price = Double(elements[2]) else {
+                    guard let price = Double(elements[2].replacingOccurrences(of: ",", with: "")) else {
                         print("Esta mal?: \(elements[2])")
                         countFail = countFail + 1
                         continue
@@ -137,6 +148,7 @@ class AgregarViewModel: ObservableObject {
                     if result == "Success" {
                         countSucc = countSucc + 1
                     } else {
+                        print("Error: \(result)")
                         countFail = countFail + 1
                     }
                 }

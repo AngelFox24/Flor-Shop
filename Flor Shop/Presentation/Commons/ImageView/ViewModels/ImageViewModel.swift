@@ -56,7 +56,8 @@ class ImageViewModel: ObservableObject {
                     print("Se carga imagen descargada")
                     self.image = Image(uiImage: uiImageNN)
                 }
-                self.saveImageUseCase.execute(id: id, image: uiImageNN, resize: false)
+                //self.saveImageUseCase.execute(id: id, image: uiImageNN, resize: false)
+                self.saveImageUseCase.execute(idImage: id, image: uiImageNN)
             }
         }
     }

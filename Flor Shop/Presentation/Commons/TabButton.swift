@@ -47,7 +47,7 @@ struct TabButton: View {
 struct TabButton_Previews: PreviewProvider {
     static var previews: some View {
         //@Namespace var animation
-        @State var selectedTab: MenuTab = .salesTab
+        @State var selectedTab: MenuTab = .employeesTab
         @State var showMenu: Bool = false
         VStack {
             TabButton(tab: MenuTab.employeesTab, selectedTab: $selectedTab, showMenu: $showMenu)
