@@ -75,16 +75,8 @@ struct SideMenuView: View {
     @Binding var showMenu: Bool
     var body: some View {
             ZStack {
-                VStack(spacing: 0, content: {
-                    Color(showMenu ? "color_accent" : "color_primary")
-                    if !showMenu && selectedTab == .pointOfSaleTab {
-                        Color("color_primary")
-                    } else if !showMenu {
-                        Color("color_background")
-                    }
-                })
-                .animation(.easeInOut(duration: 0.5))
-                .ignoresSafeArea()
+                Color("color_accent")
+                    .ignoresSafeArea()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 15, content: {
                         VStack(alignment: .leading, spacing: 15, content: {
@@ -116,7 +108,7 @@ struct SideMenuView: View {
                         Spacer()
                         VStack(alignment: .leading, spacing: 5, content: {
                             //TabButton(tab: MenuTab.logOut, selectedTab: $selectedTab, showMenu: $showMenu)
-                            Text("App Version 2.0.1")
+                            Text("App Version 2.0.2")
                                 .font(.caption)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white)

@@ -73,7 +73,6 @@ class LocalCustomerManager: CustomerManager {
             }
             if let imageNN = customer.image {
                 if let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                    print("Cliente Antiguo Imagen Editada y Reutilizada Id: \(imageEntity.idImageUrl?.uuidString) Hash: \(imageEntity.imageHash)")
                     customerEntity.toImageUrl = imageEntity
                 } else {
                     let newImage = Tb_ImageUrl(context: self.mainContext)
@@ -104,14 +103,12 @@ class LocalCustomerManager: CustomerManager {
             newCustomerEntity.creditDays = Int64(customer.creditDays)
             if let imageNN = customer.image {
                 if let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                    print("Nuevo Cliente Imagen Editada y Reutilizada Id: \(imageEntity.idImageUrl?.uuidString) Hash: \(imageEntity.imageHash)")
                     newCustomerEntity.toImageUrl = imageEntity
                 } else {
                     let newImage = Tb_ImageUrl(context: self.mainContext)
                     newImage.idImageUrl = imageNN.id
                     newImage.imageUrl = imageNN.imageUrl
                     newImage.imageHash = imageNN.imageHash
-                    print("Se guardo el hash: \(imageNN.imageHash)")
                     newCustomerEntity.toImageUrl = newImage
                 }
             }

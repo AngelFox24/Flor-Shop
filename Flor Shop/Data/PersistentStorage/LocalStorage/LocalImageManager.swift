@@ -18,7 +18,7 @@ protocol ImageManager {
     func deleteUnusedImages() async
     func loadSavedImage(id: UUID) -> UIImage?
     func downloadImage(url: URL) async -> UIImage?
-    func saveImage(id: UUID, image: UIImage, resize: Bool) -> String
+    func saveImage(idImage: UUID, image: UIImage) -> ImageUrl?
 }
 
 class LocalImageManager: ImageManager {
@@ -110,6 +110,18 @@ class LocalImageManager: ImageManager {
             return []
         }
     }
+    private func getImageByHash(imageHash: String) -> ImageUrl? {
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "imageHash == %@", imageHash)
+        request.predicate = predicate
+        do {
+            return try self.mainContext.fetch(request).map{$0.toImage()}.first
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+        //return productList
+    }
     func loadSavedImage(id: UUID) -> UIImage? {
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
             return nil
@@ -125,11 +137,36 @@ class LocalImageManager: ImageManager {
         }
         return nil
     }
+    @discardableResult
+    func saveImage(idImage: UUID, image: UIImage) -> ImageUrl? {
+        //Recortar a tamaño deseado
+        guard let imageData = image.jpegData(compressionQuality: 1.0) else {
+            return nil
+        }
+        guard let imageDataResized = resizeImage(data: imageData, maxWidth: 200, maxHeight: 200) else {
+            return nil
+        }
+        //Obtener Hash
+        let imageHash = generarHash(data: imageDataResized)
+        //Validar si existe otra imagen igual
+        guard let imageFromLocal = getImageByHash(imageHash: imageHash) else {
+            //Se guarda como nueva imagen
+            guard let uiImage = UIImage(data: imageDataResized) else {
+                return nil
+            }
+            if saveImageInLocal(id: idImage, image: uiImage) {
+                return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
+            } else {
+                return nil
+            }
+        }
+        return imageFromLocal
+    }
     func downloadImage(url: URL) async -> UIImage? {
         do {
             let request = URLRequest(url: url)
             let (data, _) = try await URLSession.shared.data(for: request)
-            let dataOptimized = try resizeImage(data: data, maxWidth: 200, maxHeight: 200)
+            let dataOptimized = resizeImage(data: data, maxWidth: 200, maxHeight: 200)
             guard let dataOp = dataOptimized else {
                 return nil
             }
@@ -274,6 +311,39 @@ class LocalImageManager: ImageManager {
             }
         }
         return imageHash
+    }
+    func saveImageInLocal(id: UUID, image: UIImage) -> Bool {
+        //Validar antes de guardar que la imagen no sea muy grande
+        //Tamaño maximo permitido es 1920x1080
+        guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+            return false
+        }
+        let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
+        do {
+            try FileManager.default.createDirectory(at: imagesDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            print("Error al crear el directorio de imágenes: \(error)")
+            return false
+        }
+        let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
+        if let data = image.jpegData(compressionQuality: 1.0) {
+            do {
+                //Validar antes de guardar que la imagen no sea muy grande
+                if shouldSaveImage(imageData: data) {
+                    print("Se guardo la imagen correctamente")
+                    try data.write(to: fileURL)
+                    return true
+                } else {
+                    print("La imagen es muy grande para ser guardada")
+                    return false
+                }
+            } catch {
+                print("Error al guardar la imagen: \(error)")
+                return false
+            }
+        } else {
+            return false
+        }
     }
     func generarHash(data: Data) -> String {
         var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))

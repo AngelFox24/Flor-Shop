@@ -67,7 +67,6 @@
 		275212A22BC970A1005E2016 /* SaveImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275212A12BC970A1005E2016 /* SaveImageUseCase.swift */; };
 		2776A2F02A86F35500410674 /* ProductsEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2776A2EF2A86F35500410674 /* ProductsEnums.swift */; };
 		2777D77C2B1EF408003C2FCA /* SaveProductUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2777D77B2B1EF408003C2FCA /* SaveProductUseCase.swift */; };
-		2777DB1C2B55DC1A00F6CAC3 /* BD_Flor_Shop.csv in Resources */ = {isa = PBXBuildFile; fileRef = 2777DB1B2B55DC1A00F6CAC3 /* BD_Flor_Shop.csv */; };
 		278142082AC333A60093B402 /* CartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278142072AC333A60093B402 /* CartViews.swift */; };
 		2786CA1B2A6D44CC00A80585 /* Fail1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA192A6D44CC00A80585 /* Fail1.mp3 */; };
 		2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA1A2A6D44CC00A80585 /* Success1.mp3 */; };
@@ -217,7 +216,6 @@
 		275212A12BC970A1005E2016 /* SaveImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveImageUseCase.swift; sourceTree = "<group>"; };
 		2776A2EF2A86F35500410674 /* ProductsEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsEnums.swift; sourceTree = "<group>"; };
 		2777D77B2B1EF408003C2FCA /* SaveProductUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveProductUseCase.swift; sourceTree = "<group>"; };
-		2777DB1B2B55DC1A00F6CAC3 /* BD_Flor_Shop.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BD_Flor_Shop.csv; sourceTree = "<group>"; };
 		278142072AC333A60093B402 /* CartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViews.swift; sourceTree = "<group>"; };
 		2786CA192A6D44CC00A80585 /* Fail1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fail1.mp3; sourceTree = "<group>"; };
 		2786CA1A2A6D44CC00A80585 /* Success1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Success1.mp3; sourceTree = "<group>"; };
@@ -493,8 +491,8 @@
 				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
 				27C7B9D12A60CEB400CA2818 /* Onboarding */,
 				27CC2DFB2A881B4B000EDB64 /* SessionView */,
-				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27F2F4692B1DF00E003E4197 /* MenuView */,
+				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27C241F52A0088A70045B2A0 /* Commons */,
 			);
 			path = Presentation;
@@ -552,7 +550,6 @@
 		2777DB162B55CF2700F6CAC3 /* TestData */ = {
 			isa = PBXGroup;
 			children = (
-				2777DB1B2B55DC1A00F6CAC3 /* BD_Flor_Shop.csv */,
 			);
 			path = TestData;
 			sourceTree = "<group>";
@@ -1346,7 +1343,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					274CE29529E6D792007C703D = {
 						CreatedOnToolsVersion = 14.3;
@@ -1385,7 +1382,6 @@
 				274CE29E29E6D793007C703D /* Assets.xcassets in Resources */,
 				27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */,
 				27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */,
-				2777DB1C2B55DC1A00F6CAC3 /* BD_Flor_Shop.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1567,6 +1563,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1627,6 +1624,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1668,7 +1666,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1703,7 +1701,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

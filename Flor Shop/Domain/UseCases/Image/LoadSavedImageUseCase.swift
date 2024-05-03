@@ -18,7 +18,6 @@ final class LoadSavedImageInteractor: LoadSavedImageUseCase {
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
     }
-    
     func execute(id: UUID) -> UIImage? {
         return self.imageRepository.loadSavedImage(id: id)
     }

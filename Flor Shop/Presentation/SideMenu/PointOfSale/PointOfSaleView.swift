@@ -14,18 +14,40 @@ struct PointOfSaleView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     var body: some View {
-        VStack(spacing: 0, content: {
+        ZStack(content: {
+            if !showMenu {
+                Color("color_primary")
+                    .ignoresSafeArea()
+            }
             VStack(spacing: 0, content: {
-                if tabSelected == .plus {
+                switch tabSelected {
+                case .plus:
                     AgregarView(showMenu: $showMenu)
-                } else if tabSelected == .magnifyingglass {
+                case .magnifyingglass:
                     ProductView(selectedTab: $tabSelected, showMenu: $showMenu)
-                } else if tabSelected == .cart {
+                case .cart:
                     CartView(selectedTab: $tabSelected, showMenu: $showMenu)
                 }
+                if !isKeyboardVisible {
+                    CustomTabBar(selectedTab: $tabSelected)
+                }
             })
-            if !isKeyboardVisible {
-                CustomTabBar(selectedTab: $tabSelected)
+            .padding(.vertical, showMenu ? 15 : 0)
+            .background(Color("color_primary"))
+            .cornerRadius(showMenu ? 35 : 0)
+            .padding(.top, showMenu ? 0 : 1)
+            .disabled(showMenu ? true : false)
+            if showMenu {
+                VStack(spacing: 0, content: {
+                    Color("color_primary")
+                        .opacity(0.001)
+                })
+                .onTapGesture(perform: {
+                    withAnimation(.easeInOut) {
+                        showMenu = false
+                    }
+                })
+                .disabled(showMenu ? false : true)
             }
         })
     }

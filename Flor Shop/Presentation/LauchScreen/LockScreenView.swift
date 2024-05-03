@@ -17,13 +17,13 @@ struct LockScreenView: View {
             Text("Versión desactualizada, vamos a la tienda a descargar la ultima versión")
                 .font(.custom("Artifika-Regular", size: 18))
                 .padding(.horizontal, 25)
-            /*
             Button(action: {
-                //selectedTab = .magnifyingglass
+                if let url = URL(string: "https://apps.apple.com/app/flor-shop/id6451300841") {
+                    UIApplication.shared.open(url)
+                }
             }) {
-                CustomButton1(text: "Ir a Productos")
+                CustomButton1(text: "Actualizar")
             }
-            */
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color("color_background"))

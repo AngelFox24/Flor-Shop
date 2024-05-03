@@ -512,7 +512,7 @@ class LocalSaleManager: SaleManager {
         request.predicate = filterAtt
         do {
             let customerOut = try self.mainContext.fetch(request).first
-            if let customerNN = customerOut, let image = customerOut?.toImageUrl?.toImage() {
+            if let image = customerOut?.toImageUrl?.toImage() {
                 return image
             } else {
                 return nil
@@ -577,7 +577,7 @@ class LocalSaleManager: SaleManager {
                 if paymentType == .loan {
                     customerEntity.firstDatePurchaseWithCredit = customerEntity.totalDebt == 0 ? Date() : customerEntity.firstDatePurchaseWithCredit
                     customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
-                    if customerEntity.totalDebt > customerEntity.creditLimit {
+                    if customerEntity.totalDebt > customerEntity.creditLimit && customerEntity.isCreditLimitActive {
                         customerEntity.isCreditLimit = true
                     } else {
                         customerEntity.isCreditLimit = false

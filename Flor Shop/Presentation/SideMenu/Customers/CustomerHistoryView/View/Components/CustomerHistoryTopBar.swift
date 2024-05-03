@@ -36,7 +36,7 @@ struct CustomerHistoryTopBar: View {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
-                        Text(String(customerHistoryViewModel.customer?.totalDebt ?? 0.0))
+                        Text(String(format: "%.2f", customerHistoryViewModel.customer?.totalDebt ?? 0.0))
                             .font(.custom("Artifika-Regular", size: 20))
                     })
                     .padding(.horizontal, 10)

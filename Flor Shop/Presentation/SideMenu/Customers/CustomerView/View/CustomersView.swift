@@ -12,16 +12,42 @@ struct CustomersView: View {
     @Binding var showMenu: Bool
     var backButton: Bool = false
     var body: some View {
-        VStack(spacing: 0) {
-            CustomerTopBar(showMenu: $showMenu, backButton: backButton)
-            CustomerListController(forSelectCustomer: backButton)
-        }
-        .onAppear {
-            customerViewModel.lazyFetchList()
-        }
-        .onDisappear {
-            customerViewModel.releaseResources()
-        }
+        ZStack(content: {
+            if !showMenu {
+                VStack(spacing: 0, content: {
+                    Color("color_primary")
+                    Color("color_background")
+                })
+                .ignoresSafeArea()
+            }
+            VStack(spacing: 0) {
+                CustomerTopBar(showMenu: $showMenu, backButton: backButton)
+                CustomerListController(forSelectCustomer: backButton)
+            }
+            .padding(.vertical, showMenu ? 15 : 0)
+            .background(Color("color_primary"))
+            .cornerRadius(showMenu ? 35 : 0)
+            .padding(.top, showMenu ? 0 : 1)
+            .disabled(showMenu ? true : false)
+            .onAppear {
+                customerViewModel.lazyFetchList()
+            }
+            .onDisappear {
+                customerViewModel.releaseResources()
+            }
+            if showMenu {
+                VStack(spacing: 0, content: {
+                    Color("color_primary")
+                        .opacity(0.001)
+                })
+                .onTapGesture(perform: {
+                    withAnimation(.easeInOut) {
+                        showMenu = false
+                    }
+                })
+                .disabled(showMenu ? false : true)
+            }
+        })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
@@ -88,7 +114,7 @@ struct CustomerListController: View {
                                 topStatus: nil,
                                 mainText: customer.name + " " + customer.lastName,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(customer.totalDebt),
+                                mainIndicator: String(format: "%.2f", customer.totalDebt),
                                 mainIndicatorAlert: customer.isCreditLimit,
                                 secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
                                 secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
@@ -110,6 +136,7 @@ struct CustomerListController: View {
                             }
                         }
                     }
+                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
                 }
             }

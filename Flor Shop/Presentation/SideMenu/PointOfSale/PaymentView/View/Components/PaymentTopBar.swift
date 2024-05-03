@@ -13,7 +13,7 @@ struct PaymentTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    //@EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
@@ -29,7 +29,6 @@ struct PaymentTopBar: View {
                     if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar, paymentType: carritoCoreDataViewModel.paymentType) {
                         carritoCoreDataViewModel.releaseResources()
                         carritoCoreDataViewModel.releaseCustomer()
-                        productsCoreDataViewModel.releaseResources()
                         playSound(named: "Success1")
                     }
                 }, label: {

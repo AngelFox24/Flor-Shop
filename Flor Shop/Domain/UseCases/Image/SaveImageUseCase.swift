@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 protocol SaveImageUseCase {
-    func execute(id: UUID, image: UIImage, resize: Bool) -> String
+    func execute(idImage: UUID, image: UIImage) -> ImageUrl?
 }
 
 final class SaveImageInteractor: SaveImageUseCase {
@@ -19,8 +19,8 @@ final class SaveImageInteractor: SaveImageUseCase {
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
     }
-    
-    func execute(id: UUID, image: UIImage, resize: Bool = true) -> String {
-        return self.imageRepository.saveImage(id: id, image: image, resize: resize)
+    @discardableResult
+    func execute(idImage: UUID, image: UIImage) -> ImageUrl? {
+        return self.imageRepository.saveImage(idImage: idImage, image: image)
     }
 }

@@ -8,23 +8,22 @@
 import SwiftUI
 import CoreData
 import AVFoundation
+import StoreKit
 
 struct ProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                ProductSearchTopBar(showMenu: $showMenu)
-                ListaControler(selectedTab: $selectedTab)
-            }
-            .onAppear {
-                productsCoreDataViewModel.lazyFetchProducts()
-            }
-            .onDisappear {
-                productsCoreDataViewModel.releaseResources()
-            }
+        VStack(spacing: 0) {
+            ProductSearchTopBar(showMenu: $showMenu)
+            ListaControler(selectedTab: $selectedTab)
+        }
+        .onAppear {
+            productsCoreDataViewModel.lazyFetchProducts()
+        }
+        .onDisappear {
+            productsCoreDataViewModel.releaseResources()
         }
     }
 }
@@ -43,6 +42,8 @@ struct ListaControler: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
+    @Environment(\.requestReview) var requestReview
     @State private var audioPlayer: AVAudioPlayer?
     @State var unitPoint: UnitPoint = .bottom
     @State var lastIndex: Int = 0
@@ -71,6 +72,7 @@ struct ListaControler: View {
 //                    })
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color("color_background"))
                 .onAppear {
                     productsCoreDataViewModel.lazyFetchProducts()
                 }
@@ -93,7 +95,7 @@ struct ListaControler: View {
                             topStatus: nil,
                             mainText: producto.name,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(producto.unitPrice),
+                            mainIndicator: String(format: "%.2f", producto.unitPrice),
                             mainIndicatorAlert: false,
                             secondaryIndicatorSuffix: " u",
                             secondaryIndicator: String(producto.qty),
@@ -126,9 +128,15 @@ struct ListaControler: View {
                         .onAppear(perform: {
                             print("Aparece item con Id: \(producto.id)")
                             productsCoreDataViewModel.shouldLoadData(product: producto)
+                            if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
+                                requestReview()
+                                isRequested20AppRatingReview = false
+                            }
                         })
                     }
                 }
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                .padding(.horizontal, 10)
                 .listStyle(PlainListStyle())
                 .background(Color("color_background"))
             }

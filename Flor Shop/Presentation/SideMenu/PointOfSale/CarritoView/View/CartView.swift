@@ -13,7 +13,7 @@ struct CartView: View {
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
-        NavigationView {
+        //NavigationView {
             VStack(spacing: 0) {
                 CartTopBar(showMenu: $showMenu)
                 ListCartController(selectedTab: $selectedTab)
@@ -21,7 +21,7 @@ struct CartView: View {
             .onAppear {
                 cartViewModel.lazyFetchCart()
             }
-        }
+        //}
     }
 }
 
@@ -55,24 +55,25 @@ struct ListCartController: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-            List {
-                ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
-                    //Enviar CartDeail en vez de product al increace o decrece
-                    CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                        .listRowBackground(Color("color_background"))
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive, action: {
-                                deleteCartDetail(cartDetail: cartDetail)
-                            }, label: {
-                                Image(systemName: "trash")
-                            })
-                            .tint(Color("color_accent"))
-                        }
+                List {
+                    ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
+                        //Enviar CartDeail en vez de product al increace o decrece
+                        CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
+                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowBackground(Color("color_background"))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive, action: {
+                                    deleteCartDetail(cartDetail: cartDetail)
+                                }, label: {
+                                    Image(systemName: "trash")
+                                })
+                                .tint(Color("color_accent"))
+                            }
+                    }
+                    .listRowSeparator(.hidden)
                 }
-                .listRowSeparator(.hidden)
-            }
-            .listStyle(PlainListStyle())
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                .listStyle(PlainListStyle())
             }
         }
         .padding(.horizontal, 10)

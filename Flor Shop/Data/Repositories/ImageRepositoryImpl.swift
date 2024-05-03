@@ -12,7 +12,7 @@ protocol ImageRepository {
     func deleteUnusedImages() async
     func loadSavedImage(id: UUID) -> UIImage?
     func downloadImage(url: URL) async -> UIImage?
-    func saveImage(id: UUID, image: UIImage, resize: Bool) -> String
+    func saveImage(idImage: UUID, image: UIImage) -> ImageUrl?
 }
 
 class ImageRepositoryImpl: ImageRepository {
@@ -30,7 +30,7 @@ class ImageRepositoryImpl: ImageRepository {
     func downloadImage(url: URL) async -> UIImage? {
         return await self.manager.downloadImage(url: url)
     }
-    func saveImage(id: UUID, image: UIImage, resize: Bool) -> String {
-        return self.manager.saveImage(id: id, image: image, resize: resize)
+    func saveImage(idImage: UUID, image: UIImage) -> ImageUrl? {
+        return self.manager.saveImage(idImage: idImage, image: image)
     }
 }
