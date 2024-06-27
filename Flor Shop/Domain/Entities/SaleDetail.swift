@@ -11,12 +11,13 @@ struct SaleDetail: Identifiable {
     var id: UUID
     var image: ImageUrl?
     var productName: String
-    var unitCost: Double
-    var unitPrice: Double
+    var unitType: UnitTypeEnum
+    var unitCost: Money
+    var unitPrice: Money
     var quantitySold: Int
     var paymentType: PaymentType
     var saleDate: Date
-    var subtotal: Double
+    var subtotal: Money
     
     static func == (lhs: SaleDetail, rhs: SaleDetail) -> Bool {
         return lhs.id == rhs.id

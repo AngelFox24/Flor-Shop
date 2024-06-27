@@ -7,6 +7,49 @@
 
 import Foundation
 
+enum UnitTypeEnum {
+    case unit
+    case kilo
+    var value: String {
+        switch self {
+        case .unit:
+            return "Unit"
+        case .kilo:
+            return "Kilo"
+        }
+    }
+    var description: String {
+        switch self {
+        case .unit:
+            return "Unidad"
+        case .kilo:
+            return "Kilogramo"
+        }
+    }
+    static var allValues: [UnitTypeEnum] {
+        return [.unit, .kilo]
+    }
+    static func == (lhs: UnitTypeEnum, rhs: UnitTypeEnum) -> Bool {
+        return lhs.description == rhs.description
+    }
+}
+
+struct Money {
+    var cents: Int
+
+    init(cents: Int) {
+        self.cents = cents
+    }
+
+    var soles: Double {
+        return Double(cents) / 100.0
+    }
+
+    mutating func addCents(_ cents: Int) {
+        self.cents += cents
+    }
+}
+
 enum ProductsFilterAttributes: CustomStringConvertible, Equatable {
     case allProducts
     case outOfStock

@@ -86,7 +86,7 @@ struct SalesListController: View {
                             url: saleDetail.image?.imageUrl,
                             mainText: saleDetail.productName,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(saleDetail.subtotal),
+                            mainIndicator: String(saleDetail.subtotal.cents),
                             mainIndicatorAlert: false,
                             secondaryIndicatorSuffix: " u",
                             secondaryIndicator: String(saleDetail.quantitySold),

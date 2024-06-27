@@ -67,14 +67,14 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.name = customer.name
         fieldsAddCustomer.lastname = customer.lastName
         fieldsAddCustomer.phoneNumber = customer.phoneNumber
-        fieldsAddCustomer.totalDebt = String(customer.totalDebt)
+        fieldsAddCustomer.totalDebt = String(customer.totalDebt.cents)
         fieldsAddCustomer.dateLimit = customer.dateLimit
         fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
         fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
         fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
         fieldsAddCustomer.creditDays = String(customer.creditDays)
         fieldsAddCustomer.creditScore = customer.creditScore
-        fieldsAddCustomer.creditLimit = String(customer.creditLimit)
+        fieldsAddCustomer.creditLimit = String(customer.creditLimit.cents)
         
     }
     func addCustomer() async -> Bool {
@@ -100,11 +100,11 @@ class AddCustomerViewModel: ObservableObject {
         }
     }
     func createCustomer() -> Customer? {
-        guard let totalDebt = Double(fieldsAddCustomer.totalDebt) else {
+        guard let totalDebt = Int(fieldsAddCustomer.totalDebt) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
-        guard let creditLimitDouble = Double(fieldsAddCustomer.creditLimit) else {
+        guard let creditLimitInt = Int(fieldsAddCustomer.creditLimit) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
@@ -113,7 +113,7 @@ class AddCustomerViewModel: ObservableObject {
             return nil
         }
         if isErrorsEmpty() {
-            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: getImageIfExist(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: getImageIfExist(), creditLimit: Money(cents: creditLimitInt), isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: Money(cents: totalDebt), isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
         } else {
             return nil
         }

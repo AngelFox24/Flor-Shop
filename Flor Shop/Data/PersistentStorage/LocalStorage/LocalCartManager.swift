@@ -52,7 +52,7 @@ class LocalCartManager: CartManager {
         } else {
             let newCart: Tb_Cart = Tb_Cart(context: self.mainContext)
             newCart.idCart = UUID()
-            newCart.total = 0.0
+            newCart.total = 0
             newCart.toEmployee = employeeEntity
             // Redundante?
             self.mainEmployeeEntity?.toCart = newCart
@@ -113,7 +113,7 @@ class LocalCartManager: CartManager {
                 newCarDetail.idCartDetail = UUID() // Genera un nuevo UUID para el detalle del carrito
                 // detalleCarrito.detalleCarrito_to_carrito = carrito // Asigna el ID del carrito existente
                 newCarDetail.quantityAdded = 1
-                newCarDetail.subtotal = productEntity.unitPrice * Double(newCarDetail.quantityAdded)
+                newCarDetail.subtotal = productEntity.unitPrice * newCarDetail.quantityAdded
                 // Agregar el objeto producto al detalle carrito
                 newCarDetail.toProduct = productEntity
                 // Agregar el objeto detalleCarrito al carrito
@@ -174,7 +174,7 @@ class LocalCartManager: CartManager {
             saveData()
             return
         }
-        cartEntity.total = Double(cartDetailEntityList.reduce(0) {$0 + $1.subtotal})
+        cartEntity.total = cartDetailEntityList.reduce(0) {$0 + $1.subtotal}
         saveData()
     }
     func increaceProductAmount (cartDetail: CartDetail) {
@@ -189,7 +189,7 @@ class LocalCartManager: CartManager {
         }
         if productEntity.quantityStock > cartDetailEntity.quantityAdded {
             cartDetailEntity.quantityAdded += 1
-            cartDetailEntity.subtotal = Double(cartDetailEntity.quantityAdded) * productEntity.unitPrice
+            cartDetailEntity.subtotal = cartDetailEntity.quantityAdded * productEntity.unitPrice
         } else {
             print("Producto no tiene stock suficiente")
         }
@@ -208,7 +208,7 @@ class LocalCartManager: CartManager {
         }
         if cartDetailEntity.quantityAdded > 1 {
             cartDetailEntity.quantityAdded -= 1
-            cartDetailEntity.subtotal = Double(cartDetailEntity.quantityAdded) * productEntity.unitPrice
+            cartDetailEntity.subtotal = cartDetailEntity.quantityAdded * productEntity.unitPrice
         } else {
             print("La cantida agregada no puede disminuir menos que 0")
         }

@@ -208,7 +208,7 @@ struct CardViewTipe3: View {
                     HStack(spacing: 0) {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 14))
-                        Text(String(format: "%.2f", cartDetail.product.unitPrice))
+                        Text(String(format: "%.2f", cartDetail.product.unitPrice.soles))
                             .font(.custom("Artifika-Regular", size: 16))
                     }
                     .padding(.vertical, 6)
@@ -314,7 +314,7 @@ struct CardViews_Previews: PreviewProvider {
         VStack(spacing: 10, content: {
             CardViewTipe1(image: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
             CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
-            let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: 34, product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), active: true, name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitCost: 23.4, unitPrice: 12.4, expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU", imageHash: "")))
+            let cartDetail = CartDetail(id: UUID(), quantity: 24, subtotal: Money(cents: 3400), product: Product(id: UUID(uuidString: "3062F3B7-14C7-4314-B342-1EC912EBD925") ?? UUID(), active: true, name: "AUDIFONOS C NOISE CANCELLING 1000XM4BMUC", qty: 23, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 2340), unitPrice: Money(cents: 1240), expirationDate: Date(), image: ImageUrl(id: UUID(), imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRenBX4ycM2_FQOz3IYXI1Waln52auoUqqdVQ&usqp=CAU", imageHash: "")))
             CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
                 .environmentObject(dependencies.cartViewModel)
             CardViewTipe4(icon: "plus", text: "Puerco")

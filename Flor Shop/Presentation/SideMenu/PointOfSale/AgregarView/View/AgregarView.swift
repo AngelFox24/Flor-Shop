@@ -52,6 +52,7 @@ struct CamposProductoAgregar: View {
     @Binding var showMenu: Bool
     @Binding var selectedTab: Tab
     @Binding var isPresented: Bool
+    @State var tipeUnitMes: Bool = true
     var sizeCampo: CGFloat = 150
     var body: some View {
         //List(content: {
@@ -158,9 +159,12 @@ struct CamposProductoAgregar: View {
                         }
                     }
                     VStack {
+                        TypeUnitView(value: $agregarViewModel.agregarFields.unitType)
+                    }
+                    VStack {
                         HStack {
                             CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
-                            CustomTextField(placeHolder: "0", title: "Costo Unitario" ,value: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited, keyboardType: .decimalPad)
+                            CustomNumberField(placeHolder: "0", title: "Costo Unitario" ,userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
                         }
                         if agregarViewModel.agregarFields.quantityError != "" {
                             ErrorMessageText(message: agregarViewModel.agregarFields.quantityError)
@@ -174,7 +178,7 @@ struct CamposProductoAgregar: View {
                     VStack {
                         HStack {
                             CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.agregarFields.profitMargin), edited: .constant(false), disable: true)
-                            CustomTextField(placeHolder: "0", title: "Precio de Venta" ,value: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited, keyboardType: .decimalPad)
+                            CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited)
                         }
                         if agregarViewModel.agregarFields.unitPriceError != "" {
                             ErrorMessageText(message: agregarViewModel.agregarFields.unitPriceError)

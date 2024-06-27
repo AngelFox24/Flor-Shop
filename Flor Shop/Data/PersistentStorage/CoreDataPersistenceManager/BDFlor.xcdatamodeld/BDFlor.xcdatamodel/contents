@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23D60" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tb_Cart" representedClassName=".Tb_Cart" syncable="YES" codeGenerationType="class">
         <attribute name="idCart" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="total" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="total" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toCart" inverseEntity="Tb_CartDetail"/>
         <relationship name="toEmployee" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toCart" inverseEntity="Tb_Employee"/>
     </entity>
     <entity name="Tb_CartDetail" representedClassName=".Tb_CartDetail" syncable="YES" codeGenerationType="class">
         <attribute name="idCartDetail" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="quantityAdded" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="subtotal" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="subtotal" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toCartDetail" inverseEntity="Tb_Cart"/>
         <relationship name="toProduct" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toCartDetail" inverseEntity="Tb_Product"/>
     </entity>
@@ -22,7 +22,7 @@
     </entity>
     <entity name="Tb_Customer" representedClassName=".Tb_Customer" syncable="YES" codeGenerationType="class">
         <attribute name="creditDays" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="creditLimit" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="creditLimit" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creditScore" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="dateLimit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="firstDatePurchaseWithCredit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -35,7 +35,7 @@
         <attribute name="lastName" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="phoneNumber" optional="YES" attributeType="String"/>
-        <attribute name="totalDebt" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="totalDebt" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toCustomer" inverseEntity="Tb_Company"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toCustomer" inverseEntity="Tb_ImageUrl"/>
         <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toCustomer" inverseEntity="Tb_Sale"/>
@@ -71,8 +71,9 @@
         <attribute name="idProduct" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="productName" attributeType="String"/>
         <attribute name="quantityStock" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="unitCost" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="unitPrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
         <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toProduct" inverseEntity="Tb_CartDetail"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toProduct" inverseEntity="Tb_ImageUrl"/>
@@ -82,7 +83,7 @@
         <attribute name="idSale" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="paymentType" attributeType="String"/>
         <attribute name="saleDate" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="total" attributeType="Double" usesScalarValueType="YES"/>
+        <attribute name="total" attributeType="Integer 64" usesScalarValueType="YES"/>
         <relationship name="toCustomer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toSale" inverseEntity="Tb_Customer"/>
         <relationship name="toEmployee" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toSale" inverseEntity="Tb_Employee"/>
         <relationship name="toSaleDetail" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_SaleDetail" inverseName="toSale" inverseEntity="Tb_SaleDetail"/>
@@ -92,9 +93,10 @@
         <attribute name="idSaleDetail" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="productName" attributeType="String"/>
         <attribute name="quantitySold" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="subtotal" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="unitCost" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="unitPrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="subtotal" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toSaleDetail" inverseEntity="Tb_ImageUrl"/>
         <relationship name="toSale" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toSaleDetail" inverseEntity="Tb_Sale"/>
     </entity>

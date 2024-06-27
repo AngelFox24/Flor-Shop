@@ -37,7 +37,7 @@ struct PaymentsFields: View {
                     Text("S/.")
                         .font(.custom("Artifika-Regular", size: 26))
                         .foregroundColor(.black)
-                    Text(String(cartViewModel.cartCoreData?.total ?? 0.0))
+                    Text(String(cartViewModel.cartCoreData?.total ?? 0))
                         .font(.custom("Artifika-Regular", size: 55))
                         .foregroundColor(.black)
                 })
@@ -57,7 +57,7 @@ struct PaymentsFields: View {
                             topStatus: customer.customerTipe.description,
                             mainText: customer.name + " " + customer.lastName,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(customer.totalDebt),
+                            mainIndicator: String(customer.totalDebt.cents),
                             mainIndicatorAlert: customer.isCreditLimit,
                             secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
                             secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,

@@ -12,7 +12,7 @@ struct Customer: Identifiable {
     var name: String
     var lastName: String
     var image: ImageUrl?
-    var creditLimit: Double
+    var creditLimit: Money
     var isCreditLimit: Bool
     var creditDays: Int
     var isDateLimit: Bool
@@ -29,11 +29,11 @@ struct Customer: Identifiable {
     var dateLimit: Date
     var firstDatePurchaseWithCredit: Date?
     var phoneNumber: String
-    var totalDebt: Double
+    var totalDebt: Money
     var isCreditLimitActive: Bool
     var isDateLimitActive: Bool
     
     static func getDummyCustomer() -> Customer {
-        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: nil, creditLimit: 12.0, isCreditLimit: false, creditDays: 30, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53, isCreditLimitActive: false, isDateLimitActive: false)
+        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: nil, creditLimit: Money(cents: 1200), isCreditLimit: false, creditDays: 30, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: Money(cents: 2300), isCreditLimitActive: false, isDateLimitActive: false)
     }
 }

@@ -77,11 +77,11 @@ class LocalSaleManager: SaleManager {
             print("No se encontró sucursal")
             return false
         }
-        if customer.totalDebt <= 0 {
+        if customer.totalDebt.cents <= 0 {
             return false
         }
-        let totalDebtDB: Double = getTotalDebtByCustomer(customer: customer)
-        if totalDebtDB == customer.totalDebt && totalDebtDB != 0 {
+        let totalDebtDB: Int = getTotalDebtByCustomer(customer: customer)
+        if totalDebtDB == customer.totalDebt.cents && totalDebtDB != 0 {
             guard let customerEntity = customer.toCustomerEntity(context: self.mainContext) else {
                 print("No se encontró sucursal")
                 return false
@@ -108,7 +108,7 @@ class LocalSaleManager: SaleManager {
             return false
         }
     }
-    func getTotalDebtByCustomer(customer: Customer) -> Double {
+    func getTotalDebtByCustomer(customer: Customer) -> Int {
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
             print("No se encontró sucursal")
             return 0
@@ -137,7 +137,7 @@ class LocalSaleManager: SaleManager {
             
             // Obtiene la suma de valorVenta
             if let firstResult = result.first,
-               let totalDebt = firstResult["TotalDebt"] as? Double {
+               let totalDebt = firstResult["TotalDebt"] as? Int {
                 return totalDebt
             } else {
                 print("No se encontraron registros de este cliente")
@@ -317,15 +317,15 @@ class LocalSaleManager: SaleManager {
             let results = try self.mainContext.fetch(fetchRequest)
             return results.compactMap { result in
                 guard let productName = result["productName"] as? String,
-                      let totalQuantity = result["totalQuantity"] as? Int64,
-                      let totalByProduct = result["totalByProduct"] as? Double else {
+                      let totalQuantity = result["totalQuantity"] as? Int,
+                      let totalByProduct = result["totalByProduct"] as? Int else {
                     return nil
                 }
                 
                 let paymentType: PaymentType = PaymentType.from(description: result["toSale.paymentType"] as? String ?? "")
                 let saleDate: Date = result["toSale.saleDate"] as? Date ?? Date()
                 
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: paymentType, saleDate: saleDate, subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: totalQuantity, paymentType: paymentType, saleDate: saleDate, subtotal: Money(cents: totalByProduct))
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -416,11 +416,11 @@ class LocalSaleManager: SaleManager {
             let results = try self.mainContext.fetch(fetchRequest)
             return results.compactMap { result in
                 guard let productName = result["productName"] as? String,
-                      let totalQuantity = result["totalQuantity"] as? Int64,
-                      let totalByProduct = result["totalByProduct"] as? Double else {
+                      let totalQuantity = result["totalQuantity"] as? Int,
+                      let totalByProduct = result["totalByProduct"] as? Int else {
                     return nil
                 }
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: totalQuantity, paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: totalByProduct))
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -489,17 +489,17 @@ class LocalSaleManager: SaleManager {
             let results = try self.mainContext.fetch(fetchRequest)
             return results.compactMap { result in
                 guard let totalQuantity = result["totalQuantity"] as? Int64,
-                      let totalByProduct = result["totalByProduct"] as? Double else {
+                      let totalByProduct = result["totalByProduct"] as? Int64 else {
                     //Si sale error en el return es porque hay error en los return de abajo
                     return nil
                 }
                 guard let customerName = result["toSale.toCustomer.name"] as? String else {
-                    return SaleDetail(id: UUID(), image: nil, productName: "Desconocido", unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                    return SaleDetail(id: UUID(), image: nil, productName: "Desconocido", unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: Int(totalByProduct)))
                 }
                 guard let customerLastName = result ["toSale.toCustomer.lastName"] as? String else {
-                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: Int(totalByProduct)))
                 }
-                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName + " " + customerLastName, unitCost: 0, unitPrice: 0, quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: totalByProduct)
+                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName + " " + customerLastName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: Int(totalByProduct)))
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -569,7 +569,7 @@ class LocalSaleManager: SaleManager {
             if let customerEntity = customer?.toCustomerEntity(context: self.mainContext) {
                 newSaleEntity.toCustomer = customerEntity
                 customerEntity.lastDatePurchase = Date()
-                if customerEntity.totalDebt == 0.0 {
+                if customerEntity.totalDebt == 0 {
                     var calendario = Calendar.current
                     calendario.timeZone = TimeZone(identifier: "UTC")!
                     customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
@@ -609,7 +609,7 @@ class LocalSaleManager: SaleManager {
                     saveChanges = false
                 }
             }
-            cartEntity.total = 0.0
+            cartEntity.total = 0
         } else {
             saveChanges = false
         }

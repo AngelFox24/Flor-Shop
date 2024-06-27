@@ -9,5 +9,5 @@ import Foundation
 
 struct Car: Identifiable {
     let id: UUID
-    let total: Double
+    let total: Int
 }

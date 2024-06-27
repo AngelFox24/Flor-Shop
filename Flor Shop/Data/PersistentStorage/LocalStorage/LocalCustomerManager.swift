@@ -54,7 +54,7 @@ class LocalCustomerManager: CustomerManager {
             customerEntity.lastName = customer.lastName
             customerEntity.creditDays = Int64(customer.creditDays)
             //customerEntity.creditActive = customer.creditActive
-            customerEntity.creditLimit = customer.creditLimit
+            customerEntity.creditLimit = Int64(customer.creditLimit.cents)
             //print("BD isCreditLimitActive Before: \(customerEntity.isCreditLimitActive)")
             customerEntity.isCreditLimitActive = customer.isCreditLimitActive
             //print("BD isCreditLimitActive After: \(customerEntity.isCreditLimitActive)")
@@ -113,7 +113,7 @@ class LocalCustomerManager: CustomerManager {
                 }
             }
             //newCustomerEntity.creditActive = customer.creditActive
-            newCustomerEntity.creditLimit = customer.creditLimit
+            newCustomerEntity.creditLimit = Int64(customer.creditLimit.cents)
             newCustomerEntity.creditScore = 50
             newCustomerEntity.dateLimit = Date()
             newCustomerEntity.phoneNumber = customer.phoneNumber

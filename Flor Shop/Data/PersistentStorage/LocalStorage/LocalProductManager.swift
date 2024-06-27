@@ -100,9 +100,9 @@ class LocalProductManager: ProductManager {
             productInContext.active = product.active
             print("Active: \(product.active)")
             productInContext.quantityStock = Int64(product.qty)
-            productInContext.unitCost = product.unitCost
+            productInContext.unitCost = Int64(product.unitCost.cents)
             productInContext.expirationDate = product.expirationDate
-            productInContext.unitPrice = product.unitPrice
+            productInContext.unitPrice = Int64(product.unitPrice.cents)
             if let imageNN = product.image {
                 if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                     productInContext.toImageUrl = imageEntity
@@ -128,8 +128,8 @@ class LocalProductManager: ProductManager {
                 newProduct.active = product.active
                 print("Active: \(product.active)")
                 newProduct.quantityStock = Int64(product.qty)
-                newProduct.unitCost = product.unitCost
-                newProduct.unitPrice = product.unitPrice
+                newProduct.unitCost = Int64(product.unitCost.cents)
+                newProduct.unitPrice = Int64(product.unitPrice.cents)
                 newProduct.expirationDate = product.expirationDate
                 newProduct.toSubsidiary = subsidiaryEntity
                 if let imageNN = product.image {

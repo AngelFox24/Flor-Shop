@@ -81,17 +81,18 @@ class AgregarViewModel: ObservableObject {
         self.agregarFields.productName = product.name
         self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
         self.agregarFields.quantityStock = String(product.qty)
-        self.agregarFields.unitCost = String(product.unitCost)
-        self.agregarFields.unitPrice = String(product.unitPrice)
+        self.agregarFields.unitType = product.unitType
+        self.agregarFields.unitCost = product.unitCost.cents
+        self.agregarFields.unitPrice = product.unitPrice.cents
         self.agregarFields.errorBD = ""
     }
     func createProduct() -> Product? {
-        guard let quantityStock = Int(self.agregarFields.quantityStock), let unitCost = Double(self.agregarFields.unitCost), let unitPrice = Double(self.agregarFields.unitPrice) else {
+        guard let quantityStock = Int(self.agregarFields.quantityStock) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
         if agregarFields.isErrorsEmpty() {
-            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.agregarFields.expirationDate, image: getImageIfExist())
+            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitType: self.agregarFields.unitType, unitCost: Money(cents: self.agregarFields.unitCost), unitPrice: Money(cents: self.agregarFields.unitPrice), expirationDate: self.agregarFields.expirationDate, image: getImageIfExist())
         } else {
             return nil
         }
@@ -184,14 +185,12 @@ class AgregarFields {
     var imageUrl: String = ""
     var imageURLEdited: Bool = false
     var imageURLError: String = ""
-    var unitCost: String = ""
+    var unitType: UnitTypeEnum = .unit
+    var unitCost: Int = 0
     var unitCostEdited: Bool = false
     var unitCostError: String {
         if unitCostEdited {
-            guard let unitCostDouble = Double(unitCost) else {
-                return "Costo debe ser número decimal o entero"
-            }
-            if unitCostDouble <= 0.0 && unitCostEdited {
+            if unitCost <= 0 && unitCostEdited {
                 return "Costo debe ser mayor a 0"
             } else {
                 return ""
@@ -201,14 +200,11 @@ class AgregarFields {
         }
     }
     var profitMarginEdited: Bool = false
-    var unitPrice: String = ""
+    var unitPrice: Int = 0
     var unitPriceEdited: Bool = false
     var unitPriceError: String {
         if unitPriceEdited {
-            guard let unitPriceDouble = Double(unitPrice) else {
-                return "Precio debe ser número decimal o entero"
-            }
-            if unitPriceDouble <= 0.0 {
+            if unitPrice <= 0 {
                 return "Precio debe ser mayor a 0"
             } else {
                 return ""
@@ -218,10 +214,7 @@ class AgregarFields {
         }
     }
     var profitMargin: String {
-            guard let unitCost = Double(unitCost), let unitPrice = Double(unitPrice) else {
-                return "0 %"
-            }
-            if ((unitPrice - unitCost) > 0.0) && (unitPrice > 0) && (unitCost > 0) {
+            if ((unitPrice - unitCost) > 0) && (unitPrice > 0) && (unitCost > 0) {
                 return String(Int(((unitPrice - unitCost) / unitCost) * 100)) + " %"
             } else {
                 return "0 %"

@@ -172,8 +172,9 @@ extension Tb_Product {
                        active: active,
                        name: productName ?? "",
                        qty: Int(quantityStock),
-                       unitCost: unitCost,
-                       unitPrice: unitPrice,
+                       unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
+                       unitCost: Money(cents: Int(unitCost)),
+                       unitPrice: Money(cents: Int(unitPrice)),
                        expirationDate: expirationDate ?? Date(),
                        image: toImageUrl?.toImage())
         
@@ -200,7 +201,7 @@ extension Tb_Customer {
                         name: name ?? "",
                         lastName: lastName ?? "",
                         image: toImageUrl?.toImage(),
-                        creditLimit: creditLimit,
+                        creditLimit: Money(cents: Int(creditLimit)),
                         isCreditLimit: isCreditLimit,
                         creditDays: Int(creditDays),
                         isDateLimit: isDateLimit,
@@ -208,7 +209,7 @@ extension Tb_Customer {
                         dateLimit: dateLimit ?? Date(),
                         firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
                         phoneNumber: phoneNumber ?? "",
-                        totalDebt: totalDebt,
+                        totalDebt: Money(cents: Int(totalDebt)),
                         isCreditLimitActive: isCreditLimitActive,
                         isDateLimitActive: isDateLimitActive)
     }
@@ -219,7 +220,7 @@ extension Tb_Sale {
         return Sale(id: idSale ?? UUID(),
                     saleDate: saleDate ?? Date(), 
                     saleDetail: toSaleDetail?.compactMap {$0 as? Tb_SaleDetail}.mapToSaleDetailList() ?? [],
-                    totalSale: total)
+                    totalSale: Money(cents: Int(total)))
     }
 }
 
@@ -228,19 +229,20 @@ extension Tb_SaleDetail {
         return SaleDetail(id: idSaleDetail ?? UUID(),
                           image: toImageUrl?.toImage(),
                           productName: productName ?? "Desconocido",
-                          unitCost: unitCost,
-                          unitPrice: unitPrice,
+                          unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
+                          unitCost: Money(cents: Int(unitCost)),
+                          unitPrice: Money(cents: Int(unitPrice)),
                           quantitySold: Int(quantitySold),
                           paymentType: self.toSale?.paymentType == PaymentType.cash.description ? PaymentType.cash : PaymentType.loan,
                           saleDate: self.toSale?.saleDate ?? Date(),
-                          subtotal: subtotal)
+                          subtotal: Money(cents: Int(subtotal)))
     }
 }
 
 extension Tb_Cart {
     func toCar() -> Car {
         return Car(id: idCart ?? UUID(),
-                   total: total)
+                   total: Int(total))
     }
 }
 
@@ -249,7 +251,7 @@ extension Tb_CartDetail {
         return CartDetail(
             id: idCartDetail ?? UUID(),
             quantity: Int(quantityAdded),
-            subtotal: subtotal,
+            subtotal: Money(cents: Int(subtotal)),
             product: toProduct?.toProduct() ?? Product.getDummyProduct())
     }
 }
