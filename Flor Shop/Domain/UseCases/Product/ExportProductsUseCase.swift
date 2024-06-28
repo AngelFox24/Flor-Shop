@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
 
 protocol ExportProductsUseCase {
-    func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product]
+    func execute() -> URL?
 }
 
 final class ExportProductsInteractor: ExportProductsUseCase {
@@ -18,15 +19,27 @@ final class ExportProductsInteractor: ExportProductsUseCase {
         self.productRepository = productRepository
     }
     
-    func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product] {
-        let url = URL(string: "sda")
+    func execute() -> URL? {
+        let fileManager = FileManager.default
+        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+            return
+        }
+        let url = libraryDirectory.appendingPathComponent("Files")
+        // Verifica si la carpeta ya existe
+        if !fileManager.fileExists(atPath: url.path) {
+            // Crea la carpeta
+            do {
+                try fileManager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                return nil
+            }
+        }
         createCSVFile(at: url)
-        guard page >= 1 else { return [] }
-        return self.productRepository.getListProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 15)
+        return url
     }
 
     private func createCSVFile(at url: URL) {
-        let header = "Nombre,Edad,País\n"
+        let header = "Id,URL,Nombre,Precio,Costo,Activo,Cantidad,TipoUnidad\n"
         do {
             // Crear el archivo y escribir el encabezado
             try header.write(to: url, atomically: true, encoding: .utf8)
@@ -37,20 +50,21 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                 fileHandle.seekToEndOfFile()
                 
                 // Data a escribir (simulando un gran dataset)
-                let data = [
-                    ["Juan", "25", "España"],
-                    ["Ana", "30", "México"],
-                    ["Luis", "28", "Argentina"]
-                ]
-                
-                // Escribir cada fila en el archivo
-                for row in data {
-                    let rowString = "\(row[0]),\(row[1]),\(row[2])\n"
-                    if let rowData = rowString.data(using: .utf8) {
-                        fileHandle.write(rowData)
+                var products: [Product]
+                var page: Int = 1
+                products = self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
+                while !products.isEmpty {
+                    // Escribir cada fila en el archivo
+                    for product in products {
+                        let line = "\(product.id),\(product.image?.imageUrl),\(product.name),\(product.unitPrice.soles),\(product.unitCost.soles),\(product.active),\(product.qty),\(product.unitType.description)\n"
+                        if let rowData = line.data(using: .utf8) {
+                            fileHandle.write(rowData)
+                        }
                     }
+                    // Agregar mas productos
+                    page += 1
+                    products = self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
                 }
-                
                 // Cerrar el archivo
                 fileHandle.closeFile()
             }
