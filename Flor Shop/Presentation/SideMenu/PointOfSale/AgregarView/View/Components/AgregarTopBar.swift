@@ -16,6 +16,7 @@ struct AgregarTopBar: View {
     @Binding var showMenu: Bool
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
+    @State private var isPopoverPresented = false
     var body: some View {
         HStack {
             CustomButton5(showMenu: $showMenu)
@@ -35,8 +36,42 @@ struct AgregarTopBar: View {
             }, label: {
                 CustomButton1(text: "Guardar")
             })
-            AgregarViewPopoverHelp()
                 .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
+            Menu {
+                Button {
+                    Task {
+                        agregarViewModel.isLoading = true
+                        if await agregarViewModel.exportCSV() {
+                            //                        agregarViewModel.releaseResources()
+                            //                        playSound(named: "Success1")
+                        } else {
+                            //                        playSound(named: "Fail1")
+                            showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
+                        }
+                        agregarViewModel.isLoading = false
+                    }
+                } label: {
+                    Label("Exportar", systemImage: "square.and.arrow.up")
+                }
+                Button {
+                    Task {
+                        agregarViewModel.isLoading = true
+                        if await agregarViewModel.importCSV() {
+                            //                        agregarViewModel.releaseResources()
+                            //                        playSound(named: "Success1")
+                        } else {
+                            //                        playSound(named: "Fail1")
+                            showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
+                        }
+                        agregarViewModel.isLoading = false
+                    }
+                } label: {
+                    Label("Importar", systemImage: "square.and.arrow.down")
+                }
+            } label: {
+                CustomButton3(simbol: "ellipsis")
+                    .rotationEffect(.degrees(90))
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
@@ -62,7 +97,10 @@ struct AgregarTopBar: View {
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let dependencies = Dependencies()
-        AgregarTopBar(showMenu: .constant(false))
-            .environmentObject(dependencies.agregarViewModel)
+        VStack {
+            AgregarTopBar(showMenu: .constant(false))
+                .environmentObject(dependencies.agregarViewModel)
+            Spacer()
+        }
     }
 }

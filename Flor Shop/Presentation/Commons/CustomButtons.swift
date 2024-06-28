@@ -107,15 +107,28 @@ struct CustomButton5: View {
     }
 }
 
+struct CustomButton6: View {
+    var simbol: String = "chevron.backward"
+    var body: some View {
+        Image(systemName: simbol)
+            .font(.custom("Artifika-Regular", size: 18))
+            .foregroundColor(Color("color_accent"))
+            .frame(width: 30, height: 30)
+            .background(.white)
+            .cornerRadius(20)
+    }
+}
+
 struct CustomButtons_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 5, content: {
-            //CustomButton1(text: "Limpiar")
-            //CustomButton2(text: "Limpiar")
-            //CustomButton3(simbol: "chevron.backward")
-            //CustomButton4(simbol: "plus")
+            CustomButton1(text: "Limpiar")
+            CustomButton2(text: "Limpiar")
+            CustomButton3(simbol: "square.and.arrow.down")
+            CustomButton4(simbol: "plus")
             CustomButton5(showMenu: .constant(false))
-                .scaleEffect(3.0)
+            CustomButton6(simbol: "chevron.backward")
+//                .scaleEffect(3.0)
         })
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.gray)

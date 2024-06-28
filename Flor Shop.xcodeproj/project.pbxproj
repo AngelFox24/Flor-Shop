@@ -87,6 +87,8 @@
 		279D1FB32BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */; };
 		279EF9D52A9124C500F97CB1 /* AgregarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279EF9D42A9124C500F97CB1 /* AgregarView.swift */; };
 		279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */; };
+		27A62A5B2C2F6912009425DB /* ExportProductsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A62A5A2C2F6912009425DB /* ExportProductsUseCase.swift */; };
+		27A62A5D2C2F6B2E009425DB /* CSVDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A62A5C2C2F6B2E009425DB /* CSVDocument.swift */; };
 		27A6EF202ACC84C100F4D178 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A6EF1F2ACC84C100F4D178 /* Extensions.swift */; };
 		27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */; };
 		27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936B29F73B510085D4EC /* CustomTabBar.swift */; };
@@ -238,6 +240,8 @@
 		279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayClientDebtUseCase.swift; sourceTree = "<group>"; };
 		279EF9D42A9124C500F97CB1 /* AgregarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarView.swift; sourceTree = "<group>"; };
 		279EF9D62A9125C300F97CB1 /* FuncOpenGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuncOpenGoogle.swift; sourceTree = "<group>"; };
+		27A62A5A2C2F6912009425DB /* ExportProductsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportProductsUseCase.swift; sourceTree = "<group>"; };
+		27A62A5C2C2F6B2E009425DB /* CSVDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVDocument.swift; sourceTree = "<group>"; };
 		27A6EF1F2ACC84C100F4D178 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAsyncImageView.swift; sourceTree = "<group>"; };
 		27B3936B29F73B510085D4EC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -365,6 +369,7 @@
 			children = (
 				27F2F4882B1DFABA003E4197 /* GetProductsUseCase.swift */,
 				2777D77B2B1EF408003C2FCA /* SaveProductUseCase.swift */,
+				27A62A5A2C2F6912009425DB /* ExportProductsUseCase.swift */,
 			);
 			path = Product;
 			sourceTree = "<group>";
@@ -661,6 +666,7 @@
 			isa = PBXGroup;
 			children = (
 				2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */,
+				27A62A5C2C2F6B2E009425DB /* CSVDocument.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1507,6 +1513,7 @@
 				273576852B1F507A00E9CF12 /* DecreaceProductInCartUseCase.swift in Sources */,
 				27C241FF2A00A89C0045B2A0 /* CartViewModel.swift in Sources */,
 				272066802A094D6A00E0CCA8 /* SalesViewModel.swift in Sources */,
+				27A62A5B2C2F6912009425DB /* ExportProductsUseCase.swift in Sources */,
 				2728EAB22A1B0E02002B534A /* Car.swift in Sources */,
 				27F321CE2BADF6CE00296E50 /* CustomerHistoryView.swift in Sources */,
 				272559382A8ACBFF008896C8 /* FirebaseSesionManagement.swift in Sources */,
@@ -1517,6 +1524,7 @@
 				27CC2DFD2A881B93000EDB64 /* WelcomeView.swift in Sources */,
 				279C64A22A8D961B003B29BC /* ImageUrl.swift in Sources */,
 				279C648E2A8D78FF003B29BC /* LocalSubsidiaryManager.swift in Sources */,
+				27A62A5D2C2F6B2E009425DB /* CSVDocument.swift in Sources */,
 				271A7E1529F0FA3300BBAEA3 /* ImageViewModel.swift in Sources */,
 				279C648A2A8D78B8003B29BC /* CompanyRepositoryImpl.swift in Sources */,
 				274C65A12AC48A3200B778A2 /* EmployeeView.swift in Sources */,

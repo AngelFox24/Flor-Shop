@@ -14,7 +14,7 @@ struct AgregarViewPopoverHelp: View {
             Button(action: {
                 isPopoverPresented.toggle()
             }, label: {
-                CustomButton3(simbol: "questionmark")
+                CustomButton6(simbol: "questionmark")
             })
             .sheet(isPresented: $isPopoverPresented) {
                 VStack(spacing: 0) {
@@ -63,5 +63,7 @@ struct AgregarViewPopoverHelp: View {
 struct AgregarViewPopoverHelp_Previews: PreviewProvider {
     static var previews: some View {
         AgregarViewPopoverHelp()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.gray)
     }
 }

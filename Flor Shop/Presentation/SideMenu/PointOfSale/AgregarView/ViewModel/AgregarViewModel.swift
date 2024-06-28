@@ -97,6 +97,12 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
     }
+    func exportCSV() async -> Bool {
+        return true
+    }
+    func importCSV() async -> Bool {
+        return true
+    }
     func getImageIfExist() -> ImageUrl? {
         if let imageLocal = self.agregarFields.selectedLocalImage {
             return self.saveImageUseCase.execute(idImage: UUID(), image: imageLocal)

@@ -69,6 +69,9 @@ struct CamposProductoAgregar: View {
             ScrollView(.vertical, showsIndicators: false, content: {
                 VStack(spacing: 23, content: {
                     HStack {
+                        AgregarViewPopoverHelp()
+                            .disabled(true)
+                            .opacity(0)
                         Spacer()
                         Button(action: {
                             withAnimation(.easeIn) {
@@ -101,6 +104,10 @@ struct CamposProductoAgregar: View {
                             }
                         })
                         Spacer()
+                        VStack(spacing: 0) {
+                            AgregarViewPopoverHelp()
+                            Spacer()
+                        }
                     }
                     VStack {
                         HStack {
