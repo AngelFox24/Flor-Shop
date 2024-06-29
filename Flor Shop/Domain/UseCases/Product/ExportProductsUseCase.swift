@@ -9,7 +9,7 @@ import Foundation
 import UniformTypeIdentifiers
 
 protocol ExportProductsUseCase {
-    func execute() -> URL?
+    func execute(url: URL)
 }
 
 final class ExportProductsInteractor: ExportProductsUseCase {
@@ -19,23 +19,9 @@ final class ExportProductsInteractor: ExportProductsUseCase {
         self.productRepository = productRepository
     }
     
-    func execute() -> URL? {
-        let fileManager = FileManager.default
-        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            return
-        }
-        let url = libraryDirectory.appendingPathComponent("Files")
-        // Verifica si la carpeta ya existe
-        if !fileManager.fileExists(atPath: url.path) {
-            // Crea la carpeta
-            do {
-                try fileManager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                return nil
-            }
-        }
+    func execute(url: URL) {
+        print("Creando CSV")
         createCSVFile(at: url)
-        return url
     }
 
     private func createCSVFile(at url: URL) {
@@ -53,10 +39,24 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                 var products: [Product]
                 var page: Int = 1
                 products = self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
+                print("Reciviendo primer lote: \(products.count)")
                 while !products.isEmpty {
+                    print("Iterando")
                     // Escribir cada fila en el archivo
                     for product in products {
-                        let line = "\(product.id),\(product.image?.imageUrl),\(product.name),\(product.unitPrice.soles),\(product.unitCost.soles),\(product.active),\(product.qty),\(product.unitType.description)\n"
+                        var idProduct = product.id.description
+                        var imageURL: String = product.image?.imageUrl ?? ""
+                        imageURL = imageURL.replacingOccurrences(of: "\\r\\n|\\n|\\r", with: "", options: .regularExpression)
+                        imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+                        imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+                        imageURL = "\"" + imageURL + "\""
+                        var nombre = "\"" + product.name + "\""
+                        var precio = product.unitPrice.soles
+                        var costo = product.unitCost.soles
+                        var activo = product.active
+                        var cantidad = product.qty
+                        var tipoUnidad = product.unitType.description
+                        let line = "\(idProduct),\(imageURL),\(nombre),\(precio),\(costo),\(activo),\(cantidad),\(tipoUnidad)\n"
                         if let rowData = line.data(using: .utf8) {
                             fileHandle.write(rowData)
                         }
@@ -66,6 +66,7 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                     products = self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
                 }
                 // Cerrar el archivo
+                print("Cerrando Archivo")
                 fileHandle.closeFile()
             }
         } catch {

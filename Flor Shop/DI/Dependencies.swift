@@ -58,6 +58,7 @@ struct Dependencies {
     private let loadSavedImageUseCase: LoadSavedImageUseCase
     private let downloadImageUseCase: DownloadImageUseCase
     private let saveImageUseCase: SaveImageUseCase
+    private let exportProductsUseCase: ExportProductsUseCase
     
     private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
@@ -127,6 +128,7 @@ struct Dependencies {
         self.loadSavedImageUseCase = LoadSavedImageInteractor(imageRepository: imageRepository)
         self.downloadImageUseCase = DownloadImageInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
+        self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
         
         self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
         self.logInUseCase = LogInInteractor(employeeRepository: employeeRepository, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, getCompanyUseCase: getCompanyUseCase, getSubsidiaryUseCase: getSubsidiaryUseCase)
@@ -134,7 +136,7 @@ struct Dependencies {
         //MARK: ViewModels
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
         self.registrationViewModel = RegistrationViewModel(registerUserUseCase: registerUserUseCase)
-        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase)
+        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getProductsInCartUseCase: getProductsInCartUseCase, getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, increaceProductInCartUseCase: increaceProductInCartUseCase, decreaceProductInCartUseCase: decreaceProductInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)

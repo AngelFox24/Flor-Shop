@@ -6,25 +6,24 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
-struct CSVDocument: FileDocument {
-    static var readableContentTypes: [UTType] { [.plainText] }
-    
-    var fileURL: URL
-    
-    init(fileURL: URL) {
-        self.fileURL = fileURL
-    }
-    
-    init(configuration: ReadConfiguration) throws {
-        // Inicializar con un archivo vacío
-        self.fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("csv")
-    }
+func showShareSheet(url: URL) {
+  let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    UIApplication.shared.currentUIWindow()?.rootViewController?.present(activityVC, animated: true, completion: nil)
+}
 
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        // Leer el contenido del archivo para guardarlo
-        let data = try Data(contentsOf: fileURL)
-        return FileWrapper(regularFileWithContents: data)
+// utility extension to easily get the window
+public extension UIApplication {
+    func currentUIWindow() -> UIWindow? {
+        let connectedScenes = UIApplication.shared.connectedScenes
+            .filter { $0.activationState == .foregroundActive }
+            .compactMap { $0 as? UIWindowScene }
+        
+        let window = connectedScenes.first?
+            .windows
+            .first { $0.isKeyWindow }
+
+        return window
+        
     }
 }

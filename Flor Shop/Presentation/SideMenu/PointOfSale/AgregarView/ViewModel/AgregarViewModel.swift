@@ -17,11 +17,13 @@ class AgregarViewModel: ObservableObject {
     private let saveProductUseCase: SaveProductUseCase
     let loadSavedImageUseCase: LoadSavedImageUseCase
     let saveImageUseCase: SaveImageUseCase
+    let exportProductsUseCase: ExportProductsUseCase
     
-    init(saveProductUseCase: SaveProductUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase) {
+    init(saveProductUseCase: SaveProductUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase, exportProductsUseCase: ExportProductsUseCase) {
         self.saveProductUseCase = saveProductUseCase
         self.loadSavedImageUseCase = loadSavedImageUseCase
         self.saveImageUseCase = saveImageUseCase
+        self.exportProductsUseCase = exportProductsUseCase
     }
     //MARK: Funtions
     func releaseResources() {
@@ -97,8 +99,8 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
     }
-    func exportCSV() async -> Bool {
-        return true
+    func exportCSV(url: URL) {
+        self.exportProductsUseCase.execute(url: url)
     }
     func importCSV() async -> Bool {
         return true

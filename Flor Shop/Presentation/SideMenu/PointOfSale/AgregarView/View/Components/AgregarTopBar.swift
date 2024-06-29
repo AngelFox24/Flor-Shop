@@ -16,7 +16,6 @@ struct AgregarTopBar: View {
     @Binding var showMenu: Bool
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
-    @State private var isPopoverPresented = false
     var body: some View {
         HStack {
             CustomButton5(showMenu: $showMenu)
@@ -39,17 +38,15 @@ struct AgregarTopBar: View {
                 .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
             Menu {
                 Button {
-                    Task {
-                        agregarViewModel.isLoading = true
-                        if await agregarViewModel.exportCSV() {
-                            //                        agregarViewModel.releaseResources()
-                            //                        playSound(named: "Success1")
-                        } else {
-                            //                        playSound(named: "Fail1")
-                            showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
-                        }
-                        agregarViewModel.isLoading = false
-                    }
+                    print("Cargando")
+                    agregarViewModel.isLoading = true
+                    print("Creando Directorio")
+                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(Date().formatted(date: .abbreviated, time: .omitted)).csv")
+                    print("Exportando")
+                    agregarViewModel.exportCSV(url: tempURL)
+                    print("Mostrando Guardador de Archivos")
+                    agregarViewModel.isLoading = false
+                    showShareSheet(url: tempURL)
                 } label: {
                     Label("Exportar", systemImage: "square.and.arrow.up")
                 }
