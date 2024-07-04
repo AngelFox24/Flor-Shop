@@ -11,6 +11,7 @@ import CoreData
 import AVFoundation
 
 struct AddCustomerTopBar: View {
+    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
@@ -28,7 +29,7 @@ struct AddCustomerTopBar: View {
                 Spacer()
                 Button(action: {
                     Task {
-                        addCustomerViewModel.isLoading = true
+                        loadingState.isLoading = true
                         if await addCustomerViewModel.addCustomer() {
                             customerHistoryViewModel.updateData()
                             playSound(named: "Success1")
@@ -38,7 +39,7 @@ struct AddCustomerTopBar: View {
                             playSound(named: "Fail1")
                             showingErrorAlert = addCustomerViewModel.fieldsAddCustomer.errorBD == "" ? false : true
                         }
-                        addCustomerViewModel.isLoading = false
+                        loadingState.isLoading = false
                     }
                 }, label: {
                     CustomButton1(text: "Guardar")

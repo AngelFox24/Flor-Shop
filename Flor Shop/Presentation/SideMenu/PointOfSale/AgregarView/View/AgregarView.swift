@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AgregarView: View {
+    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
@@ -22,9 +23,6 @@ struct AgregarView: View {
             if agregarViewModel.agregarFields.isPresented {
                 SourceSelecctionView(isPresented: $agregarViewModel.agregarFields.isPresented, fromInternetAction: agregarViewModel.findProductNameOnInternet, selectionImage: $agregarViewModel.agregarFields.selectionImage)
             }
-            if agregarViewModel.isLoading {
-                LoadingView()
-            }
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
@@ -36,6 +34,7 @@ struct AgregarView_Previews: PreviewProvider {
         let dependencies = Dependencies()
         AgregarView(selectedTab: .constant(.plus), showMenu: .constant(false))
             .environmentObject(dependencies.agregarViewModel)
+            .environmentObject(dependencies.loadingState)
     }
 }
 

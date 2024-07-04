@@ -20,9 +20,6 @@ struct AddCustomerView: View {
             if addCustomerViewModel.isPresented {
                 SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented, fromInternet: false, selectionImage: $addCustomerViewModel.selectionImage)
             }
-            if addCustomerViewModel.isLoading {
-                LoadingView()
-            }
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)

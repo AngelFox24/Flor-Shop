@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
+    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var registrationViewModel: RegistrationViewModel
@@ -18,7 +19,8 @@ struct MainView: View {
     @AppStorage("userOrEmail") var userOrEmail: String?
     @AppStorage("password") var password: String?
     var body: some View {
-        VStack(spacing: 0, content: {
+        ZStack {
+            VStack(spacing: 0, content: {
                 VStack(spacing: 0) {
                     if !hasShownOnboarding {
                         OnboardingView(onAction: {
@@ -87,7 +89,7 @@ struct MainView: View {
                     }
                 }
                 .onAppear {
-//                    versionCheck.checkAppVersion()
+                    //versionCheck.checkAppVersion()
                     NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
                         isKeyboardVisible = true
                     }
@@ -99,6 +101,13 @@ struct MainView: View {
                     CustomHideKeyboard()
                 }
             })
+            if loadingState.isLoading {
+                LoadingView()
+            }
+        }
+        .onAppear(perform: {
+            print("Var: \(loadingState.isLoading)")
+        })
     }
 }
 
@@ -114,6 +123,7 @@ struct MainView_Previews: PreviewProvider {
             .environmentObject(dependencies.registrationViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.navManager)
+            .environmentObject(dependencies.loadingState)
     }
 }
 

@@ -30,6 +30,7 @@ struct FlorShopApp: App {
                 .environmentObject(dependencies.addCustomerViewModel)
                 .environmentObject(dependencies.navManager)
                 .environmentObject(dependencies.customerHistoryViewModel)
+                .environmentObject(dependencies.loadingState)
                 .onAppear {
                     Task(priority: .background, operation: {
                         print("Se optimizara las imagenes")

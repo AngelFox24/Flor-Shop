@@ -50,12 +50,12 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                         imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
                         imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
                         imageURL = "\"" + imageURL + "\""
-                        var nombre = "\"" + product.name + "\""
-                        var precio = product.unitPrice.soles
-                        var costo = product.unitCost.soles
-                        var activo = product.active
-                        var cantidad = product.qty
-                        var tipoUnidad = product.unitType.description
+                        let nombre = "\"" + product.name + "\""
+                        let precio = product.unitPrice.soles
+                        let costo = product.unitCost.soles
+                        let activo = product.active
+                        let cantidad = product.qty
+                        let tipoUnidad = product.unitType.description
                         let line = "\(idProduct),\(imageURL),\(nombre),\(precio),\(costo),\(activo),\(cantidad),\(tipoUnidad)\n"
                         if let rowData = line.data(using: .utf8) {
                             fileHandle.write(rowData)

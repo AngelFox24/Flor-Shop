@@ -10,7 +10,7 @@ import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
-    //@EnvironmentObject var productViewModel: ProductViewModel
+    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @Binding var showMenu: Bool
@@ -22,7 +22,7 @@ struct AgregarTopBar: View {
             Spacer()
             Button(action: {
                 Task {
-                    agregarViewModel.isLoading = true
+                    loadingState.isLoading = true
                     if await agregarViewModel.addProduct() {
                         agregarViewModel.releaseResources()
                         playSound(named: "Success1")
@@ -30,7 +30,7 @@ struct AgregarTopBar: View {
                         playSound(named: "Fail1")
                         showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
                     }
-                    agregarViewModel.isLoading = false
+                    loadingState.isLoading = false
                 }
             }, label: {
                 CustomButton1(text: "Guardar")
@@ -52,7 +52,7 @@ struct AgregarTopBar: View {
                 }
                 Button {
                     Task {
-                        agregarViewModel.isLoading = true
+                        loadingState.isLoading = true
                         if await agregarViewModel.importCSV() {
                             //                        agregarViewModel.releaseResources()
                             //                        playSound(named: "Success1")
@@ -60,7 +60,7 @@ struct AgregarTopBar: View {
                             //                        playSound(named: "Fail1")
                             showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
                         }
-                        agregarViewModel.isLoading = false
+                        loadingState.isLoading = false
                     }
                 } label: {
                     Label("Importar", systemImage: "square.and.arrow.down")
@@ -97,6 +97,7 @@ struct AgregarTopBar_Previews: PreviewProvider {
         VStack {
             AgregarTopBar(showMenu: .constant(false))
                 .environmentObject(dependencies.agregarViewModel)
+                .environmentObject(dependencies.loadingState)
             Spacer()
         }
     }

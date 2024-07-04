@@ -10,7 +10,7 @@ import _PhotosUI_SwiftUI
 
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
-    @Published var isLoading: Bool = false
+//    @Published var isLoading: Bool = false
     @Published var isPresented: Bool = false
     @Published var selectedImage: UIImage?
     @Published var selectionImage: PhotosPickerItem? = nil {
@@ -29,7 +29,7 @@ class AddCustomerViewModel: ObservableObject {
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
-        self.isLoading = true
+//        self.isLoading = true
         Task {
             do {
                 let data = try await selection.loadTransferable(type: Data.self)
@@ -47,7 +47,7 @@ class AddCustomerViewModel: ObservableObject {
                 print("Error: \(error)")
             }
         }
-        self.isLoading = false
+//        self.isLoading = false
     }
     func fieldsTrue() {
         print("All value true")

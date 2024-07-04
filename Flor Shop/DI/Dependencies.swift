@@ -77,8 +77,12 @@ struct Dependencies {
     let addCustomerViewModel: AddCustomerViewModel
     let versionCheck: VersionCheck
     let navManager: NavManager
+    //Estados
+    let loadingState: LoadingState
     
     init() {
+        //Estados
+        self.loadingState = LoadingState()
         //MARK: Managers
         self.mainContext = CoreDataProvider.shared.viewContext
         self.companyManager = LocalCompanyManager(mainContext: mainContext)
