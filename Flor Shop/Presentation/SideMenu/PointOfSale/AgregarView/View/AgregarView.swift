@@ -48,6 +48,8 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
+    @State private var scannedCode: String = ""
+    @State private var isShowingScanner = false
     @Binding var showMenu: Bool
     @Binding var selectedTab: Tab
     @Binding var isPresented: Bool
@@ -191,6 +193,33 @@ struct CamposProductoAgregar: View {
                                 .padding(.top, 6)
                         }
                     }
+                    VStack {
+                        HStack {
+                            CustomTextField(placeHolder: "", title: "Codigo de barras" ,value: $scannedCode, edited: .constant(false))
+                            Button {
+                                isShowingScanner.toggle()
+                            } label: {
+                                Image(systemName: "barcode.viewfinder")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(Color("color_accent"))
+                                    .padding(.horizontal, 5)
+                            }
+                            .sheet(isPresented: $isShowingScanner, content: {
+                                BarcodeScannerView { code in
+                                    self.scannedCode = code
+                                    self.isShowingScanner = false
+                                }
+                                .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
+                            })
+
+                        }
+                    }
+//                    if isShowingScanner {
+//                        BarcodeScannerView { code in
+//                            self.scannedCode = code
+//                            self.isShowingScanner = false
+//                        }
+//                    }
                 })
                 .padding(.top, 10)
             })

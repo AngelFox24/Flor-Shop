@@ -35,5 +35,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Necesitamos acceso a la cámara para escanear códigos de barras.</string>
 </dict>
 </plist>
