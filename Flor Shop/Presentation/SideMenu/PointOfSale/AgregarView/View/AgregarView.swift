@@ -48,7 +48,7 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @State private var scannedCode: String = ""
+//    @State private var scannedCode: String = ""
     @State private var isShowingScanner = false
     @Binding var showMenu: Bool
     @Binding var selectedTab: Tab
@@ -133,6 +133,27 @@ struct CamposProductoAgregar: View {
                     }
                     VStack {
                         HStack {
+                            CustomTextField(placeHolder: "", title: "Código de barras" ,value: $agregarViewModel.agregarFields.scannedCode, edited: .constant(false))
+                            Button {
+                                isShowingScanner.toggle()
+                            } label: {
+                                Image(systemName: "barcode.viewfinder")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(Color("color_accent"))
+                                    .padding(.horizontal, 5)
+                            }
+                            .sheet(isPresented: $isShowingScanner, content: {
+                                BarcodeScannerView { code in
+                                    self.agregarViewModel.agregarFields.scannedCode = code
+                                    self.isShowingScanner = false
+                                }
+                                .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
+                            })
+
+                        }
+                    }
+                    VStack {
+                        HStack {
                             // El texto hace que tenga una separacion mayor del elemento
                             HStack {
                                 CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
@@ -193,33 +214,6 @@ struct CamposProductoAgregar: View {
                                 .padding(.top, 6)
                         }
                     }
-                    VStack {
-                        HStack {
-                            CustomTextField(placeHolder: "", title: "Codigo de barras" ,value: $scannedCode, edited: .constant(false))
-                            Button {
-                                isShowingScanner.toggle()
-                            } label: {
-                                Image(systemName: "barcode.viewfinder")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(Color("color_accent"))
-                                    .padding(.horizontal, 5)
-                            }
-                            .sheet(isPresented: $isShowingScanner, content: {
-                                BarcodeScannerView { code in
-                                    self.scannedCode = code
-                                    self.isShowingScanner = false
-                                }
-                                .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
-                            })
-
-                        }
-                    }
-//                    if isShowingScanner {
-//                        BarcodeScannerView { code in
-//                            self.scannedCode = code
-//                            self.isShowingScanner = false
-//                        }
-//                    }
                 })
                 .padding(.top, 10)
             })

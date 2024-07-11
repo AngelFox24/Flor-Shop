@@ -10,6 +10,7 @@ import Foundation
 struct SaleDetail: Identifiable {
     var id: UUID
     var image: ImageUrl?
+    var barCode: String?
     var productName: String
     var unitType: UnitTypeEnum
     var unitCost: Money

@@ -100,6 +100,7 @@ class LocalProductManager: ProductManager {
             productInContext.active = product.active
             print("Active: \(product.active)")
             productInContext.quantityStock = Int64(product.qty)
+            productInContext.barCode = product.barCode
             productInContext.unitCost = Int64(product.unitCost.cents)
             productInContext.expirationDate = product.expirationDate
             productInContext.unitPrice = Int64(product.unitPrice.cents)
@@ -129,6 +130,7 @@ class LocalProductManager: ProductManager {
                 print("Active: \(product.active)")
                 newProduct.quantityStock = Int64(product.qty)
                 newProduct.unitCost = Int64(product.unitCost.cents)
+                newProduct.barCode = product.barCode
                 newProduct.unitPrice = Int64(product.unitPrice.cents)
                 newProduct.expirationDate = product.expirationDate
                 newProduct.toSubsidiary = subsidiaryEntity

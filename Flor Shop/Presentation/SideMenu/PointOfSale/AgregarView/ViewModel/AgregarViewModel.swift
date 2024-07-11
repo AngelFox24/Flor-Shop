@@ -12,7 +12,6 @@ import _PhotosUI_SwiftUI
 class AgregarViewModel: ObservableObject {
     
     @Published var agregarFields = AgregarFields()
-    @Published var isLoading: Bool = false
     
     private let saveProductUseCase: SaveProductUseCase
     let loadSavedImageUseCase: LoadSavedImageUseCase
@@ -86,6 +85,7 @@ class AgregarViewModel: ObservableObject {
         self.agregarFields.unitType = product.unitType
         self.agregarFields.unitCost = product.unitCost.cents
         self.agregarFields.unitPrice = product.unitPrice.cents
+        self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
         self.agregarFields.errorBD = ""
     }
     func createProduct() -> Product? {
@@ -94,7 +94,18 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
         if agregarFields.isErrorsEmpty() {
-            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitType: self.agregarFields.unitType, unitCost: Money(cents: self.agregarFields.unitCost), unitPrice: Money(cents: self.agregarFields.unitPrice), expirationDate: self.agregarFields.expirationDate, image: getImageIfExist())
+            return Product(
+                id: self.agregarFields.productId ?? UUID(),
+                active: self.agregarFields.active,
+                barCode: self.agregarFields.scannedCode == "" ? nil : self.agregarFields.scannedCode,
+                name: self.agregarFields.productName,
+                qty: quantityStock,
+                unitType: self.agregarFields.unitType,
+                unitCost: Money(cents: self.agregarFields.unitCost),
+                unitPrice: Money(cents: self.agregarFields.unitPrice),
+                expirationDate: self.agregarFields.expirationDate,
+                image: getImageIfExist()
+            )
         } else {
             return nil
         }
@@ -161,6 +172,7 @@ class AgregarFields {
         }
     }
     var productId: UUID?
+    var scannedCode: String = ""
     var active: Bool = true
     var productName: String = ""
     var productEdited: Bool = false

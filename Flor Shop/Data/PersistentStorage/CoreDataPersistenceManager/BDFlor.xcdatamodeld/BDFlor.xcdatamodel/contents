@@ -66,6 +66,7 @@
     </entity>
     <entity name="Tb_Product" representedClassName=".Tb_Product" syncable="YES" codeGenerationType="class">
         <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="barCode" optional="YES" attributeType="String"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="expirationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idProduct" attributeType="UUID" usesScalarValueType="NO"/>
@@ -90,6 +91,7 @@
         <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toSale" inverseEntity="Tb_Subsidiary"/>
     </entity>
     <entity name="Tb_SaleDetail" representedClassName=".Tb_SaleDetail" syncable="YES" codeGenerationType="class">
+        <attribute name="barCode" optional="YES" attributeType="String"/>
         <attribute name="idSaleDetail" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="productName" attributeType="String"/>
         <attribute name="quantitySold" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>

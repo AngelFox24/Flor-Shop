@@ -39,13 +39,13 @@ struct AgregarTopBar: View {
             Menu {
                 Button {
                     print("Cargando")
-                    agregarViewModel.isLoading = true
+                    loadingState.isLoading = true
                     print("Creando Directorio")
                     let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(Date().formatted(date: .abbreviated, time: .omitted)).csv")
                     print("Exportando")
                     agregarViewModel.exportCSV(url: tempURL)
                     print("Mostrando Guardador de Archivos")
-                    agregarViewModel.isLoading = false
+                    loadingState.isLoading = false
                     showShareSheet(url: tempURL)
                 } label: {
                     Label("Exportar", systemImage: "square.and.arrow.up")

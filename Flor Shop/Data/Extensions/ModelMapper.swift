@@ -146,79 +146,94 @@ extension ImageUrl {
 
 extension Tb_Company {
     func toCompany() -> Company {
-        return Company(id: idCompany ?? UUID(),
-                       companyName: companyName ?? "",
-                       ruc: ruc ?? "")
+        return Company(
+            id: idCompany ?? UUID(),
+            companyName: companyName ?? "",
+            ruc: ruc ?? ""
+        )
     }
 }
 
 extension Tb_Subsidiary {
     func toSubsidiary() -> Subsidiary {
-        return Subsidiary(id: idSubsidiary ?? UUID(),
-                          name: name ?? "",
-                          image: toImageUrl?.toImage())
+        return Subsidiary(
+            id: idSubsidiary ?? UUID(),
+            name: name ?? "",
+            image: toImageUrl?.toImage()
+        )
     }
 }
 
 extension Tb_ImageUrl {
     func toImage() -> ImageUrl {
-        return ImageUrl(id: idImageUrl ?? UUID(), imageUrl: imageUrl ?? "", imageHash: imageHash ?? "")
+        return ImageUrl(
+            id: idImageUrl ?? UUID(),
+            imageUrl: imageUrl ?? "",
+            imageHash: imageHash ?? ""
+        )
     }
 }
 
 extension Tb_Product {
     func toProduct() -> Product {
-        return Product(id: idProduct ?? UUID(),
-                       active: active,
-                       name: productName ?? "",
-                       qty: Int(quantityStock),
-                       unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
-                       unitCost: Money(cents: Int(unitCost)),
-                       unitPrice: Money(cents: Int(unitPrice)),
-                       expirationDate: expirationDate ?? Date(),
-                       image: toImageUrl?.toImage())
-        
+        return Product(
+            id: idProduct ?? UUID(),
+            active: active,
+            barCode: barCode,
+            name: productName ?? "",
+            qty: Int(quantityStock),
+            unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
+            unitCost: Money(cents: Int(unitCost)),
+            unitPrice: Money(cents: Int(unitPrice)),
+            expirationDate: expirationDate ?? Date(),
+            image: toImageUrl?.toImage()
+        )
     }
 }
 
 extension Tb_Employee {
     func toEmployee() -> Employee {
-        return Employee(id: idEmployee ?? UUID(),
-                        name: name ?? "",
-                        user: user ?? "",
-                        email: email ?? "",
-                        lastName: lastName ?? "",
-                        role: role ?? "",
-                        image: toImageUrl?.toImage(),
-                        active: active,
-                        phoneNumber: phoneNumber ?? "")
+        return Employee(
+            id: idEmployee ?? UUID(),
+            name: name ?? "",
+            user: user ?? "",
+            email: email ?? "",
+            lastName: lastName ?? "",
+            role: role ?? "",
+            image: toImageUrl?.toImage(),
+            active: active,
+            phoneNumber: phoneNumber ?? ""
+        )
     }
 }
 
 extension Tb_Customer {
     func toCustomer() -> Customer {
-        return Customer(id: idCustomer ?? UUID(),
-                        name: name ?? "",
-                        lastName: lastName ?? "",
-                        image: toImageUrl?.toImage(),
-                        creditLimit: Money(cents: Int(creditLimit)),
-                        isCreditLimit: isCreditLimit,
-                        creditDays: Int(creditDays),
-                        isDateLimit: isDateLimit,
-                        creditScore: Int(creditScore),
-                        dateLimit: dateLimit ?? Date(),
-                        firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
-                        phoneNumber: phoneNumber ?? "",
-                        totalDebt: Money(cents: Int(totalDebt)),
-                        isCreditLimitActive: isCreditLimitActive,
-                        isDateLimitActive: isDateLimitActive)
+        return Customer(
+            id: idCustomer ?? UUID(),
+            name: name ?? "",
+            lastName: lastName ?? "",
+            image: toImageUrl?.toImage(),
+            creditLimit: Money(cents: Int(creditLimit)),
+            isCreditLimit: isCreditLimit,
+            creditDays: Int(creditDays),
+            isDateLimit: isDateLimit,
+            creditScore: Int(creditScore),
+            dateLimit: dateLimit ?? Date(),
+            firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
+            phoneNumber: phoneNumber ?? "",
+            totalDebt: Money(cents: Int(totalDebt)),
+            isCreditLimitActive: isCreditLimitActive,
+            isDateLimitActive: isDateLimitActive
+        )
     }
 }
 
 extension Tb_Sale {
     func toSale() -> Sale {
         return Sale(id: idSale ?? UUID(),
-                    saleDate: saleDate ?? Date(), 
+                    saleDate: saleDate ?? Date(),
+                    //TODO: Refactor
                     saleDetail: toSaleDetail?.compactMap {$0 as? Tb_SaleDetail}.mapToSaleDetailList() ?? [],
                     totalSale: Money(cents: Int(total)))
     }
@@ -226,23 +241,27 @@ extension Tb_Sale {
 
 extension Tb_SaleDetail {
     func toSaleDetail() -> SaleDetail {
-        return SaleDetail(id: idSaleDetail ?? UUID(),
-                          image: toImageUrl?.toImage(),
-                          productName: productName ?? "Desconocido",
-                          unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
-                          unitCost: Money(cents: Int(unitCost)),
-                          unitPrice: Money(cents: Int(unitPrice)),
-                          quantitySold: Int(quantitySold),
-                          paymentType: self.toSale?.paymentType == PaymentType.cash.description ? PaymentType.cash : PaymentType.loan,
-                          saleDate: self.toSale?.saleDate ?? Date(),
-                          subtotal: Money(cents: Int(subtotal)))
+        return SaleDetail(
+            id: idSaleDetail ?? UUID(),
+            image: toImageUrl?.toImage(),
+            productName: productName ?? "Desconocido",
+            unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
+            unitCost: Money(cents: Int(unitCost)),
+            unitPrice: Money(cents: Int(unitPrice)),
+            quantitySold: Int(quantitySold),
+            paymentType: self.toSale?.paymentType == PaymentType.cash.description ? PaymentType.cash : PaymentType.loan,
+            saleDate: self.toSale?.saleDate ?? Date(),
+            subtotal: Money(cents: Int(subtotal))
+        )
     }
 }
 
 extension Tb_Cart {
     func toCar() -> Car {
-        return Car(id: idCart ?? UUID(),
-                   total: Int(total))
+        return Car(
+            id: idCart ?? UUID(),
+            total: Int(total)
+        )
     }
 }
 
@@ -252,7 +271,8 @@ extension Tb_CartDetail {
             id: idCartDetail ?? UUID(),
             quantity: Int(quantityAdded),
             subtotal: Money(cents: Int(subtotal)),
-            product: toProduct?.toProduct() ?? Product.getDummyProduct())
+            product: toProduct?.toProduct() ?? Product.getDummyProduct()
+        )
     }
 }
 
