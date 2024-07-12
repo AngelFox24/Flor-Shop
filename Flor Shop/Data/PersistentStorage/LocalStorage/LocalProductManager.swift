@@ -39,7 +39,7 @@ class LocalProductManager: ProductManager {
     }
     func getLastUpdated() -> Date? {
         let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 1990, month: 1, day: 1)
+        let components = DateComponents(year: 2024, month: 7, day: 12)
         let dateFrom = calendar.date(from: components)
         var listDate: [Date?] = []
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
@@ -47,8 +47,8 @@ class LocalProductManager: ProductManager {
             return dateFrom
         }
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary == %@", subsidiaryEntity)
-        let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+        let predicate = NSPredicate(format: "toSubsidiary == %@ AND updatedAt != nil", subsidiaryEntity)
+        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -58,8 +58,10 @@ class LocalProductManager: ProductManager {
             print("Error fetching. \(error)")
         }
         guard let last = listDate[0] else {
+            print("Se retorna valor por defecto")
             return dateFrom
         }
+        print("Se retorna valor desde la BD")
         return last
     }
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
@@ -104,6 +106,9 @@ class LocalProductManager: ProductManager {
             productInContext.unitCost = Int64(product.unitCost.cents)
             productInContext.expirationDate = product.expirationDate
             productInContext.unitPrice = Int64(product.unitPrice.cents)
+            productInContext.createdAt = product.createdAt
+            productInContext.updatedAt = product.updatedAt
+            print("Guardado de Tiempo: \(product.updatedAt.description)")
             if let imageNN = product.image {
                 if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                     productInContext.toImageUrl = imageEntity
@@ -134,6 +139,9 @@ class LocalProductManager: ProductManager {
                 newProduct.unitPrice = Int64(product.unitPrice.cents)
                 newProduct.expirationDate = product.expirationDate
                 newProduct.toSubsidiary = subsidiaryEntity
+                newProduct.createdAt = product.createdAt
+                newProduct.updatedAt = product.updatedAt
+                print("Guardado de Tiempo: \(product.updatedAt.description)")
                 if let imageNN = product.image {
                     if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                         newProduct.toImageUrl = imageEntity

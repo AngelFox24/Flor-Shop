@@ -325,7 +325,7 @@ class LocalSaleManager: SaleManager {
                 let paymentType: PaymentType = PaymentType.from(description: result["toSale.paymentType"] as? String ?? "")
                 let saleDate: Date = result["toSale.saleDate"] as? Date ?? Date()
                 
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: totalQuantity, paymentType: paymentType, saleDate: saleDate, subtotal: Money(cents: totalByProduct))
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitType: UnitTypeEnum.unit, unitCost: Money(0), unitPrice: Money(0), quantitySold: totalQuantity, paymentType: paymentType, saleDate: saleDate, subtotal: Money(totalByProduct))
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -420,7 +420,7 @@ class LocalSaleManager: SaleManager {
                       let totalByProduct = result["totalByProduct"] as? Int else {
                     return nil
                 }
-                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: totalQuantity, paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: totalByProduct))
+                return SaleDetail(id: UUID(), image: completeImageSaleDetail(productName: productName), productName: productName, unitType: UnitTypeEnum.unit, unitCost: Money(0), unitPrice: Money(0), quantitySold: totalQuantity, paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(totalByProduct))
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
@@ -494,12 +494,12 @@ class LocalSaleManager: SaleManager {
                     return nil
                 }
                 guard let customerName = result["toSale.toCustomer.name"] as? String else {
-                    return SaleDetail(id: UUID(), image: nil, productName: "Desconocido", unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: Int(totalByProduct)))
+                    return SaleDetail(id: UUID(), image: nil, productName: "Desconocido", unitType: UnitTypeEnum.unit, unitCost: Money(0), unitPrice: Money(0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(Int(totalByProduct)))
                 }
                 guard let customerLastName = result ["toSale.toCustomer.lastName"] as? String else {
-                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: Int(totalByProduct)))
+                    return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName, unitType: UnitTypeEnum.unit, unitCost: Money(0), unitPrice: Money(0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(Int(totalByProduct)))
                 }
-                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName + " " + customerLastName, unitType: UnitTypeEnum.unit, unitCost: Money(cents: 0), unitPrice: Money(cents: 0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(cents: Int(totalByProduct)))
+                return SaleDetail(id: UUID(), image: completeImageCustomer(customerName: customerName), productName: customerName + " " + customerLastName, unitType: UnitTypeEnum.unit, unitCost: Money(0), unitPrice: Money(0), quantitySold: Int(totalQuantity), paymentType: PaymentType.cash, saleDate: Date(), subtotal: Money(Int(totalByProduct)))
             }
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")

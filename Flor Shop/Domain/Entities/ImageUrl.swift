@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ImageUrl: Identifiable {
+struct ImageUrl: Identifiable, Codable {
     var id: UUID
     var imageUrl: String
     var imageHash: String

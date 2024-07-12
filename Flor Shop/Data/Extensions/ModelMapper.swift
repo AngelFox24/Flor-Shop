@@ -21,6 +21,65 @@ extension Product {
             return nil
         }
     }
+    func toProductDTO(subsidiaryId: UUID) -> ProductDTO {
+        return ProductDTO(
+            id: id,
+            active: active,
+            barCode: barCode,
+            productName: name,
+            quantityStock: qty,
+            unitType: unitType,
+            unitCost: unitCost,
+            unitPrice: unitPrice,
+            expirationDate: expirationDate,
+            imageUrl: image,
+            subsidiaryId: subsidiaryId,
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+        )
+    }
+}
+
+extension ProductDTO {
+    func toProduct() -> Product {
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime]
+
+        if let created = isoFormatter.date(from: createdAt), let updated = isoFormatter.date(from: updatedAt) {
+            return Product(
+                id: id,
+                active: active,
+                barCode: barCode,
+                name: productName,
+                qty: quantityStock,
+                unitType: unitType,
+                unitCost: unitCost,
+                unitPrice: unitPrice,
+                expirationDate: expirationDate,
+                image: imageUrl,
+                createdAt: created,
+                updatedAt: updated
+            )
+        } else {
+            let calendar = Calendar(identifier: .gregorian)
+            let components = DateComponents(year: 1990, month: 1, day: 1)
+            let minimunDate = calendar.date(from: components)
+            return Product(
+                id: id,
+                active: active,
+                barCode: barCode,
+                name: productName,
+                qty: quantityStock,
+                unitType: unitType,
+                unitCost: unitCost,
+                unitPrice: unitPrice,
+                expirationDate: expirationDate,
+                image: imageUrl,
+                createdAt: minimunDate!,
+                updatedAt: minimunDate!
+            )
+        }
+    }
 }
 
 extension Employee {
@@ -176,6 +235,9 @@ extension Tb_ImageUrl {
 
 extension Tb_Product {
     func toProduct() -> Product {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1990, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
         return Product(
             id: idProduct ?? UUID(),
             active: active,
@@ -183,10 +245,12 @@ extension Tb_Product {
             name: productName ?? "",
             qty: Int(quantityStock),
             unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
-            unitCost: Money(cents: Int(unitCost)),
-            unitPrice: Money(cents: Int(unitPrice)),
+            unitCost: Money(Int(unitCost)),
+            unitPrice: Money(Int(unitPrice)),
             expirationDate: expirationDate ?? Date(),
-            image: toImageUrl?.toImage()
+            image: toImageUrl?.toImage(),
+            createdAt: createdAt ?? dateFrom!,
+            updatedAt: updatedAt ?? dateFrom!
         )
     }
 }
@@ -214,7 +278,7 @@ extension Tb_Customer {
             name: name ?? "",
             lastName: lastName ?? "",
             image: toImageUrl?.toImage(),
-            creditLimit: Money(cents: Int(creditLimit)),
+            creditLimit: Money(Int(creditLimit)),
             isCreditLimit: isCreditLimit,
             creditDays: Int(creditDays),
             isDateLimit: isDateLimit,
@@ -222,7 +286,7 @@ extension Tb_Customer {
             dateLimit: dateLimit ?? Date(),
             firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
             phoneNumber: phoneNumber ?? "",
-            totalDebt: Money(cents: Int(totalDebt)),
+            totalDebt: Money(Int(totalDebt)),
             isCreditLimitActive: isCreditLimitActive,
             isDateLimitActive: isDateLimitActive
         )
@@ -235,7 +299,7 @@ extension Tb_Sale {
                     saleDate: saleDate ?? Date(),
                     //TODO: Refactor
                     saleDetail: toSaleDetail?.compactMap {$0 as? Tb_SaleDetail}.mapToSaleDetailList() ?? [],
-                    totalSale: Money(cents: Int(total)))
+                    totalSale: Money(Int(total)))
     }
 }
 
@@ -246,12 +310,12 @@ extension Tb_SaleDetail {
             image: toImageUrl?.toImage(),
             productName: productName ?? "Desconocido",
             unitType: unitType == nil ? UnitTypeEnum.unit : unitType == "Unit" ? UnitTypeEnum.unit : UnitTypeEnum.kilo,
-            unitCost: Money(cents: Int(unitCost)),
-            unitPrice: Money(cents: Int(unitPrice)),
+            unitCost: Money(Int(unitCost)),
+            unitPrice: Money(Int(unitPrice)),
             quantitySold: Int(quantitySold),
             paymentType: self.toSale?.paymentType == PaymentType.cash.description ? PaymentType.cash : PaymentType.loan,
             saleDate: self.toSale?.saleDate ?? Date(),
-            subtotal: Money(cents: Int(subtotal))
+            subtotal: Money(Int(subtotal))
         )
     }
 }
@@ -270,7 +334,7 @@ extension Tb_CartDetail {
         return CartDetail(
             id: idCartDetail ?? UUID(),
             quantity: Int(quantityAdded),
-            subtotal: Money(cents: Int(subtotal)),
+            subtotal: Money(Int(subtotal)),
             product: toProduct?.toProduct() ?? Product.getDummyProduct()
         )
     }
@@ -292,6 +356,12 @@ extension Array where Element == Tb_SaleDetail {
 extension Array where Element == Product {
     func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Product] {
         return self.compactMap {$0.toProductEntity(context: context)}
+    }
+}
+
+extension Array where Element == ProductDTO {
+    func mapToListProducts() -> [Product] {
+        return self.compactMap {$0.toProduct()}
     }
 }
 

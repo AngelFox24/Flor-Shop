@@ -67,7 +67,7 @@
     <entity name="Tb_Product" representedClassName=".Tb_Product" syncable="YES" codeGenerationType="class">
         <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="barCode" optional="YES" attributeType="String"/>
-        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <attribute name="expirationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="idProduct" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="productName" attributeType="String"/>
@@ -75,7 +75,7 @@
         <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
-        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toProduct" inverseEntity="Tb_CartDetail"/>
         <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toProduct" inverseEntity="Tb_ImageUrl"/>
         <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toProduct" inverseEntity="Tb_Subsidiary"/>

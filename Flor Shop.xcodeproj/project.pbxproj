@@ -801,7 +801,6 @@
 			isa = PBXGroup;
 			children = (
 				270B71CB2BBB81B0002D79D6 /* OptimizedFuntions */,
-				2776A2EE2A86F34300410674 /* Enums */,
 				27F2F4552B1DE9FD003E4197 /* CoreDataPersistenceManager */,
 				68A4B10B2A196C5400FC8D9D /* LocalStorage */,
 			);
@@ -859,6 +858,7 @@
 		27F2F45A2B1DECF0003E4197 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				2776A2EE2A86F34300410674 /* Enums */,
 				68A4B1122A19835200FC8D9D /* Product.swift */,
 				2728EAB12A1B0E02002B534A /* Car.swift */,
 				2728EAB32A1B0E0D002B534A /* Sale.swift */,

@@ -7,17 +7,10 @@
 
 import Foundation
 
-enum UnitTypeEnum {
-    case unit
-    case kilo
-    var value: String {
-        switch self {
-        case .unit:
-            return "Unit"
-        case .kilo:
-            return "Kilo"
-        }
-    }
+enum UnitTypeEnum: String, Codable {
+    case unit = "Unit"
+    case kilo = "Kilo"
+    
     var description: String {
         switch self {
         case .unit:
@@ -26,27 +19,9 @@ enum UnitTypeEnum {
             return "Kilogramo"
         }
     }
+    
     static var allValues: [UnitTypeEnum] {
         return [.unit, .kilo]
-    }
-    static func == (lhs: UnitTypeEnum, rhs: UnitTypeEnum) -> Bool {
-        return lhs.description == rhs.description
-    }
-}
-
-struct Money {
-    var cents: Int
-
-    init(cents: Int) {
-        self.cents = cents
-    }
-
-    var soles: Double {
-        return Double(cents) / 100.0
-    }
-
-    mutating func addCents(_ cents: Int) {
-        self.cents += cents
     }
 }
 

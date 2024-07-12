@@ -56,17 +56,34 @@ class AgregarViewModel: ObservableObject {
             print("No se pudo crear producto")
             return false
         }
-        let result = self.saveProductUseCase.execute(product: product)
-        if result == "Success" {
-            print("Se añadio correctamente")
+        do {
+            let result = try await self.saveProductUseCase.execute(product: product)
+            if result == "Success" {
+                print("Se añadio correctamente")
+                await MainActor.run {
+                    releaseResources()
+                }
+                return true
+            } else {
+                print(result)
+                await MainActor.run {
+                    self.agregarFields.errorBD = result
+                }
+                return false
+            }
+        } catch {
             await MainActor.run {
                 releaseResources()
-            }
-            return true
-        } else {
-            print(result)
-            await MainActor.run {
-                self.agregarFields.errorBD = result
+                if let repositoryError = error as? RepositoryError {
+                    switch repositoryError {
+                    case .syncFailed(let message):
+                        self.agregarFields.errorBD = message
+                    case .invalidFields(let message):
+                        self.agregarFields.errorBD = message
+                    }
+                } else {
+                    self.agregarFields.errorBD = error.localizedDescription
+                }
             }
             return false
         }
@@ -101,10 +118,12 @@ class AgregarViewModel: ObservableObject {
                 name: self.agregarFields.productName,
                 qty: quantityStock,
                 unitType: self.agregarFields.unitType,
-                unitCost: Money(cents: self.agregarFields.unitCost),
-                unitPrice: Money(cents: self.agregarFields.unitPrice),
+                unitCost: Money(self.agregarFields.unitCost),
+                unitPrice: Money(self.agregarFields.unitPrice),
                 expirationDate: self.agregarFields.expirationDate,
-                image: getImageIfExist()
+                image: getImageIfExist(),
+                createdAt: Date(),
+                updatedAt: Date()
             )
         } else {
             return nil
