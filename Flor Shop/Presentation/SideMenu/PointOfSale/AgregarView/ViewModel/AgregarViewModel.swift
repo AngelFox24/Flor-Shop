@@ -139,7 +139,13 @@ class AgregarViewModel: ObservableObject {
         if let imageLocal = self.agregarFields.selectedLocalImage {
             return self.saveImageUseCase.execute(idImage: UUID(), image: imageLocal)
         } else if self.agregarFields.imageUrl != "" {
-            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: "")
+            return ImageUrl(
+                id: UUID(),
+                imageUrl: self.agregarFields.imageUrl,
+                imageHash: "",
+                createdAt: Date(),
+                updatedAt: Date()
+            )
         } else {
             return nil
         }

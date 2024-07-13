@@ -72,6 +72,16 @@
 		278142082AC333A60093B402 /* CartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278142072AC333A60093B402 /* CartViews.swift */; };
 		2786CA1B2A6D44CC00A80585 /* Fail1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA192A6D44CC00A80585 /* Fail1.mp3 */; };
 		2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA1A2A6D44CC00A80585 /* Success1.mp3 */; };
+		278CA6432C42D06300C200C5 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6422C42D06300C200C5 /* Money.swift */; };
+		278CA6462C42DEA300C200C5 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6452C42DEA300C200C5 /* NetworkManager.swift */; };
+		278CA6492C42DED700C200C5 /* NetworkErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6482C42DED700C200C5 /* NetworkErrors.swift */; };
+		278CA64B2C42DF0000C200C5 /* NetworkRequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA64A2C42DF0000C200C5 /* NetworkRequestProtocol.swift */; };
+		278CA64D2C42ED4600C200C5 /* LocalStorageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */; };
+		278CA64F2C42FBF700C200C5 /* CustomApiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA64E2C42FBF700C200C5 /* CustomApiRequest.swift */; };
+		278CA6512C43093F00C200C5 /* RemoteCompanyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6502C43093F00C200C5 /* RemoteCompanyManager.swift */; };
+		278CA6532C43119E00C200C5 /* RemoteCustomerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6522C43119E00C200C5 /* RemoteCustomerManager.swift */; };
+		278CA6552C432CA000C200C5 /* RemoteEmployeeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6542C432CA000C200C5 /* RemoteEmployeeManager.swift */; };
+		278CA6572C43308C00C200C5 /* RemoteSubsidiaryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6562C43308C00C200C5 /* RemoteSubsidiaryManager.swift */; };
 		279C64882A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279C64872A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift */; };
 		279C648A2A8D78B8003B29BC /* CompanyRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279C64892A8D78B8003B29BC /* CompanyRepositoryImpl.swift */; };
 		279C648E2A8D78FF003B29BC /* LocalSubsidiaryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279C648D2A8D78FF003B29BC /* LocalSubsidiaryManager.swift */; };
@@ -92,6 +102,16 @@
 		27A62A5B2C2F6912009425DB /* ExportProductsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A62A5A2C2F6912009425DB /* ExportProductsUseCase.swift */; };
 		27A62A5D2C2F6B2E009425DB /* CSVDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A62A5C2C2F6B2E009425DB /* CSVDocument.swift */; };
 		27A6EF202ACC84C100F4D178 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A6EF1F2ACC84C100F4D178 /* Extensions.swift */; };
+		27B125C62C41B8C400E6EAA2 /* SynchronizerDBUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125C52C41B8C400E6EAA2 /* SynchronizerDBUseCase.swift */; };
+		27B125CA2C41BEEC00E6EAA2 /* ProductDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125C92C41BEEC00E6EAA2 /* ProductDTO.swift */; };
+		27B125CC2C41BFB300E6EAA2 /* CompanyDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125CB2C41BFB300E6EAA2 /* CompanyDTO.swift */; };
+		27B125CE2C41BFCD00E6EAA2 /* CustomerDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125CD2C41BFCD00E6EAA2 /* CustomerDTO.swift */; };
+		27B125D02C41BFE600E6EAA2 /* EmployeeDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125CF2C41BFE600E6EAA2 /* EmployeeDTO.swift */; };
+		27B125D22C41BFFE00E6EAA2 /* ImageURLDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D12C41BFFE00E6EAA2 /* ImageURLDTO.swift */; };
+		27B125D42C41C01A00E6EAA2 /* SaleDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D32C41C01A00E6EAA2 /* SaleDetailDTO.swift */; };
+		27B125D62C41C03600E6EAA2 /* SaleDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D52C41C03600E6EAA2 /* SaleDTO.swift */; };
+		27B125D82C41C04A00E6EAA2 /* SubsidiaryDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */; };
+		27B125DA2C41CAE400E6EAA2 /* RemoteSaleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */; };
 		27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */; };
 		27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936B29F73B510085D4EC /* CustomTabBar.swift */; };
 		27B3936E29F74E4B0085D4EC /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936D29F74E4B0085D4EC /* MainView.swift */; };
@@ -227,6 +247,16 @@
 		278142072AC333A60093B402 /* CartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViews.swift; sourceTree = "<group>"; };
 		2786CA192A6D44CC00A80585 /* Fail1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fail1.mp3; sourceTree = "<group>"; };
 		2786CA1A2A6D44CC00A80585 /* Success1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Success1.mp3; sourceTree = "<group>"; };
+		278CA6422C42D06300C200C5 /* Money.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Money.swift; sourceTree = "<group>"; };
+		278CA6452C42DEA300C200C5 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		278CA6482C42DED700C200C5 /* NetworkErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrors.swift; sourceTree = "<group>"; };
+		278CA64A2C42DF0000C200C5 /* NetworkRequestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequestProtocol.swift; sourceTree = "<group>"; };
+		278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageError.swift; sourceTree = "<group>"; };
+		278CA64E2C42FBF700C200C5 /* CustomApiRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomApiRequest.swift; sourceTree = "<group>"; };
+		278CA6502C43093F00C200C5 /* RemoteCompanyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCompanyManager.swift; sourceTree = "<group>"; };
+		278CA6522C43119E00C200C5 /* RemoteCustomerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCustomerManager.swift; sourceTree = "<group>"; };
+		278CA6542C432CA000C200C5 /* RemoteEmployeeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteEmployeeManager.swift; sourceTree = "<group>"; };
+		278CA6562C43308C00C200C5 /* RemoteSubsidiaryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubsidiaryManager.swift; sourceTree = "<group>"; };
 		279C64872A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubsidiaryRepositoryImpl.swift; sourceTree = "<group>"; };
 		279C64892A8D78B8003B29BC /* CompanyRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyRepositoryImpl.swift; sourceTree = "<group>"; };
 		279C648D2A8D78FF003B29BC /* LocalSubsidiaryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSubsidiaryManager.swift; sourceTree = "<group>"; };
@@ -247,6 +277,16 @@
 		27A62A5A2C2F6912009425DB /* ExportProductsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportProductsUseCase.swift; sourceTree = "<group>"; };
 		27A62A5C2C2F6B2E009425DB /* CSVDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVDocument.swift; sourceTree = "<group>"; };
 		27A6EF1F2ACC84C100F4D178 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		27B125C52C41B8C400E6EAA2 /* SynchronizerDBUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizerDBUseCase.swift; sourceTree = "<group>"; };
+		27B125C92C41BEEC00E6EAA2 /* ProductDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDTO.swift; sourceTree = "<group>"; };
+		27B125CB2C41BFB300E6EAA2 /* CompanyDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyDTO.swift; sourceTree = "<group>"; };
+		27B125CD2C41BFCD00E6EAA2 /* CustomerDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerDTO.swift; sourceTree = "<group>"; };
+		27B125CF2C41BFE600E6EAA2 /* EmployeeDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeDTO.swift; sourceTree = "<group>"; };
+		27B125D12C41BFFE00E6EAA2 /* ImageURLDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageURLDTO.swift; sourceTree = "<group>"; };
+		27B125D32C41C01A00E6EAA2 /* SaleDetailDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleDetailDTO.swift; sourceTree = "<group>"; };
+		27B125D52C41C03600E6EAA2 /* SaleDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleDTO.swift; sourceTree = "<group>"; };
+		27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubsidiaryDTO.swift; sourceTree = "<group>"; };
+		27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSaleManager.swift; sourceTree = "<group>"; };
 		27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAsyncImageView.swift; sourceTree = "<group>"; };
 		27B3936B29F73B510085D4EC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		27B3936D29F74E4B0085D4EC /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -584,6 +624,25 @@
 			path = Alerts;
 			sourceTree = "<group>";
 		};
+		278CA6442C42D06B00C200C5 /* SubEntity */ = {
+			isa = PBXGroup;
+			children = (
+				278CA6422C42D06300C200C5 /* Money.swift */,
+			);
+			path = SubEntity;
+			sourceTree = "<group>";
+		};
+		278CA6472C42DEBB00C200C5 /* NetworkManager */ = {
+			isa = PBXGroup;
+			children = (
+				278CA6452C42DEA300C200C5 /* NetworkManager.swift */,
+				278CA6482C42DED700C200C5 /* NetworkErrors.swift */,
+				278CA64A2C42DF0000C200C5 /* NetworkRequestProtocol.swift */,
+				278CA64E2C42FBF700C200C5 /* CustomApiRequest.swift */,
+			);
+			path = NetworkManager;
+			sourceTree = "<group>";
+		};
 		27A6EF1E2ACC84A100F4D178 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -591,6 +650,51 @@
 				27A6EF1F2ACC84C100F4D178 /* Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		27B125C32C417C1F00E6EAA2 /* RemoteManager */ = {
+			isa = PBXGroup;
+			children = (
+				278CA6472C42DEBB00C200C5 /* NetworkManager */,
+				270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */,
+				27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */,
+				278CA6502C43093F00C200C5 /* RemoteCompanyManager.swift */,
+				278CA6522C43119E00C200C5 /* RemoteCustomerManager.swift */,
+				278CA6542C432CA000C200C5 /* RemoteEmployeeManager.swift */,
+				278CA6562C43308C00C200C5 /* RemoteSubsidiaryManager.swift */,
+			);
+			path = RemoteManager;
+			sourceTree = "<group>";
+		};
+		27B125C42C41B89C00E6EAA2 /* Synchronizer */ = {
+			isa = PBXGroup;
+			children = (
+				27B125C52C41B8C400E6EAA2 /* SynchronizerDBUseCase.swift */,
+			);
+			path = Synchronizer;
+			sourceTree = "<group>";
+		};
+		27B125C72C41B94200E6EAA2 /* Permisions */ = {
+			isa = PBXGroup;
+			children = (
+				273BD5DE2A4B4493001C1C03 /* Notification.swift */,
+			);
+			path = Permisions;
+			sourceTree = "<group>";
+		};
+		27B125C82C41BEDF00E6EAA2 /* DTOs */ = {
+			isa = PBXGroup;
+			children = (
+				27B125C92C41BEEC00E6EAA2 /* ProductDTO.swift */,
+				27B125CB2C41BFB300E6EAA2 /* CompanyDTO.swift */,
+				27B125CD2C41BFCD00E6EAA2 /* CustomerDTO.swift */,
+				27B125CF2C41BFE600E6EAA2 /* EmployeeDTO.swift */,
+				27B125D12C41BFFE00E6EAA2 /* ImageURLDTO.swift */,
+				27B125D32C41C01A00E6EAA2 /* SaleDetailDTO.swift */,
+				27B125D52C41C03600E6EAA2 /* SaleDTO.swift */,
+				27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */,
+			);
+			path = DTOs;
 			sourceTree = "<group>";
 		};
 		27BA28172A79BF3B008F3F08 /* Fonts */ = {
@@ -612,6 +716,7 @@
 		27C241F52A0088A70045B2A0 /* Commons */ = {
 			isa = PBXGroup;
 			children = (
+				27B125C72C41B94200E6EAA2 /* Permisions */,
 				275212A32BC98B1F005E2016 /* ImageView */,
 				27F68FBC2AD84EC700D917FF /* Navigation */,
 				27BF2C832ADB6ADE00D4C5F6 /* CardViews */,
@@ -812,6 +917,7 @@
 			children = (
 				68A4B1082A196B7500FC8D9D /* CoreDataProvider.swift */,
 				27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */,
+				278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */,
 			);
 			path = CoreDataPersistenceManager;
 			sourceTree = "<group>";
@@ -820,7 +926,7 @@
 			isa = PBXGroup;
 			children = (
 				27F2F4572B1DEA7C003E4197 /* Firebase */,
-				270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */,
+				27B125C32C417C1F00E6EAA2 /* RemoteManager */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -858,7 +964,9 @@
 		27F2F45A2B1DECF0003E4197 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				27B125C82C41BEDF00E6EAA2 /* DTOs */,
 				2776A2EE2A86F34300410674 /* Enums */,
+				278CA6442C42D06B00C200C5 /* SubEntity */,
 				68A4B1122A19835200FC8D9D /* Product.swift */,
 				2728EAB12A1B0E02002B534A /* Car.swift */,
 				2728EAB32A1B0E0D002B534A /* Sale.swift */,
@@ -876,6 +984,7 @@
 		27F2F45B2B1DED15003E4197 /* UseCases */ = {
 			isa = PBXGroup;
 			children = (
+				27B125C42C41B89C00E6EAA2 /* Synchronizer */,
 				2752129A2BC969D1005E2016 /* Image */,
 				2735D45E2B21EB7400C892AF /* SaleDetail */,
 				273576962B1FAEAC00E9CF12 /* Sale */,
@@ -1312,7 +1421,6 @@
 				68A4B10F2A197BFB00FC8D9D /* ProductRepositoryImpl.swift */,
 				2728EAAD2A1B0BC2002B534A /* SaleRepositoryImpl.swift */,
 				2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */,
-				273BD5DE2A4B4493001C1C03 /* Notification.swift */,
 				279C64872A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift */,
 				279C64892A8D78B8003B29BC /* CompanyRepositoryImpl.swift */,
 				279C64932A8D796D003B29BC /* EmployeeRepositoryImpl.swift */,
@@ -1418,6 +1526,7 @@
 				2733AF652ACB942E00BF8531 /* CustomerViewModel.swift in Sources */,
 				2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */,
 				27EBAFE62A59A2CB006E5CAD /* LaunchScreenView.swift in Sources */,
+				278CA6432C42D06300C200C5 /* Money.swift in Sources */,
 				27F2F4A02B1E2AB2003E4197 /* GetCompanyUseCase.swift in Sources */,
 				279C64882A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift in Sources */,
 				27C318E229F34498004CC146 /* DefaultTopBar.swift in Sources */,
@@ -1433,6 +1542,7 @@
 				27F68FBE2AD84EDF00D917FF /* NavManager.swift in Sources */,
 				27F321D32BAE097500296E50 /* GetCustomerSalesUseCase.swift in Sources */,
 				271FE6752C365C2B00BADA74 /* LoadingState.swift in Sources */,
+				27B125CA2C41BEEC00E6EAA2 /* ProductDTO.swift in Sources */,
 				279C64A02A8D9539003B29BC /* Subsidiary.swift in Sources */,
 				279C64A82A8D9823003B29BC /* SaleDetail.swift in Sources */,
 				279C64962A8D798A003B29BC /* CustomerRepositoryImpl.swift in Sources */,
@@ -1454,13 +1564,16 @@
 				27B796B92BBEF47100AC45D0 /* SourceSelecctionView.swift in Sources */,
 				2752129E2BC96AF2005E2016 /* LoadSavedImageUseCase.swift in Sources */,
 				274CE29C29E6D792007C703D /* ProductView.swift in Sources */,
+				27B125DA2C41CAE400E6EAA2 /* RemoteSaleManager.swift in Sources */,
 				27F54F3429FDE6180083B616 /* CartTopBar.swift in Sources */,
 				27F2F48E2B1E0E6C003E4197 /* CreateSubsidiaryUseCase.swift in Sources */,
+				27B125D62C41C03600E6EAA2 /* SaleDTO.swift in Sources */,
 				27F2F4532B1DE605003E4197 /* Dependencies.swift in Sources */,
 				273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */,
 				2728EAB02A1B0BD5002B534A /* CarRepositoryImpl.swift in Sources */,
 				271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */,
 				279C64A62A8D97E1003B29BC /* Customer.swift in Sources */,
+				27B125CE2C41BFCD00E6EAA2 /* CustomerDTO.swift in Sources */,
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
 				27C7B9D62A60F99400CA2818 /* OnboardViewModel.swift in Sources */,
 				27F321CC2BADF4F200296E50 /* CustomerHistoryTopBar.swift in Sources */,
@@ -1475,8 +1588,11 @@
 				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
 				273576892B1F72CE00E9CF12 /* GetSalesUseCase.swift in Sources */,
 				270B71CD2BBB8202002D79D6 /* OptimizeLocalImages.swift in Sources */,
+				27B125D82C41C04A00E6EAA2 /* SubsidiaryDTO.swift in Sources */,
 				279D1FB32BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift in Sources */,
 				274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */,
+				278CA6492C42DED700C200C5 /* NetworkErrors.swift in Sources */,
+				27B125C62C41B8C400E6EAA2 /* SynchronizerDBUseCase.swift in Sources */,
 				68D990C52A1AE98A00A3A393 /* ModelMapper.swift in Sources */,
 				275212992BC968DE005E2016 /* ImageRepositoryImpl.swift in Sources */,
 				27F2F4902B1E0E82003E4197 /* CreateEmployeeUseCase.swift in Sources */,
@@ -1488,16 +1604,21 @@
 				27F2F4892B1DFABA003E4197 /* GetProductsUseCase.swift in Sources */,
 				2777D77C2B1EF408003C2FCA /* SaveProductUseCase.swift in Sources */,
 				2735767F2B1F4AD700E9CF12 /* AddProductoToCartUseCase.swift in Sources */,
+				278CA64D2C42ED4600C200C5 /* LocalStorageError.swift in Sources */,
 				2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */,
 				275212A22BC970A1005E2016 /* SaveImageUseCase.swift in Sources */,
 				27E9FD302A5835CA0070216B /* FirebaseApp.swift in Sources */,
 				2735768B2B1F83CD00E9CF12 /* GetEmployeesUseCase.swift in Sources */,
+				278CA64F2C42FBF700C200C5 /* CustomApiRequest.swift in Sources */,
+				27B125D22C41BFFE00E6EAA2 /* ImageURLDTO.swift in Sources */,
 				2728EAAA2A1B0B89002B534A /* LocalCartManager.swift in Sources */,
+				278CA64B2C42DF0000C200C5 /* NetworkRequestProtocol.swift in Sources */,
 				27C241FC2A008CB50045B2A0 /* ProductViewModel.swift in Sources */,
 				279EF9D52A9124C500F97CB1 /* AgregarView.swift in Sources */,
 				27EBAFE82A59B52E006E5CAD /* LockScreenView.swift in Sources */,
 				27E7A51C2A1D18570042983D /* CartDetail.swift in Sources */,
 				279C64942A8D796D003B29BC /* EmployeeRepositoryImpl.swift in Sources */,
+				278CA6532C43119E00C200C5 /* RemoteCustomerManager.swift in Sources */,
 				27B3936E29F74E4B0085D4EC /* MainView.swift in Sources */,
 				273774102A980781004C0BD1 /* CustomBackButton.swift in Sources */,
 				68D990C22A1ADEA700A3A393 /* LocalProductManager.swift in Sources */,
@@ -1510,7 +1631,10 @@
 				273576872B1F71F800E9CF12 /* RegisterSaleUseCase.swift in Sources */,
 				27F2F4952B1E1463003E4197 /* SetDefaultSubsidiaryUseCase.swift in Sources */,
 				27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */,
+				27B125D02C41BFE600E6EAA2 /* EmployeeDTO.swift in Sources */,
+				278CA6462C42DEA300C200C5 /* NetworkManager.swift in Sources */,
 				2733AF632ACB934800BF8531 /* CustomersView.swift in Sources */,
+				278CA6512C43093F00C200C5 /* RemoteCompanyManager.swift in Sources */,
 				27CB99C52A3354F60083CAB7 /* CustomButtons.swift in Sources */,
 				27CC2E012A881BB8000EDB64 /* CreateAccountView.swift in Sources */,
 				27BA281B2A79CA67008F3F08 /* PopoverHelp.swift in Sources */,
@@ -1523,8 +1647,10 @@
 				272066802A094D6A00E0CCA8 /* SalesViewModel.swift in Sources */,
 				27A62A5B2C2F6912009425DB /* ExportProductsUseCase.swift in Sources */,
 				2728EAB22A1B0E02002B534A /* Car.swift in Sources */,
+				27B125CC2C41BFB300E6EAA2 /* CompanyDTO.swift in Sources */,
 				27F321CE2BADF6CE00296E50 /* CustomerHistoryView.swift in Sources */,
 				272559382A8ACBFF008896C8 /* FirebaseSesionManagement.swift in Sources */,
+				278CA6572C43308C00C200C5 /* RemoteSubsidiaryManager.swift in Sources */,
 				2734B2342A300FF2003EA365 /* CustomHideKeyboard.swift in Sources */,
 				27A6EF202ACC84C100F4D178 /* Extensions.swift in Sources */,
 				27F54F3229FDE5210083B616 /* CartView.swift in Sources */,
@@ -1535,12 +1661,14 @@
 				27A62A5D2C2F6B2E009425DB /* CSVDocument.swift in Sources */,
 				271A7E1529F0FA3300BBAEA3 /* ImageViewModel.swift in Sources */,
 				279C648A2A8D78B8003B29BC /* CompanyRepositoryImpl.swift in Sources */,
+				27B125D42C41C01A00E6EAA2 /* SaleDetailDTO.swift in Sources */,
 				274C65A12AC48A3200B778A2 /* EmployeeView.swift in Sources */,
 				27CC2E0B2A8844EA000EDB64 /* TabButton.swift in Sources */,
 				27F2F4992B1E15A5003E4197 /* RegisterUserUseCase.swift in Sources */,
 				270930A22B46F4C300BDF3CD /* RemoteProductManager.swift in Sources */,
 				2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */,
 				278142082AC333A60093B402 /* CartViews.swift in Sources */,
+				278CA6552C432CA000C200C5 /* RemoteEmployeeManager.swift in Sources */,
 				68A4B1092A196B7500FC8D9D /* CoreDataProvider.swift in Sources */,
 				2735D4602B21EBBE00C892AF /* GetSalesDetailsUseCase.swift in Sources */,
 				27F2F48B2B1E0869003E4197 /* CreateCompanyUseCase.swift in Sources */,

@@ -6,6 +6,26 @@
 //
 
 import Foundation
+
+extension Data {
+    func jsonString() -> String {
+        do {
+            // 1. Convertir la Data a un objeto JSON (Any)
+            let jsonObject = try JSONSerialization.jsonObject(with: self, options: [])            // 2. Convertir el objeto JSON a una representación de cadena (String)
+            if let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                // 3. Imprimir la cadena formateada en la consola
+                return jsonString
+            } else {
+                return("Error al formatear el JSON como cadena")
+            }
+            
+        } catch {
+            return "Error"
+        }
+    }
+}
+
 enum DateComponent {
     case day
     case month
@@ -62,4 +82,18 @@ extension Date {
 
         return dateFormatter.string(from: self)
     }
+}
+extension String {
+    func internetDateTime() -> Date? {
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        let dateR = isoFormatter.date(from: self)
+        return dateR
+    }
+}
+func minimunDate() -> Date {
+    let calendar = Calendar(identifier: .gregorian)
+    let components = DateComponents(year: 1990, month: 1, day: 1)
+    let minimunDate = calendar.date(from: components)
+    return minimunDate!
 }

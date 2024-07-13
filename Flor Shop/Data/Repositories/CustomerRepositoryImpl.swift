@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 protocol CustomerRepository {
+    func sync() async throws
     func addCustomer(customer: Customer) -> String
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
@@ -23,11 +24,14 @@ protocol CustomerRepository {
     func releaseResourses()
 }
 
-class CustomerRepositoryImpl: CustomerRepository {
+class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
     let manager: CustomerManager
     // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: CustomerManager) {
         self.manager = manager
+    }
+    func sync() async throws {
+        print("Not Implemented")
     }
     //C - Create
     func addCustomer(customer: Customer) -> String {

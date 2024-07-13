@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 protocol SubsidiaryRepository {
+    func sync() async throws
     func addSubsidiary(subsidiary: Subsidiary) -> Bool
     func getSubsidiaries() -> [Subsidiary]
     func updateSubsidiary(subsidiary: Subsidiary)
@@ -20,11 +21,14 @@ protocol SubsidiaryRepository {
     func releaseResourses()
 }
 
-class SubsidiaryRepositoryImpl: SubsidiaryRepository {
+class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
     let manager: SubsidiaryManager
     // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: SubsidiaryManager) {
         self.manager = manager
+    }
+    func sync() async throws {
+        print("Not Implemented")
     }
     //C - Create
     func addSubsidiary(subsidiary: Subsidiary) -> Bool {

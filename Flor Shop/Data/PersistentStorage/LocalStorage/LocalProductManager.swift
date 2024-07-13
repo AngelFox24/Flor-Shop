@@ -39,7 +39,7 @@ class LocalProductManager: ProductManager {
     }
     func getLastUpdated() -> Date? {
         let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 2024, month: 7, day: 12)
+        let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
         var listDate: [Date?] = []
         guard let subsidiaryEntity = self.mainSubsidiaryEntity else {

@@ -14,6 +14,7 @@ enum RepositoryError: Error {
 }
 
 protocol ProductRepository {
+    func sync() async throws
     func saveProduct(product: Product) async throws
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     //func filterProducts(word: String) -> [Product]
@@ -33,11 +34,11 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
     let remoteManager: RemoteProductManager
     init(manager: ProductManager) {
         self.localManager = manager
-        self.remoteManager = RemoteProductManager()
+        self.remoteManager = RemoteProductManagerImpl()
     }
     func saveProduct(product: Product) async throws {
         guard let subsidiaryId = localManager.getDefaultSubsidiary()?.id else {
-            throw APIError.invalidFields("El campo subsidiaryId no esta configurado")
+            throw LocalStorageError.notFound("El campo subsidiaryId no esta configurado")
         }
         if try await self.remoteManager.save(subsidiaryId: subsidiaryId, product: product) {
             try await sync()
@@ -60,9 +61,8 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
                 throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
             }
             let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
-            let productRequest = ProductRequest(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
             print("Se consultara a la API")
-            let products = try await self.remoteManager.sync(productRequest: productRequest)
+            let products = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
             print("Se obtuvo los productos exitosamente")
             items = products.count
             print("Items Sync: \(items)")

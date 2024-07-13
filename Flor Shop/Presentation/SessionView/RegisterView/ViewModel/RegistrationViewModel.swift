@@ -24,9 +24,33 @@ class RegistrationViewModel: ObservableObject {
         registrationFields.companyRUCEdited = true
     }
     func registerUser() -> Bool {
-        let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
-        let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: nil)
-        let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: nil, active: true, phoneNumber: "")
+        let companyRegistration: Company = Company(
+            id: UUID(),
+            companyName: registrationFields.companyName,
+            ruc: registrationFields.companyRUC,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        let subsidiaryRegistration: Subsidiary = Subsidiary(
+            id: UUID(),
+            name: registrationFields.companyName,
+            image: nil,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        let userRegistration: Employee = Employee(
+            id: UUID(),
+            name: registrationFields.managerName,
+            user: registrationFields.user,
+            email: registrationFields.email,
+            lastName: registrationFields.managerLastName,
+            role: "Manager",
+            image: nil,
+            active: true,
+            phoneNumber: "",
+            createdAt: Date(),
+            updatedAt: Date()
+        )
         return self.registerUserUseCase.execute(company: companyRegistration, subsidiary: subsidiaryRegistration, employee: userRegistration)
     }
 }

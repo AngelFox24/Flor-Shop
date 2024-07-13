@@ -155,7 +155,13 @@ class LocalImageManager: ImageManager {
                 return nil
             }
             if saveImageInLocal(id: idImage, image: uiImage) {
-                return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
+                return ImageUrl(
+                    id: idImage,
+                    imageUrl: "",
+                    imageHash: imageHash,
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
             } else {
                 return nil
             }

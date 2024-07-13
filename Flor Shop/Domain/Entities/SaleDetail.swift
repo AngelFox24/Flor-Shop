@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 struct SaleDetail: Identifiable {
     var id: UUID
@@ -19,8 +20,35 @@ struct SaleDetail: Identifiable {
     var paymentType: PaymentType
     var saleDate: Date
     var subtotal: Money
+    let createdAt: Date
+    let updatedAt: Date
     
     static func == (lhs: SaleDetail, rhs: SaleDetail) -> Bool {
         return lhs.id == rhs.id
+    }
+}
+
+extension SaleDetail {
+    func toSaleDetailDTO(saleID: UUID) -> SaleDetailDTO {
+        return SaleDetailDTO(
+            id: id,
+            productName: productName,
+            barCode: barCode ?? "",
+            quantitySold: quantitySold,
+            subtotal: subtotal.cents,
+            unitType: unitType.description,
+            unitCost: unitCost.cents,
+            unitPrice: unitPrice.cents,
+            saleID: saleID,
+            imageUrl: image?.toImageUrlDTO(),
+            createdAt: createdAt.description,
+            updatedAt: updatedAt.description
+        )
+    }
+}
+
+extension Array where Element == SaleDetail {
+    func mapToListSaleDetailDTO(saleID: UUID) -> [SaleDetailDTO] {
+        return self.compactMap {$0.toSaleDetailDTO(saleID: saleID)}
     }
 }

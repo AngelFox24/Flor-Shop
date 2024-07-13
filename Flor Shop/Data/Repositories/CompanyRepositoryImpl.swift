@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 protocol CompanyRepository {
+    func sync() async throws
     func addCompany(company: Company) -> Bool
     func getDefaultCompany() -> Company?
     func updateCompany(company: Company)
@@ -18,11 +19,14 @@ protocol CompanyRepository {
     func releaseResourses()
 }
 
-class CompanyRepositoryImpl: CompanyRepository {
+class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
     let manager: CompanyManager
     // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: CompanyManager) {
         self.manager = manager
+    }
+    func sync() async throws {
+        print("Not Implemented")
     }
     //C - Create
     func addCompany(company: Company) -> Bool {

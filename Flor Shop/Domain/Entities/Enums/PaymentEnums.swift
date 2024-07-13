@@ -36,6 +36,7 @@ enum PaymentType: CustomStringConvertible, Equatable {
         for case let tipo in PaymentType.allValues where tipo.description == description {
             return tipo
         }
+        //TODO: Review this code
         return PaymentType.loan
     }
 }

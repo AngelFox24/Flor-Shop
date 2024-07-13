@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 protocol EmployeeRepository {
+    func sync() async throws
     func addEmployee(employee: Employee) -> Bool
     func getEmployees() -> [Employee]
     func updateEmployee(employee: Employee)
@@ -22,11 +23,14 @@ protocol EmployeeRepository {
     func releaseResourses()
 }
 
-class EmployeeRepositoryImpl: EmployeeRepository {
+class EmployeeRepositoryImpl: EmployeeRepository, Syncronizable {
     let manager: EmployeeManager
     // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: EmployeeManager) {
         self.manager = manager
+    }
+    func sync() async throws {
+        print("Not Implemented")
     }
     //Luego se migrara a Firebase
     func logIn(user: String, password: String) -> Employee? {

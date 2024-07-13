@@ -9,6 +9,8 @@ import Foundation
 import CoreData
 
 protocol SaleRepository {
+    func sync() async throws
+//    func save(customerId: UUID?, employeeId: UUID, sale: Sale) async throws
     func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
     func payClientTotalDebt(customer: Customer) -> Bool
     func getListSales() -> [Sale]
@@ -23,11 +25,36 @@ protocol SaleRepository {
     func releaseResourses()
 }
 
-class SaleRepositoryImpl: SaleRepository {
+class SaleRepositoryImpl: SaleRepository, Syncronizable {
     let manager: SaleManager
+    let remoteManager: RemoteSaleManager
     // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: SaleManager) {
         self.manager = manager
+        self.remoteManager = RemoteSaleManagerImpl()
+    }
+    func sync() async throws {
+        print("Not implemented")
+//        guard let subsidiaryId = manager.getDefaultSubsidiary()?.id else {
+//            throw RepositoryError.invalidFields(("El campo subsidiaryId no esta configurado"))
+//        }
+//        var counter = 0
+//        var items = 0
+//        
+//        repeat {
+//            print("Counter: \(counter)")
+//            counter += 1
+//            guard let updatedSince = manager.getLastUpdated() else {
+//                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
+//            }
+//            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+//            let sales = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
+//            items = products.count
+//            print("Items Sync: \(items)")
+//            for sale in sales {
+//                manager.sav
+//            }
+//        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
         return self.manager.registerSale(cart: cart, customer: customer, paymentType: paymentType)

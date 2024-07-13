@@ -113,7 +113,25 @@ class AddCustomerViewModel: ObservableObject {
             return nil
         }
         if isErrorsEmpty() {
-            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: getImageIfExist(), creditLimit: Money(creditLimitInt), isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: Money(totalDebt), isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+            return Customer(
+                id: fieldsAddCustomer.id ?? UUID(),
+                name: fieldsAddCustomer.name,
+                lastName: fieldsAddCustomer.lastname,
+                image: getImageIfExist(),
+                creditLimit: Money(creditLimitInt),
+                isCreditLimit: false,
+                creditDays: creditDaysInt,
+                isDateLimit: false,
+                creditScore: fieldsAddCustomer.creditScore,
+                dateLimit: fieldsAddCustomer.dateLimit,
+                phoneNumber: fieldsAddCustomer.phoneNumber,
+                lastDatePurchase: Date(),
+                totalDebt: Money(totalDebt),
+                isCreditLimitActive: fieldsAddCustomer.creditLimitFlag,
+                isDateLimitActive: fieldsAddCustomer.dateLimitFlag,
+                createdAt: Date(),
+                updatedAt: Date()
+            )
         } else {
             return nil
         }
