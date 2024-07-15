@@ -11,6 +11,7 @@ import AVFoundation
 
 struct PaymentTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
+    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     //@EnvironmentObject var productsCoreDataViewModel: ProductViewModel
@@ -26,10 +27,13 @@ struct PaymentTopBar: View {
                 })
                 Spacer()
                 Button(action: {
-                    if ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar, paymentType: carritoCoreDataViewModel.paymentType) {
+                    Task {
+                        loadingState.isLoading = true
+                        try await ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar, paymentType: carritoCoreDataViewModel.paymentType)
                         carritoCoreDataViewModel.releaseResources()
                         carritoCoreDataViewModel.releaseCustomer()
                         playSound(named: "Success1")
+                        loadingState.isLoading = false
                     }
                 }, label: {
                     CustomButton1(text: "Finalizar")
@@ -62,5 +66,6 @@ struct PaymentTopBar_Previews: PreviewProvider {
         PaymentTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
+            .environmentObject(dependencies.loadingState)
     }
 }

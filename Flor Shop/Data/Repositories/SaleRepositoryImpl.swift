@@ -11,7 +11,7 @@ import CoreData
 protocol SaleRepository {
     func sync() async throws
 //    func save(customerId: UUID?, employeeId: UUID, sale: Sale) async throws
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
+    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws
     func payClientTotalDebt(customer: Customer) -> Bool
     func getListSales() -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
@@ -28,36 +28,39 @@ protocol SaleRepository {
 class SaleRepositoryImpl: SaleRepository, Syncronizable {
     let manager: SaleManager
     let remoteManager: RemoteSaleManager
+    let cloudBD = true
     // let remote:  remoto, se puede implementar el remoto aqui
     init(manager: SaleManager) {
         self.manager = manager
         self.remoteManager = RemoteSaleManagerImpl()
     }
     func sync() async throws {
-        print("Not implemented")
-//        guard let subsidiaryId = manager.getDefaultSubsidiary()?.id else {
-//            throw RepositoryError.invalidFields(("El campo subsidiaryId no esta configurado"))
-//        }
-//        var counter = 0
-//        var items = 0
-//        
-//        repeat {
-//            print("Counter: \(counter)")
-//            counter += 1
-//            guard let updatedSince = manager.getLastUpdated() else {
-//                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
-//            }
-//            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
-//            let sales = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
-//            items = products.count
-//            print("Items Sync: \(items)")
-//            for sale in sales {
-//                manager.sav
-//            }
-//        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+        var counter = 0
+        var items = 0
+        guard let subsidiaryId = manager.getDefaultSubsidiary()?.id else {
+            throw RepositoryError.invalidFields(("La subsidiaria no esta configurada"))
+        }
+        repeat {
+            counter += 1
+            guard let updatedSince = manager.getLastUpdated() else {
+                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
+            }
+            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let salesDTOs = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
+            items = salesDTOs.count
+            print("Items Sync: \(items)")
+            try await self.manager.sync(salesDTOs: salesDTOs)
+        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
-        return self.manager.registerSale(cart: cart, customer: customer, paymentType: paymentType)
+    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws {
+        if cloudBD {
+            guard let saleDTO = self.manager.getSaleDTO(cart: cart, customer: customer, paymentType: paymentType) else {
+                throw RepositoryError.invalidFields(("El registro de la venta fallo"))
+            }
+            try await self.remoteManager.save(saleDTO: saleDTO)
+        } else {
+            let _ = self.manager.registerSale(cart: cart, customer: customer, paymentType: paymentType)
+        }
     }
     func payClientTotalDebt(customer: Customer) -> Bool {
         return self.manager.payClientTotalDebt(customer: customer)

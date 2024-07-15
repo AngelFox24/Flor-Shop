@@ -32,19 +32,20 @@ protocol Syncronizable {
 public class ProductRepositoryImpl: ProductRepository, Syncronizable {
     let localManager: ProductManager
     let remoteManager: RemoteProductManager
+    let cloudBD = true
     init(manager: ProductManager) {
         self.localManager = manager
         self.remoteManager = RemoteProductManagerImpl()
     }
     func saveProduct(product: Product) async throws {
-        guard let subsidiaryId = localManager.getDefaultSubsidiary()?.id else {
-            throw LocalStorageError.notFound("El campo subsidiaryId no esta configurado")
-        }
-        if try await self.remoteManager.save(subsidiaryId: subsidiaryId, product: product) {
-            try await sync()
-            print("Exito Red, se guardo en local")
+        if cloudBD {
+            guard let subsidiaryId = localManager.getDefaultSubsidiary()?.id else {
+                throw LocalStorageError.notFound("El campo subsidiaryId no esta configurado")
+            }
+            let productDTO = product.toProductDTO(subsidiaryId: subsidiaryId)
+            try await self.remoteManager.save(productDTO: productDTO)
         } else {
-            print("No se pudo guardar por red")
+            let _ = self.localManager.saveProduct(product: product)
         }
     }
     func sync() async throws {
@@ -62,15 +63,10 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             }
             let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
             print("Se consultara a la API")
-            let products = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
+            let productsDTOs = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
             print("Se obtuvo los productos exitosamente")
-            items = products.count
-            print("Items Sync: \(items)")
-            for product in products {
-                //TODO: Verificar respuesta y devolver error
-                print("Se guardara en local \(product.name)")
-                localManager.saveProduct(product: product)
-            }
+            items = productsDTOs.count
+            try self.localManager.sync(productsDTOs: productsDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {

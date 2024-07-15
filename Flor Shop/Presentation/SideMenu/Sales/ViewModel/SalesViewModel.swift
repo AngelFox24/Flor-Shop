@@ -60,8 +60,8 @@ class SalesViewModel: ObservableObject {
             return saleDetail == lastSaleDetail
         }
     }
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
-        return self.registerSaleUseCase.execute(cart: cart, customer: customer, paymentType: paymentType)
+    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws {
+        try await self.registerSaleUseCase.execute(cart: cart, customer: customer, paymentType: paymentType)
     }
     func nextDate() {
         switch salesDateInterval {

@@ -10,6 +10,7 @@ import CoreData
 
 protocol ProductManager {
     func saveProduct(product: Product) -> String
+    func sync(productsDTOs: [ProductDTO]) throws
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     //func filterProducts(word: String) -> [Product]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
@@ -161,6 +162,98 @@ class LocalProductManager: ProductManager {
                 return "Se encontro duplicados del nombre del producto"
             }
         }
+    }
+    func getProductById(productId: UUID) -> Tb_Product? {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return nil
+        }
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        let predicate = NSPredicate(format: "idProduct == %@", productId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func getImageById(imageId: UUID) -> Tb_ImageUrl? {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return nil
+        }
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "idImageUrl == %@", imageId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func createImage(imageDTO: ImageURLDTO) throws -> Tb_ImageUrl {
+        guard let createdAt = imageDTO.createdAt.internetDateTime(), let updatedAt = imageDTO.updatedAt.internetDateTime() else {
+            throw RepositoryError.syncFailed("Las fechas no estan bien configuradas")
+        }
+        if let imageEntity = getImageById(imageId: imageDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            imageEntity.imageUrl = imageDTO.imageUrl
+            imageEntity.imageHash = imageDTO.imageHash
+            imageEntity.createdAt = createdAt
+            imageEntity.updatedAt = updatedAt
+            return imageEntity
+        } else {
+            let imageEntity = Tb_ImageUrl(context: self.mainContext)
+            imageEntity.idImageUrl = imageDTO.id
+            imageEntity.imageUrl = imageDTO.imageUrl
+            imageEntity.imageHash = imageDTO.imageHash
+            imageEntity.createdAt = createdAt
+            imageEntity.updatedAt = updatedAt
+            return imageEntity
+        }
+    }
+    func sync(productsDTOs: [ProductDTO]) throws {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            throw RepositoryError.syncFailed("La subsidiaria no esta configurado")
+        }
+        for productDTO in productsDTOs {
+            guard let createdAt = productDTO.createdAt.internetDateTime(), let updatedAt = productDTO.updatedAt.internetDateTime() else {
+                throw RepositoryError.syncFailed("Las fechas no estan bien configuradas")
+            }
+            let imageEntity = productDTO.imageUrl == nil ? nil : try createImage(imageDTO: productDTO.imageUrl!)
+            if let productEntity = getProductById(productId: productDTO.id) {
+                productEntity.productName = productDTO.productName
+                productEntity.active = productDTO.active
+                productEntity.quantityStock = Int64(productDTO.quantityStock)
+                productEntity.barCode = productDTO.barCode
+                productEntity.unitCost = Int64(productDTO.unitCost)
+                productEntity.expirationDate = productDTO.expirationDate
+                productEntity.unitPrice = Int64(productDTO.unitPrice)
+                productEntity.createdAt = createdAt
+                productEntity.updatedAt = updatedAt
+                productEntity.toImageUrl = imageEntity
+                productEntity.toSubsidiary = subsidiaryEntity
+            } else {
+                let productEntity = Tb_Product(context: self.mainContext)
+                productEntity.productName = productDTO.productName
+                productEntity.active = productDTO.active
+                productEntity.quantityStock = Int64(productDTO.quantityStock)
+                productEntity.barCode = productDTO.barCode
+                productEntity.unitCost = Int64(productDTO.unitCost)
+                productEntity.expirationDate = productDTO.expirationDate
+                productEntity.unitPrice = Int64(productDTO.unitPrice)
+                productEntity.createdAt = createdAt
+                productEntity.updatedAt = updatedAt
+                productEntity.toImageUrl = imageEntity
+                productEntity.toSubsidiary = subsidiaryEntity
+            }
+        }
+        saveData()
     }
     func existProductInSubsidiary(product: Product) -> Bool {
         guard let subsidiary = self.mainSubsidiaryEntity else {

@@ -10,8 +10,11 @@ import CoreData
 
 protocol SaleManager {
     func registerSale (cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
+    func sync(salesDTOs: [SaleDTO]) async throws
     func payClientTotalDebt(customer: Customer) -> Bool
     func getListSales () -> [Sale]
+    func getLastUpdated() -> Date?
+    func getSaleDTO(cart: Car?, customer: Customer?, paymentType: PaymentType) -> SaleDTO?
     func setDefaultSubsidiary(subsidiary: Subsidiary)
     func getDefaultSubsidiary() -> Subsidiary?
     func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
@@ -34,6 +37,7 @@ class LocalSaleManager: SaleManager {
             try self.mainContext.save()
         } catch {
             print("Error al guardar en LocalSaleManager \(error)")
+            rollback()
         }
     }
     func rollback() {
@@ -41,6 +45,33 @@ class LocalSaleManager: SaleManager {
     }
     func releaseResourses() {
         self.mainSubsidiaryEntity = nil
+    }
+    func getLastUpdated() -> Date? {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1999, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
+        var listDate: [Date?] = []
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return dateFrom
+        }
+        let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary == %@ AND updatedAt != nil", subsidiaryEntity)
+        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+        guard let last = listDate[0] else {
+            print("Se retorna valor por defecto")
+            return dateFrom
+        }
+        print("Se retorna valor desde la BD")
+        return last
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
         guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
@@ -685,6 +716,138 @@ class LocalSaleManager: SaleManager {
             rollback()
         }
         return saveChanges
+    }
+    func getEmployeeById(employeeId: UUID) -> Tb_Employee? {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return nil
+        }
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary == %@ AND idEmployee == %@", subsidiaryEntity, employeeId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            return try self.mainContext.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func getCustomerById(customerId: UUID) -> Tb_Customer? {
+        guard let subsidiaryEntity = self.mainSubsidiaryEntity else {
+            print("No se encontró sucursal")
+            return nil
+        }
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        let predicate = NSPredicate(format: "idCustomer == %@", customerId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            return try self.mainContext.fetch(request).first
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func sync(salesDTOs: [SaleDTO]) throws {
+        //Verificamos si existe subisidiaria por defecto
+        guard let defaultSubsidiaryEntity = self.mainSubsidiaryEntity, let subsidiaryId = defaultSubsidiaryEntity.idSubsidiary else {
+            throw RepositoryError.syncFailed("La subsidiaria no esta configurado")
+        }
+        for saleDTO in salesDTOs {
+            guard subsidiaryId == saleDTO.subsidiaryId else {
+                throw RepositoryError.syncFailed("La subsidiaria no es la misma")
+            }
+            //Verificamos si el carrito pertenece a un empleado
+            guard let employeeEntity = getEmployeeById(employeeId: saleDTO.employeeId) else {
+                throw RepositoryError.syncFailed("El empleado no existe")
+            }
+            guard saleDTO.saleDetail.isEmpty else {
+                throw RepositoryError.syncFailed("El detalle de las ventas esta vacio")
+            }
+            
+            let newSaleEntity = Tb_Sale(context: self.mainContext)
+            newSaleEntity.idSale = saleDTO.id
+            newSaleEntity.toSubsidiary = defaultSubsidiaryEntity
+            newSaleEntity.toEmployee = employeeEntity
+            if let customerId = saleDTO.customerId, let customerEntity = getCustomerById(customerId: customerId) {
+                newSaleEntity.toCustomer = customerEntity
+            }
+            newSaleEntity.paymentType = saleDTO.paymentType
+            newSaleEntity.saleDate = saleDTO.saleDate
+            newSaleEntity.total = Int64(saleDTO.total)
+            //Agregamos detalles a la venta
+            for saleDetailDTO in saleDTO.saleDetail {
+                let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
+                newSaleDetailEntity.idSaleDetail = saleDetailDTO.id
+                newSaleDetailEntity.toImageUrl?.idImageUrl = saleDetailDTO.imageUrl?.id
+                newSaleDetailEntity.productName = saleDetailDTO.productName
+                newSaleDetailEntity.unitCost = Int64(saleDetailDTO.unitCost)
+                newSaleDetailEntity.unitPrice = Int64(saleDetailDTO.unitPrice)
+                newSaleDetailEntity.quantitySold = Int64(saleDetailDTO.quantitySold)
+                newSaleDetailEntity.subtotal = Int64(saleDetailDTO.subtotal)
+                newSaleDetailEntity.toSale?.idSale = saleDetailDTO.saleID
+            }
+        }
+        saveData()
+    }
+    func getSaleDTO(cart: Car?, customer: Customer?, paymentType: PaymentType) -> SaleDTO? {
+        //Verificamos si existe subisidiaria por defecto
+        guard let defaultSubsidiaryEntity = self.mainSubsidiaryEntity, let subsidiaryId = defaultSubsidiaryEntity.idSubsidiary else {
+            print("No existe subisidiaria por defecto en LocalSaleManager")
+            return nil
+        }
+        //Verificamos si existe el carrito
+        guard let cartEntity = cart?.toCartEntity(context: self.mainContext) else {
+            print("El carrito para la venta no existe")
+            return nil
+        }
+        let customerId = customer?.toCustomerEntity(context: self.mainContext)?.idCustomer
+        //Verificamos si el carrito pertenece a un empleado
+        guard let employeeEntity = cartEntity.toEmployee, let employeeId = employeeEntity.idEmployee else {
+            print("El carrito no tiene un empleado")
+            return nil
+        }
+        //Obtenemos los detalles de los productos
+        guard let cartDetailEntitySet = cartEntity.toCartDetail as? Set<Tb_CartDetail> else {
+            return nil
+        }
+        let saleId = UUID()
+        var listSaleDetails: [SaleDetailDTO] = []
+        var total: Int = 0
+        for cartDetail in cartDetailEntitySet {
+            if let productInCart = cartDetail.toProduct {
+                let product = productInCart.toProduct()
+                let saleDetailDTO = SaleDetailDTO(
+                    id: UUID(),
+                    productName: product.name,
+                    barCode: product.barCode ?? "",
+                    quantitySold: product.qty,
+                    subtotal: product.qty * product.unitPrice.cents,
+                    unitType: product.unitType.rawValue,
+                    unitCost: product.unitCost.cents,
+                    unitPrice: product.unitPrice.cents,
+                    saleID: saleId,
+                    imageUrl: product.image?.toImageUrlDTO(),
+                    createdAt: product.createdAt.description,
+                    updatedAt: product.updatedAt.description
+                )
+                total += saleDetailDTO.subtotal
+                listSaleDetails.append(saleDetailDTO)
+            }
+        }
+        return SaleDTO(
+            id: saleId,
+            paymentType: paymentType.description,
+            saleDate: Date(),
+            total: total,
+            subsidiaryId: subsidiaryId,
+            customerId: customerId,
+            employeeId: employeeId,
+            saleDetail: listSaleDetails,
+            createdAt: Date().description,
+            updatedAt: Date().description
+        )
     }
     private func reduceStock(cartDetailEntity: Tb_CartDetail) -> Bool {
         guard let productEntity = cartDetailEntity.toProduct else {

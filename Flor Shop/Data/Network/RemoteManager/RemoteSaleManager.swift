@@ -8,22 +8,21 @@
 import Foundation
 
 protocol RemoteSaleManager {
-    func save(subsidiaryId: UUID, customerId: UUID?, employeeId: UUID, sale: Sale) async throws
-    func sync(subsidiaryId: UUID, updatedSince: String) async throws -> [Sale]
+    func save(saleDTO: SaleDTO) async throws
+    func sync(subsidiaryId: UUID, updatedSince: String) async throws -> [SaleDTO]
 }
 
 final class RemoteSaleManagerImpl: RemoteSaleManager {
-    func save(subsidiaryId: UUID, customerId: UUID?, employeeId: UUID, sale: Sale) async throws {
+    func save(saleDTO: SaleDTO) async throws {
         let urlRoute = "/sales"
-        let saleDTO = sale.toSaleDTO(subsidiaryId: subsidiaryId, customerId: customerId, employeeId: employeeId)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: saleDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(subsidiaryId: UUID, updatedSince: String) async throws -> [Sale] {
+    func sync(subsidiaryId: UUID, updatedSince: String) async throws -> [SaleDTO] {
         let urlRoute = "/sales/sync"
         let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: subsidiaryId, updatedSince: updatedSince)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: [SaleDTO] = try await NetworkManager.shared.perform(request, decodeTo: [SaleDTO].self)
-        return data.mapToListSale()
+        return data
     }
 }
