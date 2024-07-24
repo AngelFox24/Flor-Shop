@@ -28,8 +28,15 @@ class LogInViewModel: ObservableObject {
         logInFields.userOrEmailEdited = true
         logInFields.passwordEdited = true
     }
-    func logIn() {
-        self.logInStatus = self.logInUseCase.execute(email: logInFields.userOrEmail, password: logInFields.password)
+    func logIn() async -> SessionConfig? {
+        do {
+            return try await self.logInUseCase.execute(email: logInFields.userOrEmail, password: logInFields.password)
+        } catch {
+            await MainActor.run {
+                self.logInFields.errorLogIn = error.localizedDescription
+            }
+            return nil
+        }
     }
     func logOut() {
         self.logInStatus = .fail

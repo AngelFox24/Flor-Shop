@@ -28,10 +28,8 @@ struct EmployeeView: View {
 
 struct EmployeeView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
         @State var showMenu: Bool = false
         EmployeeView(isKeyboardVisible: .constant(false),showMenu: $showMenu)
-            .environmentObject(dependencies.employeeViewModel)
     }
 }
 

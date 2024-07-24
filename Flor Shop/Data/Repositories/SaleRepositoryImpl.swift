@@ -11,7 +11,7 @@ import CoreData
 protocol SaleRepository {
     func sync() async throws
 //    func save(customerId: UUID?, employeeId: UUID, sale: Sale) async throws
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws
+    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
     func payClientTotalDebt(customer: Customer) -> Bool
     func getListSales() -> [Sale]
     func setDefaultSubsidiary(subsidiary: Subsidiary)
@@ -26,74 +26,70 @@ protocol SaleRepository {
 }
 
 class SaleRepositoryImpl: SaleRepository, Syncronizable {
-    let manager: SaleManager
+    let localManager: SaleManager
     let remoteManager: RemoteSaleManager
     let cloudBD = true
-    // let remote:  remoto, se puede implementar el remoto aqui
-    init(manager: SaleManager) {
-        self.manager = manager
-        self.remoteManager = RemoteSaleManagerImpl()
+    init(
+        localProductManager: SaleManager,
+        remoteProductManager: RemoteSaleManager
+    ) {
+        self.localManager = localProductManager
+        self.remoteManager = remoteProductManager
+    }
+    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
+        if cloudBD {
+            try await self.remoteManager.save(cart: cart, paymentType: paymentType, customerId: customerId)
+        } else {
+            let _ = self.localManager.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
+        }
     }
     func sync() async throws {
         var counter = 0
         var items = 0
-        guard let subsidiaryId = manager.getDefaultSubsidiary()?.id else {
-            throw RepositoryError.invalidFields(("La subsidiaria no esta configurada"))
-        }
         repeat {
             counter += 1
-            guard let updatedSince = manager.getLastUpdated() else {
+            guard let updatedSince = localManager.getLastUpdated() else {
                 throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
             }
             let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
-            let salesDTOs = try await self.remoteManager.sync(subsidiaryId: subsidiaryId, updatedSince: updatedSinceString)
+            let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = salesDTOs.count
             print("Items Sync: \(items)")
-            try await self.manager.sync(salesDTOs: salesDTOs)
+            try await self.localManager.sync(salesDTOs: salesDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws {
-        if cloudBD {
-            guard let saleDTO = self.manager.getSaleDTO(cart: cart, customer: customer, paymentType: paymentType) else {
-                throw RepositoryError.invalidFields(("El registro de la venta fallo"))
-            }
-            try await self.remoteManager.save(saleDTO: saleDTO)
-        } else {
-            let _ = self.manager.registerSale(cart: cart, customer: customer, paymentType: paymentType)
-        }
-    }
     func payClientTotalDebt(customer: Customer) -> Bool {
-        return self.manager.payClientTotalDebt(customer: customer)
+        return self.localManager.payClientTotalDebt(customer: customer)
     }
     func getListSales() -> [Sale] {
         // add to remote logic
-        return self.manager.getListSales()
+        return self.localManager.getListSales()
     }
     func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        self.manager.setDefaultSubsidiary(subsidiary: subsidiary)
+        self.localManager.setDefaultSubsidiary(subsidiary: subsidiary)
     }
     func getDefaultSubsidiary() -> Subsidiary? {
-        return self.manager.getDefaultSubsidiary()
+        return self.localManager.getDefaultSubsidiary()
     }
     func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        return self.manager.getListSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        return self.localManager.getListSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
     func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        return self.manager.getListSalesDetailsGroupedByProduct(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        return self.localManager.getListSalesDetailsGroupedByProduct(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
     func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        return self.manager.getListSalesDetailsGroupedByCustomer(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        return self.localManager.getListSalesDetailsGroupedByCustomer(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.manager.getSalesAmount(date: date, interval: interval)
+        return self.localManager.getSalesAmount(date: date, interval: interval)
     }
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.manager.getCostAmount(date: date, interval: interval)
+        return self.localManager.getCostAmount(date: date, interval: interval)
     }
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.manager.getRevenueAmount(date: date, interval: interval)
+        return self.localManager.getRevenueAmount(date: date, interval: interval)
     }
     func releaseResourses() {
-        self.manager.releaseResourses()
+        self.localManager.releaseResourses()
     }
 }

@@ -310,7 +310,6 @@ struct CardViewPlaceHolder2: View {
 
 struct CardViews_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
         VStack(spacing: 10,
                content: {
             CardViewTipe1(image: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
@@ -322,7 +321,6 @@ struct CardViews_Previews: PreviewProvider {
                 product: Product.getDummyProduct()
             )
             CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })
-                .environmentObject(dependencies.cartViewModel)
             CardViewTipe4(icon: "plus", text: "Puerco")
             CardViewPlaceHolder1(size: 80)
             CardViewPlaceHolder2(size: 150)

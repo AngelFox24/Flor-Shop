@@ -109,9 +109,11 @@ struct CreateAccountView: View {
 
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: sesC)
         CreateAccountView(isKeyboardVisible: .constant(true))
-            .environmentObject(dependencies.logInViewModel)
+            .environmentObject(nor.logInViewModel)
             .environmentObject(dependencies.registrationViewModel)
     }
 }

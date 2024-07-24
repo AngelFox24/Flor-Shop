@@ -38,7 +38,7 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                 // Data a escribir (simulando un gran dataset)
                 var products: [Product]
                 var page: Int = 1
-                products = self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
+                products = try self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
                 print("Reciviendo primer lote: \(products.count)")
                 while !products.isEmpty {
                     print("Iterando")
@@ -63,7 +63,7 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                     }
                     // Agregar mas productos
                     page += 1
-                    products = self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
+                    products = try self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
                 }
                 // Cerrar el archivo
                 print("Cerrando Archivo")

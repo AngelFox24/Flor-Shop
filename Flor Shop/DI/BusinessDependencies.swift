@@ -1,5 +1,5 @@
 //
-//  Dependencies.swift
+//  BusinessDependencies.swift
 //  Flor Shop
 //
 //  Created by Angel Curi Laurente on 4/12/23.
@@ -8,17 +8,21 @@
 import Foundation
 import CoreData
 
-struct Dependencies {
-    //Managers
+struct BusinessDependencies {
+    //Session Configuration
+    let sessionConfig: SessionConfig
+    //Local Managers
     private let mainContext: NSManagedObjectContext
     private let companyManager: LocalCompanyManager
     private let subsidiaryManager: LocalSubsidiaryManager
     private let employeeManager: LocalEmployeeManager
     private let customerManager: LocalCustomerManager
-    private let productManager: LocalProductManager
+    private let localProductManager: LocalProductManager
     private let cartManager: LocalCartManager
     private let saleManager: LocalSaleManager
     let imageManager: ImageManager
+    //Remote Managers
+    private let remoteProductManager: RemoteProductManager
     //Repositorios
     private let companyRepository: CompanyRepositoryImpl
     private let subsidiaryRepository: SubsidiaryRepositoryImpl
@@ -32,7 +36,7 @@ struct Dependencies {
     private let getSubsidiaryUseCase: GetSubsidiaryUseCase
     private let getCompanyUseCase: GetCompanyUseCase
     private let setDefaultCompanyUseCase: SetDefaultCompanyUseCase
-    private let setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase
+//    private let setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase
     private let setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase
     private let getProductsUseCase: GetProductsUseCase
     private let createCompanyUseCase: CreateCompanyUseCase
@@ -60,7 +64,7 @@ struct Dependencies {
     private let saveImageUseCase: SaveImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
     
-    private let registerUserUseCase: RegisterUserUseCase
+//    private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
     private let logOutUseCase: LogOutUseCase
     //ViewModels
@@ -75,30 +79,28 @@ struct Dependencies {
     let customerHistoryViewModel: CustomerHistoryViewModel
     //let companyViewModel: CompanyViewModel
     let addCustomerViewModel: AddCustomerViewModel
-    let versionCheck: VersionCheck
-    let navManager: NavManager
-    //Estados
-    let loadingState: LoadingState
     
-    init() {
-        //Estados
-        self.loadingState = LoadingState()
-        //MARK: Managers
+    init(sessionConfig: SessionConfig) {
+        //Session Configuration
+        self.sessionConfig = sessionConfig
+        //MARK: Local Managers
         self.mainContext = CoreDataProvider.shared.viewContext
         self.companyManager = LocalCompanyManager(mainContext: mainContext)
         self.subsidiaryManager = LocalSubsidiaryManager(mainContext: mainContext)
         self.employeeManager = LocalEmployeeManager(mainContext: mainContext)
         self.customerManager = LocalCustomerManager(mainContext: mainContext)
-        self.productManager = LocalProductManager(mainContext: mainContext)
+        self.localProductManager = LocalProductManager(mainContext: mainContext, sessionConfig: self.sessionConfig)
         self.cartManager = LocalCartManager(mainContext: mainContext)
         self.saleManager = LocalSaleManager(mainContext: mainContext)
         self.imageManager = LocalImageManager(mainContext: mainContext)
+        //MARK: Remote Managers
+        self.remoteProductManager = RemoteProductManagerImpl(sessionConfig: self.sessionConfig)
         //MARK: Repositorios
         self.companyRepository = CompanyRepositoryImpl(manager: companyManager)
         self.subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
         self.employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
         self.customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        self.productRepository = ProductRepositoryImpl(manager: productManager)
+        self.productRepository = ProductRepositoryImpl(localProductManager: localProductManager, remoteProductManager: remoteProductManager)
         self.cartRepository = CarRepositoryImpl(manager: cartManager)
         self.salesRepository = SaleRepositoryImpl(manager: saleManager)
         self.imageRepository = ImageRepositoryImpl(manager: imageManager)
@@ -106,7 +108,7 @@ struct Dependencies {
         self.getSubsidiaryUseCase = GetSubsidiaryInteractor(employeeRepository: employeeRepository)
         self.getCompanyUseCase = GetCompanyInteractor(subsidiaryRepository: subsidiaryRepository)
         self.setDefaultCompanyUseCase = SetDefaultCompanyInteractor(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository)
-        self.setDefaultSubsidiaryUseCase = SetDefaultSubsidiaryInteractor(productReporsitory: productRepository, employeeRepository: employeeRepository, saleRepository: salesRepository)
+//        self.setDefaultSubsidiaryUseCase = SetDefaultSubsidiaryInteractor(productReporsitory: productRepository, employeeRepository: employeeRepository, saleRepository: salesRepository)
         self.setDefaultEmployeeUseCase = SetDefaultEmployeeInteractor(cartRepository: cartRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
@@ -134,12 +136,23 @@ struct Dependencies {
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
         
-        self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
-        self.logInUseCase = LogInInteractor(employeeRepository: employeeRepository, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, getCompanyUseCase: getCompanyUseCase, getSubsidiaryUseCase: getSubsidiaryUseCase)
-        self.logOutUseCase = LogOutInteractor(setDefaultEmployeeUseCase: setDefaultEmployeeUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase)
+//        self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
+        self.logInUseCase = LogInInteractor(
+            employeeRepository: employeeRepository,
+            setDefaultEmployeeUseCase: setDefaultEmployeeUseCase,
+//            setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase,
+            setDefaultCompanyUseCase: setDefaultCompanyUseCase,
+            getCompanyUseCase: getCompanyUseCase,
+            getSubsidiaryUseCase: getSubsidiaryUseCase
+        )
+        self.logOutUseCase = LogOutInteractor(
+            setDefaultEmployeeUseCase: setDefaultEmployeeUseCase,
+//            setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase,
+            setDefaultCompanyUseCase: setDefaultCompanyUseCase
+        )
         //MARK: ViewModels
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
-        self.registrationViewModel = RegistrationViewModel(registerUserUseCase: registerUserUseCase)
+        self.registrationViewModel = RegistrationViewModel()
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getProductsInCartUseCase: getProductsInCartUseCase, getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, increaceProductInCartUseCase: increaceProductInCartUseCase, decreaceProductInCartUseCase: decreaceProductInCartUseCase)
@@ -149,7 +162,5 @@ struct Dependencies {
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
         //self.companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
         self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase)
-        self.versionCheck = VersionCheck()
-        self.navManager = NavManager()
     }
 }

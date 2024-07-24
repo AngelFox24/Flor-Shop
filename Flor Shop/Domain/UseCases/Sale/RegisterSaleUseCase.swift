@@ -8,8 +8,7 @@
 import Foundation
 
 protocol RegisterSaleUseCase {
-    
-    func execute(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws
+    func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
 }
 
 final class RegisterSaleInteractor: RegisterSaleUseCase {
@@ -20,7 +19,7 @@ final class RegisterSaleInteractor: RegisterSaleUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(cart: Car?, customer: Customer?, paymentType: PaymentType) async throws {
-        try await self.saleRepository.registerSale(cart: cart, customer: customer, paymentType: paymentType)
+    func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
+        try await self.saleRepository.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
     }
 }

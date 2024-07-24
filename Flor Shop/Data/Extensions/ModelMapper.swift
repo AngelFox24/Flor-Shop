@@ -146,7 +146,8 @@ extension Tb_Cart {
     func toCar() -> Car {
         return Car(
             id: idCart ?? UUID(),
-            total: Int(total)
+            cartDetails: self.toCartDetail?.compactMap {$0 as? Tb_CartDetail}.toListCartDetail() ?? [],
+            total: Money(Int(total)) 
         )
     }
 }

@@ -9,8 +9,8 @@ import Foundation
 import CoreData
 
 protocol SaleManager {
-    func registerSale (cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
-    func sync(salesDTOs: [SaleDTO]) async throws
+    func registerSale (cart: Car, paymentType:PaymentType, customerId: UUID?) -> Bool
+    func sync(salesDTOs: [SaleDTO]) throws
     func payClientTotalDebt(customer: Customer) -> Bool
     func getListSales () -> [Sale]
     func getLastUpdated() -> Date?
@@ -28,9 +28,14 @@ protocol SaleManager {
 
 class LocalSaleManager: SaleManager {
     let mainContext: NSManagedObjectContext
-    var mainSubsidiaryEntity: Tb_Subsidiary?
-    init(mainContext: NSManagedObjectContext) {
+    let sessionConfig: SessionConfig
+//    var mainSubsidiaryEntity: Tb_Subsidiary?
+    init(
+        mainContext: NSManagedObjectContext,
+        sessionConfig: SessionConfig
+    ) {
         self.mainContext = mainContext
+        self.sessionConfig = sessionConfig
     }
     func saveData () {
         do {
@@ -636,79 +641,80 @@ class LocalSaleManager: SaleManager {
         }
         return sortDescriptor
     }
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
+    func getCustomerEntityById(customerId: UUID?) -> Tb_Customer? {
+        let filterAtt = NSPredicate(format: "idCustomer == %@", customerId.uuidString)
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let customerEntity = try self.mainContext.fetch(request).first
+            return customerEntity
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) -> Bool {
+        let date: Date = Date()
         var saveChanges: Bool = true
-        //Verificamos si existe subisidiaria por defecto
-        guard let defaultSubsidiaryEntity = self.mainSubsidiaryEntity else {
-            print("No existe subisidiaria por defecto en LocalSaleManager")
+        guard let cartEntity = cart.toCartEntity(context: self.mainContext) else {
             return false
         }
-        //Verificamos si existe el carrito
-        guard let cartEntity = cart?.toCartEntity(context: self.mainContext) else {
-            print("El carrito para la venta no existe")
+        guard cart.cartDetails.isEmpty else {
+//            throw LocalStorageError.notFound("No se encontro productos en la solicitud de venta")
+            print("No se encontro productos en la solicitud de venta")
             return false
         }
-        //Verificamos si el carrito pertenece a un empleado
-        guard let employeeEntity = cartEntity.toEmployee else {
-            print("El carrito no tiene un empleado")
+        guard let cartDetailEntity = cart.toCartEntity(context: self.mainContext) else {
             return false
         }
-        //Obtenemos los detalles de los productos
-        guard let cartDetailEntitySet = cartEntity.toCartDetail as? Set<Tb_CartDetail> else {
-            return false
-        }
-        if !cartDetailEntitySet.isEmpty {
-            let newSaleEntity = Tb_Sale(context: self.mainContext)
-            newSaleEntity.idSale = UUID()
-            newSaleEntity.toSubsidiary = defaultSubsidiaryEntity
-            newSaleEntity.toEmployee = employeeEntity
-            if let customerEntity = customer?.toCustomerEntity(context: self.mainContext) {
-                newSaleEntity.toCustomer = customerEntity
-                customerEntity.lastDatePurchase = Date()
-                if customerEntity.totalDebt == 0 {
-                    var calendario = Calendar.current
-                    calendario.timeZone = TimeZone(identifier: "UTC")!
-                    customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
-                }
-                if paymentType == .loan {
-                    customerEntity.firstDatePurchaseWithCredit = customerEntity.totalDebt == 0 ? Date() : customerEntity.firstDatePurchaseWithCredit
-                    customerEntity.totalDebt = customerEntity.totalDebt + cartEntity.total
-                    if customerEntity.totalDebt > customerEntity.creditLimit && customerEntity.isCreditLimitActive {
-                        customerEntity.isCreditLimit = true
-                    } else {
-                        customerEntity.isCreditLimit = false
-                    }
+        let newSaleEntity = Tb_Sale(context: self.mainContext)
+        newSaleEntity.idSale = UUID()
+        newSaleEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
+        newSaleEntity.toEmployee?.idEmployee = self.sessionConfig.employeeId
+        if let customerEntity = getCustomerById(customerId: customerId) {
+            newSaleEntity.toCustomer = customerEntity
+            customerEntity.lastDatePurchase = date
+            if customerEntity.totalDebt == 0 {
+                var calendario = Calendar.current
+                calendario.timeZone = TimeZone(identifier: "UTC")!
+                customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
+            }
+            if paymentType == .loan {
+                customerEntity.firstDatePurchaseWithCredit = customerEntity.totalDebt == 0 ? Date() : customerEntity.firstDatePurchaseWithCredit
+                customerEntity.totalDebt = customerEntity.totalDebt + Int64(cart.total)
+                if customerEntity.totalDebt > customerEntity.creditLimit && customerEntity.isCreditLimitActive {
+                    customerEntity.isCreditLimit = true
+                } else {
+                    customerEntity.isCreditLimit = false
                 }
             }
-            newSaleEntity.paymentType = paymentType.description
-            newSaleEntity.saleDate = Date()
-            newSaleEntity.total = cartEntity.total
-            //Agregamos detalles a la venta
-            for cartDetailEntity in cartDetailEntitySet {
-                if reduceStock(cartDetailEntity: cartDetailEntity) {
-                    if let productEntity = cartDetailEntity.toProduct {
-                        let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
-                        newSaleDetailEntity.idSaleDetail = UUID()
-                        newSaleDetailEntity.toImageUrl = productEntity.toImageUrl
-                        newSaleDetailEntity.productName = productEntity.productName
-                        newSaleDetailEntity.unitCost = productEntity.unitCost
-                        newSaleDetailEntity.unitPrice = productEntity.unitPrice
-                        newSaleDetailEntity.quantitySold = cartDetailEntity.quantityAdded
-                        newSaleDetailEntity.subtotal = cartDetailEntity.subtotal
-                        newSaleDetailEntity.toSale = newSaleEntity
-                        //Eliminamos el detalle del carrito
-                        self.mainContext.delete(cartDetailEntity)
-                    } else {
-                        saveChanges = false
-                    }
+        }
+        newSaleEntity.paymentType = paymentType.description
+        newSaleEntity.saleDate = date
+        newSaleEntity.total = Int64(cart.total.cents)
+        //Agregamos detalles a la venta
+        for cartDetail in cart.cartDetails {
+            if reduceStock(cartDetailEntity: cartDetailEntity) {
+                if let productEntity = cartDetailEntity.toProduct {
+                    let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
+                    newSaleDetailEntity.idSaleDetail = UUID()
+                    newSaleDetailEntity.toImageUrl = cartDetail.product.image
+                    newSaleDetailEntity.productName = cartDetail.product.name
+                    newSaleDetailEntity.unitCost = cartDetail.product.unitCost.cents
+                    newSaleDetailEntity.unitPrice = cartDetail.product.unitPrice.cents
+                    newSaleDetailEntity.quantitySold = cartDetail.quantity
+                    newSaleDetailEntity.subtotal = cartDetail.subtotal.cents
+                    newSaleDetailEntity.toSale = newSaleEntity
+                    //Eliminamos el detalle del carrito
+                    self.mainContext.delete(cartDetailEntity)
                 } else {
                     saveChanges = false
                 }
+            } else {
+                saveChanges = false
             }
-            cartEntity.total = 0
-        } else {
-            saveChanges = false
         }
+        cartEntity.total = 0
         if saveChanges {
             print("Se vendio correctamente")
             saveData()
@@ -750,26 +756,17 @@ class LocalSaleManager: SaleManager {
         }
     }
     func sync(salesDTOs: [SaleDTO]) throws {
-        //Verificamos si existe subisidiaria por defecto
-        guard let defaultSubsidiaryEntity = self.mainSubsidiaryEntity, let subsidiaryId = defaultSubsidiaryEntity.idSubsidiary else {
-            throw RepositoryError.syncFailed("La subsidiaria no esta configurado")
-        }
         for saleDTO in salesDTOs {
-            guard subsidiaryId == saleDTO.subsidiaryId else {
+            guard self.sessionConfig.subsidiaryId == saleDTO.subsidiaryId else {
                 throw RepositoryError.syncFailed("La subsidiaria no es la misma")
-            }
-            //Verificamos si el carrito pertenece a un empleado
-            guard let employeeEntity = getEmployeeById(employeeId: saleDTO.employeeId) else {
-                throw RepositoryError.syncFailed("El empleado no existe")
             }
             guard saleDTO.saleDetail.isEmpty else {
                 throw RepositoryError.syncFailed("El detalle de las ventas esta vacio")
             }
-            
             let newSaleEntity = Tb_Sale(context: self.mainContext)
             newSaleEntity.idSale = saleDTO.id
-            newSaleEntity.toSubsidiary = defaultSubsidiaryEntity
-            newSaleEntity.toEmployee = employeeEntity
+            newSaleEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
+            newSaleEntity.toEmployee?.idEmployee = self.sessionConfig.employeeId
             if let customerId = saleDTO.customerId, let customerEntity = getCustomerById(customerId: customerId) {
                 newSaleEntity.toCustomer = customerEntity
             }
@@ -849,7 +846,7 @@ class LocalSaleManager: SaleManager {
             updatedAt: Date().description
         )
     }
-    private func reduceStock(cartDetailEntity: Tb_CartDetail) -> Bool {
+    private func reduceStock(saleDetail: SaleDetail) -> Bool {
         guard let productEntity = cartDetailEntity.toProduct else {
             print("Detalle no contiene producto")
             return false

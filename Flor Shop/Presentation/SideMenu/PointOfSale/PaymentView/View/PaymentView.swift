@@ -21,10 +21,12 @@ struct PaymentView: View {
 
 struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         PaymentView()
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.loadingState)
+            .environmentObject(nor.loadingState)
     }
 }
 

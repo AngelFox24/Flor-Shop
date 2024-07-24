@@ -10,7 +10,8 @@ import CoreData
 
 struct Car: Identifiable {
     let id: UUID
-    let total: Int
+    let cartDetails: [CartDetail]
+    let total: Money
 }
 
 extension Car {
@@ -25,5 +26,18 @@ extension Car {
             print("Error fetching. \(error)")
             return nil
         }
+    }
+    func toCartDTO(subsidiaryId: UUID) -> CartDTO {
+        return CartDTO(
+            id: id,
+            cartDetails: cartDetails.mapToListCartDetailsDTOs(subsidiaryId: subsidiaryId),
+            total: total.cents
+        )
+    }
+}
+
+extension Array where Element == CartDetail {
+    func mapToListCartDetailsDTOs(subsidiaryId: UUID) -> [CartDetailDTO] {
+        return self.compactMap {$0.toCartDetailDTO(subsidiaryId: subsidiaryId)}
     }
 }

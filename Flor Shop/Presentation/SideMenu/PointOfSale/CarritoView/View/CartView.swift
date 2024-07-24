@@ -27,7 +27,8 @@ struct CartView: View {
 
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         CartView(selectedTab: .constant(.cart), showMenu: .constant(false))
             .environmentObject(dependencies.cartViewModel)
     }

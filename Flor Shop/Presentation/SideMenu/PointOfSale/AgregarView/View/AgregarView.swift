@@ -31,10 +31,12 @@ struct AgregarView: View {
 
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         AgregarView(selectedTab: .constant(.plus), showMenu: .constant(false))
             .environmentObject(dependencies.agregarViewModel)
-            .environmentObject(dependencies.loadingState)
+            .environmentObject(nor.loadingState)
     }
 }
 

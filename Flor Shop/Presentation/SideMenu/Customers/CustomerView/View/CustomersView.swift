@@ -55,10 +55,12 @@ struct CustomersView: View {
 
 struct CustomersView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomersView(showMenu: .constant(false))
             .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.navManager)
+            .environmentObject(nor.navManager)
     }
 }
 

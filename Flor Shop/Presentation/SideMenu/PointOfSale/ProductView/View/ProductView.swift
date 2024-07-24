@@ -30,7 +30,9 @@ struct ProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
         ProductView(selectedTab: .constant(.magnifyingglass), showMenu: $showMenu)
             .environmentObject(dependencies.productsViewModel)

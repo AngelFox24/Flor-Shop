@@ -70,7 +70,8 @@ struct AddCustomerTopBar: View {
 
 struct AddCustomerTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         AddCustomerTopBar()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)

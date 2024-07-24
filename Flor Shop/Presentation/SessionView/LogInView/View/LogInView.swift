@@ -10,6 +10,7 @@ import SwiftUI
 struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var navManager: NavManager
+    @EnvironmentObject var loadingState: LoadingState
     @Binding var isKeyboardVisible: Bool
     var body: some View {
         ZStack {
@@ -51,8 +52,12 @@ struct LogInView: View {
                         .padding(.horizontal, 30)
                         VStack(spacing: 30) {
                             Button(action: {
-                                logInViewModel.logIn()
-                                logInViewModel.checkDBIntegrity()
+                                Task {
+                                    self.loadingState.isLoading = true
+                                    await logInViewModel.logIn()
+                                    self.loadingState.isLoading = false
+                                }
+//                                logInViewModel.checkDBIntegrity()
                             }, label: {
                                 VStack {
                                     CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
@@ -89,8 +94,8 @@ struct LogInView: View {
 
 struct LogInView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
         LogInView(isKeyboardVisible: .constant(true))
-            .environmentObject(dependencies.logInViewModel)
+            .environmentObject(nor.logInViewModel)
     }
 }

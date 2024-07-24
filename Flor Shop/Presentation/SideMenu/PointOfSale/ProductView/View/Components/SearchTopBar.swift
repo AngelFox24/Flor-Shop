@@ -81,7 +81,8 @@ struct ProductSearchTopBar: View {
 
 struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         @State var showMenu: Bool = false
         VStack (content: {
             ProductSearchTopBar(showMenu: $showMenu)

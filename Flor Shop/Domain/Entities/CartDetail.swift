@@ -28,4 +28,12 @@ extension CartDetail {
             return nil
         }
     }
+    func toCartDetailDTO(subsidiaryId: UUID) -> CartDetailDTO {
+        return CartDetailDTO(
+            id: id,
+            quantity: quantity,
+            subtotal: subtotal.cents,
+            product: product.toProductDTO(subsidiaryId: subsidiaryId)
+        )
+    }
 }

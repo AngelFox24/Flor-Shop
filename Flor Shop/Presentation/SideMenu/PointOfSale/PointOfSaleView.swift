@@ -56,12 +56,13 @@ struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
         @State var isKeyboardVisible: Bool = false
         @State var showMenu: Bool = false
-        
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.versionCheck)
+            .environmentObject(nor.versionCheck)
     }
 }

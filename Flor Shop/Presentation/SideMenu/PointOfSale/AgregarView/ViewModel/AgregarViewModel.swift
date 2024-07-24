@@ -51,7 +51,7 @@ class AgregarViewModel: ObservableObject {
         await MainActor.run {
             agregarFields.fieldsTrue()
         }
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+//        try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let product = createProduct() else {
             print("No se pudo crear producto")
             return false

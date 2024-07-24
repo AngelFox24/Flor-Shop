@@ -8,19 +8,24 @@
 import Foundation
 
 protocol RemoteSaleManager {
-    func save(saleDTO: SaleDTO) async throws
-    func sync(subsidiaryId: UUID, updatedSince: String) async throws -> [SaleDTO]
+    func save(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
+    func sync(updatedSince: String) async throws -> [SaleDTO]
 }
 
 final class RemoteSaleManagerImpl: RemoteSaleManager {
-    func save(saleDTO: SaleDTO) async throws {
+    let sessionConfig: SessionConfig
+    init(sessionConfig: SessionConfig) {
+        self.sessionConfig = sessionConfig
+    }
+    func save(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
         let urlRoute = "/sales"
-        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: saleDTO)
+        let cartDTO = cart.toCartDTO(subsidiaryId: self.sessionConfig.subsidiaryId)
+        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: cartDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(subsidiaryId: UUID, updatedSince: String) async throws -> [SaleDTO] {
+    func sync(updatedSince: String) async throws -> [SaleDTO] {
         let urlRoute = "/sales/sync"
-        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: subsidiaryId, updatedSince: updatedSince)
+        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSince)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: [SaleDTO] = try await NetworkManager.shared.perform(request, decodeTo: [SaleDTO].self)
         return data

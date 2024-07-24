@@ -8,18 +8,21 @@
 import Foundation
 import SwiftUI
 
-enum NavPathsEnum {
+enum SessionRoutes {
     case loginView
     case registrationView
+}
+
+enum MenuRoutes {
     case customerView
     case customersForPaymentView
     case addCustomerView
     case paymentView
     case customerHistoryView
     
-    static var allValues: [NavPathsEnum] {
-        return [.loginView, .registrationView, .customerView, .customersForPaymentView, .addCustomerView, .paymentView, .customerHistoryView]
-    }
+//    static var allValues: [NavPathsEnum] {
+//        return [.loginView, .registrationView, .customerView, .customersForPaymentView, .addCustomerView, .paymentView, .customerHistoryView]
+//    }
 }
 
 class NavManager: ObservableObject {
@@ -32,24 +35,24 @@ class NavManager: ObservableObject {
         navPaths = NavigationPath()
     }
     func goToLoginView() {
-        navPaths.append(NavPathsEnum.loginView)
+        navPaths.append(SessionRoutes.loginView)
     }
     func goToRegistrationView() {
-        navPaths.append(NavPathsEnum.registrationView)
+        navPaths.append(SessionRoutes.registrationView)
     }
     func goToCustomerView() {
-        navPaths.append(NavPathsEnum.customerView)
+        navPaths.append(MenuRoutes.customerView)
     }
     func goToCustomerForPaymentView() {
-        navPaths.append(NavPathsEnum.customersForPaymentView)
+        navPaths.append(MenuRoutes.customersForPaymentView)
     }
     func goToAddCustomerView() {
-        navPaths.append(NavPathsEnum.addCustomerView)
+        navPaths.append(MenuRoutes.addCustomerView)
     }
     func goToPaymentView() {
-        navPaths.append(NavPathsEnum.paymentView)
+        navPaths.append(MenuRoutes.paymentView)
     }
     func goToCustomerHistoryView() {
-        navPaths.append(NavPathsEnum.customerHistoryView)
+        navPaths.append(MenuRoutes.customerHistoryView)
     }
 }

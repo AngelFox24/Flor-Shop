@@ -228,7 +228,9 @@ struct SalesTopBar: View {
 
 struct SalesTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
         VStack(spacing: 0, content: {
             SalesTopBar(showMenu: $showMenu)

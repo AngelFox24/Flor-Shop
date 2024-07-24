@@ -41,3 +41,9 @@ extension SaleDetailDTO {
         )
     }
 }
+
+extension Array where Element == SaleDetailDTO {
+    func mapToListSaleDetail(paymentType: String, saleDate: Date) -> [SaleDetail] {
+        return self.compactMap({$0.toSaleDetail(paymentType: paymentType, saleDate: saleDate)})
+    }
+}

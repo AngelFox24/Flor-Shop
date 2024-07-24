@@ -65,17 +65,19 @@ struct MenuView: View {
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
         MenuView(showMenu: $showMenu, isKeyboardVisible: .constant(false))
-            .environmentObject(dependencies.logInViewModel)
+            .environmentObject(nor.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.employeeViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.versionCheck)
+            .environmentObject(nor.versionCheck)
     }
 }
 

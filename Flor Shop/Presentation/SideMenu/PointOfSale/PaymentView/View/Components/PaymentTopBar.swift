@@ -27,13 +27,15 @@ struct PaymentTopBar: View {
                 })
                 Spacer()
                 Button(action: {
-                    Task {
-                        loadingState.isLoading = true
-                        try await ventasCoreDataViewModel.registerSale(cart: carritoCoreDataViewModel.cartCoreData, customer: carritoCoreDataViewModel.customerInCar, paymentType: carritoCoreDataViewModel.paymentType)
-                        carritoCoreDataViewModel.releaseResources()
-                        carritoCoreDataViewModel.releaseCustomer()
-                        playSound(named: "Success1")
-                        loadingState.isLoading = false
+                    if let cart = carritoCoreDataViewModel.cartCoreData {
+                        Task {
+                            loadingState.isLoading = true
+                            try await ventasCoreDataViewModel.registerSale(cart: cart, customerId: carritoCoreDataViewModel.customerInCar?.id, paymentType: carritoCoreDataViewModel.paymentType)
+                            carritoCoreDataViewModel.releaseResources()
+                            carritoCoreDataViewModel.releaseCustomer()
+                            playSound(named: "Success1")
+                            loadingState.isLoading = false
+                        }
                     }
                 }, label: {
                     CustomButton1(text: "Finalizar")
@@ -62,10 +64,12 @@ struct PaymentTopBar: View {
 }
 struct PaymentTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let depN = NormalDependencies()
+        let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         PaymentTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.loadingState)
+            .environmentObject(depN.loadingState)
     }
 }

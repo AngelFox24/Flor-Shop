@@ -9,10 +9,12 @@ import Foundation
 
 class RegistrationViewModel: ObservableObject {
     @Published var registrationFields: RegistrationFields = RegistrationFields()
-    private let registerUserUseCase: RegisterUserUseCase
-    init(registerUserUseCase: RegisterUserUseCase) {
-        self.registerUserUseCase = registerUserUseCase
-    }
+//    private let registerUserUseCase: RegisterUserUseCase
+//    init(
+//        registerUserUseCase: RegisterUserUseCase
+//    ) {
+//        self.registerUserUseCase = registerUserUseCase
+//    }
     func fieldsTrue() {
         print("All value true")
         registrationFields.emailEdited = true
@@ -51,7 +53,7 @@ class RegistrationViewModel: ObservableObject {
             createdAt: Date(),
             updatedAt: Date()
         )
-        return self.registerUserUseCase.execute(company: companyRegistration, subsidiary: subsidiaryRegistration, employee: userRegistration)
+        return false
     }
 }
 class RegistrationFields {

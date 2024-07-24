@@ -16,27 +16,19 @@ struct FlorShopApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            let dependencies = Dependencies()
-            MainView()
-                .environmentObject(dependencies.logInViewModel)
-                .environmentObject(dependencies.registrationViewModel)
-                .environmentObject(dependencies.agregarViewModel)
-                .environmentObject(dependencies.productsViewModel)
-                .environmentObject(dependencies.cartViewModel)
-                .environmentObject(dependencies.salesViewModel)
-                .environmentObject(dependencies.versionCheck)
-                .environmentObject(dependencies.employeeViewModel)
-                .environmentObject(dependencies.customerViewModel)
-                .environmentObject(dependencies.addCustomerViewModel)
-                .environmentObject(dependencies.navManager)
-                .environmentObject(dependencies.customerHistoryViewModel)
-                .environmentObject(dependencies.loadingState)
-                .onAppear {
-                    Task(priority: .background, operation: {
-                        print("Se optimizara las imagenes")
-                        await dependencies.imageManager.deleteUnusedImages()
-                    })
-                }
+//            let dependencies = Dependencies()
+            let normalDependencies = NormalDependencies()
+            RootView()
+                .environmentObject(normalDependencies.navManager)
+                .environmentObject(normalDependencies.loadingState)
+                .environmentObject(normalDependencies.versionCheck)
+                .environmentObject(normalDependencies.logInViewModel)
+//                .onAppear {
+//                    Task(priority: .background, operation: {
+//                        print("Se optimizara las imagenes")
+//                        await dependencies.imageManager.deleteUnusedImages()
+//                    })
+//                }
         }
     }
 }

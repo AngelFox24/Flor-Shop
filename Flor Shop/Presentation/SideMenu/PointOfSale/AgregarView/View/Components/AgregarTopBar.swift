@@ -93,11 +93,13 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         VStack {
             AgregarTopBar(showMenu: .constant(false))
                 .environmentObject(dependencies.agregarViewModel)
-                .environmentObject(dependencies.loadingState)
+                .environmentObject(nor.loadingState)
             Spacer()
         }
     }
