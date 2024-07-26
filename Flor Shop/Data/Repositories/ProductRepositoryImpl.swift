@@ -22,15 +22,15 @@ protocol Syncronizable {
 }
 
 public class ProductRepositoryImpl: ProductRepository, Syncronizable {
-    let localManager: ProductManager
+    let localManager: LocalProductManager
     let remoteManager: RemoteProductManager
     let cloudBD = true
     init(
-        localProductManager: ProductManager,
-        remoteProductManager: RemoteProductManager
+        localManager: LocalProductManager,
+        remoteManager: RemoteProductManager
     ) {
-        self.localManager = localProductManager
-        self.remoteManager = remoteProductManager
+        self.localManager = localManager
+        self.remoteManager = remoteManager
     }
     func saveProduct(product: Product) async throws {
         if cloudBD {
@@ -50,11 +50,9 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
                 throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
             }
             let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
-            print("Se consultara a la API")
-            let products = try await self.remoteManager.sync(updatedSince: updatedSinceString)
-            print("Se obtuvo los productos exitosamente")
-            items = products.count
-            try self.localManager.sync(products: products)
+            let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            items = productsDTOs.count
+            try self.localManager.sync(productsDTOs: productsDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) throws -> [Product] {

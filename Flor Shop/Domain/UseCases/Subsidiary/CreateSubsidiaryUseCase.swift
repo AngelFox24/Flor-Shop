@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CreateSubsidiaryUseCase {
-    func execute(subsidiary: Subsidiary) -> Bool
+    func execute(subsidiary: Subsidiary) async throws
 }
 final class CreateSubsidiaryInteractor: CreateSubsidiaryUseCase {
     
@@ -18,7 +18,7 @@ final class CreateSubsidiaryInteractor: CreateSubsidiaryUseCase {
         self.subsidiaryRepository = subsidiaryRepository
     }
      
-    func execute(subsidiary: Subsidiary) -> Bool {
-        return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
+    func execute(subsidiary: Subsidiary) async throws {
+        return try await self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
     }
 }

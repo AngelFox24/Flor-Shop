@@ -24,45 +24,32 @@ protocol CarRepository {
 }
 
 class CarRepositoryImpl: CarRepository {
-    let manager: CartManager
+    let localManager: LocalCartManager
     // let remote:  remoto
-    init(manager: CartManager) {
-        self.manager = manager
+    init(
+        localManager: LocalCartManager
+    ) {
+        self.localManager = localManager
     }
-    func getCart() -> Car? {
-        return self.manager.getCart()
+    func getCart() throws -> Car? {
+        return try self.localManager.getCart()
     }
     func deleteCartDetail(cartDetail: CartDetail) {
-        self.manager.deleteCartDetail(cartDetail: cartDetail)
+        self.localManager.deleteCartDetail(cartDetail: cartDetail)
     }
     func addProductoToCarrito(product: Product) -> Bool {
-        return self.manager.addProductToCart(productIn: product)
+        return self.localManager.addProductToCart(productIn: product)
     }
     func emptyCart() {
-        self.manager.emptyCart()
+        self.localManager.emptyCart()
     }
     func updateCartTotal() {
-        self.manager.updateCartTotal()
+        self.localManager.updateCartTotal()
     }
-    func increaceProductAmount (cartDetail: CartDetail) {
-        self.manager.increaceProductAmount(cartDetail: cartDetail)
-    }
-    func decreceProductAmount(cartDetail: CartDetail) {
-        self.manager.decreceProductAmount(cartDetail: cartDetail)
-    }
-    func getListProductInCart () -> [CartDetail] {
-        self.manager.getListProductInCart()
+    func changeProductAmountInCartDetail(cartDetail: CartDetail) {
+        self.localManager.changeProductAmountInCartDetail(productId: <#T##UUID#>, amount: <#T##Int#>)
     }
     func createCart() {
-        self.manager.createCart()
-    }
-    func setDefaultEmployee(employee: Employee) {
-        self.manager.setDefaultEmployee(employee: employee)
-    }
-    func getDefaultEmployee() -> Employee? {
-        return self.manager.getDefaultEmployee()
-    }
-    func releaseResourses() {
-        self.manager.releaseResourses()
+        self.localManager.createCart()
     }
 }

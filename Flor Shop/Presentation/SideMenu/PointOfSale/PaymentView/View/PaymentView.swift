@@ -40,7 +40,7 @@ struct PaymentsFields: View {
                     Text("S/.")
                         .font(.custom("Artifika-Regular", size: 26))
                         .foregroundColor(.black)
-                    Text(String(cartViewModel.cartCoreData?.total ?? 0))
+                    Text(String(cartViewModel.cartCoreData?.total.cents ?? 0))
                         .font(.custom("Artifika-Regular", size: 55))
                         .foregroundColor(.black)
                 })

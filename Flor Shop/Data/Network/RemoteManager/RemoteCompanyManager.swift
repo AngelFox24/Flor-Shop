@@ -9,7 +9,8 @@ import Foundation
 
 protocol RemoteCompanyManager {
     func save(company: Company) async throws
-    func sync(userName: String, password: String) async throws -> Company
+    func sync(updatedSince: String) async throws -> CompanyDTO
+    func logIn(userName: String, password: String) async throws -> CompanyDTO
 }
 
 final class RemoteCompanyManagerImpl: RemoteCompanyManager {
@@ -19,11 +20,18 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: companyDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(userName: String, password: String) async throws -> Company {
+    func sync(updatedSince: String) async throws -> CompanyDTO {
+        let urlRoute = "/subsidiaries/sync"
+        let syncParameters = SyncCompanyParameters(updatedSince: updatedSince)
+        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
+        let data: CompanyDTO = try await NetworkManager.shared.perform(request, decodeTo: CompanyDTO.self)
+        return data
+    }
+    func logIn(userName: String, password: String) async throws -> CompanyDTO {
         let urlRoute = "/companies/sync"
         let loginParameters = LoginParameters(userName: userName, password: password)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: loginParameters)
         let data: CompanyDTO = try await NetworkManager.shared.perform(request, decodeTo: CompanyDTO.self)
-        return data.toCompany()
+        return data
     }
 }

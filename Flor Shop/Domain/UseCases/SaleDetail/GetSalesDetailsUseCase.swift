@@ -21,13 +21,17 @@ final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
     }
     
     func execute(page: Int, sale: Sale? = nil, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        switch grouper {
-        case .historic:
-            return self.saleRepository.getListSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
-        case .byProduct:
-            return self.saleRepository.getListSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
-        case .byCustomer:
-            return self.saleRepository.getListSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        do {
+            switch grouper {
+            case .historic:
+                return try self.saleRepository.getListSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+            case .byProduct:
+                return try self.saleRepository.getListSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+            case .byCustomer:
+                return try self.saleRepository.getListSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+            }
+        } catch {
+            return []
         }
     }
 }

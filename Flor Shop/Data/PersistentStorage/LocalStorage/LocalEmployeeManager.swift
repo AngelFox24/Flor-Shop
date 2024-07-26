@@ -8,25 +8,24 @@
 import Foundation
 import CoreData
 
-protocol EmployeeManager {
+protocol LocalEmployeeManager {
+    func sync(employeesDTOs: [EmployeeDTO]) throws
+    func getLastUpdated() throws -> Date?
     func addEmployee(employee: Employee) -> Bool
     func getEmployees() -> [Employee]
-    func updateEmployee(employee: Employee)
-    func deleteEmployee(employee: Employee)
     func logIn(user: String, password: String) -> Employee?
-    func setDefaultSubsidiary(employee: Employee)
-    func setDefaultSubsidiary(subsidiary: Subsidiary)
-    func getEmployeeSubsidiary() -> Subsidiary?
-    func getSubsidiary(employee: Employee) -> Subsidiary?
-    func getDefaultSubsidiary() -> Subsidiary?
-    func releaseResourses()
+    func getSessionSubsidiary() throws -> Subsidiary
 }
 
-class LocalEmployeeManager: EmployeeManager {
+class LocalEmployeeManagerImpl: LocalEmployeeManager {
+    let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
-    var mainSubsidiaryEntity: Tb_Subsidiary?
-    init(mainContext: NSManagedObjectContext) {
+    init(
+        mainContext: NSManagedObjectContext,
+        sessionConfig: SessionConfig
+    ) {
         self.mainContext = mainContext
+        self.sessionConfig = sessionConfig
     }
     func saveData() {
         do {
@@ -38,25 +37,72 @@ class LocalEmployeeManager: EmployeeManager {
     func rollback() {
         self.mainContext.rollback()
     }
-    func setDefaultSubsidiary(employee: Employee) {
-        guard let employeeEntity = employee.toEmployeeEntity(context: mainContext), let subsidiaryEntity: Tb_Subsidiary = employeeEntity.toSubsidiary else {
-            print("No se pudo asingar sucursar default")
-            return
+    func getLastUpdated() throws -> Date? {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1999, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND updatedAt != nil", self.sessionConfig.subsidiaryId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+        guard let last = listDate[0] else {
+            print("Se retorna valor por defecto")
+            return dateFrom
         }
-        self.mainSubsidiaryEntity = subsidiaryEntity
+        print("Se retorna valor desde la BD")
+        return last
     }
-    func releaseResourses() {
-        self.mainSubsidiaryEntity = nil
-    }
-    func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        guard let subsidiaryEntity: Tb_Subsidiary = subsidiary.toSubsidiaryEntity(context: self.mainContext) else {
-            print("No se pudo asingar sucursar default")
-            return
+    private func getEmployeeById(employeeId: UUID) -> Tb_Employee? {
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
         }
-        self.mainSubsidiaryEntity = subsidiaryEntity
     }
-    func getDefaultSubsidiary() -> Subsidiary? {
-        return self.mainSubsidiaryEntity?.toSubsidiary()
+    //Sync
+    func sync(employeesDTOs: [EmployeeDTO]) throws {
+        for employeeDTO in employeesDTOs {
+            guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
+                throw LocalStorageError.notFound("La subsidiaria no es la misma")
+            }
+            if let employeeEntity = getEmployeeById(employeeId: employeeDTO.id) {
+                employeeEntity.name = employeeDTO.name
+                employeeEntity.lastName = employeeDTO.lastName
+                employeeEntity.active = employeeDTO.active
+                employeeEntity.email = employeeDTO.email
+                employeeEntity.phoneNumber = employeeDTO.phoneNumber
+                employeeEntity.role = employeeDTO.role
+                employeeEntity.user = employeeDTO.user
+                employeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
+                employeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
+            } else {
+                let newEmployeeEntity = Tb_Employee(context: self.mainContext)
+                newEmployeeEntity.idEmployee = employeeDTO.id
+                newEmployeeEntity.name = employeeDTO.name
+                newEmployeeEntity.lastName = employeeDTO.lastName
+                newEmployeeEntity.active = employeeDTO.active
+                newEmployeeEntity.email = employeeDTO.email
+                newEmployeeEntity.phoneNumber = employeeDTO.phoneNumber
+                newEmployeeEntity.role = employeeDTO.role
+                newEmployeeEntity.user = employeeDTO.user
+                newEmployeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
+                newEmployeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
+            }
+        }
+        saveData()
+    }
+    func getSessionSubsidiary() throws -> Subsidiary {
+        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
+        return subsidiaryEntity.toSubsidiary()
     }
     //C - Create
     func addEmployee(employee: Employee) -> Bool {
@@ -75,7 +121,7 @@ class LocalEmployeeManager: EmployeeManager {
             newEmployeeEntity.lastName = employee.lastName
             newEmployeeEntity.role = employee.role
             newEmployeeEntity.active = employee.active
-            newEmployeeEntity.toSubsidiary = self.mainSubsidiaryEntity
+            newEmployeeEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
             if let imageEntity = employee.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 newEmployeeEntity.toImageUrl = imageEntity
             } else { // Si no existe creamos uno nuevo
@@ -92,32 +138,16 @@ class LocalEmployeeManager: EmployeeManager {
     }
     //R - Read
     func getEmployees() -> [Employee] {
-        var employeesEntityList: [Tb_Employee] = []
+        let filterAtt = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        request.predicate = filterAtt
         do {
-            employeesEntityList = try self.mainContext.fetch(request)
+            let result = try self.mainContext.fetch(request)
+            return result.compactMap {$0.toEmployee()}
         } catch let error {
             print("Error fetching. \(error)")
+            return []
         }
-        return employeesEntityList.map { $0.toEmployee() }
-    }
-    func getEmployeeSubsidiary() -> Subsidiary? {
-        return self.mainSubsidiaryEntity?.toSubsidiary()
-    }
-    func getSubsidiary(employee: Employee) -> Subsidiary? {
-        guard let subsidiaryEntity = employee.toEmployeeEntity(context: self.mainContext)?.toSubsidiary else {
-            print("No se pudo obtener la sucursal del empleado")
-            return nil
-        }
-        return subsidiaryEntity.toSubsidiary()
-    }
-    //U - Update
-    func updateEmployee(employee: Employee) {
-        
-    }
-    //D - Delete
-    func deleteEmployee(employee: Employee) {
-        
     }
     func logIn(user: String, password: String) -> Employee? {
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()

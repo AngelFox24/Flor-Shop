@@ -13,13 +13,18 @@ protocol GetCompanyUseCase {
 
 final class GetCompanyInteractor: GetCompanyUseCase {
     
-    private let subsidiaryRepository: SubsidiaryRepository
+    private let companyRepository: CompanyRepository
     
-    init(subsidiaryRepository: SubsidiaryRepository) {
-        self.subsidiaryRepository = subsidiaryRepository
+    init(companyRepository: CompanyRepository) {
+        self.companyRepository = companyRepository
     }
    
     func execute(subsidiary: Subsidiary) -> Company? {
-        return self.subsidiaryRepository.getCompany(subsidiary: subsidiary)
+        do {
+            return try self.companyRepository.getSessionCompany()
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return nil
+        }
     }
 }

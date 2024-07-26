@@ -14,14 +14,16 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 import CommonCrypto
 
-protocol ImageManager {
+protocol LocalImageManager {
+    func sync(imageURLsDTOs: [ImageURLDTO]) throws
+    func getLastUpdated() throws -> Date?
     func deleteUnusedImages() async
     func loadSavedImage(id: UUID) -> UIImage?
     func downloadImage(url: URL) async -> UIImage?
     func saveImage(idImage: UUID, image: UIImage) -> ImageUrl?
 }
 
-class LocalImageManager: ImageManager {
+class LocalImageManagerImpl: LocalImageManager {
     let mainContext: NSManagedObjectContext
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
@@ -35,6 +37,54 @@ class LocalImageManager: ImageManager {
     }
     func rollback() {
         self.mainContext.rollback()
+    }
+    func getLastUpdated() throws -> Date? {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1999, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "updatedAt != nil")
+        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+        guard let last = listDate[0] else {
+            print("Se retorna valor por defecto")
+            return dateFrom
+        }
+        print("Se retorna valor desde la BD")
+        return last
+    }
+    private func getImageById(imageId: UUID) -> Tb_ImageUrl? {
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "idImageUrl == %@", imageId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    func sync(imageURLsDTOs: [ImageURLDTO]) throws {
+        for imageURLDTO in imageURLsDTOs {
+            if let imageEntity = getImageById(imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+                imageEntity.imageUrl = imageURLDTO.imageUrl
+                imageEntity.imageHash = imageURLDTO.imageHash
+                imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
+                imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
+            } else {
+                let imageEntity = Tb_ImageUrl(context: self.mainContext)
+                imageEntity.idImageUrl = imageURLDTO.id
+                imageEntity.imageUrl = imageURLDTO.imageUrl
+                imageEntity.imageHash = imageURLDTO.imageHash
+                imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
+                imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
+            }
+        }
     }
     func deleteUnusedImages() async {
         async let imagesLocal = getImagesIdsLocal()

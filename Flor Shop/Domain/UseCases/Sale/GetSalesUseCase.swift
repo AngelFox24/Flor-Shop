@@ -27,10 +27,20 @@ final class GetSalesInteractor: GetSalesUseCase {
     }
     
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.saleRepository.getSalesAmount(date: date, interval: interval)
+        do {
+            return try self.saleRepository.getSalesAmount(date: date, interval: interval)
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return 0
+        }
     }
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.saleRepository.getCostAmount(date: date, interval: interval)
+        do {
+            return try self.saleRepository.getCostAmount(date: date, interval: interval)
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return 0
+        }
     }
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
         return self.saleRepository.getRevenueAmount(date: date, interval: interval)

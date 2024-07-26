@@ -40,6 +40,14 @@ struct SyncFromCompanyParameters: Encodable {
     let updatedSince: String
 }
 
+struct SyncImageParameters: Encodable {
+    let updatedSince: String
+}
+
+struct SyncCompanyParameters: Encodable {
+    let updatedSince: String
+}
+
 struct DefaultResponse: Decodable {
     let code: Int
     let message: String

@@ -12,29 +12,26 @@ protocol SaleRepository {
     func sync() async throws
 //    func save(customerId: UUID?, employeeId: UUID, sale: Sale) async throws
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
-    func payClientTotalDebt(customer: Customer) -> Bool
+    func payClientTotalDebt(customer: Customer) throws -> Bool
     func getListSales() -> [Sale]
-    func setDefaultSubsidiary(subsidiary: Subsidiary)
-    func getDefaultSubsidiary() -> Subsidiary?
-    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
-    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
-    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
-    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
-    func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
+    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
+    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
+    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
+    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double
+    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
-    func releaseResourses()
 }
 
 class SaleRepositoryImpl: SaleRepository, Syncronizable {
-    let localManager: SaleManager
+    let localManager: LocalSaleManager
     let remoteManager: RemoteSaleManager
     let cloudBD = true
     init(
-        localProductManager: SaleManager,
-        remoteProductManager: RemoteSaleManager
+        localManager: LocalSaleManager,
+        remoteManager: RemoteSaleManager
     ) {
-        self.localManager = localProductManager
-        self.remoteManager = remoteProductManager
+        self.localManager = localManager
+        self.remoteManager = remoteManager
     }
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
         if cloudBD {
@@ -48,48 +45,39 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
         var items = 0
         repeat {
             counter += 1
-            guard let updatedSince = localManager.getLastUpdated() else {
+            guard let updatedSince = try localManager.getLastUpdated() else {
                 throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
             }
             let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
             let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = salesDTOs.count
             print("Items Sync: \(items)")
-            try await self.localManager.sync(salesDTOs: salesDTOs)
+            try self.localManager.sync(salesDTOs: salesDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func payClientTotalDebt(customer: Customer) -> Bool {
-        return self.localManager.payClientTotalDebt(customer: customer)
+    func payClientTotalDebt(customer: Customer) throws -> Bool {
+        return try self.localManager.payClientTotalDebt(customer: customer)
     }
     func getListSales() -> [Sale] {
         // add to remote logic
         return self.localManager.getListSales()
     }
-    func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        self.localManager.setDefaultSubsidiary(subsidiary: subsidiary)
+    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+        return try self.localManager.getListSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
-    func getDefaultSubsidiary() -> Subsidiary? {
-        return self.localManager.getDefaultSubsidiary()
+    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+        return try self.localManager.getListSalesDetailsGroupedByProduct(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
-    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        return self.localManager.getListSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+        return try self.localManager.getListSalesDetailsGroupedByCustomer(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
-    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        return self.localManager.getListSalesDetailsGroupedByProduct(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double {
+        return try self.localManager.getSalesAmount(date: date, interval: interval)
     }
-    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
-        return self.localManager.getListSalesDetailsGroupedByCustomer(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
-    }
-    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.localManager.getSalesAmount(date: date, interval: interval)
-    }
-    func getCostAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.localManager.getCostAmount(date: date, interval: interval)
+    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double {
+        return try self.localManager.getCostAmount(date: date, interval: interval)
     }
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
         return self.localManager.getRevenueAmount(date: date, interval: interval)
-    }
-    func releaseResourses() {
-        self.localManager.releaseResourses()
     }
 }

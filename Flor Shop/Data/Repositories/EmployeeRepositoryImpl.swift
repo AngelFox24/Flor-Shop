@@ -10,64 +10,48 @@ import CoreData
 
 protocol EmployeeRepository {
     func sync() async throws
+    func logIn(user: String, password: String) -> Employee?
     func addEmployee(employee: Employee) -> Bool
     func getEmployees() -> [Employee]
-    func updateEmployee(employee: Employee)
-    func deleteEmployee(employee: Employee)
-    func logIn(user: String, password: String) -> Employee?
-    func setDefaultSubsidiary(employee: Employee)
-    func getEmployeeSubsidiary() -> Subsidiary?
-    func setDefaultSubsidiary(subsidiary: Subsidiary)
-    func getSubsidiary(employee: Employee) -> Subsidiary?
-    func getDefaultSubsidiary() -> Subsidiary?
-    func releaseResourses()
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository, Syncronizable {
-    let manager: EmployeeManager
-    // let remote:  remoto, se puede implementar el remoto aqui
-    init(manager: EmployeeManager) {
-        self.manager = manager
+    let localManager: LocalEmployeeManager
+    let remoteManager: RemoteEmployeeManager
+    let cloudBD = true
+    init(
+        localManager: LocalEmployeeManager,
+        remoteManager: RemoteEmployeeManager
+    ) {
+        self.localManager = localManager
+        self.remoteManager = remoteManager
     }
     func sync() async throws {
-        print("Not Implemented")
+        var counter = 0
+        var items = 0
+        
+        repeat {
+            print("Counter: \(counter)")
+            counter += 1
+            guard let updatedSince = try localManager.getLastUpdated() else {
+                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
+            }
+            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let employeesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            items = employeesDTOs.count
+            try self.localManager.sync(employeesDTOs: employeesDTOs)
+        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     //Luego se migrara a Firebase
     func logIn(user: String, password: String) -> Employee? {
-        return self.manager.logIn(user: user, password: password)
+        return self.localManager.logIn(user: user, password: password)
     }
     //C - Create
     func addEmployee(employee: Employee) -> Bool {
-        return self.manager.addEmployee(employee: employee)
+        return self.localManager.addEmployee(employee: employee)
     }
     //R - Read
     func getEmployees() -> [Employee] {
-        return self.manager.getEmployees()
-    }
-    //U - Update
-    func updateEmployee(employee: Employee) {
-        self.manager.updateEmployee(employee: employee)
-    }
-    //D - Delete
-    func deleteEmployee(employee: Employee) {
-        self.manager.deleteEmployee(employee: employee)
-    }
-    func setDefaultSubsidiary(employee: Employee) {
-        self.manager.setDefaultSubsidiary(employee: employee)
-    }
-    func setDefaultSubsidiary(subsidiary: Subsidiary) {
-        self.manager.setDefaultSubsidiary(subsidiary: subsidiary)
-    }
-    func getEmployeeSubsidiary() -> Subsidiary? {
-        return self.manager.getEmployeeSubsidiary()
-    }
-    func getSubsidiary(employee: Employee) -> Subsidiary? {
-        return self.manager.getSubsidiary(employee: employee)
-    }
-    func getDefaultSubsidiary() -> Subsidiary? {
-        return self.manager.getDefaultSubsidiary()
-    }
-    func releaseResourses() {
-        self.manager.releaseResourses()
+        return self.localManager.getEmployees()
     }
 }

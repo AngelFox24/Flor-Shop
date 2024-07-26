@@ -8,21 +8,22 @@
 import Foundation
 import CoreData
 
-protocol CompanyManager {
+protocol LocalCompanyManager {
+    func getLastUpdated() throws -> Date?
+    func sync(companyDTO: CompanyDTO) throws
     func addCompany(company: Company) -> Bool
-    func getDefaultCompany() -> Company?
-    func updateCompany(company: Company)
-    func deleteCompany(company: Company)
-    func setDefaultCompany(company: Company)
-    func setDefaultCompany(employee: Employee)
-    func releaseResourses()
+    func getSessionCompany() throws -> Company
 }
 
-class LocalCompanyManager: CompanyManager {
+class LocalCompanyManagerImpl: LocalCompanyManager {
     let mainContext: NSManagedObjectContext
-    var mainCompanyEntity: Tb_Company?
-    init(mainContext: NSManagedObjectContext) {
+    let sessionConfig: SessionConfig
+    init(
+        mainContext: NSManagedObjectContext,
+        sessionConfig: SessionConfig
+    ) {
         self.mainContext = mainContext
+        self.sessionConfig = sessionConfig
     }
     func saveData() {
         do {
@@ -34,22 +35,56 @@ class LocalCompanyManager: CompanyManager {
     func rollback() {
         self.mainContext.rollback()
     }
-    func releaseResourses() {
-        self.mainCompanyEntity = nil
-    }
-    func setDefaultCompany(company: Company) {
-        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
-            print("No se pudo asingar compañia default")
-            return
+    private func getCompanyById(companyId: UUID) -> Tb_Company? {
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        let predicate = NSPredicate(format: "idCompany == %@", self.sessionConfig.companyId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
         }
-        self.mainCompanyEntity = companyEntity
     }
-    func setDefaultCompany(employee: Employee) {
-        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext), let companyEntity = employeeEntity.toSubsidiary?.toCompany else {
-            print("No se pudo asingar compañia default")
-            return
+    func getLastUpdated() throws -> Date? {
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1999, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        let predicate = NSPredicate(format: "idCompany == %@ AND updatedAt != nil", self.sessionConfig.companyId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+        guard let last = listDate[0] else {
+            print("Se retorna valor por defecto")
+            return dateFrom
         }
-        self.mainCompanyEntity = companyEntity
+        print("Se retorna valor desde la BD")
+        return last
+    }
+    //Sync
+    func sync(companyDTO: CompanyDTO) throws {
+        guard self.sessionConfig.companyId == companyDTO.id else {
+            throw LocalStorageError.notFound("La compañia no es la misma")
+        }
+        if let companyEntity = getCompanyById(companyId: companyDTO.id) {
+            companyEntity.companyName = companyDTO.companyName
+            companyEntity.ruc = companyDTO.ruc
+            companyEntity.createdAt = companyDTO.createdAt.internetDateTime()
+            companyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
+        } else {
+            let newCompanyEntity = Tb_Company(context: self.mainContext)
+            newCompanyEntity.idCompany = companyDTO.id
+            newCompanyEntity.companyName = companyDTO.companyName
+            newCompanyEntity.ruc = companyDTO.ruc
+            newCompanyEntity.createdAt = companyDTO.createdAt.internetDateTime()
+            newCompanyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
+        }
+        saveData()
     }
     //C - Create
     func addCompany(company: Company) -> Bool {
@@ -64,22 +99,14 @@ class LocalCompanyManager: CompanyManager {
             newCompany.idCompany = company.id
             newCompany.companyName = company.companyName
             newCompany.ruc = company.ruc
-            self.mainCompanyEntity = newCompany
             saveData()
             return true
         }
     }
     //R - Read
-    func getDefaultCompany() -> Company? {
-        return mainCompanyEntity?.toCompany()
-    }
-    //U - Update
-    func updateCompany(company: Company) {
-        
-    }
-    //D - Delete
-    func deleteCompany(company: Company) {
-        
+    func getSessionCompany() throws -> Company {
+        let companyEntity = try self.sessionConfig.getCompanyEntity(context: self.mainContext)
+        return companyEntity.toCompany()
     }
     func companyExist(company: Company) -> Bool {
         let filterAtt = NSPredicate(format: "companyName == %@ OR ruc == %@", company.companyName, company.ruc)

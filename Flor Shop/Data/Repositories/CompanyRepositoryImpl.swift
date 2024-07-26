@@ -11,46 +11,42 @@ import CoreData
 protocol CompanyRepository {
     func sync() async throws
     func addCompany(company: Company) -> Bool
-    func getDefaultCompany() -> Company?
-    func updateCompany(company: Company)
-    func deleteCompany(company: Company)
-    func setDefaultCompany(employee: Employee)
-    func setDefaultCompany(company: Company)
-    func releaseResourses()
+    func getSessionCompany() throws -> Company
 }
 
 class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
-    let manager: CompanyManager
-    // let remote:  remoto, se puede implementar el remoto aqui
-    init(manager: CompanyManager) {
-        self.manager = manager
+    let localManager: LocalCompanyManager
+    let remoteManager: RemoteCompanyManager
+    let cloudBD = true
+    init(
+        localManager: LocalCompanyManager,
+        remoteManager: RemoteCompanyManager
+    ) {
+        self.localManager = localManager
+        self.remoteManager = remoteManager
     }
     func sync() async throws {
-        print("Not Implemented")
+        var counter = 0
+        var items = 0
+        
+        repeat {
+            print("Counter: \(counter)")
+            counter += 1
+            guard let updatedSince = try localManager.getLastUpdated() else {
+                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
+            }
+            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let companyDTO = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            items = 1
+            try self.localManager.sync(companyDTO: companyDTO)
+        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     //C - Create
     func addCompany(company: Company) -> Bool {
-        self.manager.addCompany(company: company)
+        self.localManager.addCompany(company: company)
     }
     //R - Read
-    func getDefaultCompany() -> Company? {
-        return self.manager.getDefaultCompany()
-    }
-    //U - Update
-    func updateCompany(company: Company) {
-        self.manager.updateCompany(company: company)
-    }
-    //D - Delete
-    func deleteCompany(company: Company) {
-        self.manager.deleteCompany(company: company)
-    }
-    func setDefaultCompany(employee: Employee) {
-        self.manager.setDefaultCompany(employee: employee)
-    }
-    func setDefaultCompany(company: Company) {
-        self.manager.setDefaultCompany(company: company)
-    }
-    func releaseResourses() {
-        self.manager.releaseResourses()
+    func getSessionCompany() throws -> Company {
+        return try self.localManager.getSessionCompany()
     }
 }

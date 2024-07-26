@@ -8,19 +8,14 @@
 import Foundation
 import CoreData
 
-protocol ProductManager {
+protocol LocalProductManager {
     func saveProduct(product: Product) throws -> String
-    func sync(products: [Product]) throws
+    func sync(productsDTOs: [ProductDTO]) throws
     func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) throws -> [Product]
-    //func filterProducts(word: String) -> [Product]
-//    func setDefaultSubsidiary(subsidiary: Subsidiary)
-//    func getDefaultSubsidiary() -> Subsidiary?
     func getLastUpdated() throws -> Date?
-//    func releaseResourses()
 }
 
-class LocalProductManager: ProductManager {
-//    var mainSubsidiaryEntity: Tb_Subsidiary?
+class LocalProductManagerImpl: LocalProductManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
     init(
@@ -40,9 +35,6 @@ class LocalProductManager: ProductManager {
     func rollback() {
         self.mainContext.rollback()
     }
-//    func releaseResourses() {
-//        self.mainSubsidiaryEntity = nil
-//    }
     func getLastUpdated() throws -> Date? {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
         let calendar = Calendar(identifier: .gregorian)
@@ -149,7 +141,7 @@ class LocalProductManager: ProductManager {
             }
         }
     }
-    func getProductById(productId: UUID) -> Tb_Product? {
+    private func getProductById(productId: UUID) -> Tb_Product? {
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         let predicate = NSPredicate(format: "idProduct == %@", productId.uuidString)
         request.predicate = predicate
@@ -162,72 +154,42 @@ class LocalProductManager: ProductManager {
             return nil
         }
     }
-    func getImageById(imageId: UUID) -> Tb_ImageUrl? {
-        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        let predicate = NSPredicate(format: "idImageUrl == %@", imageId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
-    func createImage(image: ImageUrl) throws -> Tb_ImageUrl {
-        if let imageEntity = getImageById(imageId: image.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-            imageEntity.imageUrl = image.imageUrl
-            imageEntity.imageHash = image.imageHash
-            imageEntity.createdAt = image.createdAt
-            imageEntity.updatedAt = image.updatedAt
-            return imageEntity
-        } else {
-            let imageEntity = Tb_ImageUrl(context: self.mainContext)
-            imageEntity.idImageUrl = image.id
-            imageEntity.imageUrl = image.imageUrl
-            imageEntity.imageHash = image.imageHash
-            imageEntity.createdAt = image.createdAt
-            imageEntity.updatedAt = image.updatedAt
-            return imageEntity
-        }
-    }
-    func sync(products: [Product]) throws {
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
-        for product in products {
-            let imageEntity = product.image == nil ? nil : try createImage(image: product.image!)
-            if let productEntity = getProductById(productId: product.id) {
-                productEntity.productName = product.name
-                productEntity.active = product.active
-                productEntity.quantityStock = Int64(product.qty)
-                productEntity.barCode = product.barCode
-                productEntity.unitCost = Int64(product.unitCost.cents)
-                productEntity.expirationDate = product.expirationDate
-                productEntity.unitPrice = Int64(product.unitPrice.cents)
-                productEntity.createdAt = product.createdAt
-                productEntity.updatedAt = product.updatedAt
-                productEntity.toImageUrl = imageEntity
-                productEntity.toSubsidiary = subsidiaryEntity
+    func sync(productsDTOs: [ProductDTO]) throws {
+        for productDTO in productsDTOs {
+            guard self.sessionConfig.subsidiaryId == productDTO.subsidiaryId else {
+                throw LocalStorageError.notFound("Error en la sincronizacion, la subsidiaria no es la misma")
+            }
+            if let productEntity = getProductById(productId: productDTO.id) {
+                productEntity.productName = productDTO.productName
+                productEntity.active = productDTO.active
+                productEntity.quantityStock = Int64(productDTO.quantityStock)
+                productEntity.barCode = productDTO.barCode
+                productEntity.unitCost = Int64(productDTO.unitCost)
+                productEntity.expirationDate = productDTO.expirationDate
+                productEntity.unitPrice = Int64(productDTO.unitPrice)
+                productEntity.createdAt = productDTO.createdAt.internetDateTime()
+                productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
+                productEntity.toImageUrl?.idImageUrl = productDTO.imageUrl?.id
+                productEntity.toSubsidiary?.idSubsidiary = productDTO.subsidiaryId
             } else {
                 let productEntity = Tb_Product(context: self.mainContext)
-                productEntity.productName = product.name
-                productEntity.active = product.active
-                productEntity.quantityStock = Int64(product.qty)
-                productEntity.barCode = product.barCode
-                productEntity.unitCost = Int64(product.unitCost.cents)
-                productEntity.expirationDate = product.expirationDate
-                productEntity.unitPrice = Int64(product.unitPrice.cents)
-                productEntity.createdAt = product.createdAt
-                productEntity.updatedAt = product.updatedAt
-                productEntity.toImageUrl = imageEntity
-                productEntity.toSubsidiary = subsidiaryEntity
+                productEntity.productName = productDTO.productName
+                productEntity.active = productDTO.active
+                productEntity.quantityStock = Int64(productDTO.quantityStock)
+                productEntity.barCode = productDTO.barCode
+                productEntity.unitCost = Int64(productDTO.unitCost)
+                productEntity.expirationDate = productDTO.expirationDate
+                productEntity.unitPrice = Int64(productDTO.unitPrice)
+                productEntity.createdAt = productDTO.createdAt.internetDateTime()
+                productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
+                productEntity.toImageUrl?.idImageUrl = productDTO.imageUrl?.id
+                productEntity.toSubsidiary?.idSubsidiary = productDTO.subsidiaryId
             }
         }
         saveData()
     }
     func existProductInSubsidiary(product: Product) throws -> Bool {
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
-        let filterAtt = NSPredicate(format: "productName == %@ AND toSubsidiary == %@", product.name, subsidiaryEntity)
+        let filterAtt = NSPredicate(format: "productName == %@ AND toSubsidiary.idSubsidiary == %@", product.name, self.sessionConfig.subsidiaryId.uuidString)
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         request.predicate = filterAtt
         let quantityDuplicate = try self.mainContext.fetch(request).count

@@ -11,18 +11,25 @@ import CoreData
 struct BusinessDependencies {
     //Session Configuration
     let sessionConfig: SessionConfig
-    //Local Managers
+    //Main Context
     private let mainContext: NSManagedObjectContext
-    private let companyManager: LocalCompanyManager
-    private let subsidiaryManager: LocalSubsidiaryManager
-    private let employeeManager: LocalEmployeeManager
-    private let customerManager: LocalCustomerManager
-    private let localProductManager: LocalProductManager
-    private let cartManager: LocalCartManager
-    private let saleManager: LocalSaleManager
-    let imageManager: ImageManager
+    //Local Managers
+    private let localCompanyManager: LocalCompanyManagerImpl
+    private let localSubsidiaryManager: LocalSubsidiaryManagerImpl
+    private let localEmployeeManager: LocalEmployeeManagerImpl
+    private let localCustomerManager: LocalCustomerManagerImpl
+    private let localProductManager: LocalProductManagerImpl
+    private let localCartManager: LocalCartManagerImpl
+    private let localSaleManager: LocalSaleManagerImpl
+    let localImageManager: LocalImageManagerImpl
     //Remote Managers
-    private let remoteProductManager: RemoteProductManager
+    private let remoteProductManager: RemoteProductManagerImpl
+    private let remoteSaleManager: RemoteSaleManagerImpl
+    private let remoteCompanyManager: RemoteCompanyManagerImpl
+    private let remoteSubsidiaryManager: RemoteSubsidiaryManagerImpl
+    private let remoteEmployeeManager: RemoteEmployeeManagerImpl
+    private let remoteCustomerManager: RemoteCustomerManagerImpl
+    let remoteImageManager: RemoteImageManagerImpl
     //Repositorios
     private let companyRepository: CompanyRepositoryImpl
     private let subsidiaryRepository: SubsidiaryRepositoryImpl
@@ -35,9 +42,6 @@ struct BusinessDependencies {
     //UseCases
     private let getSubsidiaryUseCase: GetSubsidiaryUseCase
     private let getCompanyUseCase: GetCompanyUseCase
-    private let setDefaultCompanyUseCase: SetDefaultCompanyUseCase
-//    private let setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase
-    private let setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase
     private let getProductsUseCase: GetProductsUseCase
     private let createCompanyUseCase: CreateCompanyUseCase
     private let createSubsidiaryUseCase: CreateSubsidiaryUseCase
@@ -83,33 +87,37 @@ struct BusinessDependencies {
     init(sessionConfig: SessionConfig) {
         //Session Configuration
         self.sessionConfig = sessionConfig
-        //MARK: Local Managers
+        //MARK: Main Context
         self.mainContext = CoreDataProvider.shared.viewContext
-        self.companyManager = LocalCompanyManager(mainContext: mainContext)
-        self.subsidiaryManager = LocalSubsidiaryManager(mainContext: mainContext)
-        self.employeeManager = LocalEmployeeManager(mainContext: mainContext)
-        self.customerManager = LocalCustomerManager(mainContext: mainContext)
-        self.localProductManager = LocalProductManager(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.cartManager = LocalCartManager(mainContext: mainContext)
-        self.saleManager = LocalSaleManager(mainContext: mainContext)
-        self.imageManager = LocalImageManager(mainContext: mainContext)
+        //MARK: Local Managers
+        self.localCompanyManager = LocalCompanyManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localSubsidiaryManager = LocalSubsidiaryManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localEmployeeManager = LocalEmployeeManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localCustomerManager = LocalCustomerManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localProductManager = LocalProductManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localCartManager = LocalCartManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localSaleManager = LocalSaleManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localImageManager = LocalImageManagerImpl(mainContext: mainContext)
         //MARK: Remote Managers
         self.remoteProductManager = RemoteProductManagerImpl(sessionConfig: self.sessionConfig)
+        self.remoteSaleManager = RemoteSaleManagerImpl(sessionConfig: self.sessionConfig)
+        self.remoteCompanyManager = RemoteCompanyManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.remoteSubsidiaryManager = RemoteSubsidiaryManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.remoteEmployeeManager = RemoteEmployeeManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.remoteCustomerManager = RemoteCustomerManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.remoteImageManager = RemoteImageManagerImpl(mainContext: mainContext)
         //MARK: Repositorios
-        self.companyRepository = CompanyRepositoryImpl(manager: companyManager)
-        self.subsidiaryRepository = SubsidiaryRepositoryImpl(manager: subsidiaryManager)
-        self.employeeRepository = EmployeeRepositoryImpl(manager: employeeManager)
-        self.customerRepository = CustomerRepositoryImpl(manager: customerManager)
-        self.productRepository = ProductRepositoryImpl(localProductManager: localProductManager, remoteProductManager: remoteProductManager)
-        self.cartRepository = CarRepositoryImpl(manager: cartManager)
-        self.salesRepository = SaleRepositoryImpl(manager: saleManager)
-        self.imageRepository = ImageRepositoryImpl(manager: imageManager)
+        self.companyRepository = CompanyRepositoryImpl(localManager: localCompanyManager, remoteManager: remoteCompanyManager)
+        self.subsidiaryRepository = SubsidiaryRepositoryImpl(localManager: localSubsidiaryManager, remoteManager: remoteSubsidiaryManager)
+        self.employeeRepository = EmployeeRepositoryImpl(localManager: localEmployeeManager, remoteManager: remoteEmployeeManager)
+        self.customerRepository = CustomerRepositoryImpl(localManager: localCustomerManager, remoteManager: remoteCustomerManager)
+        self.productRepository = ProductRepositoryImpl(localManager: localProductManager, remoteManager: remoteProductManager)
+        self.cartRepository = CarRepositoryImpl(localManager: localCartManager)
+        self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
+        self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
         //MARK: UseCases
         self.getSubsidiaryUseCase = GetSubsidiaryInteractor(employeeRepository: employeeRepository)
         self.getCompanyUseCase = GetCompanyInteractor(subsidiaryRepository: subsidiaryRepository)
-        self.setDefaultCompanyUseCase = SetDefaultCompanyInteractor(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository)
-//        self.setDefaultSubsidiaryUseCase = SetDefaultSubsidiaryInteractor(productReporsitory: productRepository, employeeRepository: employeeRepository, saleRepository: salesRepository)
-        self.setDefaultEmployeeUseCase = SetDefaultEmployeeInteractor(cartRepository: cartRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
         self.createSubsidiaryUseCase = CreateSubsidiaryInteractor(subsidiaryRepository: subsidiaryRepository)

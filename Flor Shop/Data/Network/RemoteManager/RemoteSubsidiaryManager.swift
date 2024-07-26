@@ -8,22 +8,28 @@
 import Foundation
 
 protocol RemoteSubsidiaryManager {
-    func save(companyId: UUID, subsidiary: Subsidiary) async throws
-    func sync(companyId: UUID, updatedSince: String) async throws -> [Subsidiary]
+    func save(subsidiary: Subsidiary) async throws
+    func sync(updatedSince: String) async throws -> [SubsidiaryDTO]
 }
 
 final class RemoteSubsidiaryManagerImpl: RemoteSubsidiaryManager {
-    func save(companyId: UUID, subsidiary: Subsidiary) async throws {
+    let sessionConfig: SessionConfig
+    init(
+        sessionConfig: SessionConfig
+    ) {
+        self.sessionConfig = sessionConfig
+    }
+    func save(subsidiary: Subsidiary) async throws {
         let urlRoute = "/subsidiaries"
-        let subsidiaryDTO = subsidiary.toSubsidiaryDTO(companyId: companyId)
+        let subsidiaryDTO = subsidiary.toSubsidiaryDTO(companyId: self.sessionConfig.companyId)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: subsidiaryDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(companyId: UUID, updatedSince: String) async throws -> [Subsidiary] {
+    func sync(updatedSince: String) async throws -> [SubsidiaryDTO] {
         let urlRoute = "/subsidiaries/sync"
-        let syncParameters = SyncFromCompanyParameters(companyId: companyId, updatedSince: updatedSince)
+        let syncParameters = SyncFromCompanyParameters(companyId: self.sessionConfig.companyId, updatedSince: updatedSince)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: [SubsidiaryDTO] = try await NetworkManager.shared.perform(request, decodeTo: [SubsidiaryDTO].self)
-        return data.mapToListSubsidiary()
+        return data
     }
 }

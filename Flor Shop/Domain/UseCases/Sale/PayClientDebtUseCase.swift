@@ -21,7 +21,11 @@ final class PayClientDebtInteractor: PayClientDebtUseCase {
     }
     
     func total(customer: Customer) -> Bool {
-        return saleRepository.payClientTotalDebt(customer: customer)
+        do {
+            return try saleRepository.payClientTotalDebt(customer: customer)
+        } catch {
+            return false
+        }
     }
 }
 

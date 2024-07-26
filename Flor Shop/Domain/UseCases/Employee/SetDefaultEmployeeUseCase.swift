@@ -7,26 +7,26 @@
 
 import Foundation
 
-protocol SetDefaultEmployeeUseCase {
-    func execute(employee: Employee)
-    func releaseResourses()
-}
-
-final class SetDefaultEmployeeInteractor: SetDefaultEmployeeUseCase {
-    
-    private let cartRepository: CarRepository
-    
-    init(cartRepository: CarRepository) {
-        self.cartRepository = cartRepository
-    }
-   
-    func execute(employee: Employee) {
-        self.cartRepository.setDefaultEmployee(employee: employee)
-        // Creamos un carrito si no existe
-        self.cartRepository.createCart()
-    }
-    
-    func releaseResourses() {
-        self.cartRepository.releaseResourses()
-    }
-}
+//protocol SetDefaultEmployeeUseCase {
+//    func execute(employee: Employee)
+//    func releaseResourses()
+//}
+//
+//final class SetDefaultEmployeeInteractor: SetDefaultEmployeeUseCase {
+//    
+//    private let cartRepository: CarRepository
+//    
+//    init(cartRepository: CarRepository) {
+//        self.cartRepository = cartRepository
+//    }
+//   
+//    func execute(employee: Employee) {
+//        self.cartRepository.setDefaultEmployee(employee: employee)
+//        // Creamos un carrito si no existe
+//        self.cartRepository.createCart()
+//    }
+//    
+//    func releaseResourses() {
+//        self.cartRepository.releaseResourses()
+//    }
+//}

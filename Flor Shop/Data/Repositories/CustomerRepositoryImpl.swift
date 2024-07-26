@@ -18,59 +18,65 @@ protocol CustomerRepository {
     func filterCustomer(word: String) -> [Customer]
     func setOrder(order: CustomerOrder)
     func setFilter(filter: CustomerFilterAttributes)
-    func setDefaultCompany(company: Company)
-    func getDefaultCompany() -> Company?
     func getCustomer(customer: Customer) -> Customer?
-    func releaseResourses()
 }
 
 class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
-    let manager: CustomerManager
-    // let remote:  remoto, se puede implementar el remoto aqui
-    init(manager: CustomerManager) {
-        self.manager = manager
+    let localManager: LocalCustomerManager
+    let remoteManager: RemoteCustomerManager
+    let cloudBD = true
+    init(
+        localManager: LocalCustomerManager,
+        remoteManager: RemoteCustomerManager
+    ) {
+        self.localManager = localManager
+        self.remoteManager = remoteManager
     }
     func sync() async throws {
-        print("Not Implemented")
+        var counter = 0
+        var items = 0
+        
+        repeat {
+            print("Counter: \(counter)")
+            counter += 1
+            guard let updatedSince = try localManager.getLastUpdated() else {
+                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
+            }
+            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let customersDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            items = customersDTOs.count
+            try self.localManager.sync(customersDTOs: customersDTOs)
+        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     //C - Create
     func addCustomer(customer: Customer) -> String {
-        return self.manager.addCustomer(customer: customer)
+        return self.localManager.addCustomer(customer: customer)
     }
     //R - Read
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
-        return self.manager.getCustomersList(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)
+        return self.localManager.getCustomersList(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)
     }
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail] {
-        return self.manager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
+        return self.localManager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
     }
     func getCustomer(customer: Customer) -> Customer? {
-        return self.manager.getCustomer(customer: customer)
+        return self.localManager.getCustomer(customer: customer)
     }
     //U - Update
     func updateCustomer(customer: Customer) {
-        self.manager.updateCustomer(customer: customer)
+        self.localManager.updateCustomer(customer: customer)
     }
     //D - Delete
     func deleteCustomer(customer: Customer) {
-        self.manager.deleteCustomer(customer: customer)
+        self.localManager.deleteCustomer(customer: customer)
     }
     func filterCustomer(word: String) -> [Customer] {
-        return self.manager.filterCustomer(word: word)
+        return self.localManager.filterCustomer(word: word)
     }
     func setOrder(order: CustomerOrder) {
-        self.manager.setOrder(order: order)
+        self.localManager.setOrder(order: order)
     }
     func setFilter(filter: CustomerFilterAttributes) {
-        self.manager.setFilter(filter: filter)
-    }
-    func setDefaultCompany(company: Company) {
-        self.manager.setDefaultCompany(company: company)
-    }
-    func getDefaultCompany() -> Company? {
-        return self.manager.getDefaultCompany()
-    }
-    func releaseResourses() {
-        self.manager.releaseResourses()
+        self.localManager.setFilter(filter: filter)
     }
 }

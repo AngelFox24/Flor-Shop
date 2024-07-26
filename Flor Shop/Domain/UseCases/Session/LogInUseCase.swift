@@ -20,24 +20,24 @@ final class LogInRemoteInteractor: LogInUseCase {
 
 final class LogInInteractor: LogInUseCase {
     private let employeeRepository: EmployeeRepository
-    private let setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase
+//    private let setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase
 //    private let setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase
-    private let setDefaultCompanyUseCase: SetDefaultCompanyUseCase
+//    private let setDefaultCompanyUseCase: SetDefaultCompanyUseCase
     private let getCompanyUseCase: GetCompanyUseCase
     private let getSubsidiaryUseCase: GetSubsidiaryUseCase
     
     init(
         employeeRepository: EmployeeRepository,
-        setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase,
+//        setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase,
 //        setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase,
-        setDefaultCompanyUseCase: SetDefaultCompanyUseCase,
+//        setDefaultCompanyUseCase: SetDefaultCompanyUseCase,
         getCompanyUseCase: GetCompanyUseCase,
         getSubsidiaryUseCase: GetSubsidiaryUseCase
     ) {
         self.employeeRepository = employeeRepository
-        self.setDefaultEmployeeUseCase = setDefaultEmployeeUseCase
+//        self.setDefaultEmployeeUseCase = setDefaultEmployeeUseCase
 //        self.setDefaultSubsidiaryUseCase = setDefaultSubsidiaryUseCase
-        self.setDefaultCompanyUseCase = setDefaultCompanyUseCase
+//        self.setDefaultCompanyUseCase = setDefaultCompanyUseCase
         self.getCompanyUseCase = getCompanyUseCase
         self.getSubsidiaryUseCase = getSubsidiaryUseCase
     }

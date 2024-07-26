@@ -8,23 +8,24 @@
 import Foundation
 import CoreData
 
-protocol SubsidiaryManager {
-    func addSubsidiary(subsidiary: Subsidiary) -> Bool
+protocol LocalSubsidiaryManager {
+    func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws
+    func addSubsidiary(subsidiary: Subsidiary)
+    func getLastUpdated() throws -> Date?
     func getSubsidiaries() -> [Subsidiary]
     func updateSubsidiary(subsidiary: Subsidiary)
     func deleteSubsidiary(subsidiary: Subsidiary)
-    func setDefaultCompany(company: Company)
-    func setDefaultSubsidiaryCompany(employee: Employee)
-    func getCompany(subsidiary: Subsidiary) -> Company?
-    func getDefaultCompany() -> Company?
-    func releaseResourses()
 }
 
-class LocalSubsidiaryManager: SubsidiaryManager {
+class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
+    let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
-    var mainCompanyEntity: Tb_Company?
-    init(mainContext: NSManagedObjectContext) {
+    init(
+        mainContext: NSManagedObjectContext,
+        sessionConfig: SessionConfig
+    ) {
         self.mainContext = mainContext
+        self.sessionConfig = sessionConfig
     }
     func saveData() {
         do {
@@ -36,44 +37,89 @@ class LocalSubsidiaryManager: SubsidiaryManager {
     func rollback() {
         self.mainContext.rollback()
     }
-    //C - Create
-    func addSubsidiary(subsidiary: Subsidiary) -> Bool {
-        guard let companyEntity = mainCompanyEntity else {
-            print("No existe compañia para crear una sucursal")
-            rollback()
-            return false
+    func getLastUpdated() throws -> Date? {
+//        let companyEntity = try self.sessionConfig.getCompanyEntity(context: self.mainContext)
+        let calendar = Calendar(identifier: .gregorian)
+        let components = DateComponents(year: 1999, month: 1, day: 1)
+        let dateFrom = calendar.date(from: components)
+        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
+        let predicate = NSPredicate(format: "toCompany.idCompany == %@ AND updatedAt != nil", self.sessionConfig.companyId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+        guard let last = listDate[0] else {
+            print("Se retorna valor por defecto")
+            return dateFrom
         }
-        if let _ = subsidiary.toSubsidiaryEntity(context: self.mainContext) {
-            print("Ya existe sucursal, no se puede crear")
-            rollback()
-            return false
+        print("Se retorna valor desde la BD")
+        return last
+    }
+    //C - Create
+    func addSubsidiary(subsidiary: Subsidiary) {
+        if let subsidiaryEntity = getSubsidiaryById(subsidiaryId: subsidiary.id) {
+            subsidiaryEntity.idSubsidiary = subsidiary.id
+            subsidiaryEntity.name = subsidiary.name
+            subsidiaryEntity.toImageUrl = subsidiary.image?.toImageUrlEntity(context: self.mainContext)
+            subsidiaryEntity.toCompany?.idCompany = self.sessionConfig.companyId
         } else {
             let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
             newSubsidiaryEntity.idSubsidiary = subsidiary.id
             newSubsidiaryEntity.name = subsidiary.name
             newSubsidiaryEntity.toImageUrl = subsidiary.image?.toImageUrlEntity(context: self.mainContext)
-            newSubsidiaryEntity.toCompany = companyEntity
-            saveData()
-            return true
+            newSubsidiaryEntity.toCompany?.idCompany = self.sessionConfig.companyId
+        }
+        saveData()
+    }
+    func getSubsidiaryById(subsidiaryId: UUID) -> Tb_Subsidiary? {
+        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
+        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
         }
     }
-    func releaseResourses() {
-        self.mainCompanyEntity = nil
+    func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws {
+        for subsidiaryDTO in subsidiariesDTOs {
+            guard self.sessionConfig.companyId == subsidiaryDTO.companyID else {
+                throw LocalStorageError.notFound("La compañia no es la misma")
+            }
+            if let subsidiaryEntity = getSubsidiaryById(subsidiaryId: subsidiaryDTO.id) {
+                subsidiaryEntity.name = subsidiaryDTO.name
+                subsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrl?.id
+                subsidiaryEntity.toCompany?.idCompany = subsidiaryDTO.companyID
+                subsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
+                subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
+            } else {
+                let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
+                newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
+                newSubsidiaryEntity.name = subsidiaryDTO.name
+                newSubsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrl?.id
+                newSubsidiaryEntity.toCompany?.idCompany = subsidiaryDTO.companyID
+                newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
+                newSubsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
+            }
+        }
+        saveData()
     }
     //R - Read
     func getSubsidiaries() -> [Subsidiary] {
-        var subsidiaries: [Tb_Subsidiary] = []
-        if let list = mainCompanyEntity?.toSubsidiary {
-            subsidiaries = list.compactMap{$0 as? Tb_Subsidiary}
+        let filterAtt = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
+        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let result = try self.mainContext.fetch(request)
+            return result.compactMap {$0.toSubsidiary()}
+        } catch let error {
+            print("Error fetching. \(error)")
+            return []
         }
-        return subsidiaries.map{$0.toSubsidiary()}
-    }
-    func getCompany(subsidiary: Subsidiary) -> Company? {
-        guard let companyEntity = subsidiary.toSubsidiaryEntity(context: self.mainContext)?.toCompany else {
-            print("No se encontro la compañia de la sucursal")
-            return nil
-        }
-        return companyEntity.toCompany()
     }
     //U - Update
     func updateSubsidiary(subsidiary: Subsidiary) {
@@ -82,30 +128,5 @@ class LocalSubsidiaryManager: SubsidiaryManager {
     //D - Delete
     func deleteSubsidiary(subsidiary: Subsidiary) {
         
-    }
-    func setDefaultSubsidiaryCompany(employee: Employee) {
-        guard let employeeEntity = employee.toEmployeeEntity(context: self.mainContext) else {
-            print("Empleado no existe en BD")
-            return
-        }
-        guard let subsidiaryEntity = employeeEntity.toSubsidiary else {
-            print("Empleado no tiene ninguna sibsidiaria")
-            return
-        }
-        guard let companyEntity = subsidiaryEntity.toCompany else {
-            print("Subsidiaria no tiene ninguna Compañia")
-            return
-        }
-        self.mainCompanyEntity = companyEntity
-    }
-    func setDefaultCompany(company: Company) {
-        guard let companyEntity = company.toCompanyEntity(context: self.mainContext) else {
-            print("No se pudo asingar sucursar default")
-            return
-        }
-        self.mainCompanyEntity = companyEntity
-    }
-    func getDefaultCompany() -> Company? {
-        return self.mainCompanyEntity?.toCompany()
     }
 }
