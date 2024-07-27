@@ -12,34 +12,35 @@ struct CustomAsyncImageView: View {
     let urlProducto: String?
     let size: CGFloat
     @State var isLoading: Bool = true
-    @StateObject var imageViewModel = ImageViewModel()
+//    @StateObject var imageViewModel = ImageViewModel()
     var body: some View {
         HStack {
             if isLoading {
                 //TODO: Falta validar si consume muchos recursos esta animacion
                 LoadingFotoView(size: size)
                     .cornerRadius(15.0)
-            } else {
-                if let imageC = imageViewModel.image {
-                    imageC
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: size, height: size)
-                        .cornerRadius(15.0)
-                } else {
-                    CardViewPlaceHolder2(size: size)
-                }
-            }
+            } 
+//            else {
+//                if let imageC = imageViewModel.image {
+//                    imageC
+//                        .resizable()
+//                        .aspectRatio(contentMode: .fit)
+//                        .frame(width: size, height: size)
+//                        .cornerRadius(15.0)
+//                } else {
+//                    CardViewPlaceHolder2(size: size)
+//                }
+//            }
         }
-        .onAppear(perform: {
-            Task {
-                self.isLoading = true
-                if let idNN = id {
-                    await imageViewModel.loadImage(id: idNN, url: urlProducto)
-                }
-                self.isLoading = false
-            }
-        })
+//        .onAppear(perform: {
+//            Task {
+//                self.isLoading = true
+//                if let idNN = id {
+//                    await imageViewModel.loadImage(id: idNN, url: urlProducto)
+//                }
+//                self.isLoading = false
+//            }
+//        })
     }
 }
 

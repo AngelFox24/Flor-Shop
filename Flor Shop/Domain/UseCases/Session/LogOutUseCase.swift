@@ -13,28 +13,10 @@ protocol LogOutUseCase {
 
 final class LogOutRemoteInteractor: LogOutUseCase {
     func execute() {
-        
     }
 }
 
 final class LogOutInteractor: LogOutUseCase {
-    private let setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase
-//    private let setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase
-    private let setDefaultCompanyUseCase: SetDefaultCompanyUseCase
-    
-    init(
-        setDefaultEmployeeUseCase: SetDefaultEmployeeUseCase,
-//        setDefaultSubsidiaryUseCase: SetDefaultSubsidiaryUseCase,
-        setDefaultCompanyUseCase: SetDefaultCompanyUseCase
-    ) {
-        self.setDefaultEmployeeUseCase = setDefaultEmployeeUseCase
-//        self.setDefaultSubsidiaryUseCase = setDefaultSubsidiaryUseCase
-        self.setDefaultCompanyUseCase = setDefaultCompanyUseCase
-    }
-    
     func execute() {
-        self.setDefaultEmployeeUseCase.releaseResourses()
-//        self.setDefaultSubsidiaryUseCase.releaseResources()
-        self.setDefaultCompanyUseCase.releaseResources()
     }
 }

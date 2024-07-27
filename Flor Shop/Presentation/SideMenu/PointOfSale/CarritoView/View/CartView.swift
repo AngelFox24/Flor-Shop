@@ -36,11 +36,47 @@ struct CartView_Previews: PreviewProvider {
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
+    @EnvironmentObject var loadingState: LoadingState
     @Binding var showMenu: Bool
     @Binding var selectedTab: Tab
+    @State var isPresented = false
     var body: some View {
         VStack(spacing: 0) {
-            if cartViewModel.cartDetailCoreData.count == 0 {
+            if let cart = cartViewModel.cartCoreData {
+                HStack(spacing: 0,
+                       content: {
+                    SideSwipeView(swipeDirection: .right, swipeAction: goToProductsList)
+                    List {
+                        ForEach(cart.cartDetails) { cartDetail in
+                            CardViewTipe3(
+                                cartDetail: cartDetail,
+                                size: 80,
+                                decreceProductAmount: decreceProductAmount,
+                                increaceProductAmount: increaceProductAmount
+                            )
+                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowBackground(Color("color_background"))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive, action: {
+                                    Task {
+                                        loadingState.isLoading = true
+                                        await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+                                        loadingState.isLoading = false
+                                    }
+                                }, label: {
+                                    Image(systemName: "trash")
+                                })
+                                .tint(Color("color_accent"))
+                                .alert(cartViewModel.error, isPresented: $isPresented, actions: {})
+                            }
+                        }
+                        .listRowSeparator(.hidden)
+                    }
+                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                    .listStyle(PlainListStyle())
+                    SideSwipeView(swipeDirection: .left, swipeAction: goToPay)
+                })
+            } else {
                 VStack {
                     Image("groundhog-money")
                         .resizable()
@@ -57,30 +93,6 @@ struct ListCartController: View {
                     })
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                HStack(spacing: 0, content: {
-                    SideSwipeView(swipeDirection: .right, swipeAction: goToProductsList)
-                    List {
-                        ForEach(cartViewModel.cartDetailCoreData) { cartDetail in
-                            //Enviar CartDeail en vez de product al increace o decrece
-                            CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: decreceProductAmount, increaceProductAmount: increaceProductAmount)
-                                .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                                .listRowBackground(Color("color_background"))
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive, action: {
-                                        deleteCartDetail(cartDetail: cartDetail)
-                                    }, label: {
-                                        Image(systemName: "trash")
-                                    })
-                                    .tint(Color("color_accent"))
-                                }
-                        }
-                        .listRowSeparator(.hidden)
-                    }
-                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
-                    .listStyle(PlainListStyle())
-                    SideSwipeView(swipeDirection: .left, swipeAction: goToPay)
-                })
             }
         }
         .background(Color("color_background"))
@@ -91,13 +103,18 @@ struct ListCartController: View {
     func goToPay() {
         navManager.goToPaymentView()
     }
-    func deleteCartDetail(cartDetail: CartDetail) {
-        cartViewModel.deleteCartDetail(cartDetail: cartDetail)
-    }
     func decreceProductAmount(cartDetail: CartDetail) {
-        cartViewModel.decreceProductAmount(cartDetail: cartDetail)
+        Task {
+            loadingState.isLoading = true
+            await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+            loadingState.isLoading = false
+        }
     }
     func increaceProductAmount(cartDetail: CartDetail) {
-        cartViewModel.increaceProductAmount(cartDetail: cartDetail)
+        Task {
+            loadingState.isLoading = true
+            await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+            loadingState.isLoading = false
+        }
     }
 }

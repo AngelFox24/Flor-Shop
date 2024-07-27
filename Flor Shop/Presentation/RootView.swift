@@ -15,6 +15,7 @@ struct RootView: View {
     
     @EnvironmentObject var logInViewModel: LogInViewModel
 //    @EnvironmentObject var registrationViewModel: RegistrationViewModel
+    @EnvironmentObject var errorState: ErrorState
     
     @State private var isKeyboardVisible: Bool = false
     
@@ -111,6 +112,12 @@ struct RootView: View {
         .onAppear(perform: {
             print("Var: \(loadingState.isLoading)")
         })
+        .onChange(of: errorState.isPresented, perform: { item in
+            if !errorState.isPresented {
+                errorState.error = ""
+            }
+        })
+        .alert(errorState.error, isPresented: $errorState.isPresented, actions: {})
     }
 }
 

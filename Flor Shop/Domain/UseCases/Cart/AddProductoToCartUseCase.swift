@@ -9,7 +9,7 @@ import Foundation
 
 protocol AddProductoToCartUseCase {
     
-    func execute(product: Product) -> Bool
+    func execute(product: Product) throws
 }
 
 final class AddProductoToCartInteractor: AddProductoToCartUseCase {
@@ -20,9 +20,8 @@ final class AddProductoToCartInteractor: AddProductoToCartUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute(product: Product) -> Bool {
-        let result = self.cartRepository.addProductoToCarrito(product: product)
-        self.cartRepository.updateCartTotal()
-        return result
+    func execute(product: Product) throws {
+        try self.cartRepository.addProductoToCarrito(product: product)
+        try self.cartRepository.updateCartTotal()
     }
 }

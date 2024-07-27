@@ -44,6 +44,9 @@ struct ListaControler: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var errorState: ErrorState
+    @State private var showingErrorAlert = false
     @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
     @Environment(\.requestReview) var requestReview
     @State private var audioPlayer: AVAudioPlayer?
@@ -110,11 +113,7 @@ struct ListaControler: View {
                             .listRowBackground(Color("color_background"))
                             .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                 Button(action: {
-                                    if agregarProductoACarrito(producto: producto) {
-                                        playSound(named: "Success1")
-                                    } else {
-                                        playSound(named: "Fail1")
-                                    }
+                                    agregarProductoACarrito(producto: producto)
                                 }, label: {
                                     Image(systemName: "cart")
                                 })
@@ -157,9 +156,20 @@ struct ListaControler: View {
     func editProduct(product: Product) {
         agregarViewModel.editProduct(product: product)
     }
-    func agregarProductoACarrito(producto: Product) -> Bool {
-        print("Se agrego el producto al carrito \(producto.name)")
-        return carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+    func agregarProductoACarrito(producto: Product) {
+        Task {
+            loadingState.isLoading = true
+            do {
+                try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?

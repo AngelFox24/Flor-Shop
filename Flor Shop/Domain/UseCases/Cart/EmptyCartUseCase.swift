@@ -9,7 +9,7 @@ import Foundation
 
 protocol EmptyCartUseCase {
     
-    func execute()
+    func execute() throws
 }
 
 final class EmptyCartInteractor: EmptyCartUseCase {
@@ -20,8 +20,8 @@ final class EmptyCartInteractor: EmptyCartUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute() {
-        self.cartRepository.emptyCart()
-        self.cartRepository.updateCartTotal()
+    func execute() throws {
+        try self.cartRepository.emptyCart()
+        try self.cartRepository.updateCartTotal()
     }
 }

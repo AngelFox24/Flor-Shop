@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct NormalDependencies {
     let navManager: NavManager
     //Estados
     let loadingState: LoadingState
+    let errorState: ErrorState
     let versionCheck: VersionCheck
     //Session UseCases
 //    private let registerUserUseCase: RegisterUserUseCase
@@ -24,10 +26,20 @@ struct NormalDependencies {
         //Estados
         self.loadingState = LoadingState()
         self.versionCheck = VersionCheck()
+        self.errorState = ErrorState()
         //Session UseCases
         self.logInUseCase = LogInRemoteInteractor()
         self.logOutUseCase = LogOutRemoteInteractor()
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
-//        self.registrationViewModel = RegistrationViewModel(registerUserUseCase: <#T##any RegisterUserUseCase#>)
+    }
+}
+
+class ErrorState: ObservableObject {
+    @Published var isPresented: Bool = false
+    @Published var error: String = ""
+    func processError(error: Error) {
+        self.isPresented = true
+        print("Error Description: \(error.localizedDescription)")
+        self.error = "Un error inesperado"
     }
 }

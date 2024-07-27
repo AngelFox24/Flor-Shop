@@ -23,6 +23,7 @@ struct FlorShopApp: App {
                 .environmentObject(normalDependencies.loadingState)
                 .environmentObject(normalDependencies.versionCheck)
                 .environmentObject(normalDependencies.logInViewModel)
+                .environmentObject(normalDependencies.errorState)
 //                .onAppear {
 //                    Task(priority: .background, operation: {
 //                        print("Se optimizara las imagenes")

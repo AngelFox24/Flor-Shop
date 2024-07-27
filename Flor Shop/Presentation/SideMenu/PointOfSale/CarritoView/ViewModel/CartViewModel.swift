@@ -9,9 +9,9 @@ import Foundation
 
 class CartViewModel: ObservableObject {
     @Published var cartCoreData: Car?
-    @Published var cartDetailCoreData: [CartDetail] = []
     @Published var customerInCar: Customer?
     @Published var paymentType: PaymentType = .cash
+    @Published var error: String = ""
     var paymentTypes: [PaymentType] {
         guard let customer = customerInCar else {
             return [.cash]
@@ -22,67 +22,73 @@ class CartViewModel: ObservableObject {
             return [.cash]
         }
     }
-    private let getProductsInCartUseCase: GetProductsInCartUseCase
     private let getCartUseCase: GetCartUseCase
     private let deleteCartDetailUseCase: DeleteCartDetailUseCase
     private let addProductoToCartUseCase: AddProductoToCartUseCase
     private let emptyCartUseCase: EmptyCartUseCase
-    private let increaceProductInCartUseCase: IncreaceProductInCartUseCase
-    private let decreaceProductInCartUseCase: DecreaceProductInCartUseCase
+    private let changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase
     
-    init(getProductsInCartUseCase: GetProductsInCartUseCase, getCartUseCase: GetCartUseCase, deleteCartDetailUseCase: DeleteCartDetailUseCase, addProductoToCartUseCase: AddProductoToCartUseCase, emptyCartUseCase: EmptyCartUseCase, increaceProductInCartUseCase: IncreaceProductInCartUseCase, decreaceProductInCartUseCase: DecreaceProductInCartUseCase) {
-        self.getProductsInCartUseCase = getProductsInCartUseCase
+    init(
+        getCartUseCase: GetCartUseCase,
+        deleteCartDetailUseCase: DeleteCartDetailUseCase,
+        addProductoToCartUseCase: AddProductoToCartUseCase,
+        emptyCartUseCase: EmptyCartUseCase,
+        changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase
+    ) {
         self.getCartUseCase = getCartUseCase
         self.deleteCartDetailUseCase = deleteCartDetailUseCase
         self.addProductoToCartUseCase = addProductoToCartUseCase
         self.emptyCartUseCase = emptyCartUseCase
-        self.increaceProductInCartUseCase = increaceProductInCartUseCase
-        self.decreaceProductInCartUseCase = decreaceProductInCartUseCase
+        self.changeProductAmountInCartUseCase = changeProductAmountInCartUseCase
     }
     
     // MARK: CRUD Core Data
     func fetchCart() {
-        self.cartDetailCoreData = self.getProductsInCartUseCase.execute(page: 1)
         self.cartCoreData = self.getCartUseCase.execute()
     }
-    func deleteCartDetail(cartDetail: CartDetail) {
-        self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)
+    func deleteCartDetail(cartDetail: CartDetail) async {
+        do {
+            try self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)
+        } catch {
+            await MainActor.run {
+                self.error = "Error Inesperado"
+            }
+        }
         fetchCart()
     }
-    func addProductoToCarrito(product: Product) -> Bool {
-        let value = self.addProductoToCartUseCase.execute(product: product)
-        fetchCart()
-        return value
-    }
-    func emptyCart () {
-        self.emptyCartUseCase.execute()
+    func addProductoToCarrito(product: Product) async throws {
+        try self.addProductoToCartUseCase.execute(product: product)
         fetchCart()
     }
-    /*
-    func updateCartTotal() {
-        self.cartRepository.updateCartTotal()
+    func emptyCart() async {
+        do {
+            try self.emptyCartUseCase.execute()
+        } catch {
+            await MainActor.run {
+                self.error = "Error Inesperado"
+            }
+        }
         fetchCart()
     }
-     */
-    func increaceProductAmount(cartDetail: CartDetail) {
-        self.increaceProductInCartUseCase.execute(cartDetail: cartDetail)
-        fetchCart()
-    }
-    func decreceProductAmount(cartDetail: CartDetail) {
-        self.decreaceProductInCartUseCase.execute(cartDetail: cartDetail)
+    func changeProductAmount(cartDetail: CartDetail) async {
+        do {
+            try self.changeProductAmountInCartUseCase.execute(cartDetail: cartDetail)
+        } catch {
+            await MainActor.run {
+                self.error = "Error Inesperado"
+            }
+        }
         fetchCart()
     }
     func releaseResources() {
         self.cartCoreData = nil
-        self.cartDetailCoreData = []
-        //self.customerInCar = nil
         self.paymentType = .cash
     }
     func releaseCustomer() {
         self.customerInCar = nil
     }
     func lazyFetchCart() {
-        if cartDetailCoreData.isEmpty {
+        if cartCoreData == nil {
             fetchCart()
         }
     }

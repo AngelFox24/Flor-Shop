@@ -10,11 +10,11 @@ import CoreData
 
 protocol LocalCartManager {
     func getCart() throws -> Car?
-    func deleteCartDetail(cartDetail: CartDetail)
+    func deleteCartDetail(cartDetail: CartDetail) throws
     func addProductToCart(productIn: Product) throws
     func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws
-    func emptyCart()
-    func updateCartTotal()
+    func emptyCart() throws
+    func updateCartTotal() throws
 }
 
 class LocalCartManagerImpl: LocalCartManager {
@@ -27,54 +27,27 @@ class LocalCartManagerImpl: LocalCartManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func saveData() {
-        do {
-            try self.mainContext.save()
-        } catch {
-            self.mainContext.rollback()
-            print("Error al guardar en ProductRepositoryImpl \(error)")
-        }
-    }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    private func createCart() {
-        let newCart: Tb_Cart = Tb_Cart(context: self.mainContext)
-        newCart.idCart = UUID()
-        newCart.total = 0
-        newCart.toEmployee?.idEmployee = self.sessionConfig.employeeId
-        // Redundante?
-        self.mainEmployeeEntity?.toCart = newCart
-        saveData()
-    }
     func getCart() throws -> Car? {
-        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
-        return employeeEntity.toCart?.toCar()
+        return try getCartEntity()?.toCar()
     }
-    func deleteCartDetail(cartDetail: CartDetail) {
+    func deleteCartDetail(cartDetail: CartDetail) throws {
         guard let cartDetailEntity = cartDetail.toCartDetailEntity(context: self.mainContext) else {
             print("Detalle de producto no existe en carrito")
             return
         }
         self.mainContext.delete(cartDetailEntity)
-        updateCartTotal()
+        try updateCartTotal()
         saveData()
     }
     func addProductToCart(productIn: Product) throws {
+        try ensureCartExist()
         var success: Bool = false
-        //Verificamos si el empleado por defecto existe
-        guard let employeeEntity = self.sessionConfig.getEmployeeEntity(context: self.mainContext) else {
-            print("Empleado por defecto no existe")
-            return false
-        }
-        //Verificamos si tiene un carrito asignado
-        guard let cartEntity = employeeEntity.toCart else {
+        guard let cartEntity = try getCartEntity() else {
             print("Empleado por defecto no tiene carrito")
-            return false
+            throw LocalStorageError.notFound("Empleado por defecto no tiene carrito")
         }
-        // Buscamos si existe este producto en el carrito
-        if let cartDetailEntity = getCartDetail(productId: productIn.id) {
-            try changeProductAmountInCartDetail(productId: productIn, amount: Int(cartDetailEntity.quantityAdded) + 1)
+        if let cartDetailEntity = try getCartDetail(productId: productIn.id) {
+            try changeProductAmountInCartDetail(productId: productIn.id, amount: Int(cartDetailEntity.quantityAdded) + 1)
             success = true
         } else {
             // Validamos si tiene sificiente Stock
@@ -87,31 +60,20 @@ class LocalCartManagerImpl: LocalCartManager {
                 newCarDetail.toCart = cartEntity
                 success = true
             } else {
-                print("No hay stock suficiente: \(productEntity.quantityStock)")
+                print("No hay stock suficiente: \(productIn.qty)")
                 success = false
             }
         }
         if success {
-            updateCartTotal()
+            try updateCartTotal()
             saveData()
         } else {
             rollback()
         }
     }
-    func emptyCart() {
-        guard let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext) else {
-            print("El empleado por defecto no esta configurado")
-            throw LocalStorageError.notFound("El empleado por defecto no esta configurado")
-        }
-        if let cartEntity = employeeEntity.toCart {
-            cartEntity.toCartDetail = nil
-            cartEntity.total = 0
-            saveData()
-        }
-    }
     func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws {
-        //Verificamos si existe este detalle
-        guard let cartDetailEntity = getCartDetail(productId: productId) else {
+        try ensureCartExist()
+        guard let cartDetailEntity = try getCartDetail(productId: productId) else {
             print("Detalle de producto no existe en carrito")
             throw LocalStorageError.notFound("Detalle de producto no existe en carrito")
         }
@@ -126,10 +88,73 @@ class LocalCartManagerImpl: LocalCartManager {
             print("Producto no tiene stock suficiente")
             throw LocalStorageError.notFound("Producto no tiene stock suficiente")
         }
-        updateCartTotal()
+        try updateCartTotal()
         saveData()
     }
-    private func getCartDetail(productId: UUID) -> Tb_CartDetail? {
+    func emptyCart() throws {
+        try ensureCartExist()
+        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let cartEntity = employeeEntity.toCart else {
+            throw LocalStorageError.notFound("El empleado por defecto no tiene carrito asignado")
+        }
+        cartEntity.toCartDetail = nil
+        cartEntity.total = 0
+        saveData()
+    }
+    func updateCartTotal() throws {
+        try ensureCartExist()
+        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let cartEntity = employeeEntity.toCart else {
+            print("El empleado por defecto no tiene carrito")
+            throw LocalStorageError.notFound("El empleado por defecto no tiene carrito")
+        }
+        guard let cartDetailEntityList = cartEntity.toCartDetail?.compactMap({ $0 as? Tb_CartDetail }) else {
+            print("El carrito no tiene detalle")
+            cartEntity.total = 0
+            saveData()
+            return
+        }
+        cartEntity.total = cartDetailEntityList.reduce(0) {$0 + $1.subtotal}
+        saveData()
+    }
+    //MARK: Private Functions
+    private func saveData() {
+        do {
+            try self.mainContext.save()
+        } catch {
+            self.mainContext.rollback()
+            print("Error al guardar en ProductRepositoryImpl \(error)")
+        }
+    }
+    private func rollback() {
+        self.mainContext.rollback()
+    }
+    private func createCart() {
+        let newCart: Tb_Cart = Tb_Cart(context: self.mainContext)
+        newCart.idCart = UUID()
+        newCart.total = 0
+        newCart.toEmployee?.idEmployee = self.sessionConfig.employeeId
+        saveData()
+    }
+    func getCartEntity() throws -> Tb_Cart? {
+        try ensureCartExist()
+        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        return employeeEntity.toCart
+    }
+    private func cartExist() throws -> Bool {
+        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let _ = employeeEntity.toCart else {
+            return false
+        }
+        return true
+    }
+    private func ensureCartExist() throws {
+        if try !cartExist() {
+            createCart()
+        }
+    }
+    private func getCartDetail(productId: UUID) throws -> Tb_CartDetail? {
+        try ensureCartExist()
         let request: NSFetchRequest<Tb_CartDetail> = Tb_CartDetail.fetchRequest()
         let predicate = NSPredicate(format: "toProduct.idProduct == %@", productId.uuidString)
         request.predicate = predicate
@@ -141,24 +166,5 @@ class LocalCartManagerImpl: LocalCartManager {
             print("Error fetching. \(error)")
             return nil
         }
-    }
-    func updateCartTotal() {
-        guard let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext) else {
-            print("El empleado por defecto no esta configurado")
-            throw LocalStorageError.notFound("El empleado por defecto no esta configurado")
-        }
-        guard let cartEntity = employeeEntity.toCart else {
-            print("El empleado por defecto no tiene carrito")
-            throw LocalStorageError.notFound("El empleado por defecto no tiene carrito")
-        }
-        //Verificamos si existe detalle del carrito
-        guard let cartDetailEntityList = cartEntity.toCartDetail?.compactMap({ $0 as? Tb_CartDetail }) else {
-            print("El carrito no tiene detalle")
-            cartEntity.total = 0
-            saveData()
-            return
-        }
-        cartEntity.total = cartDetailEntityList.reduce(0) {$0 + $1.subtotal}
-        saveData()
     }
 }

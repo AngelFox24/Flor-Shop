@@ -40,20 +40,16 @@ struct BusinessDependencies {
     private let salesRepository: SaleRepositoryImpl
     private let imageRepository: ImageRepositoryImpl
     //UseCases
-    private let getSubsidiaryUseCase: GetSubsidiaryUseCase
-    private let getCompanyUseCase: GetCompanyUseCase
     private let getProductsUseCase: GetProductsUseCase
     private let createCompanyUseCase: CreateCompanyUseCase
     private let createSubsidiaryUseCase: CreateSubsidiaryUseCase
     private let createEmployeeUseCase: CreateEmployeeUseCase
     private let saveProductUseCase: SaveProductUseCase
-    private let getProductsInCartUseCase: GetProductsInCartUseCase
     private let getCartUseCase: GetCartUseCase
     private let deleteCartDetailUseCase: DeleteCartDetailUseCase
     private let addProductoToCartUseCase: AddProductoToCartUseCase
     private let emptyCartUseCase: EmptyCartUseCase
-    private let increaceProductInCartUseCase: IncreaceProductInCartUseCase
-    private let decreaceProductInCartUseCase: DecreaceProductInCartUseCase
+    private let changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase
     private let registerSaleUseCase: RegisterSaleUseCase
     private let getSalesUseCase: GetSalesUseCase
     private let getEmployeesUseCase: GetEmployeesUseCase
@@ -101,11 +97,11 @@ struct BusinessDependencies {
         //MARK: Remote Managers
         self.remoteProductManager = RemoteProductManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteSaleManager = RemoteSaleManagerImpl(sessionConfig: self.sessionConfig)
-        self.remoteCompanyManager = RemoteCompanyManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.remoteSubsidiaryManager = RemoteSubsidiaryManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.remoteEmployeeManager = RemoteEmployeeManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.remoteCustomerManager = RemoteCustomerManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.remoteImageManager = RemoteImageManagerImpl(mainContext: mainContext)
+        self.remoteCompanyManager = RemoteCompanyManagerImpl()
+        self.remoteSubsidiaryManager = RemoteSubsidiaryManagerImpl(sessionConfig: self.sessionConfig)
+        self.remoteEmployeeManager = RemoteEmployeeManagerImpl(sessionConfig: self.sessionConfig)
+        self.remoteCustomerManager = RemoteCustomerManagerImpl(sessionConfig: self.sessionConfig)
+        self.remoteImageManager = RemoteImageManagerImpl()
         //MARK: Repositorios
         self.companyRepository = CompanyRepositoryImpl(localManager: localCompanyManager, remoteManager: remoteCompanyManager)
         self.subsidiaryRepository = SubsidiaryRepositoryImpl(localManager: localSubsidiaryManager, remoteManager: remoteSubsidiaryManager)
@@ -116,20 +112,16 @@ struct BusinessDependencies {
         self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
         self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
         //MARK: UseCases
-        self.getSubsidiaryUseCase = GetSubsidiaryInteractor(employeeRepository: employeeRepository)
-        self.getCompanyUseCase = GetCompanyInteractor(subsidiaryRepository: subsidiaryRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
         self.createSubsidiaryUseCase = CreateSubsidiaryInteractor(subsidiaryRepository: subsidiaryRepository)
         self.createEmployeeUseCase = CreateEmployeeInteractor(employeeRepository: employeeRepository)
         self.saveProductUseCase = SaveProductInteractor(productRepository: productRepository)
-        self.getProductsInCartUseCase = GetProductsInCartInteractor(cartRepository: cartRepository)
         self.getCartUseCase = GetCartInteractor(cartRepository: cartRepository)
         self.deleteCartDetailUseCase = DeleteCartDetailInteractor(cartRepository: cartRepository)
         self.addProductoToCartUseCase = AddProductoToCartInteractor(cartRepository: cartRepository)
         self.emptyCartUseCase = EmptyCartInteractor(cartRepository: cartRepository)
-        self.increaceProductInCartUseCase = IncreaceProductInCartInteractor(cartRepository: cartRepository)
-        self.decreaceProductInCartUseCase = DecreaceProductInCartInteractor(cartRepository: cartRepository)
+        self.changeProductAmountInCartUseCase = ChangeProductAmountInCartInteractor(cartRepository: cartRepository)
         self.registerSaleUseCase = RegisterSaleInteractor(saleRepository: salesRepository)
         self.getSalesUseCase = GetSalesInteractor(saleRepository: salesRepository)
         self.getEmployeesUseCase = GetEmployeesUseCaseInteractor(employeeRepository: employeeRepository)
@@ -145,30 +137,18 @@ struct BusinessDependencies {
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
         
 //        self.registerUserUseCase = RegisterUserInteractor(createCompanyUseCase: createCompanyUseCase, createSubsidiaryUseCase: createSubsidiaryUseCase, createEmployeeUseCase: createEmployeeUseCase, setDefaultCompanyUseCase: setDefaultCompanyUseCase, setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase, setDefaultEmployeeUseCase: setDefaultEmployeeUseCase)
-        self.logInUseCase = LogInInteractor(
-            employeeRepository: employeeRepository,
-            setDefaultEmployeeUseCase: setDefaultEmployeeUseCase,
-//            setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase,
-            setDefaultCompanyUseCase: setDefaultCompanyUseCase,
-            getCompanyUseCase: getCompanyUseCase,
-            getSubsidiaryUseCase: getSubsidiaryUseCase
-        )
-        self.logOutUseCase = LogOutInteractor(
-            setDefaultEmployeeUseCase: setDefaultEmployeeUseCase,
-//            setDefaultSubsidiaryUseCase: setDefaultSubsidiaryUseCase,
-            setDefaultCompanyUseCase: setDefaultCompanyUseCase
-        )
+        self.logInUseCase = LogInInteractor()
+        self.logOutUseCase = LogOutInteractor()
         //MARK: ViewModels
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
         self.registrationViewModel = RegistrationViewModel()
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
-        self.cartViewModel = CartViewModel(getProductsInCartUseCase: getProductsInCartUseCase, getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, increaceProductInCartUseCase: increaceProductInCartUseCase, decreaceProductInCartUseCase: decreaceProductInCartUseCase)
+        self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
-        //self.companyViewModel = CompanyViewModel(companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository)
         self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase)
     }
 }

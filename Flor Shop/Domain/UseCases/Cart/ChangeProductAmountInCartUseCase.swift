@@ -1,5 +1,5 @@
 //
-//  DeleteCartDetailUseCase.swift
+//  DecreaceProductInCartUseCase.swift
 //  Flor Shop
 //
 //  Created by Angel Curi Laurente on 5/12/23.
@@ -7,13 +7,11 @@
 
 import Foundation
 
-protocol DeleteCartDetailUseCase {
-    
+protocol ChangeProductAmountInCartUseCase {
     func execute(cartDetail: CartDetail) throws
 }
 
-final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
-    
+final class ChangeProductAmountInCartInteractor: ChangeProductAmountInCartUseCase {
     private let cartRepository: CarRepository
     
     init(cartRepository: CarRepository) {
@@ -21,7 +19,7 @@ final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
     }
     
     func execute(cartDetail: CartDetail) throws {
-        try self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
+        try self.cartRepository.changeProductAmountInCartDetail(cartDetail: cartDetail)
         try self.cartRepository.updateCartTotal()
     }
 }
