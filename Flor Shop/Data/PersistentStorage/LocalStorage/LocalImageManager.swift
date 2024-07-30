@@ -21,6 +21,7 @@ protocol LocalImageManager {
     func loadSavedImage(id: UUID) -> UIImage?
     func downloadImage(url: URL) async -> UIImage?
     func saveImage(idImage: UUID, image: UIImage) -> ImageUrl?
+    func saveImage(image: ImageUrl) throws -> ImageUrl
 }
 
 class LocalImageManagerImpl: LocalImageManager {
@@ -186,6 +187,51 @@ class LocalImageManagerImpl: LocalImageManager {
             print("No se pudo obtener la imagen \(id.uuidString).jpeg")
         }
         return nil
+    }
+    private func getImageEntityByHash(imageHash: String) -> Tb_ImageUrl? {
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "imageHash == %@", imageHash)
+        request.predicate = predicate
+        do {
+            return try self.mainContext.fetch(request).first
+        } catch {
+            return nil
+        }
+    }
+    private func getImageEntityByURL(imageURL: String) -> Tb_ImageUrl? {
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "imageUrl == %@", imageURL)
+        request.predicate = predicate
+        do {
+            return try self.mainContext.fetch(request).first
+        } catch {
+            return nil
+        }
+    }
+    func saveImage(image: ImageUrl) throws -> ImageUrl {
+        let url = image.imageUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        let hash = image.imageHash.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard url == "" else {
+            throw LocalStorageError.notFound("La URL no es valida")
+        }
+        if let imageEntity = getImageEntityByURL(imageURL: url) {
+            imageEntity.idImageUrl = image.id
+            imageEntity.imageHash = image.imageHash == "" ? imageEntity.imageHash : image.imageHash
+            imageEntity.imageUrl = image.imageUrl
+            imageEntity.createdAt = image.createdAt
+            imageEntity.updatedAt = image.updatedAt
+            saveData()
+            return imageEntity.toImage()
+        } else {
+            let newImageEntity = Tb_ImageUrl(context: self.mainContext)
+            newImageEntity.idImageUrl = image.id
+            newImageEntity.imageUrl = image.imageUrl
+            newImageEntity.imageHash = image.imageHash
+            newImageEntity.createdAt = image.createdAt
+            newImageEntity.updatedAt = image.updatedAt
+            saveData()
+            return newImageEntity.toImage()
+        }
     }
     @discardableResult
     func saveImage(idImage: UUID, image: UIImage) -> ImageUrl? {

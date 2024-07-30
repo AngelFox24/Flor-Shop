@@ -9,10 +9,10 @@ import Foundation
 import CoreData
 
 protocol LocalProductManager {
-    func saveProduct(product: Product) throws -> String
+    func saveProduct(product: Product)
     func sync(productsDTOs: [ProductDTO]) throws
-    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) throws -> [Product]
-    func getLastUpdated() throws -> Date?
+    func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
+    func getLastUpdated() -> Date
 }
 
 class LocalProductManagerImpl: LocalProductManager {
@@ -25,44 +25,35 @@ class LocalProductManagerImpl: LocalProductManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func saveData () {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en ProductRepositoryImpl \(error)")
-        }
-    }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    func getLastUpdated() throws -> Date? {
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
+    func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary == %@ AND updatedAt != nil", subsidiaryEntity)
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND updatedAt != nil", self.sessionConfig.subsidiaryId.uuidString)
         let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
-        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
-        guard let last = listDate[0] else {
-            print("Se retorna valor por defecto")
-            return dateFrom
+        do {
+            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
+            guard let dateNN = date else {
+                return dateFrom!
+            }
+            return dateNN
+        } catch let error {
+            print("Error fetching. \(error)")
+            return dateFrom!
         }
-        print("Se retorna valor desde la BD")
-        return last
     }
-    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) throws -> [Product] {
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
+    func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         request.fetchLimit = pageSize
         request.fetchOffset = (page - 1) * pageSize
         
-        var predicate1 = NSPredicate(format: "toSubsidiary == %@", subsidiaryEntity)
+        var predicate1 = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
         if seachText != "" {
-            predicate1 = NSPredicate(format: "productName CONTAINS[c] %@ AND toSubsidiary == %@", seachText, subsidiaryEntity)
+            predicate1 = NSPredicate(format: "productName CONTAINS[c] %@ AND toSubsidiary.idSubsidiary == %@", seachText, self.sessionConfig.subsidiaryId.uuidString)
         }
         let predicate2 = getFilterAtribute(filter: filterAttribute)
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
@@ -70,88 +61,41 @@ class LocalProductManagerImpl: LocalProductManager {
         request.predicate = compoundPredicate
         let sortDescriptor = getOrderFilter(order: primaryOrder)
         request.sortDescriptors = [sortDescriptor]
-        let productList = try self.mainContext.fetch(request).map{$0.toProduct()}
-        return productList
-    }
-    func saveProduct(product: Product) throws -> String {
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
-        if let productInContext = product.toProductEntity(context: mainContext) { //Existe este producto, vamos a actualizarlo
-            print("Se encontro producto, lo vamos a actualizar")
-            productInContext.productName = product.name
-            productInContext.active = product.active
-            print("Active: \(product.active)")
-            productInContext.quantityStock = Int64(product.qty)
-            productInContext.barCode = product.barCode
-            productInContext.unitCost = Int64(product.unitCost.cents)
-            productInContext.expirationDate = product.expirationDate
-            productInContext.unitPrice = Int64(product.unitPrice.cents)
-            productInContext.createdAt = product.createdAt
-            productInContext.updatedAt = product.updatedAt
-            print("Guardado de Tiempo: \(product.updatedAt.description)")
-            if let imageNN = product.image {
-                if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                    productInContext.toImageUrl = imageEntity
-                } else {
-                    let newImage = Tb_ImageUrl(context: self.mainContext)
-                    newImage.idImageUrl = imageNN.id
-                    newImage.imageUrl = imageNN.imageUrl
-                    newImage.imageHash = imageNN.imageHash
-                    productInContext.toImageUrl = newImage
-                }
-            }
-            //productInContext.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
-            saveData()
-            return "Success"
-        } else {
-            //Buscar el nombre del producto con el mismo nombre en la sucursal
-            if try !existProductInSubsidiary(product: product) {
-                print("No se encontro producto, lo vamos a crear")
-                //Creamos un nuevo producto
-                let newProduct = Tb_Product(context: mainContext)
-                newProduct.idProduct = product.id
-                newProduct.productName = product.name
-                newProduct.active = product.active
-                print("Active: \(product.active)")
-                newProduct.quantityStock = Int64(product.qty)
-                newProduct.unitCost = Int64(product.unitCost.cents)
-                newProduct.barCode = product.barCode
-                newProduct.unitPrice = Int64(product.unitPrice.cents)
-                newProduct.expirationDate = product.expirationDate
-                newProduct.toSubsidiary = subsidiaryEntity
-                newProduct.createdAt = product.createdAt
-                newProduct.updatedAt = product.updatedAt
-                print("Guardado de Tiempo: \(product.updatedAt.description)")
-                if let imageNN = product.image {
-                    if let imageEntity = product.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                        newProduct.toImageUrl = imageEntity
-                    } else {
-                        let newImage = Tb_ImageUrl(context: self.mainContext)
-                        newImage.idImageUrl = imageNN.id
-                        newImage.imageUrl = imageNN.imageUrl
-                        newImage.imageHash = imageNN.imageHash
-                        newProduct.toImageUrl = newImage
-                    }
-                }
-                //newProduct.toImageUrl = product.image?.toImageUrlEntity(context: self.mainContext)
-                saveData()
-                return "Success"
-            } else {
-                print("Se encontro duplicados del nombre del producto")
-                return "Se encontro duplicados del nombre del producto"
-            }
+        do {
+            return try self.mainContext.fetch(request).compactMap{$0.toProduct()}
+        } catch {
+            print("Error fetching. \(error)")
+            return []
         }
     }
-    private func getProductById(productId: UUID) -> Tb_Product? {
-        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate = NSPredicate(format: "idProduct == %@", productId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
+    func saveProduct(product: Product) {
+        if let productEntity = getProductById(productId: product.id) {
+            productEntity.productName = product.name
+            productEntity.active = product.active
+            productEntity.quantityStock = Int64(product.qty)
+            productEntity.barCode = product.barCode
+            productEntity.unitCost = Int64(product.unitCost.cents)
+            productEntity.expirationDate = product.expirationDate
+            productEntity.unitPrice = Int64(product.unitPrice.cents)
+            productEntity.toImageUrl?.idImageUrl = product.image?.id
+            productEntity.createdAt = product.createdAt
+            productEntity.updatedAt = product.updatedAt
+            saveData()
+        } else {
+            let newProductEntity = Tb_Product(context: mainContext)
+            newProductEntity.idProduct = product.id
+            newProductEntity.productName = product.name
+            newProductEntity.active = product.active
+            newProductEntity.quantityStock = Int64(product.qty)
+            newProductEntity.unitCost = Int64(product.unitCost.cents)
+            newProductEntity.barCode = product.barCode
+            newProductEntity.unitPrice = Int64(product.unitPrice.cents)
+            newProductEntity.expirationDate = product.expirationDate
+            newProductEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
+            newProductEntity.toImageUrl?.idImageUrl = product.image?.id
+            newProductEntity.createdAt = product.createdAt
+            newProductEntity.updatedAt = product.updatedAt
+            saveData()
         }
     }
     func sync(productsDTOs: [ProductDTO]) throws {
@@ -196,7 +140,31 @@ class LocalProductManagerImpl: LocalProductManager {
         print("Cantidad de Duplicados: \(quantityDuplicate)")
         return quantityDuplicate == 0 ? false : true
     }
-    func getOrderFilter(order: PrimaryOrder) -> NSSortDescriptor {
+    //MARK: Private Functions
+    private func saveData () {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en ProductRepositoryImpl \(error)")
+        }
+    }
+    private func rollback() {
+        self.mainContext.rollback()
+    }
+    private func getProductById(productId: UUID) -> Tb_Product? {
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        let predicate = NSPredicate(format: "idProduct == %@ AND toSubsidiary.idSubsidiary == %@", productId.uuidString, self.sessionConfig.subsidiaryId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func getOrderFilter(order: PrimaryOrder) -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
         switch order {
         case .nameAsc:
@@ -214,7 +182,7 @@ class LocalProductManagerImpl: LocalProductManager {
         }
         return sortDescriptor
     }
-    func getFilterAtribute(filter: ProductsFilterAttributes) -> NSPredicate {
+    private func getFilterAtribute(filter: ProductsFilterAttributes) -> NSPredicate {
         var filterAtt = NSPredicate(format: "quantityStock != 0")
         switch filter {
         case .allProducts:

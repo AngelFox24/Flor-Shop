@@ -22,22 +22,6 @@ struct Product: Identifiable, Codable {
     var createdAt: Date
     var updatedAt: Date
     
-//    // Incluyendo CodingKeys para mapear los campos del JSON a las propiedades del struct
-//    private enum CodingKeys: String, CodingKey {
-//        case id
-//        case active
-//        case barCode
-//        case name = "productName"
-//        case qty = "quantityStock"
-//        case unitType
-//        case unitCost
-//        case unitPrice
-//        case expirationDate
-//        case image = "imageUrl"
-//        case createdAt
-//        case updatedAt
-//    }
-    
     static func getDummyProduct() -> Product {
         return Product(
             id: UUID(),
@@ -57,18 +41,6 @@ struct Product: Identifiable, Codable {
 }
 
 extension Product {
-    func toProductEntity(context: NSManagedObjectContext) -> Tb_Product? {
-        let filterAtt = NSPredicate(format: "idProduct == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let productEntity = try context.fetch(request).first
-            return productEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func toProductDTO(subsidiaryId: UUID) -> ProductDTO {
         return ProductDTO(
             id: id,
@@ -85,12 +57,6 @@ extension Product {
             createdAt: createdAt.description,
             updatedAt: updatedAt.description
         )
-    }
-}
-
-extension Array where Element == Product {
-    func mapToListProductEntity(context: NSManagedObjectContext) -> [Tb_Product] {
-        return self.compactMap {$0.toProductEntity(context: context)}
     }
 }
 

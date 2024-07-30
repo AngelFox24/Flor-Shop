@@ -11,7 +11,7 @@ import CoreData
 protocol LocalCustomerManager {
     func getLastUpdated() throws -> Date?
     func sync(customersDTOs: [CustomerDTO]) throws
-    func addCustomer(customer: Customer) -> String
+    func addCustomer(customer: Customer)
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func updateCustomer(customer: Customer)
@@ -123,71 +123,39 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         saveData()
     }
     //C - Create
-    func addCustomer(customer: Customer) -> String {
+    func addCustomer(customer: Customer) {
+        //TODO: Refactor this
         if let customerEntity = customer.toCustomerEntity(context: self.mainContext) { //Busqueda por id
             customerEntity.name = customer.name
             customerEntity.lastName = customer.lastName
             customerEntity.creditDays = Int64(customer.creditDays)
-            //customerEntity.creditActive = customer.creditActive
             customerEntity.creditLimit = Int64(customer.creditLimit.cents)
-            //print("BD isCreditLimitActive Before: \(customerEntity.isCreditLimitActive)")
             customerEntity.isCreditLimitActive = customer.isCreditLimitActive
-            //print("BD isCreditLimitActive After: \(customerEntity.isCreditLimitActive)")
             customerEntity.isDateLimitActive = customer.isDateLimitActive
             customerEntity.phoneNumber = customer.phoneNumber
             if customer.isDateLimitActive && customerEntity.totalDebt > 0 && customerEntity.firstDatePurchaseWithCredit != nil {
                 var calendar = Calendar.current
                 calendar.timeZone = TimeZone(identifier: "UTC")!
                 customerEntity.dateLimit = calendar.date(byAdding: .day, value: Int(customerEntity.creditDays), to: customerEntity.firstDatePurchaseWithCredit!)!
-                //print("Se actualizo DateLimit en CustomerManager: \(String(describing: customerEntity.dateLimit?.description))")
                 let finalDelDia = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: Date())!
                 customerEntity.isDateLimit = customerEntity.dateLimit ?? Date() < finalDelDia
-                //print("finalDelDia en CustomerManager: \(String(describing: finalDelDia.description))")
-                //print("creditDays en CustomerManager: \(String(describing: customerEntity.creditDays))")
-                //print("firstDatePurchaseWithCredit en CustomerManager: \(String(describing: customerEntity.firstDatePurchaseWithCredit!.description))")
             }
-            if let imageNN = customer.image {
-                if let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                    customerEntity.toImageUrl = imageEntity
-                } else {
-                    let newImage = Tb_ImageUrl(context: self.mainContext)
-                    newImage.idImageUrl = imageNN.id
-                    newImage.imageUrl = imageNN.imageUrl
-                    newImage.imageHash = imageNN.imageHash
-                    print("Se guardo el hash: \(imageNN.imageHash)")
-                    customerEntity.toImageUrl = newImage
-                }
-            }
+            customerEntity.toImageUrl?.idImageUrl = customer.image?.id
             if customerEntity.isCreditLimitActive {
-                print("Entro porque es true")
                 customerEntity.isCreditLimit = customerEntity.totalDebt >= customerEntity.creditLimit
             } else {
                 customerEntity.isCreditLimit = false
-                print("Se apago el Flag")
             }
             saveData()
-            return ""
         } else if customerExist(customer: customer) { //Comprobamos si existe el mismo empleado por otros atributos
             rollback()
-            return "Hay otro cliente con el mismo nombre y apellido"
         } else { //Creamos un nuevo empleado
             let newCustomerEntity = Tb_Customer(context: self.mainContext)
             newCustomerEntity.idCustomer = customer.id
             newCustomerEntity.name = customer.name
             newCustomerEntity.lastName = customer.lastName
             newCustomerEntity.creditDays = Int64(customer.creditDays)
-            if let imageNN = customer.image {
-                if let imageEntity = imageNN.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                    newCustomerEntity.toImageUrl = imageEntity
-                } else {
-                    let newImage = Tb_ImageUrl(context: self.mainContext)
-                    newImage.idImageUrl = imageNN.id
-                    newImage.imageUrl = imageNN.imageUrl
-                    newImage.imageHash = imageNN.imageHash
-                    newCustomerEntity.toImageUrl = newImage
-                }
-            }
-            //newCustomerEntity.creditActive = customer.creditActive
+            newCustomerEntity.toImageUrl?.idImageUrl = customer.image?.id
             newCustomerEntity.creditLimit = Int64(customer.creditLimit.cents)
             newCustomerEntity.creditScore = 50
             newCustomerEntity.dateLimit = Date()
@@ -197,7 +165,6 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             newCustomerEntity.isCreditLimitActive = customer.isCreditLimitActive
             newCustomerEntity.toCompany?.idCompany = self.sessionConfig.companyId
             saveData()
-            return ""
         }
     }
     //R - Read

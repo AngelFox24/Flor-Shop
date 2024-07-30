@@ -14,7 +14,7 @@ enum RepositoryError: Error {
 protocol ProductRepository {
     func sync() async throws
     func saveProduct(product: Product) async throws
-    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) throws -> [Product]
+    func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
 }
 
 protocol Syncronizable {
@@ -36,7 +36,7 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
         if cloudBD {
             try await self.remoteManager.save(product: product)
         } else {
-            let _ = try self.localManager.saveProduct(product: product)
+            self.localManager.saveProduct(product: product)
         }
     }
     func sync() async throws {
@@ -46,16 +46,13 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
         repeat {
             print("Counter: \(counter)")
             counter += 1
-            guard let updatedSince = try localManager.getLastUpdated() else {
-                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
-            }
-            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
             let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = productsDTOs.count
             try self.localManager.sync(productsDTOs: productsDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func getListProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) throws -> [Product] {
-        return try localManager.getListProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)
+    func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
+        return localManager.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)
     }
 }

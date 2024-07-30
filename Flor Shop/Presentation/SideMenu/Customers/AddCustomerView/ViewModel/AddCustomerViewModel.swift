@@ -77,27 +77,16 @@ class AddCustomerViewModel: ObservableObject {
         fieldsAddCustomer.creditLimit = String(customer.creditLimit.cents)
         
     }
-    func addCustomer() async -> Bool {
+    func addCustomer() async throws {
         await MainActor.run {
             fieldsTrue()
         }
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let customer = createCustomer() else {
             print("No se pudo crear Cliente")
-            return false
+            throw LocalStorageError.notFound("No se pudo crear Cliente")
         }
-        let result = self.saveCustomerUseCase.execute(customer: customer)
-        if result == "" {
-            print("Se añadio correctamente")
-            await releaseResources()
-            return true
-        } else {
-            print(result)
-            await MainActor.run {
-                fieldsAddCustomer.errorBD = result
-            }
-            return false
-        }
+        try await self.saveCustomerUseCase.execute(customer: customer)
+        await releaseResources()
     }
     func createCustomer() -> Customer? {
         guard let totalDebt = Int(fieldsAddCustomer.totalDebt) else {

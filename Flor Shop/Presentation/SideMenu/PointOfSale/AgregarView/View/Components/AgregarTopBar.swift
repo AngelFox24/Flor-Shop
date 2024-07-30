@@ -13,6 +13,7 @@ struct AgregarTopBar: View {
     @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @EnvironmentObject var errorState: ErrorState
     @Binding var showMenu: Bool
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
@@ -21,17 +22,7 @@ struct AgregarTopBar: View {
             CustomButton5(showMenu: $showMenu)
             Spacer()
             Button(action: {
-                Task {
-                    loadingState.isLoading = true
-                    if await agregarViewModel.addProduct() {
-                        agregarViewModel.releaseResources()
-                        playSound(named: "Success1")
-                    } else {
-                        playSound(named: "Fail1")
-                        showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
-                    }
-                    loadingState.isLoading = false
-                }
+                saveProduct()
             }, label: {
                 CustomButton1(text: "Guardar")
             })
@@ -74,6 +65,21 @@ struct AgregarTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
+    }
+    private func saveProduct() {
+        Task {
+            loadingState.isLoading = true
+            do {
+                try await agregarViewModel.addProduct()
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?

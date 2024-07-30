@@ -35,7 +35,7 @@ extension Tb_Subsidiary {
 extension Tb_ImageUrl {
     func toImage() -> ImageUrl {
         return ImageUrl(
-            id: idImageUrl ?? UUID(),
+            id: idImageUrl!,
             imageUrl: imageUrl ?? "",
             imageHash: imageHash ?? "",
             createdAt: createdAt ?? minimunDate(),

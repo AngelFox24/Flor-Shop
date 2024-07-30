@@ -10,7 +10,7 @@ import CoreData
 
 protocol CustomerRepository {
     func sync() async throws
-    func addCustomer(customer: Customer) -> String
+    func addCustomer(customer: Customer)
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func updateCustomer(customer: Customer)
@@ -49,8 +49,8 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     //C - Create
-    func addCustomer(customer: Customer) -> String {
-        return self.localManager.addCustomer(customer: customer)
+    func addCustomer(customer: Customer) {
+        self.localManager.addCustomer(customer: customer)
     }
     //R - Read
     func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {

@@ -13,8 +13,7 @@ protocol LocalSaleManager {
     func sync(salesDTOs: [SaleDTO]) throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
     func getListSales () -> [Sale]
-    func getLastUpdated() throws -> Date?
-    func getSaleDTO(cart: Car?, customer: Customer?, paymentType: PaymentType) -> SaleDTO?
+    func getLastUpdated() -> Date
     func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -33,60 +32,93 @@ class LocalSaleManagerImpl: LocalSaleManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func saveData () {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en LocalSaleManager \(error)")
+    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) -> Bool {
+        let date: Date = Date()
+        var saveChanges: Bool = true
+        guard let cartEntity = getCartEntityById(cartId: cart.id) else {
+            return false
+        }
+        guard cart.cartDetails.isEmpty else {
+//            throw LocalStorageError.notFound("No se encontro productos en la solicitud de venta")
+            print("No se encontro productos en la solicitud de venta")
+            return false
+        }
+        let newSaleEntity = Tb_Sale(context: self.mainContext)
+        newSaleEntity.idSale = UUID()
+        newSaleEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
+        newSaleEntity.toEmployee?.idEmployee = self.sessionConfig.employeeId
+        if let customerId = customerId, let customerEntity = getCustomerEntityById(customerId: customerId) {
+            newSaleEntity.toCustomer = customerEntity
+            customerEntity.lastDatePurchase = date
+            if customerEntity.totalDebt == 0 {
+                var calendario = Calendar.current
+                calendario.timeZone = TimeZone(identifier: "UTC")!
+                customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
+            }
+            if paymentType == .loan {
+                customerEntity.firstDatePurchaseWithCredit = customerEntity.totalDebt == 0 ? Date() : customerEntity.firstDatePurchaseWithCredit
+                customerEntity.totalDebt = customerEntity.totalDebt + Int64(cart.total.cents)
+                if customerEntity.totalDebt > customerEntity.creditLimit && customerEntity.isCreditLimitActive {
+                    customerEntity.isCreditLimit = true
+                } else {
+                    customerEntity.isCreditLimit = false
+                }
+            }
+        }
+        newSaleEntity.paymentType = paymentType.description
+        newSaleEntity.saleDate = date
+        newSaleEntity.total = Int64(cart.total.cents)
+        //Agregamos detalles a la venta
+        for cartDetail in cart.cartDetails {
+            if let cartDetailEntity = cartDetail.toCartDetailEntity(context: self.mainContext) {
+                if reduceStock(cartDetailEntity: cartDetailEntity) {
+                    let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
+                    newSaleDetailEntity.idSaleDetail = UUID()
+                    newSaleDetailEntity.toImageUrl?.idImageUrl = cartDetail.product.image?.id
+                    newSaleDetailEntity.productName = cartDetail.product.name
+                    newSaleDetailEntity.unitCost = Int64(cartDetail.product.unitCost.cents)
+                    newSaleDetailEntity.unitPrice = Int64(cartDetail.product.unitPrice.cents)
+                    newSaleDetailEntity.quantitySold = Int64(cartDetail.quantity)
+                    newSaleDetailEntity.subtotal = Int64(cartDetail.subtotal.cents)
+                    newSaleDetailEntity.toSale = newSaleEntity
+                    //Eliminamos el detalle del carrito
+                    self.mainContext.delete(cartDetailEntity)
+                } else {
+                    saveChanges = false
+                }
+            } else {
+                saveChanges = false
+            }
+        }
+        cartEntity.total = 0
+        if saveChanges {
+            print("Se vendio correctamente")
+            saveData()
+        } else {
             rollback()
         }
+        return saveChanges
     }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    func getLastUpdated() throws -> Date? {
+    func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
-        var listDate: [Date?] = []
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
         let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary == %@ AND updatedAt != nil", subsidiaryEntity)
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND updatedAt != nil", self.sessionConfig.subsidiaryId.uuidString)
         let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
         do {
-            listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
+            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
+            guard let dateNN = date else {
+                return dateFrom!
+            }
+            return dateNN
         } catch let error {
             print("Error fetching. \(error)")
+            return dateFrom!
         }
-        guard let last = listDate[0] else {
-            print("Se retorna valor por defecto")
-            return dateFrom
-        }
-        print("Se retorna valor desde la BD")
-        return last
-    }
-    func getListSales() -> [Sale] {
-        var sales: [Tb_Sale] = []
-            let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
-            do {
-                sales = try self.mainContext.fetch(request)
-            } catch let error {
-                print("Error fetching. \(error)")
-            }
-        return sales.mapToListSale()
-    }
-    func getListCart() -> [Tb_Cart] {
-        var cart: [Tb_Cart] = []
-            let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
-            do {
-                cart = try self.mainContext.fetch(request)
-            } catch let error {
-                print("Error fetching. \(error)")
-            }
-        return cart
     }
     func payClientTotalDebt(customer: Customer) throws -> Bool {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
@@ -120,6 +152,16 @@ class LocalSaleManagerImpl: LocalSaleManager {
             print("El monto de deuda en la vista: \(customer.totalDebt) no coincide con la BD: \(totalDebtDB)")
             return false
         }
+    }
+    func getListSales() -> [Sale] {
+        var sales: [Tb_Sale] = []
+            let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
+            do {
+                sales = try self.mainContext.fetch(request)
+            } catch let error {
+                print("Error fetching. \(error)")
+            }
+        return sales.mapToListSale()
     }
     func getTotalDebtByCustomer(customer: Customer) throws -> Int {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
@@ -157,48 +199,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
             print("Error al obtener registros del Cliente: \(error)")
             return 0
         }
-    }
-    private func getStartDate(date: Date, interval: SalesDateInterval) -> Date {
-        var calendar = Calendar.current
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-        var startDateComponent = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-        
-        startDateComponent.hour = 0
-        startDateComponent.minute = 0
-        startDateComponent.second = 0
-        
-        switch interval {
-        case .diary:
-            break
-        case .monthly:
-            startDateComponent.day = 1
-        case .yearly:
-            startDateComponent.day = 1
-            startDateComponent.month = 1
-        }
-        return calendar.date(from: startDateComponent)!
-    }
-    private func getEndDate(date: Date, interval: SalesDateInterval) -> Date {
-        var calendar = Calendar.current
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-        var endDateComponent = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-        
-        endDateComponent.hour = 23
-        endDateComponent.minute = 59
-        endDateComponent.second = 59
-        
-        switch interval {
-        case .diary:
-            break
-        case .monthly:
-            endDateComponent.day = 0
-            endDateComponent.month! += 1
-        case .yearly:
-            endDateComponent.day = 0
-            endDateComponent.month = 1
-            endDateComponent.year! += 1
-        }
-        return calendar.date(from: endDateComponent)!
     }
     func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
@@ -284,8 +284,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Tb_SaleDetail")
         fetchRequest.fetchLimit = pageSize
         fetchRequest.fetchOffset = (page - 1) * pageSize
-        
-        //var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
         var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
         print("Star: \(startDate), End: \(endDate)")
         if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
@@ -321,7 +319,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
                       let totalByProduct = result["totalByProduct"] as? Int else {
                     return nil
                 }
-                
                 let paymentType: PaymentType = PaymentType.from(description: result["toSale.paymentType"] as? String ?? "")
                 let saleDate: Date = result["toSale.saleDate"] as? Date ?? Date()
                 
@@ -344,38 +341,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
             print("Error al recuperar datos: \(error.localizedDescription)")
             return []
         }
-    }
-    func getListSalesDetailsHistoric2(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
-        var salesDetailList: [SaleDetail] = []
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
-        let startDate = getStartDate(date: date, interval: interval)
-        let endDate = getEndDate(date: date, interval: interval)
-        
-        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
-        request.fetchLimit = pageSize
-        request.fetchOffset = (page - 1) * pageSize
-        
-        //var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
-        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
-        print("Star: \(startDate), End: \(endDate)")
-        if let saleEntity = sale?.toSaleEntity(context: self.mainContext) {
-            print("sale exist")
-            predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
-        }
-        request.predicate = predicate
-        let sortDescriptor = getOrder(order: order)
-        request.sortDescriptors = [sortDescriptor]
-        //Ordenamiento por fecha veremos si es necesario
-        /*
-         let sortDescriptor = getOrderFilter(order: primaryOrder)
-         request.sortDescriptors = [sortDescriptor]
-         */
-        do {
-            salesDetailList = try self.mainContext.fetch(request).mapToSaleDetailList()
-        } catch let error {
-            print("Error fetching. \(error)")
-        }
-        return salesDetailList
     }
     func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
@@ -442,24 +407,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
         } catch {
             print("Error al recuperar datos: \(error.localizedDescription)")
             return []
-        }
-    }
-    func completeImageSaleDetail(productName: String) -> ImageUrl? {
-        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
-        let filterAtt = NSPredicate(format: "productName == %@", productName)
-        let sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
-        request.predicate = filterAtt
-        request.sortDescriptors = [sortDescriptor]
-        do {
-            let saleDetailOut = try self.mainContext.fetch(request).first
-            if let saleDetailNN = saleDetailOut, let image = saleDetailNN.toImageUrl?.toImage() {
-                return image
-            } else {
-                return nil
-            }
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
         }
     }
     func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
@@ -559,151 +506,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return []
         }
     }
-    func completeImageCustomer(customerName: String) -> ImageUrl? {
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let filterAtt = NSPredicate(format: "name == %@", customerName)
-        request.predicate = filterAtt
-        do {
-            let customerOut = try self.mainContext.fetch(request).first
-            if let image = customerOut?.toImageUrl?.toImage() {
-                return image
-            } else {
-                return nil
-            }
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
-    func getOrder(order: SalesOrder) -> NSSortDescriptor {
-        var sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
-        switch order {
-        case .dateAsc:
-            sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
-        case .dateDesc:
-            sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: true)
-        case .quantityAsc:
-            sortDescriptor = NSSortDescriptor(key: "totalQuantity", ascending: true)
-        case .quantityDesc:
-            sortDescriptor = NSSortDescriptor(key: "totalQuantity", ascending: false)
-        case .incomeAsc:
-            sortDescriptor = NSSortDescriptor(key: "totalByProduct", ascending: true)
-        case .incomeDesc:
-            sortDescriptor = NSSortDescriptor(key: "totalByProduct", ascending: false)
-        }
-        return sortDescriptor
-    }
-    func getCustomerEntityById(customerId: UUID?) -> Tb_Customer? {
-        guard let customerId = customerId else {
-            return nil
-        }
-        let filterAtt = NSPredicate(format: "idCustomer == %@", customerId.uuidString)
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let customerEntity = try self.mainContext.fetch(request).first
-            return customerEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
-    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) -> Bool {
-        let date: Date = Date()
-        var saveChanges: Bool = true
-        guard let cartEntity = cart.toCartEntity(context: self.mainContext) else {
-            return false
-        }
-        guard cart.cartDetails.isEmpty else {
-//            throw LocalStorageError.notFound("No se encontro productos en la solicitud de venta")
-            print("No se encontro productos en la solicitud de venta")
-            return false
-        }
-        let newSaleEntity = Tb_Sale(context: self.mainContext)
-        newSaleEntity.idSale = UUID()
-        newSaleEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
-        newSaleEntity.toEmployee?.idEmployee = self.sessionConfig.employeeId
-        if let customerEntity = getCustomerEntityById(customerId: customerId) {
-            newSaleEntity.toCustomer = customerEntity
-            customerEntity.lastDatePurchase = date
-            if customerEntity.totalDebt == 0 {
-                var calendario = Calendar.current
-                calendario.timeZone = TimeZone(identifier: "UTC")!
-                customerEntity.dateLimit = calendario.date(byAdding: .day, value: Int(customerEntity.creditDays), to: Date())!
-            }
-            if paymentType == .loan {
-                customerEntity.firstDatePurchaseWithCredit = customerEntity.totalDebt == 0 ? Date() : customerEntity.firstDatePurchaseWithCredit
-                customerEntity.totalDebt = customerEntity.totalDebt + Int64(cart.total.cents)
-                if customerEntity.totalDebt > customerEntity.creditLimit && customerEntity.isCreditLimitActive {
-                    customerEntity.isCreditLimit = true
-                } else {
-                    customerEntity.isCreditLimit = false
-                }
-            }
-        }
-        newSaleEntity.paymentType = paymentType.description
-        newSaleEntity.saleDate = date
-        newSaleEntity.total = Int64(cart.total.cents)
-        //Agregamos detalles a la venta
-        for cartDetail in cart.cartDetails {
-            if let cartDetailEntity = cartDetail.toCartDetailEntity(context: self.mainContext) {
-                if reduceStock(cartDetailEntity: cartDetailEntity) {
-                    if let productEntity = cartDetailEntity.toProduct {
-                        let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
-                        newSaleDetailEntity.idSaleDetail = UUID()
-                        newSaleDetailEntity.toImageUrl?.idImageUrl = cartDetail.product.image?.id
-                        newSaleDetailEntity.productName = cartDetail.product.name
-                        newSaleDetailEntity.unitCost = Int64(cartDetail.product.unitCost.cents)
-                        newSaleDetailEntity.unitPrice = Int64(cartDetail.product.unitPrice.cents)
-                        newSaleDetailEntity.quantitySold = Int64(cartDetail.quantity)
-                        newSaleDetailEntity.subtotal = Int64(cartDetail.subtotal.cents)
-                        newSaleDetailEntity.toSale = newSaleEntity
-                        //Eliminamos el detalle del carrito
-                        self.mainContext.delete(cartDetailEntity)
-                    } else {
-                        saveChanges = false
-                    }
-                } else {
-                    saveChanges = false
-                }
-            } else {
-                saveChanges = false
-            }
-        }
-        cartEntity.total = 0
-        if saveChanges {
-            print("Se vendio correctamente")
-            saveData()
-        } else {
-            rollback()
-        }
-        return saveChanges
-    }
-//    func getEmployeeById(employeeId: UUID) throws -> Tb_Employee? {
-//        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
-//        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-//        let predicate = NSPredicate(format: "toSubsidiary == %@ AND idEmployee == %@", subsidiaryEntity, employeeId.uuidString)
-//        request.predicate = predicate
-//        request.fetchLimit = 1
-//        do {
-//            return try self.mainContext.fetch(request).first
-//        } catch let error {
-//            print("Error fetching. \(error)")
-//            return nil
-//        }
-//    }
-    func getCustomerById(customerId: UUID) -> Tb_Customer? {
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate = NSPredicate(format: "idCustomer == %@", customerId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            return try self.mainContext.fetch(request).first
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func sync(salesDTOs: [SaleDTO]) throws {
         for saleDTO in salesDTOs {
             guard self.sessionConfig.subsidiaryId == saleDTO.subsidiaryId else {
@@ -716,7 +518,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             newSaleEntity.idSale = saleDTO.id
             newSaleEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
             newSaleEntity.toEmployee?.idEmployee = self.sessionConfig.employeeId
-            if let customerId = saleDTO.customerId, let customerEntity = getCustomerById(customerId: customerId) {
+            if let customerId = saleDTO.customerId, let customerEntity = getCustomerEntityById(customerId: customerId) {
                 newSaleEntity.toCustomer = customerEntity
             }
             newSaleEntity.paymentType = saleDTO.paymentType
@@ -736,59 +538,59 @@ class LocalSaleManagerImpl: LocalSaleManager {
         }
         saveData()
     }
-    func getSaleDTO(cart: Car?, customer: Customer?, paymentType: PaymentType) -> SaleDTO? {
-        let subsidiaryId = sessionConfig.subsidiaryId
-        //Verificamos si existe el carrito
-        guard let cartEntity = cart?.toCartEntity(context: self.mainContext) else {
-            print("El carrito para la venta no existe")
-            return nil
+    //MARK: Private Functions
+    private func saveData () {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en LocalSaleManager \(error)")
+            rollback()
         }
-        let customerId = customer?.toCustomerEntity(context: self.mainContext)?.idCustomer
-        //Verificamos si el carrito pertenece a un empleado
-        guard let employeeEntity = cartEntity.toEmployee, let employeeId = employeeEntity.idEmployee else {
-            print("El carrito no tiene un empleado")
-            return nil
+    }
+    private func rollback() {
+        self.mainContext.rollback()
+    }
+    private func getStartDate(date: Date, interval: SalesDateInterval) -> Date {
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        var startDateComponent = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        
+        startDateComponent.hour = 0
+        startDateComponent.minute = 0
+        startDateComponent.second = 0
+        
+        switch interval {
+        case .diary:
+            break
+        case .monthly:
+            startDateComponent.day = 1
+        case .yearly:
+            startDateComponent.day = 1
+            startDateComponent.month = 1
         }
-        //Obtenemos los detalles de los productos
-        guard let cartDetailEntitySet = cartEntity.toCartDetail as? Set<Tb_CartDetail> else {
-            return nil
+        return calendar.date(from: startDateComponent)!
+    }
+    private func getEndDate(date: Date, interval: SalesDateInterval) -> Date {
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        var endDateComponent = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        
+        endDateComponent.hour = 23
+        endDateComponent.minute = 59
+        endDateComponent.second = 59
+        
+        switch interval {
+        case .diary:
+            break
+        case .monthly:
+            endDateComponent.day = 0
+            endDateComponent.month! += 1
+        case .yearly:
+            endDateComponent.day = 0
+            endDateComponent.month = 1
+            endDateComponent.year! += 1
         }
-        let saleId = UUID()
-        var listSaleDetails: [SaleDetailDTO] = []
-        var total: Int = 0
-        for cartDetail in cartDetailEntitySet {
-            if let productInCart = cartDetail.toProduct {
-                let product = productInCart.toProduct()
-                let saleDetailDTO = SaleDetailDTO(
-                    id: UUID(),
-                    productName: product.name,
-                    barCode: product.barCode ?? "",
-                    quantitySold: product.qty,
-                    subtotal: product.qty * product.unitPrice.cents,
-                    unitType: product.unitType.rawValue,
-                    unitCost: product.unitCost.cents,
-                    unitPrice: product.unitPrice.cents,
-                    saleID: saleId,
-                    imageUrl: product.image?.toImageUrlDTO(),
-                    createdAt: product.createdAt.description,
-                    updatedAt: product.updatedAt.description
-                )
-                total += saleDetailDTO.subtotal
-                listSaleDetails.append(saleDetailDTO)
-            }
-        }
-        return SaleDTO(
-            id: saleId,
-            paymentType: paymentType.description,
-            saleDate: Date(),
-            total: total,
-            subsidiaryId: subsidiaryId,
-            customerId: customerId,
-            employeeId: employeeId,
-            saleDetail: listSaleDetails,
-            createdAt: Date().description,
-            updatedAt: Date().description
-        )
+        return calendar.date(from: endDateComponent)!
     }
     private func reduceStock(cartDetailEntity: Tb_CartDetail) -> Bool {
         guard let productEntity = cartDetailEntity.toProduct else {
@@ -802,5 +604,82 @@ class LocalSaleManagerImpl: LocalSaleManager {
             print("No hay stock suficiente")
             return false
         }
+    }
+    private func getCustomerEntityById(customerId: UUID) -> Tb_Customer? {
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        let filterAtt = NSPredicate(format: "idCustomer == %@", customerId.uuidString)
+        request.predicate = filterAtt
+        request.fetchLimit = 1
+        do {
+            let customerEntity = try self.mainContext.fetch(request).first
+            return customerEntity
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func getCartEntityById(cartId: UUID) -> Tb_Cart? {
+        let filterAtt = NSPredicate(format: "idCart == %@", cartId.uuidString)
+        let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let cartEntity = try self.mainContext.fetch(request).first
+            return cartEntity
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func completeImageCustomer(customerName: String) -> ImageUrl? {
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        let filterAtt = NSPredicate(format: "name == %@", customerName)
+        request.predicate = filterAtt
+        do {
+            let customerOut = try self.mainContext.fetch(request).first
+            if let image = customerOut?.toImageUrl?.toImage() {
+                return image
+            } else {
+                return nil
+            }
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func completeImageSaleDetail(productName: String) -> ImageUrl? {
+        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
+        let filterAtt = NSPredicate(format: "productName == %@", productName)
+        let sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        request.predicate = filterAtt
+        request.sortDescriptors = [sortDescriptor]
+        do {
+            let saleDetailOut = try self.mainContext.fetch(request).first
+            if let saleDetailNN = saleDetailOut, let image = saleDetailNN.toImageUrl?.toImage() {
+                return image
+            } else {
+                return nil
+            }
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func getOrder(order: SalesOrder) -> NSSortDescriptor {
+        var sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        switch order {
+        case .dateAsc:
+            sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
+        case .dateDesc:
+            sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: true)
+        case .quantityAsc:
+            sortDescriptor = NSSortDescriptor(key: "totalQuantity", ascending: true)
+        case .quantityDesc:
+            sortDescriptor = NSSortDescriptor(key: "totalQuantity", ascending: false)
+        case .incomeAsc:
+            sortDescriptor = NSSortDescriptor(key: "totalByProduct", ascending: true)
+        case .incomeDesc:
+            sortDescriptor = NSSortDescriptor(key: "totalByProduct", ascending: false)
+        }
+        return sortDescriptor
     }
 }

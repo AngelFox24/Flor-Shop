@@ -47,45 +47,17 @@ class AgregarViewModel: ObservableObject {
             self.agregarFields.productEdited = true
         }
     }
-    func addProduct() async -> Bool {
+    func addProduct() async throws {
         await MainActor.run {
             agregarFields.fieldsTrue()
         }
-//        try? await Task.sleep(nanoseconds: 1_000_000_000)
         guard let product = createProduct() else {
             print("No se pudo crear producto")
-            return false
+            throw LocalStorageError.notFound("No se pudo crear el producto")
         }
-        do {
-            let result = try await self.saveProductUseCase.execute(product: product)
-            if result == "Success" {
-                print("Se añadio correctamente")
-                await MainActor.run {
-                    releaseResources()
-                }
-                return true
-            } else {
-                print(result)
-                await MainActor.run {
-                    self.agregarFields.errorBD = result
-                }
-                return false
-            }
-        } catch {
-            await MainActor.run {
-                releaseResources()
-                if let repositoryError = error as? RepositoryError {
-                    switch repositoryError {
-                    case .syncFailed(let message):
-                        self.agregarFields.errorBD = message
-                    case .invalidFields(let message):
-                        self.agregarFields.errorBD = message
-                    }
-                } else {
-                    self.agregarFields.errorBD = error.localizedDescription
-                }
-            }
-            return false
+        try await self.saveProductUseCase.execute(product: product)
+        await MainActor.run {
+            releaseResources()
         }
     }
     func editProduct(product: Product) {

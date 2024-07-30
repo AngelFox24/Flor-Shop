@@ -11,7 +11,7 @@ import CoreData
 protocol LocalEmployeeManager {
     func sync(employeesDTOs: [EmployeeDTO]) throws
     func getLastUpdated() throws -> Date?
-    func addEmployee(employee: Employee) -> Bool
+    func addEmployee(employee: Employee)
     func getEmployees() -> [Employee]
     func logIn(user: String, password: String) -> Employee?
     func getSessionSubsidiary() throws -> Subsidiary
@@ -105,14 +105,13 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         return subsidiaryEntity.toSubsidiary()
     }
     //C - Create
-    func addEmployee(employee: Employee) -> Bool {
+    func addEmployee(employee: Employee) {
+        //TODO: Refactor this
         if employee.toEmployeeEntity(context: mainContext) != nil { //Busqueda por id
             print("Empleado ya existe: \(String(describing: employee.name))")
             rollback()
-            return false
         } else if employeeExist(employee: employee) { //Comprobamos si existe el mismo empleado por otros atributos
             rollback()
-            return false
         } else { //Creamos un nuevo empleado
             let newEmployeeEntity = Tb_Employee(context: self.mainContext)
             newEmployeeEntity.idEmployee = employee.id
@@ -133,7 +132,6 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 }
             }
             saveData()
-            return true
         }
     }
     //R - Read

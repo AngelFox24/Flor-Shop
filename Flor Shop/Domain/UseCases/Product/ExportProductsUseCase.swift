@@ -38,13 +38,13 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                 // Data a escribir (simulando un gran dataset)
                 var products: [Product]
                 var page: Int = 1
-                products = try self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
+                products = self.productRepository.getProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
                 print("Reciviendo primer lote: \(products.count)")
                 while !products.isEmpty {
                     print("Iterando")
                     // Escribir cada fila en el archivo
                     for product in products {
-                        var idProduct = product.id.description
+                        let idProduct = product.id.description
                         var imageURL: String = product.image?.imageUrl ?? ""
                         imageURL = imageURL.replacingOccurrences(of: "\\r\\n|\\n|\\r", with: "", options: .regularExpression)
                         imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
@@ -63,7 +63,7 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                     }
                     // Agregar mas productos
                     page += 1
-                    products = try self.productRepository.getListProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
+                    products = self.productRepository.getProducts(seachText: "", primaryOrder: .nameAsc, filterAttribute: .allProducts, page: page, pageSize: 50)
                 }
                 // Cerrar el archivo
                 print("Cerrando Archivo")

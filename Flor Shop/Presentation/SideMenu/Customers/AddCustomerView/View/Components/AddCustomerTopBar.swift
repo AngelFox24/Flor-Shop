@@ -12,6 +12,7 @@ import AVFoundation
 
 struct AddCustomerTopBar: View {
     @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
@@ -28,19 +29,7 @@ struct AddCustomerTopBar: View {
                 })
                 Spacer()
                 Button(action: {
-                    Task {
-                        loadingState.isLoading = true
-                        if await addCustomerViewModel.addCustomer() {
-                            customerHistoryViewModel.updateData()
-                            playSound(named: "Success1")
-                            navManager.goToBack()
-                        } else {
-                            addCustomerViewModel.fieldsTrue()
-                            playSound(named: "Fail1")
-                            showingErrorAlert = addCustomerViewModel.fieldsAddCustomer.errorBD == "" ? false : true
-                        }
-                        loadingState.isLoading = false
-                    }
+                    addCustomer()
                 }, label: {
                     CustomButton1(text: "Guardar")
                 })
@@ -51,6 +40,23 @@ struct AddCustomerTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
+    }
+    func addCustomer() {
+        Task {
+            loadingState.isLoading = true
+            do {
+                try await addCustomerViewModel.addCustomer()
+                playSound(named: "Success1")
+                customerHistoryViewModel.updateData()
+                navManager.goToBack()
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?

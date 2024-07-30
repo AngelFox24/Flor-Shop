@@ -45,10 +45,7 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
         var items = 0
         repeat {
             counter += 1
-            guard let updatedSince = try localManager.getLastUpdated() else {
-                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
-            }
-            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
             let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = salesDTOs.count
             print("Items Sync: \(items)")

@@ -8,16 +8,23 @@
 import Foundation
 
 protocol SaveProductUseCase {
-    func execute(product: Product) async throws -> String
+    func execute(product: Product) async throws
 }
 final class SaveProductInteractor: SaveProductUseCase {
     let productRepository: ProductRepository
-    init(productRepository: ProductRepository) {
+    let imageRepository: ImageRepository
+    init(
+        productRepository: ProductRepository,
+        imageRepository: ImageRepository
+    ) {
         self.productRepository = productRepository
+        self.imageRepository = imageRepository
     }
-    func execute(product: Product) async throws -> String {
-        //return self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
-        try await self.productRepository.saveProduct(product: product)
-        return "success"
+    func execute(product: Product) async throws {
+        var productIn = product
+        if let image = productIn.image {
+            productIn.image = try self.imageRepository.saveImage(image: image)
+        }
+        try await self.productRepository.saveProduct(product: productIn)
     }
 }

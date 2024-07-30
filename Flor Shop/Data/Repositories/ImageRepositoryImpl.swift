@@ -14,6 +14,7 @@ protocol ImageRepository {
     func loadSavedImage(id: UUID) -> UIImage?
     func downloadImage(url: URL) async -> UIImage?
     func saveImage(idImage: UUID, image: UIImage) -> ImageUrl?
+    func saveImage(image: ImageUrl) throws -> ImageUrl
 }
 
 class ImageRepositoryImpl: ImageRepository, Syncronizable {
@@ -26,6 +27,9 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
     ) {
         self.localManager = localManager
         self.remoteManager = remoteManager
+    }
+    func saveImage(image: ImageUrl) throws -> ImageUrl {
+        return try self.localManager.saveImage(image: image)
     }
     func sync() async throws {
         var counter = 0

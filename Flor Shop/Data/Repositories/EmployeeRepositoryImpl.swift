@@ -11,7 +11,7 @@ import CoreData
 protocol EmployeeRepository {
     func sync() async throws
     func logIn(user: String, password: String) -> Employee?
-    func addEmployee(employee: Employee) -> Bool
+    func addEmployee(employee: Employee)
     func getEmployees() -> [Employee]
 }
 
@@ -47,8 +47,8 @@ class EmployeeRepositoryImpl: EmployeeRepository, Syncronizable {
         return self.localManager.logIn(user: user, password: password)
     }
     //C - Create
-    func addEmployee(employee: Employee) -> Bool {
-        return self.localManager.addEmployee(employee: employee)
+    func addEmployee(employee: Employee) {
+        self.localManager.addEmployee(employee: employee)
     }
     //R - Read
     func getEmployees() -> [Employee] {

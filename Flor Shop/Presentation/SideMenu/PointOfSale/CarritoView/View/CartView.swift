@@ -58,11 +58,7 @@ struct ListCartController: View {
                             .listRowBackground(Color("color_background"))
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(role: .destructive, action: {
-                                    Task {
-                                        loadingState.isLoading = true
-                                        await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
-                                        loadingState.isLoading = false
-                                    }
+                                    deleteCartDetail(cartDetail: cartDetail)
                                 }, label: {
                                     Image(systemName: "trash")
                                 })
@@ -102,6 +98,13 @@ struct ListCartController: View {
     }
     func goToPay() {
         navManager.goToPaymentView()
+    }
+    func deleteCartDetail(cartDetail: CartDetail) {
+        Task {
+            loadingState.isLoading = true
+            await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+            loadingState.isLoading = false
+        }
     }
     func decreceProductAmount(cartDetail: CartDetail) {
         Task {

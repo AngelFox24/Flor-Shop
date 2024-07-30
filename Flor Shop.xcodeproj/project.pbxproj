@@ -918,8 +918,8 @@
 		27F2F4552B1DE9FD003E4197 /* CoreDataPersistenceManager */ = {
 			isa = PBXGroup;
 			children = (
-				68A4B1082A196B7500FC8D9D /* CoreDataProvider.swift */,
 				27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */,
+				68A4B1082A196B7500FC8D9D /* CoreDataProvider.swift */,
 				278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */,
 			);
 			path = CoreDataPersistenceManager;
