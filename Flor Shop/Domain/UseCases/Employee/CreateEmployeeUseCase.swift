@@ -27,8 +27,8 @@ final class CreateEmployeeInteractor: CreateEmployeeUseCase {
     func execute(employee: Employee) async throws {
         var employeeIn = employee
         if let image = employeeIn.image {
-            employeeIn.image = try self.imageRepository.saveImage(image: image)
+            employeeIn.image = try self.imageRepository.save(image: image)
         }
-        self.employeeRepository.addEmployee(employee: employeeIn)
+        self.employeeRepository.save(employee: employeeIn)
     }
 }

@@ -10,11 +10,9 @@ import CoreData
 
 protocol LocalEmployeeManager {
     func sync(employeesDTOs: [EmployeeDTO]) throws
-    func getLastUpdated() throws -> Date?
-    func addEmployee(employee: Employee)
+    func getLastUpdated() -> Date
+    func save(employee: Employee)
     func getEmployees() -> [Employee]
-    func logIn(user: String, password: String) -> Employee?
-    func getSessionSubsidiary() throws -> Subsidiary
 }
 
 class LocalEmployeeManagerImpl: LocalEmployeeManager {
@@ -27,17 +25,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func saveData() {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
-        }
-    }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    func getLastUpdated() throws -> Date? {
+    func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
@@ -47,34 +35,23 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
-        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
-        guard let last = listDate[0] else {
-            print("Se retorna valor por defecto")
-            return dateFrom
-        }
-        print("Se retorna valor desde la BD")
-        return last
-    }
-    private func getEmployeeById(employeeId: UUID) -> Tb_Employee? {
-        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
         do {
-            let result = try self.mainContext.fetch(request).first
-            return result
+            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
+            guard let dateNN = date else {
+                return dateFrom!
+            }
+            return dateNN
         } catch let error {
             print("Error fetching. \(error)")
-            return nil
+            return dateFrom!
         }
     }
-    //Sync
     func sync(employeesDTOs: [EmployeeDTO]) throws {
         for employeeDTO in employeesDTOs {
             guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
                 throw LocalStorageError.notFound("La subsidiaria no es la misma")
             }
-            if let employeeEntity = getEmployeeById(employeeId: employeeDTO.id) {
+            if let employeeEntity = getEmployeeEntityById(employeeId: employeeDTO.id) {
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
@@ -100,16 +77,18 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         }
         saveData()
     }
-    func getSessionSubsidiary() throws -> Subsidiary {
-        let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
-        return subsidiaryEntity.toSubsidiary()
-    }
-    //C - Create
-    func addEmployee(employee: Employee) {
-        //TODO: Refactor this
-        if employee.toEmployeeEntity(context: mainContext) != nil { //Busqueda por id
-            print("Empleado ya existe: \(String(describing: employee.name))")
-            rollback()
+    func save(employee: Employee) {
+        if let employeeEntity = getEmployeeEntityById(employeeId: employee.id) { //Busqueda por id
+            employeeEntity.name = employee.name
+            employeeEntity.lastName = employee.lastName
+            employeeEntity.active = employee.active
+            employeeEntity.email = employee.email
+            employeeEntity.phoneNumber = employee.phoneNumber
+            employeeEntity.role = employee.role
+            employeeEntity.user = employee.user
+            employeeEntity.toImageUrl?.idImageUrl = employee.image?.id
+            employeeEntity.updatedAt = Date()
+            saveData()
         } else if employeeExist(employee: employee) { //Comprobamos si existe el mismo empleado por otros atributos
             rollback()
         } else { //Creamos un nuevo empleado
@@ -121,20 +100,10 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             newEmployeeEntity.role = employee.role
             newEmployeeEntity.active = employee.active
             newEmployeeEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
-            if let imageEntity = employee.image?.toImageUrlEntity(context: self.mainContext) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
-                newEmployeeEntity.toImageUrl = imageEntity
-            } else { // Si no existe creamos uno nuevo
-                if let imageCl = employee.image {
-                    let newImage = Tb_ImageUrl(context: self.mainContext)
-                    newImage.idImageUrl = imageCl.id
-                    newImage.imageUrl = imageCl.imageUrl
-                    newEmployeeEntity.toImageUrl = newImage
-                }
-            }
+            newEmployeeEntity.toImageUrl?.idImageUrl = employee.image?.id
             saveData()
         }
     }
-    //R - Read
     func getEmployees() -> [Employee] {
         let filterAtt = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
@@ -147,23 +116,6 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             return []
         }
     }
-    func logIn(user: String, password: String) -> Employee? {
-        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        print("Se intenta buscar en BD al empleado \(user)")
-        let filterAtt = NSPredicate(format: "email == %@", user)
-        request.predicate = filterAtt
-        do {
-            let employeeList = try self.mainContext.fetch(request)
-            print("Contamos los empleados \(employeeList.count)")
-            for employee in employeeList {
-                print("nombre: \(String(describing: employee.name)) email: \(String(describing: employee.email))")
-            }
-            return employeeList.first?.toEmployee()
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func employeeExist(employee: Employee) -> Bool {
         let filterAtt = NSPredicate(format: "(name == %@ AND lastName == %@) OR email == %@", employee.name, employee.lastName, employee.email)
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
@@ -174,6 +126,31 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         } catch let error {
             print("Error fetching. \(error)")
             return false
+        }
+    }
+    //MARK: Private Funtions
+    private func saveData() {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en LocalEmployeeManager: \(error)")
+            rollback()
+        }
+    }
+    private func rollback() {
+        self.mainContext.rollback()
+    }
+    private func getEmployeeEntityById(employeeId: UUID) -> Tb_Employee? {
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
         }
     }
 }

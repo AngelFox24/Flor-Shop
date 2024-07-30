@@ -10,8 +10,7 @@ import CoreData
 
 protocol CompanyRepository {
     func sync() async throws
-    func addCompany(company: Company) -> Bool
-    func getSessionCompany() throws -> Company
+    func save(company: Company) throws
 }
 
 class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
@@ -41,12 +40,7 @@ class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
             try self.localManager.sync(companyDTO: companyDTO)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    //C - Create
-    func addCompany(company: Company) -> Bool {
-        self.localManager.addCompany(company: company)
-    }
-    //R - Read
-    func getSessionCompany() throws -> Company {
-        return try self.localManager.getSessionCompany()
+    func save(company: Company) throws {
+        try self.localManager.save(company: company)
     }
 }

@@ -19,6 +19,6 @@ final class CreateSubsidiaryInteractor: CreateSubsidiaryUseCase {
     }
      
     func execute(subsidiary: Subsidiary) async throws {
-        return try await self.subsidiaryRepository.addSubsidiary(subsidiary: subsidiary)
+        return try await self.subsidiaryRepository.save(subsidiary: subsidiary)
     }
 }

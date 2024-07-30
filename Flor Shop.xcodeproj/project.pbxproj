@@ -654,14 +654,13 @@
 		27B125C32C417C1F00E6EAA2 /* RemoteManager */ = {
 			isa = PBXGroup;
 			children = (
-				278CA6472C42DEBB00C200C5 /* NetworkManager */,
-				270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */,
-				27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */,
+				273F70E52C53118000F2B8CF /* RemoteImageManager.swift */,
 				278CA6502C43093F00C200C5 /* RemoteCompanyManager.swift */,
 				278CA6562C43308C00C200C5 /* RemoteSubsidiaryManager.swift */,
 				278CA6522C43119E00C200C5 /* RemoteCustomerManager.swift */,
 				278CA6542C432CA000C200C5 /* RemoteEmployeeManager.swift */,
-				273F70E52C53118000F2B8CF /* RemoteImageManager.swift */,
+				270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */,
+				27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */,
 			);
 			path = RemoteManager;
 			sourceTree = "<group>";
@@ -685,16 +684,16 @@
 		27B125C82C41BEDF00E6EAA2 /* DTOs */ = {
 			isa = PBXGroup;
 			children = (
-				27B125C92C41BEEC00E6EAA2 /* ProductDTO.swift */,
+				27B125D12C41BFFE00E6EAA2 /* ImageURLDTO.swift */,
 				27B125CB2C41BFB300E6EAA2 /* CompanyDTO.swift */,
+				27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */,
 				27B125CD2C41BFCD00E6EAA2 /* CustomerDTO.swift */,
 				27B125CF2C41BFE600E6EAA2 /* EmployeeDTO.swift */,
-				27B125D12C41BFFE00E6EAA2 /* ImageURLDTO.swift */,
-				27B125D52C41C03600E6EAA2 /* SaleDTO.swift */,
-				27B125D32C41C01A00E6EAA2 /* SaleDetailDTO.swift */,
-				27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */,
 				2729CC102C51AFE70096B841 /* CartDTO.swift */,
 				2729CC122C51B00B0096B841 /* CartDetailDTO.swift */,
+				27B125C92C41BEEC00E6EAA2 /* ProductDTO.swift */,
+				27B125D52C41C03600E6EAA2 /* SaleDTO.swift */,
+				27B125D32C41C01A00E6EAA2 /* SaleDetailDTO.swift */,
 			);
 			path = DTOs;
 			sourceTree = "<group>";
@@ -909,26 +908,27 @@
 			isa = PBXGroup;
 			children = (
 				270B71CB2BBB81B0002D79D6 /* OptimizedFuntions */,
-				27F2F4552B1DE9FD003E4197 /* CoreDataPersistenceManager */,
-				68A4B10B2A196C5400FC8D9D /* LocalStorage */,
+				27F2F4552B1DE9FD003E4197 /* CoreDataManager */,
+				68A4B10B2A196C5400FC8D9D /* LocalManager */,
 			);
 			path = PersistentStorage;
 			sourceTree = "<group>";
 		};
-		27F2F4552B1DE9FD003E4197 /* CoreDataPersistenceManager */ = {
+		27F2F4552B1DE9FD003E4197 /* CoreDataManager */ = {
 			isa = PBXGroup;
 			children = (
 				27C318D229F2FA45004CC146 /* BDFlor.xcdatamodeld */,
 				68A4B1082A196B7500FC8D9D /* CoreDataProvider.swift */,
 				278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */,
 			);
-			path = CoreDataPersistenceManager;
+			path = CoreDataManager;
 			sourceTree = "<group>";
 		};
 		27F2F4562B1DEA3A003E4197 /* Network */ = {
 			isa = PBXGroup;
 			children = (
 				27F2F4572B1DEA7C003E4197 /* Firebase */,
+				278CA6472C42DEBB00C200C5 /* NetworkManager */,
 				27B125C32C417C1F00E6EAA2 /* RemoteManager */,
 			);
 			path = Network;
@@ -970,15 +970,15 @@
 				27B125C82C41BEDF00E6EAA2 /* DTOs */,
 				2776A2EE2A86F34300410674 /* Enums */,
 				278CA6442C42D06B00C200C5 /* SubEntity */,
-				68A4B1122A19835200FC8D9D /* Product.swift */,
-				2728EAB12A1B0E02002B534A /* Car.swift */,
-				27E7A51B2A1D18570042983D /* CartDetail.swift */,
-				2728EAB32A1B0E0D002B534A /* Sale.swift */,
+				279C64A12A8D961B003B29BC /* ImageUrl.swift */,
 				279C649D2A8D9488003B29BC /* Company.swift */,
 				279C649F2A8D9539003B29BC /* Subsidiary.swift */,
-				279C64A12A8D961B003B29BC /* ImageUrl.swift */,
-				279C64A32A8D977C003B29BC /* Employee.swift */,
 				279C64A52A8D97E1003B29BC /* Customer.swift */,
+				279C64A32A8D977C003B29BC /* Employee.swift */,
+				2728EAB12A1B0E02002B534A /* Car.swift */,
+				27E7A51B2A1D18570042983D /* CartDetail.swift */,
+				68A4B1122A19835200FC8D9D /* Product.swift */,
+				2728EAB32A1B0E0D002B534A /* Sale.swift */,
 				279C64A72A8D9823003B29BC /* SaleDetail.swift */,
 			);
 			path = Entities;
@@ -987,17 +987,17 @@
 		27F2F45B2B1DED15003E4197 /* UseCases */ = {
 			isa = PBXGroup;
 			children = (
+				2777D77D2B1EF5FE003C2FCA /* Session */,
 				27B125C42C41B89C00E6EAA2 /* Synchronizer */,
 				2752129A2BC969D1005E2016 /* Image */,
-				2735D45E2B21EB7400C892AF /* SaleDetail */,
-				273576962B1FAEAC00E9CF12 /* Sale */,
-				273576952B1FAE8C00E9CF12 /* Cart */,
-				273576942B1FAE6C00E9CF12 /* Employee */,
+				273576902B1FADE800E9CF12 /* Company */,
 				273576932B1FAE4D00E9CF12 /* Subsidiary */,
 				273576922B1FAE3500E9CF12 /* Customer */,
+				273576942B1FAE6C00E9CF12 /* Employee */,
+				273576952B1FAE8C00E9CF12 /* Cart */,
 				273576912B1FAE0A00E9CF12 /* Product */,
-				273576902B1FADE800E9CF12 /* Company */,
-				2777D77D2B1EF5FE003C2FCA /* Session */,
+				273576962B1FAEAC00E9CF12 /* Sale */,
+				2735D45E2B21EB7400C892AF /* SaleDetail */,
 			);
 			path = UseCases;
 			sourceTree = "<group>";
@@ -1404,33 +1404,33 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
-		68A4B10B2A196C5400FC8D9D /* LocalStorage */ = {
+		68A4B10B2A196C5400FC8D9D /* LocalManager */ = {
 			isa = PBXGroup;
 			children = (
-				68D990C12A1ADEA700A3A393 /* LocalProductManager.swift */,
-				2728EAAB2A1B0BA4002B534A /* LocalSaleManager.swift */,
-				2728EAA92A1B0B89002B534A /* LocalCartManager.swift */,
+				27E113462A992B4C0027728A /* LocalImageManager.swift */,
 				279C648F2A8D7912003B29BC /* LocalCompanyManager.swift */,
 				279C648D2A8D78FF003B29BC /* LocalSubsidiaryManager.swift */,
-				279C64972A8D89A2003B29BC /* LocalEmployeeManager.swift */,
 				279C64992A8D89BB003B29BC /* LocalCustomerManager.swift */,
-				27E113462A992B4C0027728A /* LocalImageManager.swift */,
+				279C64972A8D89A2003B29BC /* LocalEmployeeManager.swift */,
+				2728EAA92A1B0B89002B534A /* LocalCartManager.swift */,
+				68D990C12A1ADEA700A3A393 /* LocalProductManager.swift */,
+				2728EAAB2A1B0BA4002B534A /* LocalSaleManager.swift */,
 			);
-			path = LocalStorage;
+			path = LocalManager;
 			sourceTree = "<group>";
 		};
 		68D990C02A1ADE8000A3A393 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
 				274D4EEB2C45BAB000C54430 /* Session Configuration */,
+				275212982BC968DE005E2016 /* ImageRepositoryImpl.swift */,
+				279C64892A8D78B8003B29BC /* CompanyRepositoryImpl.swift */,
+				279C64872A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift */,
+				279C64952A8D798A003B29BC /* CustomerRepositoryImpl.swift */,
+				279C64932A8D796D003B29BC /* EmployeeRepositoryImpl.swift */,
+				2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */,
 				68A4B10F2A197BFB00FC8D9D /* ProductRepositoryImpl.swift */,
 				2728EAAD2A1B0BC2002B534A /* SaleRepositoryImpl.swift */,
-				2728EAAF2A1B0BD5002B534A /* CarRepositoryImpl.swift */,
-				279C64872A8D7880003B29BC /* SubsidiaryRepositoryImpl.swift */,
-				279C64892A8D78B8003B29BC /* CompanyRepositoryImpl.swift */,
-				279C64932A8D796D003B29BC /* EmployeeRepositoryImpl.swift */,
-				279C64952A8D798A003B29BC /* CustomerRepositoryImpl.swift */,
-				275212982BC968DE005E2016 /* ImageRepositoryImpl.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";

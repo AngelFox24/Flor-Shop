@@ -10,7 +10,6 @@ import CoreData
 
 protocol SaleRepository {
     func sync() async throws
-//    func save(customerId: UUID?, employeeId: UUID, sale: Sale) async throws
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
     func getListSales() -> [Sale]

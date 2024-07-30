@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol LocalProductManager {
-    func saveProduct(product: Product)
+    func save(product: Product)
     func sync(productsDTOs: [ProductDTO]) throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     func getLastUpdated() -> Date
@@ -68,7 +68,7 @@ class LocalProductManagerImpl: LocalProductManager {
             return []
         }
     }
-    func saveProduct(product: Product) {
+    func save(product: Product) {
         if let productEntity = getProductById(productId: product.id) {
             productEntity.productName = product.name
             productEntity.active = product.active

@@ -19,7 +19,6 @@ protocol CarRepository {
 
 class CarRepositoryImpl: CarRepository {
     let localManager: LocalCartManager
-    // let remote:  remoto
     init(
         localManager: LocalCartManager
     ) {

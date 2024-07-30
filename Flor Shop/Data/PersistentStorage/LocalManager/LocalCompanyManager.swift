@@ -11,8 +11,7 @@ import CoreData
 protocol LocalCompanyManager {
     func getLastUpdated() throws -> Date?
     func sync(companyDTO: CompanyDTO) throws
-    func addCompany(company: Company) -> Bool
-    func getSessionCompany() throws -> Company
+    func save(company: Company) throws
 }
 
 class LocalCompanyManagerImpl: LocalCompanyManager {
@@ -24,29 +23,6 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
-    }
-    func saveData() {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
-        }
-    }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    private func getCompanyById(companyId: UUID) -> Tb_Company? {
-        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let predicate = NSPredicate(format: "idCompany == %@", self.sessionConfig.companyId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
     }
     func getLastUpdated() throws -> Date? {
         let calendar = Calendar(identifier: .gregorian)
@@ -66,12 +42,11 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         print("Se retorna valor desde la BD")
         return last
     }
-    //Sync
     func sync(companyDTO: CompanyDTO) throws {
         guard self.sessionConfig.companyId == companyDTO.id else {
             throw LocalStorageError.notFound("La compañia no es la misma")
         }
-        if let companyEntity = getCompanyById(companyId: companyDTO.id) {
+        if let companyEntity = getCompanyEntityById(companyId: companyDTO.id) {
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
             companyEntity.createdAt = companyDTO.createdAt.internetDateTime()
@@ -86,29 +61,32 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         }
         saveData()
     }
-    //C - Create
-    func addCompany(company: Company) -> Bool {
-        if company.toCompanyEntity(context: self.mainContext) != nil { //Comprobacion Inicial por Id
-            rollback()
-            return false
+    func save(company: Company) throws {
+        if let companyEntity = getCompanyEntityById(companyId: company.id) { //Comprobacion Inicial por Id
+            companyEntity.companyName = company.companyName
+            companyEntity.ruc = company.ruc
         } else if companyExist(company: company) { //Buscamos compañia por otros atributos
-            rollback()
-            return false
+            throw LocalStorageError.notFound("La compañia ya existe")
         } else { //Creamos una nueva comañia
             let newCompany = Tb_Company(context: mainContext)
             newCompany.idCompany = company.id
             newCompany.companyName = company.companyName
             newCompany.ruc = company.ruc
-            saveData()
-            return true
+        }
+        saveData()
+    }
+    //MARK: Private Funtions
+    private func saveData() {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en LocalEmployeeManager: \(error)")
         }
     }
-    //R - Read
-    func getSessionCompany() throws -> Company {
-        let companyEntity = try self.sessionConfig.getCompanyEntity(context: self.mainContext)
-        return companyEntity.toCompany()
+    private func rollback() {
+        self.mainContext.rollback()
     }
-    func companyExist(company: Company) -> Bool {
+    private func companyExist(company: Company) -> Bool {
         let filterAtt = NSPredicate(format: "companyName == %@ OR ruc == %@", company.companyName, company.ruc)
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
         request.predicate = filterAtt
@@ -118,6 +96,19 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         } catch let error {
             print("Error fetching. \(error)")
             return false
+        }
+    }
+    private func getCompanyEntityById(companyId: UUID) -> Tb_Company? {
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        let predicate = NSPredicate(format: "idCompany == %@", self.sessionConfig.companyId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
         }
     }
 }

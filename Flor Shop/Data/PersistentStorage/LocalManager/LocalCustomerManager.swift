@@ -9,23 +9,15 @@ import Foundation
 import CoreData
 
 protocol LocalCustomerManager {
-    func getLastUpdated() throws -> Date?
+    func getLastUpdated() -> Date
     func sync(customersDTOs: [CustomerDTO]) throws
-    func addCustomer(customer: Customer)
-    func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
+    func save(customer: Customer)
+    func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
-    func updateCustomer(customer: Customer)
-    func deleteCustomer(customer: Customer)
-    func filterCustomer(word: String) -> [Customer]
-    func setOrder(order: CustomerOrder)
-    func setFilter(filter: CustomerFilterAttributes)
     func getCustomer(customer: Customer) -> Customer?
 }
 
 class LocalCustomerManagerImpl: LocalCustomerManager {
-    //TODO: Delete these variables, should be only in ViewModel
-    var customerOrder: CustomerOrder = .nameAsc
-    var customerFilterAttributes: CustomerFilterAttributes = .allCustomers
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
     init(
@@ -35,17 +27,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func saveData() {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
-        }
-    }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    func getLastUpdated() throws -> Date? {
+    func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
@@ -55,34 +37,23 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
-        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
-        guard let last = listDate[0] else {
-            print("Se retorna valor por defecto")
-            return dateFrom
-        }
-        print("Se retorna valor desde la BD")
-        return last
-    }
-    private func getCustomerById(customerId: UUID) -> Tb_Customer? {
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
         do {
-            let result = try self.mainContext.fetch(request).first
-            return result
+            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
+            guard let dateNN = date else {
+                return dateFrom!
+            }
+            return dateNN
         } catch let error {
             print("Error fetching. \(error)")
-            return nil
+            return dateFrom!
         }
     }
-    //Sync
     func sync(customersDTOs: [CustomerDTO]) throws {
         for customerDTO in customersDTOs {
             guard self.sessionConfig.companyId == customerDTO.companyID else {
                 throw LocalStorageError.notFound("La compañia no es la misma")
             }
-            if let customerEntity = getCustomerById(customerId: customerDTO.id) {
+            if let customerEntity = getCustomerEntityById(customerId: customerDTO.id) {
                 customerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 customerEntity.creditScore = Int64(customerDTO.creditScore)
                 customerEntity.creditDays = Int64(customerDTO.creditDays)
@@ -94,6 +65,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.lastName = customerDTO.lastName
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
+                customerEntity.toImageUrl?.idImageUrl = customerDTO.imageUrl?.id
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -113,6 +85,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.lastName = customerDTO.lastName
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
+                newCustomerEntity.toImageUrl?.idImageUrl = customerDTO.imageUrl?.id
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 newCustomerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -122,10 +95,8 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
         saveData()
     }
-    //C - Create
-    func addCustomer(customer: Customer) {
-        //TODO: Refactor this
-        if let customerEntity = customer.toCustomerEntity(context: self.mainContext) { //Busqueda por id
+    func save(customer: Customer) {
+        if let customerEntity = getCustomerEntityById(customerId: customer.id) { //Busqueda por id
             customerEntity.name = customer.name
             customerEntity.lastName = customer.lastName
             customerEntity.creditDays = Int64(customer.creditDays)
@@ -133,6 +104,8 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             customerEntity.isCreditLimitActive = customer.isCreditLimitActive
             customerEntity.isDateLimitActive = customer.isDateLimitActive
             customerEntity.phoneNumber = customer.phoneNumber
+            customerEntity.toImageUrl?.idImageUrl = customer.image?.id
+            //TODO: Segregate this
             if customer.isDateLimitActive && customerEntity.totalDebt > 0 && customerEntity.firstDatePurchaseWithCredit != nil {
                 var calendar = Calendar.current
                 calendar.timeZone = TimeZone(identifier: "UTC")!
@@ -140,7 +113,6 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 let finalDelDia = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: Date())!
                 customerEntity.isDateLimit = customerEntity.dateLimit ?? Date() < finalDelDia
             }
-            customerEntity.toImageUrl?.idImageUrl = customer.image?.id
             if customerEntity.isCreditLimitActive {
                 customerEntity.isCreditLimit = customerEntity.totalDebt >= customerEntity.creditLimit
             } else {
@@ -155,28 +127,17 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             newCustomerEntity.name = customer.name
             newCustomerEntity.lastName = customer.lastName
             newCustomerEntity.creditDays = Int64(customer.creditDays)
-            newCustomerEntity.toImageUrl?.idImageUrl = customer.image?.id
             newCustomerEntity.creditLimit = Int64(customer.creditLimit.cents)
             newCustomerEntity.creditScore = 50
             newCustomerEntity.dateLimit = Date()
             newCustomerEntity.phoneNumber = customer.phoneNumber
+            newCustomerEntity.toImageUrl?.idImageUrl = customer.image?.id
             newCustomerEntity.totalDebt = 0
             newCustomerEntity.isDateLimitActive = customer.isDateLimitActive
             newCustomerEntity.isCreditLimitActive = customer.isCreditLimitActive
             newCustomerEntity.toCompany?.idCompany = self.sessionConfig.companyId
             saveData()
         }
-    }
-    //R - Read
-    func getCustomers() -> [Customer] {
-        var customerEntityList: [Tb_Customer] = []
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        do {
-            customerEntityList = try self.mainContext.fetch(request)
-        } catch let error {
-            print("Error fetching. \(error)")
-        }
-        return customerEntityList.map { $0.toCustomer() }
     }
     func getCustomer(customer: Customer) -> Customer? {
         if let customerNN = customer.toCustomerEntity(context: self.mainContext) {
@@ -185,7 +146,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             return nil
         }
     }
-    func getCustomersList(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
+    func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
         var cutomerList: [Customer] = []
         let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
         request.fetchLimit = pageSize
@@ -225,7 +186,43 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
         return salesCutomerList
     }
-    func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
+    func customerExist(customer: Customer) -> Bool {
+        let filterAtt = NSPredicate(format: "name == %@ AND lastName == %@", customer.name, customer.lastName)
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        request.predicate = filterAtt
+        do {
+            let total = try self.mainContext.fetch(request).count
+            return total == 0 ? false : true
+        } catch let error {
+            print("Error fetching. \(error)")
+            return false
+        }
+    }
+    //MARK: Private Funtions
+    private func saveData() {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en LocalEmployeeManager: \(error)")
+        }
+    }
+    private func rollback() {
+        self.mainContext.rollback()
+    }
+    private func getCustomerEntityById(customerId: UUID) -> Tb_Customer? {
+        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
+        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
         var filterAtt = NSPredicate(format: "name != ''")
         switch filter {
         case .allCustomers:
@@ -247,7 +244,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
         return filterAtt
     }
-    func getOrder(order: CustomerOrder) -> NSSortDescriptor {
+    private func getOrder(order: CustomerOrder) -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         switch order {
         case .nameAsc:
@@ -260,79 +257,5 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             sortDescriptor = NSSortDescriptor(key: "totalDebt", ascending: false)
         }
         return sortDescriptor
-    }
-    //U - Update
-    func updateCustomer(customer: Customer) {
-        
-    }
-    //D - Delete
-    func deleteCustomer(customer: Customer) {
-        
-    }
-    func customerExist(customer: Customer) -> Bool {
-        let filterAtt = NSPredicate(format: "name == %@ AND lastName == %@", customer.name, customer.lastName)
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let total = try self.mainContext.fetch(request).count
-            return total == 0 ? false : true
-        } catch let error {
-            print("Error fetching. \(error)")
-            return false
-        }
-    }
-    func filterCustomer(word: String) -> [Customer] {
-        var customers: [Customer] = []
-        let fetchRequest: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate1 = NSPredicate(format: "name CONTAINS[c] %@ AND toCompany.idCompany == %@", word, self.sessionConfig.companyId.uuidString)
-        let predicate2 = getFilterAtribute()
-        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
-        fetchRequest.predicate = compoundPredicate
-        // Agregar el sort descriptor para ordenar por nombre ascendente
-        let sortDescriptor = getOrderFilter()
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        do {
-            // Ejecutar la consulta y obtener los resultados
-            let customersBD = try self.mainContext.fetch(fetchRequest)
-            customers = customersBD.map{$0.toCustomer()}
-            return customers
-        } catch {
-            print("Error al ejecutar la consulta: \(error.localizedDescription)")
-            return customers
-        }
-    }
-    func getOrderFilter() -> NSSortDescriptor {
-        var sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        switch customerOrder {
-        case .nameAsc:
-            sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        case .nextDate:
-            sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        case .quantityAsc:
-            sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        case .quantityDesc:
-            sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        }
-        return sortDescriptor
-    }
-    func getFilterAtribute() -> NSPredicate {
-        var filterAtt = NSPredicate(format: "active == true")
-        switch customerFilterAttributes {
-        case .allCustomers:
-            filterAtt = NSPredicate(format: "active == true")
-        case .dueByDate:
-            filterAtt = NSPredicate(format: "active == true")
-        case .excessAmount:
-            filterAtt = NSPredicate(format: "active == true")
-        case .onTime:
-            filterAtt = NSPredicate(format: "active == true")
-        }
-        return filterAtt
-    }
-    func setOrder(order: CustomerOrder) {
-        self.customerOrder = order
-    }
-    func setFilter(filter: CustomerFilterAttributes) {
-        self.customerFilterAttributes = filter
     }
 }

@@ -10,11 +10,9 @@ import CoreData
 
 protocol LocalSubsidiaryManager {
     func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws
-    func addSubsidiary(subsidiary: Subsidiary)
-    func getLastUpdated() throws -> Date?
+    func save(subsidiary: Subsidiary)
+    func getLastUpdated() -> Date
     func getSubsidiaries() -> [Subsidiary]
-    func updateSubsidiary(subsidiary: Subsidiary)
-    func deleteSubsidiary(subsidiary: Subsidiary)
 }
 
 class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
@@ -27,18 +25,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func saveData() {
-        do {
-            try self.mainContext.save()
-        } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
-        }
-    }
-    func rollback() {
-        self.mainContext.rollback()
-    }
-    func getLastUpdated() throws -> Date? {
-//        let companyEntity = try self.sessionConfig.getCompanyEntity(context: self.mainContext)
+    func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
@@ -48,17 +35,19 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
-        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
-        guard let last = listDate[0] else {
-            print("Se retorna valor por defecto")
-            return dateFrom
+        do {
+            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
+            guard let dateNN = date else {
+                return dateFrom!
+            }
+            return dateNN
+        } catch let error {
+            print("Error fetching. \(error)")
+            return dateFrom!
         }
-        print("Se retorna valor desde la BD")
-        return last
     }
-    //C - Create
-    func addSubsidiary(subsidiary: Subsidiary) {
-        if let subsidiaryEntity = getSubsidiaryById(subsidiaryId: subsidiary.id) {
+    func save(subsidiary: Subsidiary) {
+        if let subsidiaryEntity = getSubsidiaryEntityById(subsidiaryId: subsidiary.id) {
             subsidiaryEntity.idSubsidiary = subsidiary.id
             subsidiaryEntity.name = subsidiary.name
             subsidiaryEntity.toImageUrl = subsidiary.image?.toImageUrlEntity(context: self.mainContext)
@@ -72,25 +61,12 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         }
         saveData()
     }
-    func getSubsidiaryById(subsidiaryId: UUID) -> Tb_Subsidiary? {
-        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws {
         for subsidiaryDTO in subsidiariesDTOs {
             guard self.sessionConfig.companyId == subsidiaryDTO.companyID else {
                 throw LocalStorageError.notFound("La compañia no es la misma")
             }
-            if let subsidiaryEntity = getSubsidiaryById(subsidiaryId: subsidiaryDTO.id) {
+            if let subsidiaryEntity = getSubsidiaryEntityById(subsidiaryId: subsidiaryDTO.id) {
                 subsidiaryEntity.name = subsidiaryDTO.name
                 subsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrl?.id
                 subsidiaryEntity.toCompany?.idCompany = subsidiaryDTO.companyID
@@ -108,7 +84,6 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         }
         saveData()
     }
-    //R - Read
     func getSubsidiaries() -> [Subsidiary] {
         let filterAtt = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
         let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
@@ -121,12 +96,28 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
             return []
         }
     }
-    //U - Update
-    func updateSubsidiary(subsidiary: Subsidiary) {
-        
+    //MARK: Private Funtions
+    private func saveData() {
+        do {
+            try self.mainContext.save()
+        } catch {
+            print("Error al guardar en LocalEmployeeManager: \(error)")
+        }
     }
-    //D - Delete
-    func deleteSubsidiary(subsidiary: Subsidiary) {
-        
+    private func rollback() {
+        self.mainContext.rollback()
+    }
+    private func getSubsidiaryEntityById(subsidiaryId: UUID) -> Tb_Subsidiary? {
+        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
+        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
     }
 }

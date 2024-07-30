@@ -10,8 +10,6 @@ import SwiftUI
 struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var navManager: NavManager
-    let menuOrders: [CustomerOrder] = CustomerOrder.allValues
-    let menuFilters: [CustomerFilterAttributes] = CustomerFilterAttributes.allValues
     @Binding var showMenu: Bool
     var backButton: Bool = false
     var body: some View {
@@ -65,19 +63,8 @@ struct CustomerTopBar: View {
                 .background(.white)
                 .cornerRadius(20.0)
                 Menu {
-//                    Picker("", selection: $customerViewModel.order) {
-//                        ForEach(menuOrders, id: \.self) {
-//                            Text($0.longDescription)
-//                        }
-//                    }
-//                    Divider()
-//                    Picker("", selection: $customerViewModel.filter) {
-//                        ForEach(menuFilters, id: \.self) {
-//                            Text($0.description)
-//                        }
-//                    }
                     Section("Ordenamiento") {
-                        ForEach(menuOrders, id: \.self) { orden in
+                        ForEach(CustomerOrder.allValues, id: \.self) { orden in
                             Button {
                                 customerViewModel.order = orden
                             } label: {
@@ -86,7 +73,7 @@ struct CustomerTopBar: View {
                         }
                     }
                     Section("Filtros") {
-                        ForEach(menuFilters, id: \.self) { filter in
+                        ForEach(CustomerFilterAttributes.allValues, id: \.self) { filter in
                             Button {
                                 customerViewModel.filter = filter
                             } label: {

@@ -13,8 +13,8 @@ protocol ImageRepository {
     func deleteUnusedImages() async
     func loadSavedImage(id: UUID) -> UIImage?
     func downloadImage(url: URL) async -> UIImage?
-    func saveImage(idImage: UUID, image: UIImage) -> ImageUrl?
-    func saveImage(image: ImageUrl) throws -> ImageUrl
+    func save(idImage: UUID, image: UIImage) -> ImageUrl?
+    func save(image: ImageUrl) throws -> ImageUrl
 }
 
 class ImageRepositoryImpl: ImageRepository, Syncronizable {
@@ -28,8 +28,8 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func saveImage(image: ImageUrl) throws -> ImageUrl {
-        return try self.localManager.saveImage(image: image)
+    func save(image: ImageUrl) throws -> ImageUrl {
+        return try self.localManager.save(image: image)
     }
     func sync() async throws {
         var counter = 0
@@ -38,10 +38,7 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
         repeat {
             print("Counter: \(counter)")
             counter += 1
-            guard let updatedSince = try localManager.getLastUpdated() else {
-                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
-            }
-            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
             let imagesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = imagesDTOs.count
             try self.localManager.sync(imageURLsDTOs: imagesDTOs)
@@ -56,7 +53,7 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
     func downloadImage(url: URL) async -> UIImage? {
         return await self.localManager.downloadImage(url: url)
     }
-    func saveImage(idImage: UUID, image: UIImage) -> ImageUrl? {
-        return self.localManager.saveImage(idImage: idImage, image: image)
+    func save(idImage: UUID, image: UIImage) -> ImageUrl? {
+        return self.localManager.save(idImage: idImage, image: image)
     }
 }

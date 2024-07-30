@@ -21,6 +21,6 @@ final class SaveImageInteractor: SaveImageUseCase {
     }
     @discardableResult
     func execute(idImage: UUID, image: UIImage) -> ImageUrl? {
-        return self.imageRepository.saveImage(idImage: idImage, image: image)
+        return self.imageRepository.save(idImage: idImage, image: image)
     }
 }

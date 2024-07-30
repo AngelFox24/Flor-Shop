@@ -13,7 +13,7 @@ enum RepositoryError: Error {
 
 protocol ProductRepository {
     func sync() async throws
-    func saveProduct(product: Product) async throws
+    func save(product: Product) async throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
 }
 
@@ -32,11 +32,11 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func saveProduct(product: Product) async throws {
+    func save(product: Product) async throws {
         if cloudBD {
             try await self.remoteManager.save(product: product)
         } else {
-            self.localManager.saveProduct(product: product)
+            self.localManager.save(product: product)
         }
     }
     func sync() async throws {
