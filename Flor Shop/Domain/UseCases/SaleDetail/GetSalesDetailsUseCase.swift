@@ -24,11 +24,11 @@ final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
         do {
             switch grouper {
             case .historic:
-                return try self.saleRepository.getListSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+                return try self.saleRepository.getSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
             case .byProduct:
-                return try self.saleRepository.getListSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+                return try self.saleRepository.getSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
             case .byCustomer:
-                return try self.saleRepository.getListSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+                return try self.saleRepository.getSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
             }
         } catch {
             return []

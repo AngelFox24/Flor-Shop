@@ -9,14 +9,13 @@ import Foundation
 import CoreData
 
 protocol LocalSaleManager {
-    func registerSale (cart: Car, paymentType:PaymentType, customerId: UUID?) -> Bool
+    func registerSale (cart: Car, paymentType:PaymentType, customerId: UUID?) throws
     func sync(salesDTOs: [SaleDTO]) throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
-    func getListSales () -> [Sale]
     func getLastUpdated() -> Date
-    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
-    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
-    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
+    func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
+    func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
+    func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double
     func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
@@ -32,16 +31,15 @@ class LocalSaleManagerImpl: LocalSaleManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) -> Bool {
+    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) throws {
         let date: Date = Date()
-        var saveChanges: Bool = true
         guard let cartEntity = getCartEntityById(cartId: cart.id) else {
-            return false
+            throw LocalStorageError.notFound("No se encontro carrito de ventas")
         }
         guard cart.cartDetails.isEmpty else {
 //            throw LocalStorageError.notFound("No se encontro productos en la solicitud de venta")
             print("No se encontro productos en la solicitud de venta")
-            return false
+            throw LocalStorageError.notFound("No se encontro productos en la solicitud de venta")
         }
         let newSaleEntity = Tb_Sale(context: self.mainContext)
         newSaleEntity.idSale = UUID()
@@ -84,20 +82,17 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     //Eliminamos el detalle del carrito
                     self.mainContext.delete(cartDetailEntity)
                 } else {
-                    saveChanges = false
+                    rollback()
+                    throw LocalStorageError.notFound("No se pudo reducir el stock")
                 }
             } else {
-                saveChanges = false
+                rollback()
+                throw LocalStorageError.notFound("No se encontro el detalle del carrito")
             }
         }
         cartEntity.total = 0
-        if saveChanges {
-            print("Se vendio correctamente")
-            saveData()
-        } else {
-            rollback()
-        }
-        return saveChanges
+        print("Se vendio correctamente")
+        saveData()
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -152,16 +147,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
             print("El monto de deuda en la vista: \(customer.totalDebt) no coincide con la BD: \(totalDebtDB)")
             return false
         }
-    }
-    func getListSales() -> [Sale] {
-        var sales: [Tb_Sale] = []
-            let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
-            do {
-                sales = try self.mainContext.fetch(request)
-            } catch let error {
-                print("Error fetching. \(error)")
-            }
-        return sales.mapToListSale()
     }
     func getTotalDebtByCustomer(customer: Customer) throws -> Int {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
@@ -276,7 +261,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
         return 0
     }
-    func getListSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+    func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
         let startDate = getStartDate(date: date, interval: interval)
         let endDate = getEndDate(date: date, interval: interval)
@@ -342,7 +327,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return []
         }
     }
-    func getListSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+    func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
         let startDate = getStartDate(date: date, interval: interval)
         let endDate = getEndDate(date: date, interval: interval)
@@ -409,7 +394,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return []
         }
     }
-    func getListSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+    func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntity(context: self.mainContext)
         let startDate = getStartDate(date: date, interval: interval)
         let endDate = getEndDate(date: date, interval: interval)

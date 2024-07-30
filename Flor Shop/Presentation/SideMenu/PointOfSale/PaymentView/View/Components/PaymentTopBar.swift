@@ -14,7 +14,7 @@ struct PaymentTopBar: View {
     @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
-    //@EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
@@ -27,16 +27,7 @@ struct PaymentTopBar: View {
                 })
                 Spacer()
                 Button(action: {
-                    if let cart = carritoCoreDataViewModel.cartCoreData {
-                        Task {
-                            loadingState.isLoading = true
-                            try await ventasCoreDataViewModel.registerSale(cart: cart, customerId: carritoCoreDataViewModel.customerInCar?.id, paymentType: carritoCoreDataViewModel.paymentType)
-                            carritoCoreDataViewModel.releaseResources()
-                            carritoCoreDataViewModel.releaseCustomer()
-                            playSound(named: "Success1")
-                            loadingState.isLoading = false
-                        }
-                    }
+                    registerSale()
                 }, label: {
                     CustomButton1(text: "Finalizar")
                 })
@@ -46,6 +37,26 @@ struct PaymentTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
+    }
+    func registerSale() {
+        Task {
+            loadingState.isLoading = true
+            do {
+                guard let cart = carritoCoreDataViewModel.cartCoreData else {
+                    throw LocalStorageError.notFound("No se encontro carrito configurado en viewModel")
+                }
+                try await ventasCoreDataViewModel.registerSale(cart: cart, customerId: carritoCoreDataViewModel.customerInCar?.id, paymentType: carritoCoreDataViewModel.paymentType)
+                carritoCoreDataViewModel.releaseResources()
+                carritoCoreDataViewModel.releaseCustomer()
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?
