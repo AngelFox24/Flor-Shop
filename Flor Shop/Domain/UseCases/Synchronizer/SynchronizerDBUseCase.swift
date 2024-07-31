@@ -39,12 +39,16 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
     }
     
     func sync() async throws {
+        print("Imagenes sincronizando ...")
         try await self.imageRepository.sync()
+        print("Compania sincronizando ...")
         try await self.companyRepository.sync()
+        print("Subsidiaria sincronizando ...")
         try await self.subsidiaryRepository.sync()
-        try await self.customerRepository.sync()
-        try await self.employeeRepository.sync()
+//        try await self.customerRepository.sync()
+//        try await self.employeeRepository.sync()
+        print("Productos sincronizando ...")
         try await self.productRepository.sync()
-        try await self.saleRepository.sync()
+//        try await self.saleRepository.sync()
     }
 }

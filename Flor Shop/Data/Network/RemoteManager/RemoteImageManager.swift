@@ -13,7 +13,7 @@ protocol RemoteImageManager {
 
 final class RemoteImageManagerImpl: RemoteImageManager {
     func sync(updatedSince: String) async throws -> [ImageURLDTO] {
-        let urlRoute = "/images/sync"
+        let urlRoute = "/imageUrls/sync"
         let syncParameters = SyncImageParameters(updatedSince: updatedSince)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: [ImageURLDTO] = try await NetworkManager.shared.perform(request, decodeTo: [ImageURLDTO].self)

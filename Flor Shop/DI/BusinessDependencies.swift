@@ -40,6 +40,7 @@ struct BusinessDependencies {
     private let salesRepository: SaleRepositoryImpl
     private let imageRepository: ImageRepositoryImpl
     //UseCases
+    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let getProductsUseCase: GetProductsUseCase
     private let createCompanyUseCase: CreateCompanyUseCase
     private let createSubsidiaryUseCase: CreateSubsidiaryUseCase
@@ -107,6 +108,7 @@ struct BusinessDependencies {
         self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
         self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
         //MARK: UseCases
+        self.synchronizerDBUseCase = SynchronizerDBInteractor(imageRepository: imageRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository, employeeRepository: employeeRepository, productRepository: productRepository, saleRepository: salesRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
         self.createSubsidiaryUseCase = CreateSubsidiaryInteractor(subsidiaryRepository: subsidiaryRepository)
@@ -136,7 +138,7 @@ struct BusinessDependencies {
 //        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
 //        self.registrationViewModel = RegistrationViewModel()
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
-        self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
+        self.productsViewModel = ProductViewModel(synchronizerDBUseCase: synchronizerDBUseCase, getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)

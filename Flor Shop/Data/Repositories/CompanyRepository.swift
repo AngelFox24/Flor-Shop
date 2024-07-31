@@ -31,10 +31,7 @@ class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
         repeat {
             print("Counter: \(counter)")
             counter += 1
-            guard let updatedSince = try localManager.getLastUpdated() else {
-                throw RepositoryError.invalidFields(("El campo updatedSince no se encuentra"))
-            }
-            let updatedSinceString = ISO8601DateFormatter().string(from: updatedSince)
+            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
             let companyDTO = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = 1
             try self.localManager.sync(companyDTO: companyDTO)

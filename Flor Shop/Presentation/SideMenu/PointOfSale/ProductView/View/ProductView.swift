@@ -12,6 +12,9 @@ import StoreKit
 
 struct ProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var errorState: ErrorState
+    @State private var audioPlayer: AVAudioPlayer?
     @Binding var selectedTab: Tab
     @Binding var showMenu: Bool
     var body: some View {
@@ -20,10 +23,43 @@ struct ProductView: View {
             ListaControler(selectedTab: $selectedTab)
         }
         .onAppear {
+            sync()
             productsCoreDataViewModel.lazyFetchProducts()
         }
         .onDisappear {
             productsCoreDataViewModel.releaseResources()
+        }
+    }
+    private func sync() {
+        Task {
+            loadingState.isLoading = true
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            do {
+                print("Syncronizing ...")
+                try await productsCoreDataViewModel.sync()
+                print("Syncronized")
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
+    }
+    private func playSound(named fileName: String) {
+        var soundURL: URL?
+        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
+        guard let url = soundURL else {
+            print("No se pudo encontrar el archivo de sonido.")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
         }
     }
 }

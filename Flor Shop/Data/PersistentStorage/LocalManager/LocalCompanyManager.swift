@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol LocalCompanyManager {
-    func getLastUpdated() throws -> Date?
+    func getLastUpdated() -> Date
     func sync(companyDTO: CompanyDTO) throws
     func save(company: Company) throws
 }
@@ -24,7 +24,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func getLastUpdated() throws -> Date? {
+    func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = DateComponents(year: 1999, month: 1, day: 1)
         let dateFrom = calendar.date(from: components)
@@ -34,24 +34,31 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
-        let listDate = try self.mainContext.fetch(request).map{$0.updatedAt}
-        guard let last = listDate[0] else {
-            print("Se retorna valor por defecto")
-            return dateFrom
+        do {
+            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
+            guard let dateNN = date else {
+                return dateFrom!
+            }
+            return dateNN
+        } catch let error {
+            print("Error fetching. \(error)")
+            return dateFrom!
         }
-        print("Se retorna valor desde la BD")
-        return last
     }
     func sync(companyDTO: CompanyDTO) throws {
         guard self.sessionConfig.companyId == companyDTO.id else {
+            print("La compañia no es la misma")
+            rollback()
             throw LocalStorageError.notFound("La compañia no es la misma")
         }
         if let companyEntity = getCompanyEntityById(companyId: companyDTO.id) {
+            print("Se actualiza la compañia")
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
             companyEntity.createdAt = companyDTO.createdAt.internetDateTime()
             companyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
         } else {
+            print("Se crea la compañia")
             let newCompanyEntity = Tb_Company(context: self.mainContext)
             newCompanyEntity.idCompany = companyDTO.id
             newCompanyEntity.companyName = companyDTO.companyName
@@ -59,6 +66,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             newCompanyEntity.createdAt = companyDTO.createdAt.internetDateTime()
             newCompanyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
         }
+        print("Se guardara los datos en LocalCompanyManager")
         saveData()
     }
     func save(company: Company) throws {
@@ -80,7 +88,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
+            print("Error al guardar en LocalCompanyManager: \(error)")
         }
     }
     private func rollback() {
@@ -100,7 +108,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
     }
     private func getCompanyEntityById(companyId: UUID) -> Tb_Company? {
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let predicate = NSPredicate(format: "idCompany == %@", self.sessionConfig.companyId.uuidString)
+        let predicate = NSPredicate(format: "idCompany == %@", companyId.uuidString)
         request.predicate = predicate
         request.fetchLimit = 1
         do {

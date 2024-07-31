@@ -20,11 +20,19 @@ class ProductViewModel: ObservableObject {
     private var lastCarge: Int = 0
     private var cancellableSet = Set<AnyCancellable>()
     
+    let synchronizerDBUseCase: SynchronizerDBUseCase
     let getProductsUseCase: GetProductsUseCase
     
-    init(getProductsUseCase: GetProductsUseCase) {
+    init(
+        synchronizerDBUseCase: SynchronizerDBUseCase,
+        getProductsUseCase: GetProductsUseCase
+    ) {
+        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.getProductsUseCase = getProductsUseCase
         addSearchTextSuscriber()
+    }
+    func sync() async throws {
+        try await self.synchronizerDBUseCase.sync()
     }
     func addSearchTextSuscriber() {
         $searchText

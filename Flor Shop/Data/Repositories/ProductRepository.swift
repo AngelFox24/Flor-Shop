@@ -49,6 +49,7 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
             let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
             items = productsDTOs.count
+            print("Items: \(items)")
             try self.localManager.sync(productsDTOs: productsDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }

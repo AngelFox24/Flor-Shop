@@ -203,7 +203,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
+            print("Error al guardar en LocalCustomerManager: \(error)")
         }
     }
     private func rollback() {

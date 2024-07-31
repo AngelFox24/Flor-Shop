@@ -26,7 +26,9 @@ final class RemoteProductManagerImpl: RemoteProductManager {
         let urlRoute = "/products/sync"
         let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSince)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
+        print("Antes del pedido")
         let data: [ProductDTO] = try await NetworkManager.shared.perform(request, decodeTo: [ProductDTO].self)
+        print("Despues del pedido")
         return data
     }
 }

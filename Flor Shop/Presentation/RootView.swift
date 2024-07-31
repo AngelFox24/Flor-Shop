@@ -103,9 +103,11 @@ struct RootView: View {
             logInViewModel.logInFields.userOrEmail = user
             logInViewModel.logInFields.password = password
             Task {
+                print("Se logea desde guardado")
                 let ses = try await logInViewModel.logIn()
                 await MainActor.run {
                     self.sesConfig = ses
+                    logInViewModel.logInStatus = .success
                 }
             }
         }

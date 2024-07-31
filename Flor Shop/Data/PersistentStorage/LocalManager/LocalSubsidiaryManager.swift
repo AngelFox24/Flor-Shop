@@ -62,26 +62,39 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         saveData()
     }
     func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws {
+        print("Local Sync: se sincronizara la subsidiaria")
         for subsidiaryDTO in subsidiariesDTOs {
             guard self.sessionConfig.companyId == subsidiaryDTO.companyID else {
+                print("La compañia no es la misma")
+                rollback()
                 throw LocalStorageError.notFound("La compañia no es la misma")
+            }
+            guard let companyEntity = getCompanyEntityById(companyId: subsidiaryDTO.companyID) else {
+                print("No se pudo obtener la compañia: \(subsidiaryDTO.companyID)")
+                rollback()
+                throw LocalStorageError.notFound("No se pudo obtener la compañia")
             }
             if let subsidiaryEntity = getSubsidiaryEntityById(subsidiaryId: subsidiaryDTO.id) {
                 subsidiaryEntity.name = subsidiaryDTO.name
-                subsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrl?.id
-                subsidiaryEntity.toCompany?.idCompany = subsidiaryDTO.companyID
+                if let imageId = subsidiaryDTO.imageUrl?.id, let imageEntity = getImageEntityById(imageId: imageId) {
+                    subsidiaryEntity.toImageUrl = imageEntity
+                }
+                subsidiaryEntity.toCompany = companyEntity
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
             } else {
                 let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
                 newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
                 newSubsidiaryEntity.name = subsidiaryDTO.name
-                newSubsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrl?.id
-                newSubsidiaryEntity.toCompany?.idCompany = subsidiaryDTO.companyID
+                if let imageId = subsidiaryDTO.imageUrl?.id, let imageEntity = getImageEntityById(imageId: imageId) {
+                    newSubsidiaryEntity.toImageUrl = imageEntity
+                }
+                newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 newSubsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
             }
         }
+        print("Local Sync: Se guardara en LocalSubsidiaryManager")
         saveData()
     }
     func getSubsidiaries() -> [Subsidiary] {
@@ -101,7 +114,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
+            print("Error al guardar en LocalSubsidiaryManager: \(error)")
         }
     }
     private func rollback() {
@@ -109,7 +122,38 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
     }
     private func getSubsidiaryEntityById(subsidiaryId: UUID) -> Tb_Subsidiary? {
         let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
+        let predicate = NSPredicate(format: "idSubsidiary == %@", subsidiaryId.uuidString)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func getCompanyEntityById(companyId: UUID) -> Tb_Company? {
+        print("Se pide companyId: \(companyId.uuidString)")
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        let predicate = NSPredicate(format: "idCompany == %@", companyId.uuidString)
+        request.predicate = predicate
+//        request.fetchLimit = 1
+        do {
+            let result = try self.mainContext.fetch(request)//.first
+            print("Las Compañias: \(result.count)")
+            for c in result {
+                print("Compañia: \(c.idCompany)")
+            }
+            return result.first
+        } catch let error {
+            print("Error fetching. \(error)")
+            return nil
+        }
+    }
+    private func getImageEntityById(imageId: UUID) -> Tb_ImageUrl? {
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "idImageUrl == %@", imageId.uuidString)
         request.predicate = predicate
         request.fetchLimit = 1
         do {

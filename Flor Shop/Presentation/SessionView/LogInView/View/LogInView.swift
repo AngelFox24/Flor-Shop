@@ -96,6 +96,9 @@ struct LogInView: View {
                 self.sesConfig = try await logInViewModel.logIn()
                 print("Log In Correcto")
                 playSound(named: "Success1")
+                await MainActor.run {
+                    logInViewModel.logInStatus = .success
+                }
             } catch {
                 await MainActor.run {
                     errorState.processError(error: error)

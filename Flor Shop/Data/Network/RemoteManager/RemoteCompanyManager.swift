@@ -20,7 +20,7 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func sync(updatedSince: String) async throws -> CompanyDTO {
-        let urlRoute = "/subsidiaries/sync"
+        let urlRoute = "/companies/sync"
         let syncParameters = SyncCompanyParameters(updatedSince: updatedSince)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: CompanyDTO = try await NetworkManager.shared.perform(request, decodeTo: CompanyDTO.self)
