@@ -15,6 +15,8 @@ struct NormalDependencies {
     let errorState: ErrorState
     let versionCheck: VersionCheck
     //Session UseCases
+    let remoteSessionManager: RemoteSessionManager
+    let sessionRepository: SessionRepository
 //    private let registerUserUseCase: RegisterUserUseCase
     private let logInUseCase: LogInUseCase
     private let logOutUseCase: LogOutUseCase
@@ -27,8 +29,11 @@ struct NormalDependencies {
         self.loadingState = LoadingState()
         self.versionCheck = VersionCheck()
         self.errorState = ErrorState()
+        //Repo
+        self.remoteSessionManager = RemoteSessionManagerImpl()
+        self.sessionRepository = SessionRepositoryImpl(remoteManager: remoteSessionManager)
         //Session UseCases
-        self.logInUseCase = LogInRemoteInteractor()
+        self.logInUseCase = LogInInteractor(sessionRepository: sessionRepository)
         self.logOutUseCase = LogOutRemoteInteractor()
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
     }

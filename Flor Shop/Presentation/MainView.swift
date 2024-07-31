@@ -10,7 +10,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @State private var showMenu: Bool = false
-    @Binding private var isKeyboardVisible: Bool
+    @Binding var isKeyboardVisible: Bool
     let dependencies: BusinessDependencies
     var body: some View {
         ZStack(content: {
@@ -50,12 +50,12 @@ struct MainView: View {
     }
 }
 
-//struct MainView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let depN = NormalDependencies()
-//        let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-//        let dep = BusinessDependencies(sessionConfig: sesC)
-//        MainView(isKeyboardVisible: .constant(true), dependencies: dep)
-//            .environmentObject(depN.logInViewModel)
-//    }
-//}
+struct MainView_Previews: PreviewProvider {
+    static var previews: some View {
+        let depN = NormalDependencies()
+        let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dep = BusinessDependencies(sessionConfig: sesC)
+        MainView(isKeyboardVisible: .constant(true), dependencies: dep)
+            .environmentObject(depN.logInViewModel)
+    }
+}

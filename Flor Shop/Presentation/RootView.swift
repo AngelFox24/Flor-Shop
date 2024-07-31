@@ -37,45 +37,24 @@ struct RootView: View {
                         case .lockVersion:
                             LockScreenView()
                         case .versionOk:
-                            //Etapa del LogIn o Registro
                             NavigationStack(path: $navManager.navPaths) {
                                 ZStack(content: {
                                     if logInViewModel.logInStatus == .success, let sesC = sesConfig {
-//                                        MenuView(showMenu: $showMenu, isKeyboardVisible: $isKeyboardVisible)
-//                                        MainView(isKeyboardVisible: $isKeyboardVisible, dependencies: BusinessDependencies(sessionConfig: sesC))
-                                        LaunchScreenView()
+                                        let sesDep = BusinessDependencies(sessionConfig: sesC)
+                                        MainView(isKeyboardVisible: $isKeyboardVisible, dependencies: sesDep)
                                     } else {
                                         WelcomeView(isKeyboardVisible: $isKeyboardVisible)
                                             .onAppear(perform: {
-                                                if let user = userOrEmail, let password = password {
-                                                    logInViewModel.logInFields.userOrEmail = user
-                                                    logInViewModel.logInFields.password = password
-                                                    Task {
-                                                        if let ses = await logInViewModel.logIn() {
-                                                            await MainActor.run {
-                                                                self.sesConfig = ses
-                                                            }
-                                                        }
-                                                    }
-                                                }
-//                                                else {//Registration not work yet
-//                                                    let reg = registrationViewModel.registerUser()
-//                                                    print("\(reg)")
-//                                                    logInViewModel.logInFields.userOrEmail = registrationViewModel.registrationFields.email
-//                                                    logInViewModel.logInFields.password = registrationViewModel.registrationFields.password
-//                                                    print("User: \(registrationViewModel.registrationFields.email)")
-//                                                    print("Pass: \(registrationViewModel.registrationFields.password)")
-//                                                    sesConfig = logInViewModel.logIn()
-//                                                }
+                                                logIn()
                                             })
                                     }
                                 })
                                 .navigationDestination(for: SessionRoutes.self) { route in
                                     switch route {
                                     case .loginView:
-                                        LogInView(isKeyboardVisible: $isKeyboardVisible)
+                                        LogInView(isKeyboardVisible: $isKeyboardVisible, sesConfig: $sesConfig)
                                     case .registrationView:
-                                        LogInView(isKeyboardVisible: $isKeyboardVisible)
+                                        LogInView(isKeyboardVisible: $isKeyboardVisible, sesConfig: $sesConfig)
 //                                        CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
                                     }
                                 }
@@ -118,6 +97,27 @@ struct RootView: View {
             }
         })
         .alert(errorState.error, isPresented: $errorState.isPresented, actions: {})
+    }
+    private func logIn() {
+        if let user = userOrEmail, let password = password {
+            logInViewModel.logInFields.userOrEmail = user
+            logInViewModel.logInFields.password = password
+            Task {
+                let ses = try await logInViewModel.logIn()
+                await MainActor.run {
+                    self.sesConfig = ses
+                }
+            }
+        }
+//                                                else {//Registration not work yet
+//                                                    let reg = registrationViewModel.registerUser()
+//                                                    print("\(reg)")
+//                                                    logInViewModel.logInFields.userOrEmail = registrationViewModel.registrationFields.email
+//                                                    logInViewModel.logInFields.password = registrationViewModel.registrationFields.password
+//                                                    print("User: \(registrationViewModel.registrationFields.email)")
+//                                                    print("Pass: \(registrationViewModel.registrationFields.password)")
+//                                                    sesConfig = logInViewModel.logIn()
+//                                                }
     }
 }
 

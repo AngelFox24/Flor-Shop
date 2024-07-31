@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-struct SessionConfig {
+struct SessionConfig: Codable {
     let companyId: UUID
     let subsidiaryId: UUID
     let employeeId: UUID

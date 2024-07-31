@@ -114,6 +114,5 @@ struct CreateAccountView_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: sesC)
         CreateAccountView(isKeyboardVisible: .constant(true))
             .environmentObject(nor.logInViewModel)
-            .environmentObject(dependencies.registrationViewModel)
     }
 }

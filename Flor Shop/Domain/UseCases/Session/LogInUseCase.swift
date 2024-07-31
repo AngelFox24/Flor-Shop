@@ -8,18 +8,19 @@
 import Foundation
 
 protocol LogInUseCase {
-    func execute(email: String, password: String) async throws -> SessionConfig
-}
-
-final class LogInRemoteInteractor: LogInUseCase {
-    func execute(email: String, password: String) async throws -> SessionConfig {
-        //TODO: Implement Remote Log In
-        return SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-    }
+    func execute(username: String, password: String) async throws -> SessionConfig
 }
 
 final class LogInInteractor: LogInUseCase {
-    func execute(email: String, password: String) async throws -> SessionConfig {
-        return SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+    
+    private let sessionRepository: SessionRepository
+    
+    init(
+        sessionRepository: SessionRepository
+    ) {
+        self.sessionRepository = sessionRepository
+    }
+    func execute(username: String, password: String) async throws -> SessionConfig {
+        return try await self.sessionRepository.logIn(username: username, password: password)
     }
 }

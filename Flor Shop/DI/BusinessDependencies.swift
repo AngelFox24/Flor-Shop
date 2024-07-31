@@ -63,10 +63,10 @@ struct BusinessDependencies {
     private let downloadImageUseCase: DownloadImageUseCase
     private let saveImageUseCase: SaveImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
-    private let logInUseCase: LogInUseCase
-    private let logOutUseCase: LogOutUseCase
-    let logInViewModel: LogInViewModel
-    let registrationViewModel: RegistrationViewModel
+//    private let logInUseCase: LogInUseCase
+//    private let logOutUseCase: LogOutUseCase
+//    let logInViewModel: LogInViewModel
+//    let registrationViewModel: RegistrationViewModel
     let agregarViewModel: AgregarViewModel
     let productsViewModel: ProductViewModel
     let cartViewModel: CartViewModel
@@ -130,11 +130,11 @@ struct BusinessDependencies {
         self.downloadImageUseCase = DownloadImageInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
-        self.logInUseCase = LogInInteractor()
-        self.logOutUseCase = LogOutInteractor()
+//        self.logInUseCase = LogInInteractor(sessionRepository: ses)
+//        self.logOutUseCase = LogOutInteractor()
         //MARK: ViewModels
-        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
-        self.registrationViewModel = RegistrationViewModel()
+//        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
+//        self.registrationViewModel = RegistrationViewModel()
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
         self.productsViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)

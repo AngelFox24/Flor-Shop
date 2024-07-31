@@ -25,8 +25,8 @@ struct CustomAPIRequest: NetworkRequest {
     }
 }
 
-struct LoginParameters: Encodable {
-    let userName: String
+struct LogInParameters: Encodable {
+    let username: String
     let password: String
 }
 

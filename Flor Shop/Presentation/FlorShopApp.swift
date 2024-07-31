@@ -16,7 +16,6 @@ struct FlorShopApp: App {
     }
     var body: some Scene {
         WindowGroup {
-//            let dependencies = Dependencies()
             let normalDependencies = NormalDependencies()
             RootView()
                 .environmentObject(normalDependencies.navManager)

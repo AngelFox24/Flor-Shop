@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var errorState: ErrorState
+    @State private var audioPlayer: AVAudioPlayer?
     @Binding var isKeyboardVisible: Bool
+    @Binding var sesConfig: SessionConfig?
     var body: some View {
         ZStack {
             Color("color_primary")
@@ -52,19 +56,13 @@ struct LogInView: View {
                         .padding(.horizontal, 30)
                         VStack(spacing: 30) {
                             Button(action: {
-                                Task {
-                                    self.loadingState.isLoading = true
-                                    await logInViewModel.logIn()
-                                    self.loadingState.isLoading = false
-                                }
-//                                logInViewModel.checkDBIntegrity()
+                                logIn()
                             }, label: {
                                 VStack {
                                     CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                         .foregroundColor(Color(.black))
                                     if logInViewModel.logInFields.errorLogIn != "" {
                                         ErrorMessageText(message: logInViewModel.logInFields.errorLogIn)
-                                        //.padding(.top, 18)
                                     }
                                 }
                             })
@@ -90,12 +88,44 @@ struct LogInView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
+    private func logIn() {
+        Task {
+            loadingState.isLoading = true
+            do {
+                print("Se logeara desde Remote")
+                self.sesConfig = try await logInViewModel.logIn()
+                print("Log In Correcto")
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
+    }
+    private func playSound(named fileName: String) {
+        var soundURL: URL?
+        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
+        guard let url = soundURL else {
+            print("No se pudo encontrar el archivo de sonido.")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
+        }
+    }
 }
 
 struct LogInView_Previews: PreviewProvider {
     static var previews: some View {
         let nor = NormalDependencies()
-        LogInView(isKeyboardVisible: .constant(true))
+        @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        LogInView(isKeyboardVisible: .constant(true), sesConfig: $sesConfig)
             .environmentObject(nor.logInViewModel)
     }
 }
