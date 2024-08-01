@@ -31,7 +31,7 @@ class LocalCartManagerImpl: LocalCartManager {
         return try getCartEntity()?.toCar()
     }
     func deleteCartDetail(cartDetail: CartDetail) throws {
-        guard let cartDetailEntity = cartDetail.toCartDetailEntity(context: self.mainContext) else {
+        guard let cartDetailEntity = self.sessionConfig.getCartDetailEntityById(context: self.mainContext, cartDetailId: cartDetail.id) else {
             print("Detalle de producto no existe en carrito")
             return
         }
@@ -93,7 +93,9 @@ class LocalCartManagerImpl: LocalCartManager {
     }
     func emptyCart() throws {
         try ensureCartExist()
-        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: self.sessionConfig.employeeId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
         guard let cartEntity = employeeEntity.toCart else {
             throw LocalStorageError.notFound("El empleado por defecto no tiene carrito asignado")
         }
@@ -103,7 +105,9 @@ class LocalCartManagerImpl: LocalCartManager {
     }
     func updateCartTotal() throws {
         try ensureCartExist()
-        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: self.sessionConfig.employeeId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
         guard let cartEntity = employeeEntity.toCart else {
             print("El empleado por defecto no tiene carrito")
             throw LocalStorageError.notFound("El empleado por defecto no tiene carrito")
@@ -122,7 +126,7 @@ class LocalCartManagerImpl: LocalCartManager {
         do {
             try self.mainContext.save()
         } catch {
-            self.mainContext.rollback()
+            rollback()
             print("Error al guardar en ProductRepositoryImpl \(error)")
         }
     }
@@ -138,11 +142,15 @@ class LocalCartManagerImpl: LocalCartManager {
     }
     func getCartEntity() throws -> Tb_Cart? {
         try ensureCartExist()
-        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: self.sessionConfig.employeeId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
         return employeeEntity.toCart
     }
     private func cartExist() throws -> Bool {
-        let employeeEntity = try self.sessionConfig.getEmployeeEntity(context: self.mainContext)
+        guard let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: self.sessionConfig.employeeId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
         guard let _ = employeeEntity.toCart else {
             return false
         }

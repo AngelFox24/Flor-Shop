@@ -61,18 +61,6 @@ struct Customer: Identifiable {
 }
 
 extension Customer {
-    func toCustomerEntity(context: NSManagedObjectContext) -> Tb_Customer? {
-        let filterAtt = NSPredicate(format: "idCustomer == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let customerEntity = try context.fetch(request).first
-            return customerEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func toCustomerDTO(companyId: UUID) -> CustomerDTO {
         return CustomerDTO(
             id: id,

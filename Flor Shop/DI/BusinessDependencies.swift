@@ -89,7 +89,7 @@ struct BusinessDependencies {
         self.localProductManager = LocalProductManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
         self.localCartManager = LocalCartManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
         self.localSaleManager = LocalSaleManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.localImageManager = LocalImageManagerImpl(mainContext: mainContext)
+        self.localImageManager = LocalImageManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
         //MARK: Remote Managers
         self.remoteProductManager = RemoteProductManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteSaleManager = RemoteSaleManagerImpl(sessionConfig: self.sessionConfig)

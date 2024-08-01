@@ -51,7 +51,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
                 throw LocalStorageError.notFound("La subsidiaria no es la misma")
             }
-            if let employeeEntity = getEmployeeEntityById(employeeId: employeeDTO.id) {
+            if let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employeeDTO.id) {
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
@@ -78,7 +78,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         saveData()
     }
     func save(employee: Employee) {
-        if let employeeEntity = getEmployeeEntityById(employeeId: employee.id) { //Busqueda por id
+        if let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employee.id) { //Busqueda por id
             employeeEntity.name = employee.name
             employeeEntity.lastName = employee.lastName
             employeeEntity.active = employee.active
@@ -139,19 +139,6 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
     }
     private func rollback() {
         self.mainContext.rollback()
-    }
-    private func getEmployeeEntityById(employeeId: UUID) -> Tb_Employee? {
-        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@", self.sessionConfig.subsidiaryId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
     }
 }
 

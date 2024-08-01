@@ -26,8 +26,13 @@ protocol LocalImageManager {
 
 class LocalImageManagerImpl: LocalImageManager {
     let mainContext: NSManagedObjectContext
-    init(mainContext: NSManagedObjectContext) {
+    let sessionConfig: SessionConfig
+    init(
+        mainContext: NSManagedObjectContext,
+        sessionConfig: SessionConfig
+    ) {
         self.mainContext = mainContext
+        self.sessionConfig = sessionConfig
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -52,11 +57,12 @@ class LocalImageManagerImpl: LocalImageManager {
     }
     func sync(imageURLsDTOs: [ImageURLDTO]) throws {
         for imageURLDTO in imageURLsDTOs {
-            if let imageEntity = getImageEntityById(imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            if let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
+                saveData()
             } else {
                 let imageEntity = Tb_ImageUrl(context: self.mainContext)
                 imageEntity.idImageUrl = imageURLDTO.id
@@ -64,6 +70,7 @@ class LocalImageManagerImpl: LocalImageManager {
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
+                saveData()
             }
         }
     }
@@ -125,7 +132,7 @@ class LocalImageManagerImpl: LocalImageManager {
         //Obtener Hash
         let imageHash = generarHash(data: imageDataResized)
         //Validar si existe otra imagen igual
-        guard let imageFromLocal = getImageByHash(imageHash: imageHash) else {
+        guard let imageEntity = getImageEntityByHash(imageHash: imageHash) else {
             //Se guarda como nueva imagen
             guard let uiImage = UIImage(data: imageDataResized) else {
                 return nil
@@ -142,7 +149,7 @@ class LocalImageManagerImpl: LocalImageManager {
                 return nil
             }
         }
-        return imageFromLocal
+        return imageEntity.toImage()
     }
     func downloadImage(url: URL) async -> UIImage? {
         do {
@@ -226,24 +233,12 @@ class LocalImageManagerImpl: LocalImageManager {
         do {
             try self.mainContext.save()
         } catch {
+            rollback()
             print("Error al guardar en LocalImageManager: \(error)")
         }
     }
     private func rollback() {
         self.mainContext.rollback()
-    }
-    private func getImageEntityById(imageId: UUID) -> Tb_ImageUrl? {
-        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        let predicate = NSPredicate(format: "idImageUrl == %@", imageId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
     }
     private func getImageEntityByHash(imageHash: String) -> Tb_ImageUrl? {
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
@@ -255,18 +250,6 @@ class LocalImageManagerImpl: LocalImageManager {
             print("Error fetching. \(error)")
             return nil
         }
-    }
-    private func getImageByHash(imageHash: String) -> ImageUrl? {
-        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        let predicate = NSPredicate(format: "imageHash == %@", imageHash)
-        request.predicate = predicate
-        do {
-            return try self.mainContext.fetch(request).map{$0.toImage()}.first
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-        //return productList
     }
     private func getImageEntityByURL(imageURL: String) -> Tb_ImageUrl? {
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()

@@ -23,18 +23,6 @@ struct Employee: Identifiable {
 }
 
 extension Employee {
-    func toEmployeeEntity(context: NSManagedObjectContext) -> Tb_Employee? {
-        let filterAtt = NSPredicate(format: "idEmployee == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let employeeEntity = try context.fetch(request).first
-            return employeeEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func toEmployeeDTO(subsidiaryId: UUID) -> EmployeeDTO {
         return EmployeeDTO(
             id: id,

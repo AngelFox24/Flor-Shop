@@ -17,18 +17,6 @@ struct Company: Identifiable {
 }
 
 extension Company {
-    func toCompanyEntity(context: NSManagedObjectContext) -> Tb_Company? {
-        let filterAtt = NSPredicate(format: "idCompany == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let companyEntity = try context.fetch(request).first
-            return companyEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func toCompanyDTO() -> CompanyDTO {
         return CompanyDTO(
             id: id,

@@ -16,18 +16,6 @@ struct CartDetail: Identifiable {
 }
 
 extension CartDetail {
-    func toCartDetailEntity(context: NSManagedObjectContext) -> Tb_CartDetail? {
-        let filterAtt = NSPredicate(format: "idCartDetail == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_CartDetail> = Tb_CartDetail.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let cartDetailEntity = try context.fetch(request).first
-            return cartDetailEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func toCartDetailDTO(subsidiaryId: UUID) -> CartDetailDTO {
         return CartDetailDTO(
             id: id,

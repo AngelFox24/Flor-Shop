@@ -53,7 +53,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             guard self.sessionConfig.companyId == customerDTO.companyID else {
                 throw LocalStorageError.notFound("La compañia no es la misma")
             }
-            if let customerEntity = getCustomerEntityById(customerId: customerDTO.id) {
+            if let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerDTO.id) {
                 customerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 customerEntity.creditScore = Int64(customerDTO.creditScore)
                 customerEntity.creditDays = Int64(customerDTO.creditDays)
@@ -96,7 +96,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         saveData()
     }
     func save(customer: Customer) {
-        if let customerEntity = getCustomerEntityById(customerId: customer.id) { //Busqueda por id
+        if let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) { //Busqueda por id
             customerEntity.name = customer.name
             customerEntity.lastName = customer.lastName
             customerEntity.creditDays = Int64(customer.creditDays)
@@ -140,7 +140,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
     }
     func getCustomer(customer: Customer) -> Customer? {
-        if let customerNN = customer.toCustomerEntity(context: self.mainContext) {
+        if let customerNN = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) {
             return customerNN.toCustomer()
         } else {
             return nil
@@ -208,19 +208,6 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
     }
     private func rollback() {
         self.mainContext.rollback()
-    }
-    private func getCustomerEntityById(customerId: UUID) -> Tb_Customer? {
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate = NSPredicate(format: "toCompany.idCompany == %@", self.sessionConfig.companyId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
     }
     private func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
         var filterAtt = NSPredicate(format: "name != ''")

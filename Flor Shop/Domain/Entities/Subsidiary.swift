@@ -28,18 +28,6 @@ struct Subsidiary: Identifiable {
 }
 
 extension Subsidiary {
-    func toSubsidiaryEntity(context: NSManagedObjectContext) -> Tb_Subsidiary? {
-        let filterAtt = NSPredicate(format: "idSubsidiary == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let subsidiaryEntity = try context.fetch(request).first
-            return subsidiaryEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
     func toSubsidiaryDTO(companyId: UUID) -> SubsidiaryDTO {
         return SubsidiaryDTO(
             id: id,

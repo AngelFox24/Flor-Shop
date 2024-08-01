@@ -38,16 +38,4 @@ extension Sale {
             updatedAt: updatedAt.description
         )
     }
-    func toSaleEntity(context: NSManagedObjectContext) -> Tb_Sale? {
-        let filterAtt = NSPredicate(format: "idSale == %@", id.uuidString)
-        let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let saleEntity = try context.fetch(request).first
-            return saleEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
-        }
-    }
 }

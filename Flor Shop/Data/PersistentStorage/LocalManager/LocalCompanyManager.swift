@@ -51,7 +51,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             rollback()
             throw LocalStorageError.notFound("La compañia no es la misma")
         }
-        if let companyEntity = getCompanyEntityById(companyId: companyDTO.id) {
+        if let companyEntity = self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: companyDTO.id) {
             print("Se actualiza la compañia")
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
@@ -70,7 +70,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         saveData()
     }
     func save(company: Company) throws {
-        if let companyEntity = getCompanyEntityById(companyId: company.id) { //Comprobacion Inicial por Id
+        if let companyEntity = self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: company.id) { //Comprobacion Inicial por Id
             companyEntity.companyName = company.companyName
             companyEntity.ruc = company.ruc
         } else if companyExist(company: company) { //Buscamos compañia por otros atributos
@@ -104,19 +104,6 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         } catch let error {
             print("Error fetching. \(error)")
             return false
-        }
-    }
-    private func getCompanyEntityById(companyId: UUID) -> Tb_Company? {
-        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let predicate = NSPredicate(format: "idCompany == %@", companyId.uuidString)
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let result = try self.mainContext.fetch(request).first
-            return result
-        } catch let error {
-            print("Error fetching. \(error)")
-            return nil
         }
     }
 }

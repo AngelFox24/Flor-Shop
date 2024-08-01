@@ -36,7 +36,7 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
         if cloudBD {
             try await self.remoteManager.save(product: product)
         } else {
-            self.localManager.save(product: product)
+            try self.localManager.save(product: product)
         }
     }
     func sync() async throws {
