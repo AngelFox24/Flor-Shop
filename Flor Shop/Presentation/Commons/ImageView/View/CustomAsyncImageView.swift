@@ -15,8 +15,9 @@ struct CustomAsyncImageView: View {
     var body: some View {
         HStack {
             if isLoading {
-                //TODO: Falta validar si consume muchos recursos esta animacion
-                LoadingFotoView(size: size)
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .frame(width: size, height: size)
                     .cornerRadius(15.0)
             } 
             else {
@@ -34,10 +35,13 @@ struct CustomAsyncImageView: View {
         .onAppear(perform: {
             Task {
                 self.isLoading = true
+//                try? await Task.sleep(nanoseconds: 2_000_000_000)
                 if let imageNN = imageUrl {
-                    let imageR = try await LocalImageManagerImpl.loadImage(image: imageNN)
-                    await MainActor.run {
-                        self.image = Image(uiImage: imageR)
+                    let imageR = try? await LocalImageManagerImpl.loadImage(image: imageNN)
+                    if let uiImage = imageR {
+                        await MainActor.run {
+                            self.image = Image(uiImage: uiImage)
+                        }
                     }
                 }
                 self.isLoading = false

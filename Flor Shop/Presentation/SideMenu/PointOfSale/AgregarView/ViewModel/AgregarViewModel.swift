@@ -63,12 +63,6 @@ class AgregarViewModel: ObservableObject {
         }
     }
     func editProduct(product: Product) async throws {
-        if let imageUrl = product.image {
-            let uiImage = try await LocalImageManagerImpl.loadImage(image: imageUrl)
-            await MainActor.run {
-                self.agregarFields.selectedLocalImage = uiImage
-            }
-        }
         await MainActor.run {
             self.agregarFields.idImage = product.image?.id
             self.agregarFields.productId = product.id
@@ -81,6 +75,12 @@ class AgregarViewModel: ObservableObject {
             self.agregarFields.unitPrice = product.unitPrice.cents
             self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
             self.agregarFields.errorBD = ""
+        }
+        if let imageUrl = product.image {
+            let uiImage = try? await LocalImageManagerImpl.loadImage(image: imageUrl)
+            await MainActor.run {
+                self.agregarFields.selectedLocalImage = uiImage
+            }
         }
     }
     func createProduct() async throws -> Product? {

@@ -33,11 +33,9 @@ struct ProductView: View {
     private func sync() {
         Task {
             loadingState.isLoading = true
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
+//            try? await Task.sleep(nanoseconds: 2_000_000_000)
             do {
-                print("Syncronizing ...")
                 try await productsCoreDataViewModel.sync()
-                print("Syncronized")
                 playSound(named: "Success1")
             } catch {
                 await MainActor.run {

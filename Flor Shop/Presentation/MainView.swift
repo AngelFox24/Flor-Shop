@@ -21,6 +21,7 @@ struct MainView: View {
                 .environmentObject(dependencies.customerViewModel)
                 .environmentObject(dependencies.addCustomerViewModel)
                 .environmentObject(dependencies.employeeViewModel)
+                .environmentObject(dependencies.agregarViewModel)
         })
         .navigationDestination(for: MenuRoutes.self) { routes in
             switch routes {
