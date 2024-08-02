@@ -29,7 +29,7 @@ struct BusinessDependencies {
     private let remoteSubsidiaryManager: RemoteSubsidiaryManagerImpl
     private let remoteEmployeeManager: RemoteEmployeeManagerImpl
     private let remoteCustomerManager: RemoteCustomerManagerImpl
-    let remoteImageManager: RemoteImageManagerImpl
+    private let remoteImageManager: RemoteImageManagerImpl
     //Repositorios
     private let companyRepository: CompanyRepositoryImpl
     private let subsidiaryRepository: SubsidiaryRepositoryImpl
@@ -60,8 +60,6 @@ struct BusinessDependencies {
     private let getCustomerSalesUseCase: GetCustomerSalesUseCase
     private let payClientDebtUseCase: PayClientDebtUseCase
     private let deleteUnusedImagesUseCase: DeleteUnusedImagesUseCase
-    private let loadSavedImageUseCase: LoadSavedImageUseCase
-    private let downloadImageUseCase: DownloadImageUseCase
     private let saveImageUseCase: SaveImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
 //    private let logInUseCase: LogInUseCase
@@ -128,8 +126,6 @@ struct BusinessDependencies {
         self.getCustomerSalesUseCase = GetCustomerSalesInteractor(customerRepository: customerRepository)
         self.payClientDebtUseCase = PayClientDebtInteractor(saleRepository: salesRepository)
         self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
-        self.loadSavedImageUseCase = LoadSavedImageInteractor(imageRepository: imageRepository)
-        self.downloadImageUseCase = DownloadImageInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
 //        self.logInUseCase = LogInInteractor(sessionRepository: ses)
@@ -137,13 +133,13 @@ struct BusinessDependencies {
         //MARK: ViewModels
 //        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
 //        self.registrationViewModel = RegistrationViewModel()
-        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
+        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
         self.productsViewModel = ProductViewModel(synchronizerDBUseCase: synchronizerDBUseCase, getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
-        self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, loadSavedImageUseCase: loadSavedImageUseCase, saveImageUseCase: saveImageUseCase)
+        self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, saveImageUseCase: saveImageUseCase)
     }
 }

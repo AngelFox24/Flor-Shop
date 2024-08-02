@@ -60,25 +60,10 @@ struct CustomersView_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomersView(showMenu: .constant(false))
             .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.addCustomerViewModel)
+            .environmentObject(dependencies.customerHistoryViewModel)
+            .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.navManager)
-    }
-}
-
-struct CardViewTipe2_2: View {
-    var id: UUID?
-    var url: String?
-    //var topStatusColor: Color?
-    //var topStatus: String?
-    //var mainText: String
-    //var mainIndicatorPrefix: String?
-    //var mainIndicator: String
-    //var mainIndicatorAlert: Bool
-    //var secondaryIndicatorSuffix: String?
-    //var secondaryIndicator: String?
-    //var secondaryIndicatorAlert: Bool
-    let size: CGFloat
-    var body: some View {
-            CustomAsyncImageView(id: id, urlProducto: url, size: size)
     }
 }
 
@@ -108,10 +93,7 @@ struct CustomerListController: View {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
                             CardViewTipe2(
-                                id: customer.image?.id,
-                                url: customer.image?.imageUrl,
-                                //topStatusColor: customer.customerTipe.color,
-                                //topStatus: customer.customerTipe.description,
+                                imageUrl: customer.image,
                                 topStatusColor: nil,
                                 topStatus: nil,
                                 mainText: customer.name + " " + customer.lastName,
@@ -130,8 +112,6 @@ struct CustomerListController: View {
                                     cartViewModel.customerInCar = customer
                                     navManager.goToBack()
                                 } else {
-                                    //addCustomerViewModel.editCustomer(customer: customer)
-                                    //navManager.goToAddCustomerView()
                                     customerHistoryViewModel.setCustomerInContext(customer: customer)
                                     navManager.goToCustomerHistoryView()
                                 }

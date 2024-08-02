@@ -9,12 +9,10 @@ import Foundation
 import SwiftUI
 
 protocol ImageRepository {
+    func save(image: ImageUrl) throws -> ImageUrl
+    func saveImage(image: UIImage) async throws -> ImageUrl
     func sync() async throws
     func deleteUnusedImages() async
-    func loadSavedImage(id: UUID) -> UIImage?
-    func downloadImage(url: URL) async -> UIImage?
-    func save(idImage: UUID, image: UIImage) -> ImageUrl?
-    func save(image: ImageUrl) throws -> ImageUrl
 }
 
 class ImageRepositoryImpl: ImageRepository, Syncronizable {
@@ -31,6 +29,9 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
     func save(image: ImageUrl) throws -> ImageUrl {
         return try self.localManager.save(image: image)
     }
+    func saveImage(image: UIImage) async throws -> ImageUrl {
+        return try await self.localManager.saveImage(image: image)
+    }
     func sync() async throws {
         var counter = 0
         var items = 0
@@ -46,14 +47,5 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
     }
     func deleteUnusedImages() async {
         await self.localManager.deleteUnusedImages()
-    }
-    func loadSavedImage(id: UUID) -> UIImage? {
-        return self.localManager.loadSavedImage(id: id)
-    }
-    func downloadImage(url: URL) async -> UIImage? {
-        return await self.localManager.downloadImage(url: url)
-    }
-    func save(idImage: UUID, image: UIImage) -> ImageUrl? {
-        return self.localManager.save(idImage: idImage, image: image)
     }
 }

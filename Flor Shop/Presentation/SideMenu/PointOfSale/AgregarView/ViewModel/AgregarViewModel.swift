@@ -14,13 +14,15 @@ class AgregarViewModel: ObservableObject {
     @Published var agregarFields = AgregarFields()
     
     private let saveProductUseCase: SaveProductUseCase
-    let loadSavedImageUseCase: LoadSavedImageUseCase
     let saveImageUseCase: SaveImageUseCase
     let exportProductsUseCase: ExportProductsUseCase
     
-    init(saveProductUseCase: SaveProductUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase, exportProductsUseCase: ExportProductsUseCase) {
+    init(
+        saveProductUseCase: SaveProductUseCase,
+        saveImageUseCase: SaveImageUseCase,
+        exportProductsUseCase: ExportProductsUseCase
+    ) {
         self.saveProductUseCase = saveProductUseCase
-        self.loadSavedImageUseCase = loadSavedImageUseCase
         self.saveImageUseCase = saveImageUseCase
         self.exportProductsUseCase = exportProductsUseCase
     }
@@ -51,7 +53,7 @@ class AgregarViewModel: ObservableObject {
         await MainActor.run {
             agregarFields.fieldsTrue()
         }
-        guard let product = createProduct() else {
+        guard let product = try await createProduct() else {
             print("No se pudo crear producto")
             throw LocalStorageError.notFound("No se pudo crear el producto")
         }
@@ -60,24 +62,28 @@ class AgregarViewModel: ObservableObject {
             releaseResources()
         }
     }
-    func editProduct(product: Product) {
-        if let imageId = product.image?.id {
-            self.agregarFields.selectedLocalImage = self.loadSavedImageUseCase.execute(id: imageId)
-            self.agregarFields.idImage = imageId
-            print("Se agrego el id correctamente")
+    func editProduct(product: Product) async throws {
+        if let imageUrl = product.image {
+            let uiImage = try await LocalImageManagerImpl.loadImage(image: imageUrl)
+            await MainActor.run {
+                self.agregarFields.selectedLocalImage = uiImage
+            }
         }
-        self.agregarFields.productId = product.id
-        self.agregarFields.active = product.active
-        self.agregarFields.productName = product.name
-        self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
-        self.agregarFields.quantityStock = String(product.qty)
-        self.agregarFields.unitType = product.unitType
-        self.agregarFields.unitCost = product.unitCost.cents
-        self.agregarFields.unitPrice = product.unitPrice.cents
-        self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
-        self.agregarFields.errorBD = ""
+        await MainActor.run {
+            self.agregarFields.idImage = product.image?.id
+            self.agregarFields.productId = product.id
+            self.agregarFields.active = product.active
+            self.agregarFields.productName = product.name
+            self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
+            self.agregarFields.quantityStock = String(product.qty)
+            self.agregarFields.unitType = product.unitType
+            self.agregarFields.unitCost = product.unitCost.cents
+            self.agregarFields.unitPrice = product.unitPrice.cents
+            self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
+            self.agregarFields.errorBD = ""
+        }
     }
-    func createProduct() -> Product? {
+    func createProduct() async throws -> Product? {
         guard let quantityStock = Int(self.agregarFields.quantityStock) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
@@ -93,7 +99,7 @@ class AgregarViewModel: ObservableObject {
                 unitCost: Money(self.agregarFields.unitCost),
                 unitPrice: Money(self.agregarFields.unitPrice),
                 expirationDate: self.agregarFields.expirationDate,
-                image: getImageIfExist(),
+                image: try await getImageIfExist(),
                 createdAt: Date(),
                 updatedAt: Date()
             )
@@ -107,17 +113,9 @@ class AgregarViewModel: ObservableObject {
     func importCSV() async -> Bool {
         return true
     }
-    func getImageIfExist() -> ImageUrl? {
-        if let imageLocal = self.agregarFields.selectedLocalImage {
-            return self.saveImageUseCase.execute(idImage: UUID(), image: imageLocal)
-        } else if self.agregarFields.imageUrl != "" {
-            return ImageUrl(
-                id: UUID(),
-                imageUrl: self.agregarFields.imageUrl,
-                imageHash: "",
-                createdAt: Date(),
-                updatedAt: Date()
-            )
+    func getImageIfExist() async throws -> ImageUrl? {
+        if let uiImage = self.agregarFields.selectedLocalImage {
+            return try await self.saveImageUseCase.execute(uiImage: uiImage)
         } else {
             return nil
         }

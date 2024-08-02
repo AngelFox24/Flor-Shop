@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CardViewTipe1: View {
-    //No se declara modelos de datos de capa vista porque se reutilizara para varias vistas
     let image: ImageUrl?
     let topStatusColor: Color
     let topStatus: String
@@ -18,7 +17,7 @@ struct CardViewTipe1: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(id: image?.id, urlProducto: image?.imageUrl, size: size)
+                CustomAsyncImageView(imageUrl: image, size: size)
                 VStack(spacing: 2) {
                     HStack{
                         topStatusColor
@@ -60,8 +59,7 @@ struct CardViewTipe1: View {
     }
 }
 struct CardViewTipe2: View {
-    var id: UUID?
-    var url: String?
+    var imageUrl: ImageUrl?
     var topStatusColor: Color?
     var topStatus: String?
     var mainText: String
@@ -75,7 +73,7 @@ struct CardViewTipe2: View {
     var body: some View {
         VStack{
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(id: id, urlProducto: url, size: size)
+                CustomAsyncImageView(imageUrl: imageUrl, size: size)
                 VStack(spacing: 2) {
                     if let topStatusUnwrap = topStatus, let topStatusColorUnwrap = topStatusColor {
                         HStack{
@@ -143,8 +141,6 @@ struct CardViewTipe2: View {
 }
 
 struct CardViewTipe3: View {
-    // let cartDetail: CartDetail
-    // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     let cartDetail: CartDetail
     let size: CGFloat
     var decreceProductAmount: (CartDetail) -> Void
@@ -152,7 +148,7 @@ struct CardViewTipe3: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                CustomAsyncImageView(id: cartDetail.product.image?.id, urlProducto: cartDetail.product.image?.imageUrl, size: size)
+                CustomAsyncImageView(imageUrl: cartDetail.product.image, size: size)
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)
@@ -312,8 +308,8 @@ struct CardViews_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 10,
                content: {
-            CardViewTipe1(image: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
-            CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
+//            CardViewTipe1(image: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
+//            CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
             let cartDetail = CartDetail(
                 id: UUID(),
                 quantity: 24,

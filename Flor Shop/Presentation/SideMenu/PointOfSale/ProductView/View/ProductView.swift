@@ -132,8 +132,7 @@ struct ListaControler: View {
                         }
                         ForEach(productsCoreDataViewModel.productsCoreData) { producto in
                             CardViewTipe2(
-                                id: producto.image?.id,
-                                url: producto.image?.imageUrl,
+                                imageUrl: producto.image,
                                 topStatusColor: Color.red,
                                 topStatus: nil,
                                 mainText: producto.name,
@@ -190,7 +189,19 @@ struct ListaControler: View {
         selectedTab = .cart
     }
     func editProduct(product: Product) {
-        agregarViewModel.editProduct(product: product)
+        Task {
+            loadingState.isLoading = true
+            do {
+                try await agregarViewModel.editProduct(product: product)
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
     }
     func agregarProductoACarrito(producto: Product) {
         Task {

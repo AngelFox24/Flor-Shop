@@ -19,12 +19,13 @@ class AddCustomerViewModel: ObservableObject {
         }
     }
     let saveCustomerUseCase: SaveCustomerUseCase
-    let loadSavedImageUseCase: LoadSavedImageUseCase
     let saveImageUseCase: SaveImageUseCase
     
-    init(saveCustomerUseCase: SaveCustomerUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase) {
+    init(
+        saveCustomerUseCase: SaveCustomerUseCase,
+        saveImageUseCase: SaveImageUseCase
+    ) {
         self.saveCustomerUseCase = saveCustomerUseCase
-        self.loadSavedImageUseCase = loadSavedImageUseCase
         self.saveImageUseCase = saveImageUseCase
     }
     private func setImage(from selection: PhotosPickerItem?) {
@@ -57,38 +58,43 @@ class AddCustomerViewModel: ObservableObject {
         //fieldsAddCustomer.dateLimitEdited = true
         fieldsAddCustomer.creditLimitEdited = true
     }
-    func editCustomer(customer: Customer) {
-        if let imageId = customer.image?.id {
-            self.selectedImage = self.loadSavedImageUseCase.execute(id: imageId)
-            fieldsAddCustomer.idImage = imageId
+    func editCustomer(customer: Customer) async throws {
+        if let imageUrl = customer.image {
+            let uiImage = try await LocalImageManagerImpl.loadImage(image: imageUrl)
+            await MainActor.run {
+                self.selectedImage = uiImage
+            }
             print("Se agrego el id correctamente")
         }
-        fieldsAddCustomer.id = customer.id
-        fieldsAddCustomer.name = customer.name
-        fieldsAddCustomer.lastname = customer.lastName
-        fieldsAddCustomer.phoneNumber = customer.phoneNumber
-        fieldsAddCustomer.totalDebt = String(customer.totalDebt.cents)
-        fieldsAddCustomer.dateLimit = customer.dateLimit
-        fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
-        fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
-        fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
-        fieldsAddCustomer.creditDays = String(customer.creditDays)
-        fieldsAddCustomer.creditScore = customer.creditScore
-        fieldsAddCustomer.creditLimit = String(customer.creditLimit.cents)
+        await MainActor.run {
+            fieldsAddCustomer.idImage = customer.image?.id
+            fieldsAddCustomer.id = customer.id
+            fieldsAddCustomer.name = customer.name
+            fieldsAddCustomer.lastname = customer.lastName
+            fieldsAddCustomer.phoneNumber = customer.phoneNumber
+            fieldsAddCustomer.totalDebt = String(customer.totalDebt.cents)
+            fieldsAddCustomer.dateLimit = customer.dateLimit
+            fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
+            fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
+            fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
+            fieldsAddCustomer.creditDays = String(customer.creditDays)
+            fieldsAddCustomer.creditScore = customer.creditScore
+            fieldsAddCustomer.creditLimit = String(customer.creditLimit.cents)
+        }
         
     }
     func addCustomer() async throws {
         await MainActor.run {
             fieldsTrue()
         }
-        guard let customer = createCustomer() else {
+        guard let customer = try await createCustomer() else {
             print("No se pudo crear Cliente")
             throw LocalStorageError.notFound("No se pudo crear Cliente")
         }
         try await self.saveCustomerUseCase.execute(customer: customer)
         await releaseResources()
     }
-    func createCustomer() -> Customer? {
+    func createCustomer() async throws -> Customer? {
         guard let totalDebt = Int(fieldsAddCustomer.totalDebt) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
@@ -106,7 +112,7 @@ class AddCustomerViewModel: ObservableObject {
                 id: fieldsAddCustomer.id ?? UUID(),
                 name: fieldsAddCustomer.name,
                 lastName: fieldsAddCustomer.lastname,
-                image: getImageIfExist(),
+                image: try await getImageIfExist(),
                 creditLimit: Money(creditLimitInt),
                 isCreditLimit: false,
                 creditDays: creditDaysInt,
@@ -150,11 +156,11 @@ class AddCustomerViewModel: ObservableObject {
         return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
     }
      */
-    func getImageIfExist() -> ImageUrl? {
+    func getImageIfExist() async throws -> ImageUrl? {
         guard let image = self.selectedImage else {
             return nil
         }
-        return self.saveImageUseCase.execute(idImage: UUID(), image: image)
+        return try await self.saveImageUseCase.execute(uiImage: image)
     }
     func releaseResources() async {
         await MainActor.run {

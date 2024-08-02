@@ -13,6 +13,8 @@ struct CustomerHistoryTopBar: View {
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var navManager: NavManager
+    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
@@ -47,10 +49,9 @@ struct CustomerHistoryTopBar: View {
                 })
                 if let customer = customerHistoryViewModel.customer {
                     Button(action: {
-                        addCustomerViewModel.editCustomer(customer: customer)
-                        navManager.goToAddCustomerView()
+                        editCustomer(customer: customer)
                     }, label: {
-                        CustomAsyncImageView(id: customer.image?.id, urlProducto: customer.image?.imageUrl, size: 40)
+                        CustomAsyncImageView(imageUrl: customer.image, size: 40)
                     })
                 } else {
                     CustomButton3(simbol: "person.crop.circle.badge.plus")
@@ -61,6 +62,22 @@ struct CustomerHistoryTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
+    }
+    private func editCustomer(customer: Customer) {
+        Task {
+            loadingState.isLoading = true
+            do {
+                try await addCustomerViewModel.editCustomer(customer: customer)
+                navManager.goToAddCustomerView()
+                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+                playSound(named: "Fail1")
+            }
+            loadingState.isLoading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?
