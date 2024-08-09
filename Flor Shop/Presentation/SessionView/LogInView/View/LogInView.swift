@@ -12,7 +12,6 @@ struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @ObservedObject var logInFields: LogInFields
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var viewStates: ViewStates
     @FocusState var currentFocusField: AllFocusFields?
@@ -103,7 +102,7 @@ struct LogInView: View {
     }
     private func logIn() {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             do {
                 print("Se logeara desde Remote")
                 self.sesConfig = try await logInViewModel.logIn()
@@ -118,7 +117,7 @@ struct LogInView: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

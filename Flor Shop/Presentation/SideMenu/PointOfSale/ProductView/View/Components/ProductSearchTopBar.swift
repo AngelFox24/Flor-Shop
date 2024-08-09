@@ -7,40 +7,55 @@
 
 import SwiftUI
 
+struct CustomSearchField: View {
+    @EnvironmentObject var viewStates: ViewStates
+    let placeHolder: String = "Buscar"
+    @Binding var text: String
+    let focusField: AllFocusFields
+    var currentFocusField: FocusState<AllFocusFields?>.Binding
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(Color("color_accent"))
+                .font(.custom("Artifika-Regular", size: 16))
+                .padding(.vertical, 10)
+                .padding(.leading, 10)
+            TextField(placeHolder, text: $text)
+                .focused(currentFocusField, equals: focusField)
+                .padding(.vertical, 10)
+                .font(.custom("Artifika-Regular", size: 16))
+                .foregroundColor(Color("color_primary"))
+                .submitLabel(.done)
+                .disableAutocorrection(true)
+            Button(action: {
+                text = ""
+            }, label: {
+                Image(systemName: "x.circle")
+                    .foregroundColor(Color("color_accent"))
+                    .font(.custom("Artifika-Regular", size: 16))
+                    .padding(.vertical, 10)
+                    .padding(.trailing, 10)
+            })
+        }
+        .background(.white)
+        .cornerRadius(20.0)
+        .onTapGesture {
+            viewStates.focusedField = focusField
+        }
+    }
+}
+
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var viewStates: ViewStates
+    var currentFocusField: FocusState<AllFocusFields?>.Binding
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
                 CustomButton5(showMenu: $viewStates.isShowMenu)
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("color_accent"))
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .padding(.vertical, 10)
-                        .padding(.leading, 10)
-                    // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Producto", text: $productsCoreDataViewModel.searchText)
-                        .padding(.vertical, 10)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color("color_primary"))
-                        .submitLabel(.done)
-                        .disableAutocorrection(true)
-                    Button(action: {
-                        productsCoreDataViewModel.searchText = ""
-                    }, label: {
-                        Image(systemName: "x.circle")
-                            .foregroundColor(Color("color_accent"))
-                            .font(.custom("Artifika-Regular", size: 16))
-                            .padding(.vertical, 10)
-                            .padding(.trailing, 10)
-                    })
-                }
-                .background(.white)
-                .cornerRadius(20.0)
+                CustomSearchField(text: $productsCoreDataViewModel.searchText, focusField: .products(.searchBar), currentFocusField: currentFocusField)
                 Menu {
                     Section("Ordenamiento") {
                         ForEach(menuOrders, id: \.self) { orden in
@@ -81,12 +96,15 @@ struct ProductSearchTopBar: View {
 
 struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
+        let nor = NormalDependencies()
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
+        @FocusState var currentFocusField: AllFocusFields?
         @State var showMenu: Bool = false
         VStack (content: {
-            ProductSearchTopBar()
+            ProductSearchTopBar(currentFocusField: $currentFocusField)
                 .environmentObject(dependencies.productsViewModel)
+                .environmentObject(nor.viewStates)
             Spacer()
         })
     }

@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CustomTextField: View {
+    @EnvironmentObject var viewStates: ViewStates
     var placeHolder: String = ""
     var title: String = "Campo"
     @Binding var value: String
     @Binding var edited: Bool
-    @EnvironmentObject var viewStates: ViewStates
     let focusField: AllFocusFields
     var currentFocusField: FocusState<AllFocusFields?>.Binding
     private var isEqual: Bool { currentFocusField.wrappedValue == focusField }
@@ -33,12 +33,6 @@ struct CustomTextField: View {
                         .foregroundColor(.black)
                         .padding(.vertical, 4)
                         .disableAutocorrection(disableAutocorrection)
-//                        .onTapGesture {
-//                            print("Taped: \(focusField)")
-//                            if !disable {
-//                                viewStates.focusedField = focusField
-//                            }
-//                        }
                         .onChange(of: value, perform: { text in
                             print("Custom: \(text)")
                             print("Ext: \(value)")
@@ -77,12 +71,12 @@ struct CustomTextField: View {
                     .cornerRadius(5)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .offset(y: -22)
-                    .onTapGesture {
-                        if !disable {
-                            viewStates.focusedField = focusField
-                        }
-                    }
                     .disabled(disable)
+            }
+        }
+        .onTapGesture {
+            if !disable {
+                viewStates.focusedField = focusField
             }
         }
     }

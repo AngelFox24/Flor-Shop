@@ -11,7 +11,6 @@ import SwiftUI
 struct NormalDependencies {
     let navManager: NavManager
     //Estados
-    let loadingState: LoadingState
     let errorState: ErrorState
     let versionCheck: VersionCheck
     let viewStates: ViewStates
@@ -27,7 +26,6 @@ struct NormalDependencies {
     init() {
         self.navManager = NavManager()
         //Estados
-        self.loadingState = LoadingState()
         self.versionCheck = VersionCheck()
         self.errorState = ErrorState()
         self.viewStates = ViewStates()
@@ -54,36 +52,6 @@ class ErrorState: ObservableObject {
 class ViewStates: ObservableObject {
     @Published var focusedField: AllFocusFields? = nil
     @Published var isShowMenu: Bool = false
-}
-
-enum AllFocusFields: Hashable {
-    case agregar(AgregarFocusFields)
-    case addCustomer(AddCustomerFocusFields)
-    case logIn(LogInFocusFields)
-}
-
-enum AgregarFocusFields {
-    case textFieldA1
-    case textFieldA2
-    case barcode
-    case productName
-    case disponible
-    case quantity
-    case margin
-}
-
-enum AddCustomerFocusFields {
-    case nombre
-    case apellidos
-    case movil
-    case deudaTotal
-    case fechalimite
-    case diascredito
-    case limitecredito
-}
-
-enum LogInFocusFields {
-    case user
-    case password
+    @Published var isLoading: Bool = false
 }
 

@@ -11,6 +11,7 @@ struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var viewStates: ViewStates
+    var currentFocusField: FocusState<AllFocusFields?>.Binding
     var backButton: Bool = false
     var body: some View {
         VStack {
@@ -37,31 +38,7 @@ struct CustomerTopBar: View {
                         .frame(width: 40, height: 40)
                     })
                 }
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("color_accent"))
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .padding(.vertical, 10)
-                        .padding(.leading, 10)
-                    // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Cliente", text: $customerViewModel.searchWord)
-                        .padding(.vertical, 10)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color("color_primary"))
-                        .submitLabel(.search)
-                        .disableAutocorrection(true)
-                    Button(action: {
-                        customerViewModel.searchWord = ""
-                    }, label: {
-                        Image(systemName: "x.circle")
-                            .foregroundColor(Color("color_accent"))
-                            .font(.custom("Artifika-Regular", size: 16))
-                            .padding(.vertical, 10)
-                            .padding(.trailing, 10)
-                    })
-                }
-                .background(.white)
-                .cornerRadius(20.0)
+                CustomSearchField(text: $customerViewModel.searchWord, focusField: .customers(.searchBar), currentFocusField: currentFocusField)
                 Menu {
                     Section("Ordenamiento") {
                         ForEach(CustomerOrder.allValues, id: \.self) { orden in

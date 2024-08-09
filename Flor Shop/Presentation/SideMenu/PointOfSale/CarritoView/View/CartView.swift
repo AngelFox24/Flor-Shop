@@ -37,7 +37,7 @@ struct CartView_Previews: PreviewProvider {
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var viewStates: ViewStates
     @Binding var selectedTab: Tab
     @State var isPresented = false
     var body: some View {
@@ -101,23 +101,23 @@ struct ListCartController: View {
     }
     func deleteCartDetail(cartDetail: CartDetail) {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     func decreceProductAmount(cartDetail: CartDetail) {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             await cartViewModel.changeProductAmount(cartDetail: cartDetail)
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     func increaceProductAmount(cartDetail: CartDetail) {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             await cartViewModel.changeProductAmount(cartDetail: cartDetail)
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
 }

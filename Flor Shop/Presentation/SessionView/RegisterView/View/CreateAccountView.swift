@@ -37,21 +37,21 @@ struct CreateAccountView: View {
                     VStack(spacing: 30) {
                         VStack(spacing: 40){
                             VStack {
-                                CustomTextField(title: "Correo" ,value: $registrationViewModel.registrationFields.email, edited: $registrationViewModel.registrationFields.emailEdited, focusField: .agregar(.textFieldA1), currentFocusField: $currentFocusField)
+                                CustomTextField(title: "Correo" ,value: $registrationViewModel.registrationFields.email, edited: $registrationViewModel.registrationFields.emailEdited, focusField: .agregar(.barcode), currentFocusField: $currentFocusField)
                                 if registrationViewModel.registrationFields.emailError != "" {
                                     ErrorMessageText(message: registrationViewModel.registrationFields.emailError)
                                     //.padding(.top, 8)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Usuario" ,value: $registrationViewModel.registrationFields.user, edited: $registrationViewModel.registrationFields.userEdited, focusField: .agregar(.textFieldA1), currentFocusField: $currentFocusField)
+                                CustomTextField(title: "Usuario" ,value: $registrationViewModel.registrationFields.user, edited: $registrationViewModel.registrationFields.userEdited, focusField: .agregar(.margin), currentFocusField: $currentFocusField)
                                 if registrationViewModel.registrationFields.userError != "" {
                                     ErrorMessageText(message: registrationViewModel.registrationFields.userError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Contraseña" ,value: $registrationViewModel.registrationFields.password, edited: $registrationViewModel.registrationFields.passwordEdited, focusField: .agregar(.textFieldA1), currentFocusField: $currentFocusField)
+                                CustomTextField(title: "Contraseña" ,value: $registrationViewModel.registrationFields.password, edited: $registrationViewModel.registrationFields.passwordEdited, focusField: .agregar(.quantity), currentFocusField: $currentFocusField)
                                 if registrationViewModel.registrationFields.passwordError != "" {
                                     ErrorMessageText(message: registrationViewModel.registrationFields.passwordError)
                                     //.padding(.top, 18)
@@ -59,7 +59,7 @@ struct CreateAccountView: View {
                             }
                             HStack {
                                 VStack {
-                                    CustomTextField(title: "Nombre de la Tienda" ,value: $registrationViewModel.registrationFields.companyName, edited: $registrationViewModel.registrationFields.companyNameEdited, focusField: .agregar(.textFieldA1), currentFocusField: $currentFocusField)
+                                    CustomTextField(title: "Nombre de la Tienda" ,value: $registrationViewModel.registrationFields.companyName, edited: $registrationViewModel.registrationFields.companyNameEdited, focusField: .agregar(.margin), currentFocusField: $currentFocusField)
                                     if registrationViewModel.registrationFields.companyNameError != "" {
                                         ErrorMessageText(message: registrationViewModel.registrationFields.companyNameError)
                                         //.padding(.top, 18)
@@ -75,14 +75,14 @@ struct CreateAccountView: View {
                                 })
                             }
                             VStack {
-                                CustomTextField(title: "Nombre del Dueño" ,value: $registrationViewModel.registrationFields.managerName, edited: $registrationViewModel.registrationFields.managerNameEdited, focusField: .agregar(.textFieldA1), currentFocusField: $currentFocusField)
+                                CustomTextField(title: "Nombre del Dueño" ,value: $registrationViewModel.registrationFields.managerName, edited: $registrationViewModel.registrationFields.managerNameEdited, focusField: .agregar(.disponible), currentFocusField: $currentFocusField)
                                 if registrationViewModel.registrationFields.managerNameError != "" {
                                     ErrorMessageText(message: registrationViewModel.registrationFields.managerNameError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Apellidos del Dueño" ,value: $registrationViewModel.registrationFields.managerLastName, edited: $registrationViewModel.registrationFields.managerLastNameEdited, focusField: .agregar(.textFieldA1), currentFocusField: $currentFocusField)
+                                CustomTextField(title: "Apellidos del Dueño" ,value: $registrationViewModel.registrationFields.managerLastName, edited: $registrationViewModel.registrationFields.managerLastNameEdited, focusField: .agregar(.margin), currentFocusField: $currentFocusField)
                                 if registrationViewModel.registrationFields.managerLastNameError != "" {
                                     ErrorMessageText(message: registrationViewModel.registrationFields.managerLastNameError)
                                     //.padding(.top, 18)

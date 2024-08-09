@@ -9,7 +9,6 @@ import SwiftUI
 import PhotosUI
 
 struct AgregarView: View {
-    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var viewStates: ViewStates
     @FocusState var currentFocusField: AllFocusFields?
@@ -45,7 +44,6 @@ struct AgregarView_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         AgregarView(selectedTab: .constant(.plus))
             .environmentObject(dependencies.agregarViewModel)
-            .environmentObject(nor.loadingState)
             .environmentObject(nor.viewStates)
     }
 }
@@ -181,7 +179,7 @@ struct CamposProductoAgregar: View {
                         VStack {
                             HStack {
                                 CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarFields.quantityStock, edited: $agregarFields.quantityEdited, focusField: .agregar(.quantity), currentFocusField: currentFocusField, keyboardType: .numberPad)
-                                CustomNumberField(placeHolder: "0", title: "Costo Unitario" ,userInput: $agregarFields.unitCost, edited: $agregarFields.unitCostEdited)
+                                CustomNumberField(placeHolder: "0", title: "Costo Unitario" ,userInput: $agregarFields.unitCost, edited: $agregarFields.unitCostEdited, focusField: .agregar(.unitCost), currentFocusField: currentFocusField)
                             }
                             if agregarFields.quantityError != "" {
                                 ErrorMessageText(message: agregarFields.quantityError)
@@ -195,7 +193,7 @@ struct CamposProductoAgregar: View {
                         VStack {
                             HStack {
                                 CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarFields.profitMargin), edited: .constant(false), focusField: .agregar(.margin), currentFocusField: currentFocusField, disable: true)
-                                CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarFields.unitPrice, edited: $agregarFields.unitPriceEdited)
+                                CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarFields.unitPrice, edited: $agregarFields.unitPriceEdited, focusField: .agregar(.unitPrice), currentFocusField: currentFocusField)
                             }
                             if agregarFields.unitPriceError != "" {
                                 ErrorMessageText(message: agregarFields.unitPriceError)

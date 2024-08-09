@@ -14,7 +14,7 @@ enum LogInStatus {
 }
 
 class LogInViewModel: ObservableObject {
-    @Published var logInStatus: LogInStatus = .success
+    @Published var logInStatus: LogInStatus = .fail
     @ObservedObject var logInFields: LogInFields = LogInFields()
     private let logInUseCase: LogInUseCase
     private let logOutUseCase: LogOutUseCase

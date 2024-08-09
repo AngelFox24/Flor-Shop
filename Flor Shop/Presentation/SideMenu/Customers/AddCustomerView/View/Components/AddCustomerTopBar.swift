@@ -11,7 +11,7 @@ import CoreData
 import AVFoundation
 
 struct AddCustomerTopBar: View {
-    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
@@ -43,7 +43,7 @@ struct AddCustomerTopBar: View {
     }
     func addCustomer() {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             do {
                 try await addCustomerViewModel.addCustomer()
                 playSound(named: "Success1")
@@ -55,7 +55,7 @@ struct AddCustomerTopBar: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -76,10 +76,12 @@ struct AddCustomerTopBar: View {
 
 struct AddCustomerTopBar_Previews: PreviewProvider {
     static var previews: some View {
+        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         AddCustomerTopBar()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
+            .environmentObject(nor.viewStates)
     }
 }

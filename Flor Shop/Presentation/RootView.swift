@@ -10,7 +10,6 @@ import SwiftUI
 struct RootView: View {
 //    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
     @State var sesConfig: SessionConfig? = nil
-    @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var navManager: NavManager
     
@@ -80,13 +79,10 @@ struct RootView: View {
                     CustomHideKeyboard()
                 }
             })
-            if loadingState.isLoading {
+            if viewStates.isLoading {
                 LoadingView()
             }
         }
-        .onAppear(perform: {
-            print("Var: \(loadingState.isLoading)")
-        })
         .onChange(of: errorState.isPresented, perform: { item in
             if !errorState.isPresented {
                 errorState.error = ""
@@ -125,7 +121,6 @@ struct RootView_Previews: PreviewProvider {
         let normalDependencies = NormalDependencies()
         RootView()
             .environmentObject(normalDependencies.navManager)
-            .environmentObject(normalDependencies.loadingState)
             .environmentObject(normalDependencies.versionCheck)
             .environmentObject(normalDependencies.logInViewModel)
             .environmentObject(normalDependencies.viewStates)

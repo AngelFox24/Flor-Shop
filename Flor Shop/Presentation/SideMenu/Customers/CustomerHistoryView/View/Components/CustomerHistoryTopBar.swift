@@ -13,7 +13,7 @@ struct CustomerHistoryTopBar: View {
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
@@ -65,7 +65,7 @@ struct CustomerHistoryTopBar: View {
     }
     private func editCustomer(customer: Customer) {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             do {
                 try await addCustomerViewModel.editCustomer(customer: customer)
                 navManager.goToAddCustomerView()
@@ -76,7 +76,7 @@ struct CustomerHistoryTopBar: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

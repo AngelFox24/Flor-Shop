@@ -26,7 +26,7 @@ struct PaymentView_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: ses)
         PaymentView()
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.loadingState)
+            .environmentObject(nor.viewStates)
     }
 }
 

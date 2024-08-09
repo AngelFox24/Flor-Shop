@@ -56,7 +56,6 @@ struct MainView_Previews: PreviewProvider {
         let dep = BusinessDependencies(sessionConfig: sesC)
         MainView(dependencies: dep)
             .environmentObject(normalDependencies.navManager)
-            .environmentObject(normalDependencies.loadingState)
             .environmentObject(normalDependencies.versionCheck)
             .environmentObject(normalDependencies.logInViewModel)
             .environmentObject(normalDependencies.viewStates)

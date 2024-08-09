@@ -12,18 +12,28 @@ import StoreKit
 
 struct CustomProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var viewStates: ViewStates
+    @FocusState var currentFocusField: AllFocusFields?
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar()
+            ProductSearchTopBar(currentFocusField: $currentFocusField)
             ListaControler(selectedTab: $selectedTab)
         }
+        .onChange(of: viewStates.focusedField, perform: { newVal in
+            print("Ext cambio: \(viewStates.focusedField)")
+            currentFocusField = viewStates.focusedField
+        })
+        .onChange(of: currentFocusField, perform: { newVal in
+            print("curr cambio: \(currentFocusField)")
+            viewStates.focusedField = currentFocusField
+        })
         .onAppear {
             sync()
             productsCoreDataViewModel.lazyFetchProducts()
+            self.currentFocusField = viewStates.focusedField
         }
         .onDisappear {
             productsCoreDataViewModel.releaseResources()
@@ -31,7 +41,7 @@ struct CustomProductView: View {
     }
     private func sync() {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
 //            try? await Task.sleep(nanoseconds: 2_000_000_000)
             do {
                 try await productsCoreDataViewModel.sync()
@@ -42,7 +52,7 @@ struct CustomProductView: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -69,6 +79,7 @@ struct HomeView_Previews: PreviewProvider {
         CustomProductView(selectedTab: .constant(.magnifyingglass))
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
+            .environmentObject(nor.viewStates)
     }
 }
 
@@ -76,7 +87,7 @@ struct ListaControler: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
     @State private var showingErrorAlert = false
     @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
@@ -186,7 +197,7 @@ struct ListaControler: View {
     }
     func editProduct(product: Product) {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             do {
                 try await agregarViewModel.editProduct(product: product)
                 playSound(named: "Success1")
@@ -196,12 +207,12 @@ struct ListaControler: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     func agregarProductoACarrito(producto: Product) {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             do {
                 try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
                 playSound(named: "Success1")
@@ -211,7 +222,7 @@ struct ListaControler: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

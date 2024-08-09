@@ -11,7 +11,7 @@ import AVFoundation
 
 struct PaymentTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
-    @EnvironmentObject var loadingState: LoadingState
+    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var errorState: ErrorState
@@ -40,7 +40,7 @@ struct PaymentTopBar: View {
     }
     func registerSale() {
         Task {
-            loadingState.isLoading = true
+            viewStates.isLoading = true
             do {
                 guard let cart = carritoCoreDataViewModel.cartCoreData else {
                     throw LocalStorageError.notFound("No se encontro carrito configurado en viewModel")
@@ -55,7 +55,7 @@ struct PaymentTopBar: View {
                 }
                 playSound(named: "Fail1")
             }
-            loadingState.isLoading = false
+            viewStates.isLoading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -81,6 +81,6 @@ struct PaymentTopBar_Previews: PreviewProvider {
         PaymentTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
-            .environmentObject(depN.loadingState)
+            .environmentObject(depN.viewStates)
     }
 }

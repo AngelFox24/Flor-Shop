@@ -8,23 +8,23 @@
 import SwiftUI
 
 struct CustomNumberField: View {
+    @EnvironmentObject var viewStates: ViewStates
     var placeHolder: String = "0.00"
     var title: String = "Campo"
     @State private var viewText: String = ""
     @Binding var userInput: Int
     @Binding var edited: Bool
-    @FocusState var isTextFieldFocused
+    let focusField: AllFocusFields
+    var currentFocusField: FocusState<AllFocusFields?>.Binding
+    private var isEqual: Bool { currentFocusField.wrappedValue == focusField }
     var disable: Bool = false
-    var onSubmit: (() -> Void)?
     var onUnFocused: (() -> Void)?
-    //private var keyboardType: UIKeyboardType = .numberPad
-    //var disableAutocorrection: Bool = true
     var body: some View {
         HStack {
             ZStack {
                     HStack(spacing: 0) {
                         TextField(placeHolder, text: $viewText)
-                            .focused($isTextFieldFocused)
+                            .focused(currentFocusField, equals: focusField)
                             .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 20))
                             .multilineTextAlignment(.center)
@@ -33,11 +33,8 @@ struct CustomNumberField: View {
                             .foregroundColor(.black)
                             .padding(.vertical, 4)
                             .disableAutocorrection(true)
-                            .onTapGesture {
-                                isTextFieldFocused = true
-                            }
-                            .onChange(of: viewText, perform: {newValue in
-                                if isTextFieldFocused {
+                            .onChange(of: viewText, perform: { newValue in
+                                if isEqual {
                                     if newValue != "" {
                                         edited = true
                                     }
@@ -50,24 +47,19 @@ struct CustomNumberField: View {
                                     }
                                 }
                             })
-                            .onSubmit({
-                                if viewText != "" {
-                                    onSubmit?()
-                                }
-                            })
-                            .onChange(of: isTextFieldFocused, perform: {focus in
+                            .onChange(of: isEqual, perform: { focus in
                                 if focus == false {
                                     print("Se ejecuta UnFocused")
                                     onUnFocused?()
                                 }
                             })
                             .disabled(disable)
-                        if isTextFieldFocused {
+                        if isEqual {
                             Button(action: {
-                                if isTextFieldFocused {
+                                if isEqual {
                                     viewText.removeAll()
                                 } else if !disable {
-                                    isTextFieldFocused = true
+                                    viewStates.focusedField = focusField
                                 }
                             }, label: {
                                 Image(systemName: "x.circle")
@@ -76,7 +68,7 @@ struct CustomNumberField: View {
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 12)
                                     //.opacity(isTextFieldFocused ? 1 : 0)
-                                    .animation(.easeInOut(duration: 0.4), value: isTextFieldFocused)
+                                    .animation(.easeInOut(duration: 0.4), value: isEqual)
                             })
                         }
                     }
@@ -90,12 +82,12 @@ struct CustomNumberField: View {
                         .cornerRadius(5)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .offset(y: -22)
-                        .onTapGesture {
-                            if !disable {
-                                isTextFieldFocused = true
-                            }
-                        }
                         .disabled(disable)
+            }
+        }
+        .onTapGesture {
+            if !disable {
+                viewStates.focusedField = focusField
             }
         }
         .onAppear {
@@ -120,6 +112,13 @@ struct CustomNumberField: View {
     }
 }
 
+struct prevThis: View {
+    var body: some View {
+        @FocusState var currentFocusField: AllFocusFields?
+        CustomNumberField(userInput: .constant(34), edited: .constant(false), focusField: .addCustomer(.apellidos), currentFocusField: $currentFocusField)
+    }
+}
+
 #Preview {
-    CustomNumberField(userInput: .constant(34), edited: .constant(false))
+    prevThis()
 }

@@ -19,10 +19,6 @@ enum MenuRoutes {
     case addCustomerView
     case paymentView
     case customerHistoryView
-    
-//    static var allValues: [NavPathsEnum] {
-//        return [.loginView, .registrationView, .customerView, .customersForPaymentView, .addCustomerView, .paymentView, .customerHistoryView]
-//    }
 }
 
 class NavManager: ObservableObject {

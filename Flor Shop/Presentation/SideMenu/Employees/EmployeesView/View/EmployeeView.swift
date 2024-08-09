@@ -11,10 +11,12 @@ import AVFoundation
 
 struct EmployeeView: View {
     @EnvironmentObject var employeeViewModel: EmployeeViewModel
+    @EnvironmentObject var viewStates: ViewStates
+    @FocusState var currentFocusField: AllFocusFields?
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                ProductSearchTopBar()
+                ProductSearchTopBar(currentFocusField: $currentFocusField)
                 EmployeeListController()
             }
             .onAppear {

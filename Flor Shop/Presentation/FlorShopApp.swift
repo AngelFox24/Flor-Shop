@@ -19,7 +19,6 @@ struct FlorShopApp: App {
             let normalDependencies = NormalDependencies()
             RootView()
                 .environmentObject(normalDependencies.navManager)
-                .environmentObject(normalDependencies.loadingState)
                 .environmentObject(normalDependencies.versionCheck)
                 .environmentObject(normalDependencies.logInViewModel)
                 .environmentObject(normalDependencies.errorState)

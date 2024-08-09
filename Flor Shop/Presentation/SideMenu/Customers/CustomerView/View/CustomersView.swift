@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomersView: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var viewStates: ViewStates
+    @FocusState var currentFocusField: AllFocusFields?
     var backButton: Bool = false
     var body: some View {
         ZStack(content: {
@@ -21,7 +22,7 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(backButton: backButton)
+                CustomerTopBar(currentFocusField: $currentFocusField, backButton: backButton)
                 CustomerListController(forSelectCustomer: backButton)
             }
             .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
@@ -50,6 +51,17 @@ struct CustomersView: View {
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
+        .onChange(of: viewStates.focusedField, perform: { newVal in
+            print("Ext cambio: \(viewStates.focusedField)")
+            currentFocusField = viewStates.focusedField
+        })
+        .onChange(of: currentFocusField, perform: { newVal in
+            print("curr cambio: \(currentFocusField)")
+            viewStates.focusedField = currentFocusField
+        })
+        .onAppear {
+            self.currentFocusField = viewStates.focusedField
+        }
     }
 }
 
