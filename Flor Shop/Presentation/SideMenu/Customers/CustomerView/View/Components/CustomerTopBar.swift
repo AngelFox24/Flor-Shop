@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var navManager: NavManager
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     var backButton: Bool = false
     var body: some View {
         VStack {
@@ -24,7 +24,7 @@ struct CustomerTopBar: View {
                 } else {
                     Button(action: {
                         withAnimation(.spring()){
-                            showMenu.toggle()
+                            viewStates.isShowMenu.toggle()
                         }
                     }, label: {
                         HStack {

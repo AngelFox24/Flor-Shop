@@ -9,8 +9,7 @@ import SwiftUI
 
 struct MenuView: View {
     @State private var selectedTab: MenuTab = .pointOfSaleTab
-    @Binding var showMenu: Bool
-    @Binding var isKeyboardVisible: Bool
+    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var navManager: NavManager
     @AppStorage("userOrEmail") var userOrEmail: String?
@@ -18,34 +17,34 @@ struct MenuView: View {
     @State private var tabSelected: Tab = .magnifyingglass
     var body: some View {
         ZStack {
-            SideMenuView(selectedTab: $selectedTab, showMenu: $showMenu)
+            SideMenuView(selectedTab: $selectedTab)
             ZStack {
-                if showMenu {
+                if viewStates.isShowMenu {
                     Color(.white)
                         .opacity(0.5)
-                        .cornerRadius(showMenu ? 35 : 0)
+                        .cornerRadius(viewStates.isShowMenu ? 35 : 0)
                         .shadow(color: Color.black.opacity(0.07), radius: 5, x: -5, y: 0)
-                        .offset(x: showMenu ? -25 : 0)
+                        .offset(x: viewStates.isShowMenu ? -25 : 0)
                         .padding(.vertical, 30)
                     Color(.white)
                         .opacity(0.4)
-                        .cornerRadius(showMenu ? 35 : 0)
+                        .cornerRadius(viewStates.isShowMenu ? 35 : 0)
                         .shadow(color: Color.black.opacity(0.07), radius: 5, x: -5, y: 0)
-                        .offset(x: showMenu ? -50 : 0)
+                        .offset(x: viewStates.isShowMenu ? -50 : 0)
                         .padding(.vertical, 60)
                 }
                 VStack(spacing: 0, content: {
                     switch selectedTab {
                     case .pointOfSaleTab:
-                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                        PointOfSaleView()
                     case .salesTab:
-                        SalesView(showMenu: $showMenu)
+                        SalesView()
                     case .customersTab:
-                        CustomersView(showMenu: $showMenu)
+                        CustomersView()
                     case .employeesTab:
-                        EmployeeView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                        EmployeeView()
                     case .settingsTab:
-                        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+                        PointOfSaleView()
                     case .logOut:
                         LockScreenView()
                             .onAppear(perform: {
@@ -57,8 +56,8 @@ struct MenuView: View {
                     }
                 })
             }
-            .scaleEffect(showMenu ? 0.84 : 1)
-            .offset(x: showMenu ? getRect().width - 180 : 0)
+            .scaleEffect(viewStates.isShowMenu ? 0.84 : 1)
+            .offset(x: viewStates.isShowMenu ? getRect().width - 180 : 0)
         }
     }
 }
@@ -69,7 +68,7 @@ struct MenuView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
-        MenuView(showMenu: $showMenu, isKeyboardVisible: .constant(false))
+        MenuView()
             .environmentObject(nor.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
@@ -78,6 +77,7 @@ struct MenuView_Previews: PreviewProvider {
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(nor.versionCheck)
+            .environmentObject(nor.viewStates)
     }
 }
 

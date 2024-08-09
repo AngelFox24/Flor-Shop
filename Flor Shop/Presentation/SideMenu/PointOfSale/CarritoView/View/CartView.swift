@@ -11,12 +11,11 @@ import CoreData
 struct CartView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @Binding var selectedTab: Tab
-    @Binding var showMenu: Bool
     var body: some View {
         //NavigationView {
             VStack(spacing: 0) {
-                CartTopBar(showMenu: $showMenu)
-                ListCartController(showMenu: $showMenu, selectedTab: $selectedTab)
+                CartTopBar()
+                ListCartController(selectedTab: $selectedTab)
             }
             .onAppear {
                 cartViewModel.lazyFetchCart()
@@ -28,16 +27,17 @@ struct CartView: View {
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let nor = NormalDependencies()
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CartView(selectedTab: .constant(.cart), showMenu: .constant(false))
+        CartView(selectedTab: .constant(.cart))
             .environmentObject(dependencies.cartViewModel)
+            .environmentObject(nor.viewStates)
     }
 }
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var loadingState: LoadingState
-    @Binding var showMenu: Bool
     @Binding var selectedTab: Tab
     @State var isPresented = false
     var body: some View {

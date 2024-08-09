@@ -10,16 +10,15 @@ import CoreData
 import AVFoundation
 import StoreKit
 
-struct ProductView: View {
+struct CustomProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
     @Binding var selectedTab: Tab
-    @Binding var showMenu: Bool
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar(showMenu: $showMenu)
+            ProductSearchTopBar()
             ListaControler(selectedTab: $selectedTab)
         }
         .onAppear {
@@ -67,8 +66,7 @@ struct HomeView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var showMenu: Bool = false
-        ProductView(selectedTab: .constant(.magnifyingglass), showMenu: $showMenu)
+        CustomProductView(selectedTab: .constant(.magnifyingglass))
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
     }
@@ -100,7 +98,7 @@ struct ListaControler: View {
                         .padding(.horizontal, 20)
                         .font(.custom("Artifika-Regular", size: 18))
                     Button(action: {
-                        selectedTab = .plus
+                        goToEditProduct()
                     }, label: {
                         CustomButton1(text: "Agregar")
                     })

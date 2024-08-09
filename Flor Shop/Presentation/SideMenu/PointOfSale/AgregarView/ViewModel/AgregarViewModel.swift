@@ -11,7 +11,7 @@ import _PhotosUI_SwiftUI
 
 class AgregarViewModel: ObservableObject {
     
-    @Published var agregarFields = AgregarFields()
+    @ObservedObject var agregarFields = AgregarFields()
     
     private let saveProductUseCase: SaveProductUseCase
     let saveImageUseCase: SaveImageUseCase
@@ -33,10 +33,8 @@ class AgregarViewModel: ObservableObject {
     func findProductNameOnInternet() {
         if self.agregarFields.productName != "" {
             openGoogleImageSearch(nombre: self.agregarFields.productName)
-            self.agregarFields.isPresented = false
         } else {
             self.agregarFields.productEdited = true
-            self.agregarFields.isPresented = false
         }
     }
     func pasteFromInternet() {
@@ -63,6 +61,7 @@ class AgregarViewModel: ObservableObject {
         }
     }
     func editProduct(product: Product) async throws {
+        print("Se edito producto: \(product.name)")
         await MainActor.run {
             self.agregarFields.idImage = product.image?.id
             self.agregarFields.productId = product.id
@@ -82,6 +81,7 @@ class AgregarViewModel: ObservableObject {
                 self.agregarFields.selectedLocalImage = uiImage
             }
         }
+        print("Se verifica producto: \(self.agregarFields.productName)")
     }
     func createProduct() async throws -> Product? {
         guard let quantityStock = Int(self.agregarFields.quantityStock) else {
@@ -158,19 +158,20 @@ class AgregarViewModel: ObservableObject {
 //    }
 }
 //MARK: Fields
-class AgregarFields {
-    var isPresented: Bool = false
-    var selectedLocalImage: UIImage?
-    var selectionImage: PhotosPickerItem? = nil {
+class AgregarFields: ObservableObject {
+    @Published var isShowingPicker = false
+    @Published var isShowingScanner = false
+    @Published var selectedLocalImage: UIImage?
+    @Published var selectionImage: PhotosPickerItem? = nil {
         didSet{
             setImage(from: selectionImage)
         }
     }
-    var productId: UUID?
-    var scannedCode: String = ""
-    var active: Bool = true
-    var productName: String = ""
-    var productEdited: Bool = false
+    @Published var productId: UUID?
+    @Published var scannedCode: String = ""
+    @Published var active: Bool = true
+    @Published var productName: String = ""
+    @Published var productEdited: Bool = false
     var productError: String {
         if productName == "" && productEdited {
             return "Nombre de producto no válido"
@@ -178,10 +179,10 @@ class AgregarFields {
             return ""
         }
     }
-    var expirationDate: Date?
-    var expirationDateEdited: Bool = false
-    var quantityStock: String = ""
-    var quantityEdited: Bool = false
+    @Published var expirationDate: Date?
+    @Published var expirationDateEdited: Bool = false
+    @Published var quantityStock: String = ""
+    @Published var quantityEdited: Bool = false
     var quantityError: String {
         if quantityEdited {
             guard let quantityInt = Int(quantityStock) else {
@@ -196,13 +197,13 @@ class AgregarFields {
             return ""
         }
     }
-    var idImage: UUID?
-    var imageUrl: String = ""
-    var imageURLEdited: Bool = false
-    var imageURLError: String = ""
-    var unitType: UnitTypeEnum = .unit
-    var unitCost: Int = 0
-    var unitCostEdited: Bool = false
+    @Published var idImage: UUID?
+    @Published var imageUrl: String = ""
+    @Published var imageURLEdited: Bool = false
+    @Published var imageURLError: String = ""
+    @Published var unitType: UnitTypeEnum = .unit
+    @Published var unitCost: Int = 0
+    @Published var unitCostEdited: Bool = false
     var unitCostError: String {
         if unitCostEdited {
             if unitCost <= 0 && unitCostEdited {
@@ -214,9 +215,9 @@ class AgregarFields {
             return ""
         }
     }
-    var profitMarginEdited: Bool = false
-    var unitPrice: Int = 0
-    var unitPriceEdited: Bool = false
+    @Published var profitMarginEdited: Bool = false
+    @Published var unitPrice: Int = 0
+    @Published var unitPriceEdited: Bool = false
     var unitPriceError: String {
         if unitPriceEdited {
             if unitPrice <= 0 {
@@ -235,7 +236,7 @@ class AgregarFields {
                 return "0 %"
             }
     }
-    var errorBD: String = ""
+    @Published var errorBD: String = ""
     
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
@@ -246,11 +247,10 @@ class AgregarFields {
                     print("Imagen vacia")
                     return
                 }
-                //selectedImage = uiImage
-                //TODO: Save image with id
+                let imagen = try await LocalImageManagerImpl.getEfficientImage(uiImage: uiImage)
                 await MainActor.run {
-                    isPresented = false
-                    selectedLocalImage = uiImage
+                    print("Se le asigno la imagen")
+                    selectedLocalImage = imagen
                 }
             } catch {
                 print("Error: \(error)")

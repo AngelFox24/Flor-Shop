@@ -14,6 +14,7 @@ struct NormalDependencies {
     let loadingState: LoadingState
     let errorState: ErrorState
     let versionCheck: VersionCheck
+    let viewStates: ViewStates
     //Session UseCases
     let remoteSessionManager: RemoteSessionManager
     let sessionRepository: SessionRepository
@@ -29,6 +30,7 @@ struct NormalDependencies {
         self.loadingState = LoadingState()
         self.versionCheck = VersionCheck()
         self.errorState = ErrorState()
+        self.viewStates = ViewStates()
         //Repo
         self.remoteSessionManager = RemoteSessionManagerImpl()
         self.sessionRepository = SessionRepositoryImpl(remoteManager: remoteSessionManager)
@@ -41,10 +43,47 @@ struct NormalDependencies {
 
 class ErrorState: ObservableObject {
     @Published var isPresented: Bool = false
-    @Published var error: String = ""
+    var error: String = ""
     func processError(error: Error) {
         self.isPresented = true
         print("Error Description: \(error.localizedDescription)")
         self.error = "Un error inesperado"
     }
 }
+
+class ViewStates: ObservableObject {
+    @Published var focusedField: AllFocusFields? = nil
+    @Published var isShowMenu: Bool = false
+}
+
+enum AllFocusFields: Hashable {
+    case agregar(AgregarFocusFields)
+    case addCustomer(AddCustomerFocusFields)
+    case logIn(LogInFocusFields)
+}
+
+enum AgregarFocusFields {
+    case textFieldA1
+    case textFieldA2
+    case barcode
+    case productName
+    case disponible
+    case quantity
+    case margin
+}
+
+enum AddCustomerFocusFields {
+    case nombre
+    case apellidos
+    case movil
+    case deudaTotal
+    case fechalimite
+    case diascredito
+    case limitecredito
+}
+
+enum LogInFocusFields {
+    case user
+    case password
+}
+

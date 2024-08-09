@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CustomHideKeyboard: View {
+    @EnvironmentObject var viewStates: ViewStates
     var body: some View {
         ZStack {
             VStack {
@@ -15,7 +16,7 @@ struct CustomHideKeyboard: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        viewStates.focusedField = nil
                     }, label: {
                         Image(systemName: "keyboard.chevron.compact.down")
                             .font(.system(size: 30))

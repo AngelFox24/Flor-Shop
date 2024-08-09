@@ -10,11 +10,13 @@ import AVFoundation
 
 struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
+    @ObservedObject var logInFields: LogInFields
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var errorState: ErrorState
+    @EnvironmentObject var viewStates: ViewStates
+    @FocusState var currentFocusField: AllFocusFields?
     @State private var audioPlayer: AVAudioPlayer?
-    @Binding var isKeyboardVisible: Bool
     @Binding var sesConfig: SessionConfig?
     var body: some View {
         ZStack {
@@ -39,16 +41,16 @@ struct LogInView: View {
                     VStack(spacing: 30) {
                         VStack(spacing: 40){
                             VStack {
-                                CustomTextField(title: "Usuario o Correo" ,value: $logInViewModel.logInFields.userOrEmail, edited: $logInViewModel.logInFields.userOrEmailEdited, keyboardType: .default)
-                                if logInViewModel.logInFields.userOrEmailError != "" {
-                                    ErrorMessageText(message: logInViewModel.logInFields.userOrEmailError)
+                                CustomTextField(title: "Usuario o Correo" ,value: $logInFields.userOrEmail, edited: $logInFields.userOrEmailEdited, focusField: .logIn(.user), currentFocusField: $currentFocusField, keyboardType: .default)
+                                if logInFields.userOrEmailError != "" {
+                                    ErrorMessageText(message: logInFields.userOrEmailError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Contraseña" ,value: $logInViewModel.logInFields.password, edited: $logInViewModel.logInFields.passwordEdited, keyboardType: .default)
-                                if logInViewModel.logInFields.passwordError != "" {
-                                    ErrorMessageText(message: logInViewModel.logInFields.passwordError)
+                                CustomTextField(title: "Contraseña" ,value: $logInFields.password, edited: $logInFields.passwordEdited, focusField: .logIn(.password), currentFocusField: $currentFocusField, keyboardType: .default)
+                                if logInFields.passwordError != "" {
+                                    ErrorMessageText(message: logInFields.passwordError)
                                     //.padding(.top, 18)
                                 }
                             }
@@ -61,8 +63,8 @@ struct LogInView: View {
                                 VStack {
                                     CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                         .foregroundColor(Color(.black))
-                                    if logInViewModel.logInFields.errorLogIn != "" {
-                                        ErrorMessageText(message: logInViewModel.logInFields.errorLogIn)
+                                    if logInFields.errorLogIn != "" {
+                                        ErrorMessageText(message: logInFields.errorLogIn)
                                     }
                                 }
                             })
@@ -87,6 +89,17 @@ struct LogInView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
+        .onChange(of: viewStates.focusedField, perform: { newVal in
+            print("Ext cambio: \(viewStates.focusedField)")
+            currentFocusField = viewStates.focusedField
+        })
+        .onChange(of: currentFocusField, perform: { newVal in
+            print("curr cambio: \(currentFocusField)")
+            viewStates.focusedField = currentFocusField
+        })
+        .onAppear {
+            self.currentFocusField = viewStates.focusedField    // << read !!
+        }
     }
     private func logIn() {
         Task {
@@ -124,11 +137,18 @@ struct LogInView: View {
     }
 }
 
-struct LogInView_Previews: PreviewProvider {
-    static var previews: some View {
-        let nor = NormalDependencies()
-        @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        LogInView(isKeyboardVisible: .constant(true), sesConfig: $sesConfig)
+struct LogInView_Previews: View {
+    let nor = NormalDependencies()
+    @State var field = LogInFields()
+    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+    var body: some View {
+        LogInView(logInFields: field, sesConfig: $sesConfig)
             .environmentObject(nor.logInViewModel)
+            .environmentObject(nor.viewStates)
+            .environmentObject(nor.navManager)
+            .environmentObject(nor.errorState)
     }
+}
+#Preview {
+    LogInView_Previews()
 }

@@ -10,13 +10,11 @@ import CoreData
 import AVFoundation
 
 struct EmployeeView: View {
-    @Binding var isKeyboardVisible: Bool
-    @Binding var showMenu: Bool
     @EnvironmentObject var employeeViewModel: EmployeeViewModel
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                ProductSearchTopBar(showMenu: $showMenu)
+                ProductSearchTopBar()
                 EmployeeListController()
             }
             .onAppear {
@@ -29,7 +27,7 @@ struct EmployeeView: View {
 struct EmployeeView_Previews: PreviewProvider {
     static var previews: some View {
         @State var showMenu: Bool = false
-        EmployeeView(isKeyboardVisible: .constant(false),showMenu: $showMenu)
+        EmployeeView()
     }
 }
 

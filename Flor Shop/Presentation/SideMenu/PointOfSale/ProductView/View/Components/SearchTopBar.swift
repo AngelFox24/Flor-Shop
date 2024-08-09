@@ -9,13 +9,13 @@ import SwiftUI
 
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var viewStates: ViewStates
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
-    @Binding var showMenu: Bool
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
-                CustomButton5(showMenu: $showMenu)
+                CustomButton5(showMenu: $viewStates.isShowMenu)
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color("color_accent"))
@@ -85,7 +85,7 @@ struct SearchTopBar_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         @State var showMenu: Bool = false
         VStack (content: {
-            ProductSearchTopBar(showMenu: $showMenu)
+            ProductSearchTopBar()
                 .environmentObject(dependencies.productsViewModel)
             Spacer()
         })

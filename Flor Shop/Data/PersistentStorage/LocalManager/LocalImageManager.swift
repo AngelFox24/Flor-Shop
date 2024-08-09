@@ -128,10 +128,10 @@ class LocalImageManagerImpl: LocalImageManager {
         }
     }
     func deleteUnusedImages() async {
-        async let imagesLocal = LocalImageManagerImpl.getImagesIdsLocal()
+        async let imagesLocal = getImagesIdsLocal()
         let imagesCoreData = await getImagesIdsCoreData()
         let imagesToDelete = await imagesLocal.filter { !imagesCoreData.contains($0) }
-        await LocalImageManagerImpl.deleteImageFile(imagesNames: imagesToDelete)
+        await deleteImageFile(imagesNames: imagesToDelete)
     }
     //MARK: Private Funtions
     private func saveData() {
@@ -191,6 +191,64 @@ class LocalImageManagerImpl: LocalImageManager {
             print("Error borrar imagenes sin uso: \(error.localizedDescription)")
             return []
         }
+    }
+    private func getImagesIdsLocal() async -> [String] {
+        var imagesNames: [String] = []
+        let fileManager = FileManager.default
+        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+            return []
+        }
+        let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
+        do {
+            let directoryContents = try fileManager.contentsOfDirectory(at: imagesDirectory, includingPropertiesForKeys: nil)
+            for imageURL in directoryContents {
+                if imageURL.pathExtension.lowercased() == "jpg" || imageURL.pathExtension.lowercased() == "jpeg" || imageURL.pathExtension.lowercased() == "png" {
+                    let imagename = imageURL.deletingPathExtension()
+                    imagesNames.append(imagename.lastPathComponent)
+                }
+            }
+            return imagesNames
+        } catch {
+            return []
+        }
+    }
+    private func deleteImageFile(imagesNames: [String]) async {
+        let fileManager = FileManager.default
+        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+            return
+        }
+        let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
+        do {
+            let directoryContents = try fileManager.contentsOfDirectory(at: imagesDirectory, includingPropertiesForKeys: nil)
+            
+            for imageURL in directoryContents {
+                if imageURL.pathExtension.lowercased() == "jpg" || imageURL.pathExtension.lowercased() == "jpeg" || imageURL.pathExtension.lowercased() == "png" {
+                    let imageRes = imageURL
+                    let imageName = imageRes.deletingPathExtension()
+                    let imageNameString = imageName.lastPathComponent
+                    if imagesNames.contains(imageNameString) {
+                        try fileManager.removeItem(at: imageRes)
+                    }
+                }
+            }
+        } catch {
+            print("Error al borrar imagenes sin uso")
+        }
+    }
+    private func shouldSaveImage(imageData: Data) -> Bool {//Talves se pueda eliminar o dejar en uses cases
+        guard let uiImage = UIImage(data: imageData) else {
+            return false
+        }
+        let imageSize = uiImage.size
+        let imageSizeInPixels = Int(imageSize.width) * Int(imageSize.height)
+        let imageSizeInKB = imageData.count / 1024 // Divide entre 1024 para obtener el tamaño en KB
+        let maximumImageSizeInPixels = 1920 * 1080 // Define el tamaño máximo permitido en píxeles
+        let maximumImageSizeInKB = 1024 // Define el tamaño máximo permitido en KB
+        if imageSizeInPixels > maximumImageSizeInPixels || imageSizeInKB > maximumImageSizeInKB {
+            return false
+        }
+        print("La imagen es valida para ser guardada \(imageSizeInPixels.description) ----- \(imageSizeInKB.description)")
+        return true
     }
     //MARK: Static Funtions
     static func loadImage(image: ImageUrl) async throws -> UIImage {
@@ -383,62 +441,4 @@ class LocalImageManagerImpl: LocalImageManager {
         return properties
     }
     
-    static private func deleteImageFile(imagesNames: [String]) async {
-        let fileManager = FileManager.default
-        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            return
-        }
-        let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
-        do {
-            let directoryContents = try fileManager.contentsOfDirectory(at: imagesDirectory, includingPropertiesForKeys: nil)
-            
-            for imageURL in directoryContents {
-                if imageURL.pathExtension.lowercased() == "jpg" || imageURL.pathExtension.lowercased() == "jpeg" || imageURL.pathExtension.lowercased() == "png" {
-                    let imageRes = imageURL
-                    let imageName = imageRes.deletingPathExtension()
-                    let imageNameString = imageName.lastPathComponent
-                    if imagesNames.contains(imageNameString) {
-                        try fileManager.removeItem(at: imageRes)
-                    }
-                }
-            }
-        } catch {
-            print("Error al borrar imagenes sin uso")
-        }
-    }
-    static private func getImagesIdsLocal() async -> [String] {
-        var imagesNames: [String] = []
-        let fileManager = FileManager.default
-        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            return []
-        }
-        let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
-        do {
-            let directoryContents = try fileManager.contentsOfDirectory(at: imagesDirectory, includingPropertiesForKeys: nil)
-            for imageURL in directoryContents {
-                if imageURL.pathExtension.lowercased() == "jpg" || imageURL.pathExtension.lowercased() == "jpeg" || imageURL.pathExtension.lowercased() == "png" {
-                    let imagename = imageURL.deletingPathExtension()
-                    imagesNames.append(imagename.lastPathComponent)
-                }
-            }
-            return imagesNames
-        } catch {
-            return []
-        }
-    }
-    static private func shouldSaveImage(imageData: Data) -> Bool {
-        guard let uiImage = UIImage(data: imageData) else {
-            return false
-        }
-        let imageSize = uiImage.size
-        let imageSizeInPixels = Int(imageSize.width) * Int(imageSize.height)
-        let imageSizeInKB = imageData.count / 1024 // Divide entre 1024 para obtener el tamaño en KB
-        let maximumImageSizeInPixels = 1920 * 1080 // Define el tamaño máximo permitido en píxeles
-        let maximumImageSizeInKB = 1024 // Define el tamaño máximo permitido en KB
-        if imageSizeInPixels > maximumImageSizeInPixels || imageSizeInKB > maximumImageSizeInKB {
-            return false
-        }
-        print("La imagen es valida para ser guardada \(imageSizeInPixels.description) ----- \(imageSizeInKB.description)")
-        return true
-    }
 }

@@ -9,11 +9,11 @@ import SwiftUI
 
 struct CustomersView: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     var backButton: Bool = false
     var body: some View {
         ZStack(content: {
-            if !showMenu {
+            if !viewStates.isShowMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -21,31 +21,31 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(showMenu: $showMenu, backButton: backButton)
+                CustomerTopBar(backButton: backButton)
                 CustomerListController(forSelectCustomer: backButton)
             }
-            .padding(.vertical, showMenu ? 15 : 0)
+            .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
             .background(Color("color_primary"))
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
-            .disabled(showMenu ? true : false)
+            .cornerRadius(viewStates.isShowMenu ? 35 : 0)
+            .padding(.top, viewStates.isShowMenu ? 0 : 1)
+            .disabled(viewStates.isShowMenu ? true : false)
             .onAppear {
                 customerViewModel.lazyFetchList()
             }
             .onDisappear {
                 customerViewModel.releaseResources()
             }
-            if showMenu {
+            if viewStates.isShowMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                         .opacity(0.001)
                 })
                 .onTapGesture(perform: {
                     withAnimation(.easeInOut) {
-                        showMenu = false
+                        viewStates.isShowMenu = false
                     }
                 })
-                .disabled(showMenu ? false : true)
+                .disabled(viewStates.isShowMenu ? false : true)
             }
         })
         .navigationBarTitleDisplayMode(.inline)
@@ -58,12 +58,13 @@ struct CustomersView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomersView(showMenu: .constant(false))
+        CustomersView()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
             .environmentObject(dependencies.customerHistoryViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.navManager)
+            .environmentObject(nor.viewStates)
     }
 }
 

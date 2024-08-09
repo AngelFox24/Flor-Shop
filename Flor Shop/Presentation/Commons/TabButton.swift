@@ -10,13 +10,13 @@ import SwiftUI
 struct TabButton: View {
     var tab: MenuTab
     @Binding var selectedTab: MenuTab
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     //var animation: Namespace.ID
     var body: some View {
         Button(action: {
             selectedTab = tab
             withAnimation(.spring()){
-                showMenu.toggle()
+                viewStates.isShowMenu.toggle()
             }
             print("Se presiono tab: \(selectedTab.rawValue) y se asigno: \(tab.rawValue)")
         }, label: {
@@ -48,11 +48,10 @@ struct TabButton_Previews: PreviewProvider {
     static var previews: some View {
         //@Namespace var animation
         @State var selectedTab: MenuTab = .employeesTab
-        @State var showMenu: Bool = false
         VStack {
-            TabButton(tab: MenuTab.employeesTab, selectedTab: $selectedTab, showMenu: $showMenu)
-            TabButton(tab: MenuTab.pointOfSaleTab, selectedTab: $selectedTab, showMenu: $showMenu)
-            TabButton(tab: MenuTab.settingsTab, selectedTab: $selectedTab, showMenu: $showMenu)
+            TabButton(tab: MenuTab.employeesTab, selectedTab: $selectedTab)
+            TabButton(tab: MenuTab.pointOfSaleTab, selectedTab: $selectedTab)
+            TabButton(tab: MenuTab.settingsTab, selectedTab: $selectedTab)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray)

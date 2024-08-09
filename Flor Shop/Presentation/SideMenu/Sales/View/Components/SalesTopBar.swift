@@ -9,13 +9,13 @@ import SwiftUI
 
 struct SalesTopBar: View {
     @EnvironmentObject var salesCoreDataViewModel: SalesViewModel
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 10, content: {
                 Button(action: {
                     withAnimation(.spring()){
-                        showMenu.toggle()
+                        viewStates.isShowMenu.toggle()
                     }
                 }, label: {
                     HStack {
@@ -233,7 +233,7 @@ struct SalesTopBar_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
         VStack(spacing: 0, content: {
-            SalesTopBar(showMenu: $showMenu)
+            SalesTopBar()
                 .environmentObject(dependencies.salesViewModel)
             Spacer()
         })

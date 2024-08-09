@@ -8,46 +8,45 @@
 import SwiftUI
 
 struct PointOfSaleView: View {
-    @State var tabSelected: Tab = .magnifyingglass
-    @Binding var isKeyboardVisible: Bool
-    @Binding var showMenu: Bool
+    @State var tabSelected: Tab = .plus
+    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     var body: some View {
         ZStack(content: {
-            if !showMenu {
+            if !viewStates.isShowMenu {
                 Color("color_primary")
                     .ignoresSafeArea()
             }
             VStack(spacing: 0, content: {
                 switch tabSelected {
                 case .plus:
-                    AgregarView(selectedTab: $tabSelected, showMenu: $showMenu)
+                    AgregarView(selectedTab: $tabSelected)
                 case .magnifyingglass:
-                    ProductView(selectedTab: $tabSelected, showMenu: $showMenu)
+                    CustomProductView(selectedTab: $tabSelected)
                 case .cart:
-                    CartView(selectedTab: $tabSelected, showMenu: $showMenu)
+                    CartView(selectedTab: $tabSelected)
                 }
-                if !isKeyboardVisible {
+                if viewStates.focusedField == nil {
                     CustomTabBar(selectedTab: $tabSelected)
                 }
             })
-            .padding(.vertical, showMenu ? 15 : 0)
+            .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
             .background(Color("color_primary"))
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
-            .disabled(showMenu ? true : false)
-            if showMenu {
+            .cornerRadius(viewStates.isShowMenu ? 35 : 0)
+            .padding(.top, viewStates.isShowMenu ? 0 : 1)
+            .disabled(viewStates.isShowMenu ? true : false)
+            if viewStates.isShowMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                         .opacity(0.001)
                 })
                 .onTapGesture(perform: {
                     withAnimation(.easeInOut) {
-                        showMenu = false
+                        viewStates.isShowMenu = false
                     }
                 })
-                .disabled(showMenu ? false : true)
+                .disabled(viewStates.isShowMenu ? false : true)
             }
         })
     }
@@ -59,10 +58,11 @@ struct PointOfSaleView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        PointOfSaleView(isKeyboardVisible: $isKeyboardVisible, showMenu: $showMenu)
+        PointOfSaleView()
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.versionCheck)
+            .environmentObject(nor.viewStates)
     }
 }

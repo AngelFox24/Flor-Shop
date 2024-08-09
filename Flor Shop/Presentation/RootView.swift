@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct RootView: View {
+//    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
     @State var sesConfig: SessionConfig? = nil
     @EnvironmentObject var loadingState: LoadingState
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var navManager: NavManager
     
     @EnvironmentObject var logInViewModel: LogInViewModel
-//    @EnvironmentObject var registrationViewModel: RegistrationViewModel
     @EnvironmentObject var errorState: ErrorState
     
-    @State private var isKeyboardVisible: Bool = false
+    @EnvironmentObject var viewStates: ViewStates
     
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     @AppStorage("userOrEmail") var userOrEmail: String?
@@ -41,9 +41,9 @@ struct RootView: View {
                                 ZStack(content: {
                                     if logInViewModel.logInStatus == .success, let sesC = sesConfig {
                                         let sesDep = BusinessDependencies(sessionConfig: sesC)
-                                        MainView(isKeyboardVisible: $isKeyboardVisible, dependencies: sesDep)
+                                        MainView(dependencies: sesDep)
                                     } else {
-                                        WelcomeView(isKeyboardVisible: $isKeyboardVisible)
+                                        WelcomeView()
                                             .onAppear(perform: {
                                                 logIn()
                                             })
@@ -52,9 +52,11 @@ struct RootView: View {
                                 .navigationDestination(for: SessionRoutes.self) { route in
                                     switch route {
                                     case .loginView:
-                                        LogInView(isKeyboardVisible: $isKeyboardVisible, sesConfig: $sesConfig)
+                                        LogInView(logInFields: logInViewModel.logInFields, sesConfig: $sesConfig)
                                     case .registrationView:
-                                        LogInView(isKeyboardVisible: $isKeyboardVisible, sesConfig: $sesConfig)
+                                        let dependencies: BusinessDependencies = BusinessDependencies(sessionConfig: SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID()))
+                                        AgregarView(selectedTab: .constant(.plus))
+                                            .environmentObject(dependencies.agregarViewModel)
 //                                        CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
                                     }
                                 }
@@ -73,14 +75,8 @@ struct RootView: View {
                 }
                 .onAppear {
                     //versionCheck.checkAppVersion()
-                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
-                        isKeyboardVisible = true
-                    }
-                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-                        isKeyboardVisible = false
-                    }
                 }
-                if isKeyboardVisible {
+                if viewStates.focusedField != nil {
                     CustomHideKeyboard()
                 }
             })
@@ -132,6 +128,8 @@ struct RootView_Previews: PreviewProvider {
             .environmentObject(normalDependencies.loadingState)
             .environmentObject(normalDependencies.versionCheck)
             .environmentObject(normalDependencies.logInViewModel)
+            .environmentObject(normalDependencies.viewStates)
+            .environmentObject(normalDependencies.errorState)
     }
 }
 

@@ -15,12 +15,12 @@ struct CartTopBar: View {
     @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var navManager: NavManager
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
 //            HStack{
-//                CustomButton5(showMenu: $showMenu)
+//                CustomButton5(showMenu: $viewStates.isShowMenu)
 //                Spacer()
 //                Button(action: {
 //                    navManager.goToPaymentView()
@@ -82,7 +82,7 @@ struct CartTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CartTopBar(showMenu: .constant(false))
+        CartTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(nor.navManager)

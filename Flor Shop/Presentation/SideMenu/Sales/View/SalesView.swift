@@ -9,11 +9,11 @@ import SwiftUI
 
 struct SalesView: View {
     @EnvironmentObject var salesViewModel: SalesViewModel
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     var backButton: Bool = false
     var body: some View {
         ZStack(content: {
-            if !showMenu {
+            if !viewStates.isShowMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -21,31 +21,31 @@ struct SalesView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                SalesTopBar(showMenu: $showMenu)
+                SalesTopBar()
                 SalesListController()
             }
-            .padding(.vertical, showMenu ? 15 : 0)
+            .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
             .background(Color("color_primary"))
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
-            .disabled(showMenu ? true : false)
+            .cornerRadius(viewStates.isShowMenu ? 35 : 0)
+            .padding(.top, viewStates.isShowMenu ? 0 : 1)
+            .disabled(viewStates.isShowMenu ? true : false)
             .onAppear {
                 salesViewModel.lazyFetchList()
             }
             .onDisappear(perform: {
                 salesViewModel.releaseResources()
             })
-            if showMenu {
+            if viewStates.isShowMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                         .opacity(0.001)
                 })
                 .onTapGesture(perform: {
                     withAnimation(.easeInOut) {
-                        showMenu = false
+                        viewStates.isShowMenu = false
                     }
                 })
-                .disabled(showMenu ? false : true)
+                .disabled(viewStates.isShowMenu ? false : true)
             }
         })
     }
@@ -56,10 +56,11 @@ struct SalesView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        SalesView(showMenu: .constant(false))
+        SalesView()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(nor.navManager)
+            .environmentObject(nor.viewStates)
     }
 }
 

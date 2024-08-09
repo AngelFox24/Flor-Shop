@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @Binding var isKeyboardVisible: Bool
     @EnvironmentObject var navManager: NavManager
     var body: some View {
         VStack {
@@ -52,7 +51,7 @@ struct WelcomeView: View {
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         let navManager = NavManager()
-        WelcomeView(isKeyboardVisible: .constant(true))
+        WelcomeView()
             .environmentObject(navManager)
     }
 }

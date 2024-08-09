@@ -9,12 +9,10 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
-    @State private var showMenu: Bool = false
-    @Binding var isKeyboardVisible: Bool
     let dependencies: BusinessDependencies
     var body: some View {
         ZStack(content: {
-            MenuView(showMenu: $showMenu, isKeyboardVisible: $isKeyboardVisible)
+            MenuView()
                 .environmentObject(dependencies.productsViewModel)
                 .environmentObject(dependencies.cartViewModel)
                 .environmentObject(dependencies.salesViewModel)
@@ -26,13 +24,13 @@ struct MainView: View {
         .navigationDestination(for: MenuRoutes.self) { routes in
             switch routes {
             case .customerView:
-                CustomersView(showMenu: $showMenu, backButton: true)
+                CustomersView(backButton: true)
                     .environmentObject(dependencies.customerViewModel)
                     .environmentObject(dependencies.cartViewModel)
                     .environmentObject(dependencies.addCustomerViewModel)
                     .environmentObject(dependencies.customerHistoryViewModel)
             case .customersForPaymentView:
-                CustomersView(showMenu: .constant(false), backButton: true)
+                CustomersView(backButton: true)
                     .environmentObject(dependencies.customerViewModel)
                     .environmentObject(dependencies.cartViewModel)
                     .environmentObject(dependencies.addCustomerViewModel)
@@ -53,10 +51,15 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        let depN = NormalDependencies()
+        let normalDependencies = NormalDependencies()
         let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dep = BusinessDependencies(sessionConfig: sesC)
-        MainView(isKeyboardVisible: .constant(true), dependencies: dep)
-            .environmentObject(depN.logInViewModel)
+        MainView(dependencies: dep)
+            .environmentObject(normalDependencies.navManager)
+            .environmentObject(normalDependencies.loadingState)
+            .environmentObject(normalDependencies.versionCheck)
+            .environmentObject(normalDependencies.logInViewModel)
+            .environmentObject(normalDependencies.viewStates)
+            .environmentObject(normalDependencies.errorState)
     }
 }

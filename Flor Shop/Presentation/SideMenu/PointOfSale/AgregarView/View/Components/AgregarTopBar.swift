@@ -14,12 +14,12 @@ struct AgregarTopBar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var errorState: ErrorState
-    @Binding var showMenu: Bool
+    @EnvironmentObject var viewStates: ViewStates
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
     var body: some View {
         HStack {
-            CustomButton5(showMenu: $showMenu)
+            CustomButton5(showMenu: $viewStates.isShowMenu)
             Spacer()
             Button(action: {
                 saveProduct()
@@ -103,9 +103,10 @@ struct AgregarTopBar_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         VStack {
-            AgregarTopBar(showMenu: .constant(false))
+            AgregarTopBar()
                 .environmentObject(dependencies.agregarViewModel)
                 .environmentObject(nor.loadingState)
+                .environmentObject(nor.viewStates)
             Spacer()
         }
     }
