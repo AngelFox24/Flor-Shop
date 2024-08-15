@@ -14,9 +14,9 @@ struct FlorShopApp: App {
     init() {
 //        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
+    let normalDependencies = NormalDependencies()
     var body: some Scene {
         WindowGroup {
-            let normalDependencies = NormalDependencies()
             RootView()
                 .environmentObject(normalDependencies.navManager)
                 .environmentObject(normalDependencies.versionCheck)

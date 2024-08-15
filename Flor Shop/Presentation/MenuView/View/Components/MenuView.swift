@@ -55,6 +55,18 @@ struct MenuView: View {
                             })
                     }
                 })
+                if viewStates.isShowMenu {
+                    VStack(spacing: 0, content: {
+                        Color("color_primary")
+                            .opacity(0.001)
+                    })
+                    .onTapGesture(perform: {
+                        withAnimation(.easeInOut) {
+                            viewStates.isShowMenu = false
+                        }
+                    })
+                    .disabled(viewStates.isShowMenu ? false : true)
+                }
             }
             .scaleEffect(viewStates.isShowMenu ? 0.84 : 1)
             .offset(x: viewStates.isShowMenu ? getRect().width - 180 : 0)
@@ -76,26 +88,10 @@ struct MenuView_Previews: PreviewProvider {
             .environmentObject(dependencies.employeeViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerViewModel)
+            .environmentObject(dependencies.addCustomerViewModel)
             .environmentObject(nor.versionCheck)
             .environmentObject(nor.viewStates)
-    }
-}
-
-struct CornerRadiusModifier: ViewModifier {
-    var cornerRadius: CGFloat
-    var isEnabled: Bool
-    
-    func body(content: Content) -> some View {
-        if isEnabled {
-            return AnyView(content.cornerRadius(cornerRadius))
-        } else {
-            return AnyView(content)
-        }
-    }
-}
-
-extension View {
-    func cornerRadius(_ cornerRadius: CGFloat, isEnabled: Bool) -> some View {
-        self.modifier(CornerRadiusModifier(cornerRadius: cornerRadius, isEnabled: isEnabled))
+            .environmentObject(nor.errorState)
+            .environmentObject(nor.navManager)
     }
 }

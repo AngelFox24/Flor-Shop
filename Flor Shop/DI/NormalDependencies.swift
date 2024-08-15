@@ -50,7 +50,6 @@ class ErrorState: ObservableObject {
 }
 
 class ViewStates: ObservableObject {
-    @Published var focusedField: AllFocusFields? = nil
     @Published var isShowMenu: Bool = false
     @Published var isLoading: Bool = false
 }

@@ -11,7 +11,7 @@ struct MainView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     let dependencies: BusinessDependencies
     var body: some View {
-        ZStack(content: {
+        VStack(spacing: 0) {
             MenuView()
                 .environmentObject(dependencies.productsViewModel)
                 .environmentObject(dependencies.cartViewModel)
@@ -20,7 +20,7 @@ struct MainView: View {
                 .environmentObject(dependencies.addCustomerViewModel)
                 .environmentObject(dependencies.employeeViewModel)
                 .environmentObject(dependencies.agregarViewModel)
-        })
+        }
         .navigationDestination(for: MenuRoutes.self) { routes in
             switch routes {
             case .customerView:

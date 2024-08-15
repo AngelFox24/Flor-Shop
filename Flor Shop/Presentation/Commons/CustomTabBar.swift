@@ -33,8 +33,8 @@ struct CustomTabBar: View {
         }
     }
     var body: some View {
-        ZStack {
-            VStack {
+//        ZStack {
+        TabView(selection: $selectedTab) {
                 //Spacer()
                 HStack {
                     ForEach(Tab.allCases, id: \.rawValue) { tab in
@@ -57,6 +57,7 @@ struct CustomTabBar: View {
                             .frame(maxHeight: .infinity)
                         }
                         .contentShape(Rectangle())
+                        .tag(tab)
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.1)) {
                                 selectedTab = tab
@@ -67,11 +68,73 @@ struct CustomTabBar: View {
                 .background(Color("color_primary"))
                 .frame(width: nil, height: 50)
             }
+        .border(Color.red)
+//        }
+    }
+}
+
+struct ContentView23: View {
+    @Binding var selectedTab: Tab
+
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            VStack {
+                Image(systemName: "magnifyingglass")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                Text("Primera pestaña")
+                    .font(.title)
+            }
+            .tabItem {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                    Text("Primera pestaña")
+                        .font(.title)
+                }
+                .background(Color.red)
+//                Label("Agregar", systemImage: "plus")
+            }
+            .tag(Tab.plus)
+
+            VStack {
+                Image(systemName: "house")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                Text("Segunda pestaña")
+                    .font(.title)
+            }
+            .tabItem {
+                Label("Buscar", systemImage: "magnifyingglass")
+            }
+            .tag(Tab.magnifyingglass)
+
+            VStack {
+                Image(systemName: "gear")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                Text("Tercera pestaña")
+                    .font(.title)
+            }
+            .tabItem {
+                Label("Cart", systemImage: "cart")
+            }
+            .tag(Tab.cart)
         }
     }
 }
-struct CustomTabBar_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomTabBar(selectedTab: .constant(.cart))
+struct CustomTabBar_Previews: View {
+    @State var selectedTab: Tab = .cart
+    var body: some View {
+        ContentView23(selectedTab: $selectedTab)
     }
+}
+
+#Preview {
+    CustomTabBar_Previews()
 }

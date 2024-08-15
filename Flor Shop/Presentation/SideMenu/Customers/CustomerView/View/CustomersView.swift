@@ -36,32 +36,9 @@ struct CustomersView: View {
             .onDisappear {
                 customerViewModel.releaseResources()
             }
-            if viewStates.isShowMenu {
-                VStack(spacing: 0, content: {
-                    Color("color_primary")
-                        .opacity(0.001)
-                })
-                .onTapGesture(perform: {
-                    withAnimation(.easeInOut) {
-                        viewStates.isShowMenu = false
-                    }
-                })
-                .disabled(viewStates.isShowMenu ? false : true)
-            }
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .onChange(of: viewStates.focusedField, perform: { newVal in
-            print("Ext cambio: \(viewStates.focusedField)")
-            currentFocusField = viewStates.focusedField
-        })
-        .onChange(of: currentFocusField, perform: { newVal in
-            print("curr cambio: \(currentFocusField)")
-            viewStates.focusedField = currentFocusField
-        })
-        .onAppear {
-            self.currentFocusField = viewStates.focusedField
-        }
     }
 }
 

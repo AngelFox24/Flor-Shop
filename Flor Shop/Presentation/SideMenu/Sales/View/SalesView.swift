@@ -35,18 +35,6 @@ struct SalesView: View {
             .onDisappear(perform: {
                 salesViewModel.releaseResources()
             })
-            if viewStates.isShowMenu {
-                VStack(spacing: 0, content: {
-                    Color("color_primary")
-                        .opacity(0.001)
-                })
-                .onTapGesture(perform: {
-                    withAnimation(.easeInOut) {
-                        viewStates.isShowMenu = false
-                    }
-                })
-                .disabled(viewStates.isShowMenu ? false : true)
-            }
         })
     }
 }

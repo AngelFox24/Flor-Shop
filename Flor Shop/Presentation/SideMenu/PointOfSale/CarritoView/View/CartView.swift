@@ -12,15 +12,13 @@ struct CartView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @Binding var selectedTab: Tab
     var body: some View {
-        //NavigationView {
-            VStack(spacing: 0) {
-                CartTopBar()
-                ListCartController(selectedTab: $selectedTab)
-            }
-            .onAppear {
-                cartViewModel.lazyFetchCart()
-            }
-        //}
+        VStack(spacing: 0) {
+            CartTopBar()
+            ListCartController(selectedTab: $selectedTab)
+        }
+        .onAppear {
+            cartViewModel.lazyFetchCart()
+        }
     }
 }
 
@@ -39,7 +37,6 @@ struct ListCartController: View {
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var viewStates: ViewStates
     @Binding var selectedTab: Tab
-    @State var isPresented = false
     var body: some View {
         VStack(spacing: 0) {
             if let cart = cartViewModel.cartCoreData {
@@ -63,7 +60,6 @@ struct ListCartController: View {
                                     Image(systemName: "trash")
                                 })
                                 .tint(Color("color_accent"))
-                                .alert(cartViewModel.error, isPresented: $isPresented, actions: {})
                             }
                         }
                         .listRowSeparator(.hidden)

@@ -8,14 +8,11 @@
 import SwiftUI
 
 struct CustomTextField: View {
-    @EnvironmentObject var viewStates: ViewStates
     var placeHolder: String = ""
     var title: String = "Campo"
     @Binding var value: String
     @Binding var edited: Bool
-    let focusField: AllFocusFields
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
-    private var isEqual: Bool { currentFocusField.wrappedValue == focusField }
+    @FocusState var isInputActive: Bool
     var disable: Bool = false
     var keyboardType: UIKeyboardType = .default
     var disableAutocorrection: Bool = true
@@ -24,7 +21,7 @@ struct CustomTextField: View {
             ZStack {
                 HStack(spacing: 0) {
                     TextField(placeHolder, text: $value)
-                        .focused(currentFocusField, equals: focusField)
+                        .focused($isInputActive)
                         .foregroundColor(.black)
                         .font(.custom("Artifika-Regular", size: 20))
                         .multilineTextAlignment(.center)
@@ -36,20 +33,40 @@ struct CustomTextField: View {
                         .onChange(of: value, perform: { text in
                             print("Custom: \(text)")
                             print("Ext: \(value)")
-                            if isEqual {
+                            if isInputActive {
                                 if text != "" {
                                     edited = true
                                 }
                             }
                         })
                         .disabled(disable)
-                    if isEqual && !value.isEmpty {
+                        .toolbar {
+                            if isInputActive {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    HStack {
+                                        Spacer()
+                                        Button(action: {
+                                            isInputActive = false
+                                        }, label: {
+                                            Image(systemName: "keyboard.chevron.compact.down")
+                                                .font(.system(size: 20))
+                                                .foregroundColor(Color("color_accent"))
+                                                .padding(.trailing, 50)
+                                                .padding(.vertical, 10)
+                                        })
+                                    }
+                                    .background(Color("color_primary"))
+                                    .frame(width: UIScreen.main.bounds.width)
+                                }
+                            }
+                        }
+                    if isInputActive && !value.isEmpty {
                         Button(action: {
-                            if isEqual {
+                            if isInputActive {
                                 print("Removed")
                                 value.removeAll()
                             } else if !disable {
-                                viewStates.focusedField = focusField
+                                isInputActive = true
                             }
                         }, label: {
                             Image(systemName: "x.circle")
@@ -57,7 +74,7 @@ struct CustomTextField: View {
                                 .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 12)
-                                .animation(.easeInOut(duration: 0.9), value: isEqual)
+                                .animation(.easeInOut(duration: 0.9), value: isInputActive)
                         })
                     }
                 }
@@ -76,7 +93,7 @@ struct CustomTextField: View {
         }
         .onTapGesture {
             if !disable {
-                viewStates.focusedField = focusField
+                isInputActive = true
             }
         }
     }
@@ -98,11 +115,11 @@ struct ViewCss1: View {
 
 struct ViewCss2: View {
     @ObservedObject var fields: AgregarFields
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
+    @State var currentFocusField: FocusState<AllFocusFields?>.Binding
     var body: some View {
         VStack(spacing: 16) {
-            CustomTextField(value: $fields.productName, edited: $fields.productEdited, focusField: .agregar(.productName), currentFocusField: currentFocusField)
-            CustomTextField(value: $fields.quantityStock, edited: $fields.quantityEdited, focusField: .agregar(.quantity), currentFocusField: currentFocusField)
+            CustomTextField(value: $fields.productName, edited: $fields.productEdited)
+            CustomTextField(value: $fields.quantityStock, edited: $fields.quantityEdited)
             //CustomText(title: "Nombre", value: "", disable: true)
             //CustomTextField(edited: .constant(false))
         }

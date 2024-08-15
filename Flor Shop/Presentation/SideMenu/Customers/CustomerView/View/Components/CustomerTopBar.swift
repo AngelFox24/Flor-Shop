@@ -38,7 +38,7 @@ struct CustomerTopBar: View {
                         .frame(width: 40, height: 40)
                     })
                 }
-                CustomSearchField(text: $customerViewModel.searchWord, focusField: .customers(.searchBar), currentFocusField: currentFocusField)
+                CustomSearchField(text: $customerViewModel.searchWord)
                 Menu {
                     Section("Ordenamiento") {
                         ForEach(CustomerOrder.allValues, id: \.self) { orden in

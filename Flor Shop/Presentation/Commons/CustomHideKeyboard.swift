@@ -16,7 +16,7 @@ struct CustomHideKeyboard: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        viewStates.focusedField = nil
+//                        viewStates.focusedField = nil
                     }, label: {
                         Image(systemName: "keyboard.chevron.compact.down")
                             .font(.system(size: 30))

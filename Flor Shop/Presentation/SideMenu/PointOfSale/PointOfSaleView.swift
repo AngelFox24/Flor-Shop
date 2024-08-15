@@ -13,42 +13,40 @@ struct PointOfSaleView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     var body: some View {
-        ZStack(content: {
+        ZStack {
             if !viewStates.isShowMenu {
-                Color("color_primary")
-                    .ignoresSafeArea()
+                VStack(spacing: 0, content: {
+                    Color("color_primary")
+                    Color("color_background")
+                })
+                .ignoresSafeArea()
             }
-            VStack(spacing: 0, content: {
-                switch tabSelected {
-                case .plus:
+            VStack(spacing: 0) {
+                TabView(selection: $tabSelected) {
                     AgregarView(selectedTab: $tabSelected)
-                case .magnifyingglass:
+                        .tabItem {
+                            Label("Agregar", systemImage: "plus")
+                        }
+                        .tag(Tab.plus)
                     CustomProductView(selectedTab: $tabSelected)
-                case .cart:
+                        .tabItem {
+                            Label("Buscar", systemImage: "magnifyingglass")
+                        }
+                        .tag(Tab.magnifyingglass)
                     CartView(selectedTab: $tabSelected)
+                        .tabItem {
+                            Label("Carro", systemImage: "cart")
+                        }
+                        .tag(Tab.cart)
                 }
-                if viewStates.focusedField == nil {
-                    CustomTabBar(selectedTab: $tabSelected)
-                }
-            })
+            }
             .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
             .background(Color("color_primary"))
             .cornerRadius(viewStates.isShowMenu ? 35 : 0)
             .padding(.top, viewStates.isShowMenu ? 0 : 1)
             .disabled(viewStates.isShowMenu ? true : false)
-            if viewStates.isShowMenu {
-                VStack(spacing: 0, content: {
-                    Color("color_primary")
-                        .opacity(0.001)
-                })
-                .onTapGesture(perform: {
-                    withAnimation(.easeInOut) {
-                        viewStates.isShowMenu = false
-                    }
-                })
-                .disabled(viewStates.isShowMenu ? false : true)
-            }
-        })
+            .accentColor(Color("color_accent"))
+        }
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {
@@ -64,5 +62,6 @@ struct PointOfSaleView_Previews: PreviewProvider {
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.versionCheck)
             .environmentObject(nor.viewStates)
+            .environmentObject(nor.errorState)
     }
 }

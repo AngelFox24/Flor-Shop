@@ -22,18 +22,9 @@ struct CustomProductView: View {
             ProductSearchTopBar(currentFocusField: $currentFocusField)
             ListaControler(selectedTab: $selectedTab)
         }
-        .onChange(of: viewStates.focusedField, perform: { newVal in
-            print("Ext cambio: \(viewStates.focusedField)")
-            currentFocusField = viewStates.focusedField
-        })
-        .onChange(of: currentFocusField, perform: { newVal in
-            print("curr cambio: \(currentFocusField)")
-            viewStates.focusedField = currentFocusField
-        })
         .onAppear {
             sync()
             productsCoreDataViewModel.lazyFetchProducts()
-            self.currentFocusField = viewStates.focusedField
         }
         .onDisappear {
             productsCoreDataViewModel.releaseResources()
@@ -80,6 +71,7 @@ struct HomeView_Previews: PreviewProvider {
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.viewStates)
+            .environmentObject(nor.errorState)
     }
 }
 

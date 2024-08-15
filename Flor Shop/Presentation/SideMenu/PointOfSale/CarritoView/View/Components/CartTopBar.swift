@@ -12,49 +12,47 @@ import AVFoundation
 struct CartTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var viewStates: ViewStates
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
-//            HStack{
-//                CustomButton5(showMenu: $viewStates.isShowMenu)
-//                Spacer()
-//                Button(action: {
-//                    navManager.goToPaymentView()
-//                    print("Se presiono cobrar")
-//                }, label: {
-//                    HStack(spacing: 5, content: {
-//                        Text(String("S/. "))
-//                            .font(.custom("Artifika-Regular", size: 15))
-//                        Text(String(format: "%.2f", carritoCoreDataViewModel.cartCoreData?.total ?? 0.0))
-//                            .font(.custom("Artifika-Regular", size: 20))
-//                    })
-//                    .padding(.horizontal, 10)
-//                    .padding(.vertical, 8)
-//                    .foregroundColor(Color("color_background"))
-//                    .background(Color("color_accent"))
-//                    .cornerRadius(15.0)
-//                })
-//                Button(action: {
-//                    navManager.goToCustomerView()
-//                }, label: {
-//                    if let customer = carritoCoreDataViewModel.customerInCar, let image = customer.image {
-//                        CustomAsyncImageView(id: image.id, urlProducto: image.imageUrl, size: 40)
-//                            .contextMenu(menuItems: {
-//                                Button(role: .destructive,action: {
-//                                    carritoCoreDataViewModel.customerInCar = nil
-//                                }, label: {
-//                                    Text("Desvincular Cliente")
-//                                })
-//                            })
-//                    } else {
-//                        CustomButton3(simbol: "person.crop.circle.badge.plus")
-//                    }
-//                })
-//            }
+            HStack{
+                CustomButton5(showMenu: $viewStates.isShowMenu)
+                Spacer()
+                Button(action: {
+                    navManager.goToPaymentView()
+                    print("Se presiono cobrar")
+                }, label: {
+                    HStack(spacing: 5, content: {
+                        Text(String("S/. "))
+                            .font(.custom("Artifika-Regular", size: 15))
+                            Text(String(format: "%.2f", carritoCoreDataViewModel.cartCoreData?.total.cents ?? 0.0))
+                            .font(.custom("Artifika-Regular", size: 20))
+                    })
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .foregroundColor(Color("color_background"))
+                    .background(Color("color_accent"))
+                    .cornerRadius(15.0)
+                })
+                Button(action: {
+                    navManager.goToCustomerView()
+                }, label: {
+                    if let customer = carritoCoreDataViewModel.customerInCar, let image = customer.image {
+                        CustomAsyncImageView(imageUrl: image, size: 40)
+                            .contextMenu(menuItems: {
+                                Button(role: .destructive,action: {
+                                    carritoCoreDataViewModel.customerInCar = nil
+                                }, label: {
+                                    Text("Desvincular Cliente")
+                                })
+                            })
+                    } else {
+                        CustomButton3(simbol: "person.crop.circle.badge.plus")
+                    }
+                })
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
@@ -84,7 +82,7 @@ struct CartTopBar_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CartTopBar()
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.salesViewModel)
             .environmentObject(nor.navManager)
+            .environmentObject(nor.viewStates)
     }
 }

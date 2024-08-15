@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct CustomSearchField: View {
-    @EnvironmentObject var viewStates: ViewStates
     let placeHolder: String = "Buscar"
+    @FocusState var isInputActive: Bool
     @Binding var text: String
-    let focusField: AllFocusFields
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
     var body: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -21,7 +19,7 @@ struct CustomSearchField: View {
                 .padding(.vertical, 10)
                 .padding(.leading, 10)
             TextField(placeHolder, text: $text)
-                .focused(currentFocusField, equals: focusField)
+                .focused($isInputActive)
                 .padding(.vertical, 10)
                 .font(.custom("Artifika-Regular", size: 16))
                 .foregroundColor(Color("color_primary"))
@@ -39,9 +37,6 @@ struct CustomSearchField: View {
         }
         .background(.white)
         .cornerRadius(20.0)
-        .onTapGesture {
-            viewStates.focusedField = focusField
-        }
     }
 }
 
@@ -55,7 +50,7 @@ struct ProductSearchTopBar: View {
         VStack {
             HStack(spacing: 10, content: {
                 CustomButton5(showMenu: $viewStates.isShowMenu)
-                CustomSearchField(text: $productsCoreDataViewModel.searchText, focusField: .products(.searchBar), currentFocusField: currentFocusField)
+                CustomSearchField(text: $productsCoreDataViewModel.searchText)
                 Menu {
                     Section("Ordenamiento") {
                         ForEach(menuOrders, id: \.self) { orden in

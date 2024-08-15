@@ -23,7 +23,7 @@ struct RootView: View {
     @AppStorage("password") var password: String?
     var body: some View {
         ZStack {
-            VStack(spacing: 0, content: {
+            VStack(spacing: 0) {
                 VStack(spacing: 0) {
                     if !hasShownOnboarding {
                         OnboardingView(onAction: {
@@ -37,15 +37,15 @@ struct RootView: View {
                             LockScreenView()
                         case .versionOk:
                             NavigationStack(path: $navManager.navPaths) {
-                                ZStack(content: {
+                                VStack(content: {
                                     if logInViewModel.logInStatus == .success, let sesC = sesConfig {
                                         let sesDep = BusinessDependencies(sessionConfig: sesC)
                                         MainView(dependencies: sesDep)
                                     } else {
                                         WelcomeView()
-                                            .onAppear(perform: {
+                                            .onAppear {
                                                 logIn()
-                                            })
+                                            }
                                     }
                                 })
                                 .navigationDestination(for: SessionRoutes.self) { route in
@@ -75,10 +75,7 @@ struct RootView: View {
                 .onAppear {
                     //versionCheck.checkAppVersion()
                 }
-                if viewStates.focusedField != nil {
-                    CustomHideKeyboard()
-                }
-            })
+            }
             if viewStates.isLoading {
                 LoadingView()
             }

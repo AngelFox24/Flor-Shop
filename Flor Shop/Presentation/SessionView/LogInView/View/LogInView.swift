@@ -40,14 +40,14 @@ struct LogInView: View {
                     VStack(spacing: 30) {
                         VStack(spacing: 40){
                             VStack {
-                                CustomTextField(title: "Usuario o Correo" ,value: $logInFields.userOrEmail, edited: $logInFields.userOrEmailEdited, focusField: .logIn(.user), currentFocusField: $currentFocusField, keyboardType: .default)
+                                CustomTextField(title: "Usuario o Correo" ,value: $logInFields.userOrEmail, edited: $logInFields.userOrEmailEdited, keyboardType: .default)
                                 if logInFields.userOrEmailError != "" {
                                     ErrorMessageText(message: logInFields.userOrEmailError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Contraseña" ,value: $logInFields.password, edited: $logInFields.passwordEdited, focusField: .logIn(.password), currentFocusField: $currentFocusField, keyboardType: .default)
+                                CustomTextField(title: "Contraseña" ,value: $logInFields.password, edited: $logInFields.passwordEdited, keyboardType: .default)
                                 if logInFields.passwordError != "" {
                                     ErrorMessageText(message: logInFields.passwordError)
                                     //.padding(.top, 18)
@@ -88,17 +88,6 @@ struct LogInView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .onChange(of: viewStates.focusedField, perform: { newVal in
-            print("Ext cambio: \(viewStates.focusedField)")
-            currentFocusField = viewStates.focusedField
-        })
-        .onChange(of: currentFocusField, perform: { newVal in
-            print("curr cambio: \(currentFocusField)")
-            viewStates.focusedField = currentFocusField
-        })
-        .onAppear {
-            self.currentFocusField = viewStates.focusedField    // << read !!
-        }
     }
     private func logIn() {
         Task {

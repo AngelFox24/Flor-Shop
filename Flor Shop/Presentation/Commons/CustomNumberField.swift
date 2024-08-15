@@ -14,9 +14,7 @@ struct CustomNumberField: View {
     @State private var viewText: String = ""
     @Binding var userInput: Int
     @Binding var edited: Bool
-    let focusField: AllFocusFields
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
-    private var isEqual: Bool { currentFocusField.wrappedValue == focusField }
+    @FocusState var isInputActive: Bool
     var disable: Bool = false
     var onUnFocused: (() -> Void)?
     var body: some View {
@@ -24,7 +22,7 @@ struct CustomNumberField: View {
             ZStack {
                     HStack(spacing: 0) {
                         TextField(placeHolder, text: $viewText)
-                            .focused(currentFocusField, equals: focusField)
+                            .focused($isInputActive)
                             .foregroundColor(.black)
                             .font(.custom("Artifika-Regular", size: 20))
                             .multilineTextAlignment(.center)
@@ -34,7 +32,7 @@ struct CustomNumberField: View {
                             .padding(.vertical, 4)
                             .disableAutocorrection(true)
                             .onChange(of: viewText, perform: { newValue in
-                                if isEqual {
+                                if isInputActive {
                                     if newValue != "" {
                                         edited = true
                                     }
@@ -47,19 +45,39 @@ struct CustomNumberField: View {
                                     }
                                 }
                             })
-                            .onChange(of: isEqual, perform: { focus in
+                            .onChange(of: isInputActive, perform: { focus in
                                 if focus == false {
                                     print("Se ejecuta UnFocused")
                                     onUnFocused?()
                                 }
                             })
                             .disabled(disable)
-                        if isEqual {
+                            .toolbar {
+                                if isInputActive {
+                                    ToolbarItemGroup(placement: .keyboard) {
+                                        HStack {
+                                            Spacer()
+                                            Button(action: {
+                                                isInputActive = false
+                                            }, label: {
+                                                Image(systemName: "keyboard.chevron.compact.down")
+                                                    .font(.system(size: 20))
+                                                    .foregroundColor(Color("color_accent"))
+                                                    .padding(.trailing, 50)
+                                                    .padding(.vertical, 10)
+                                            })
+                                        }
+                                        .background(Color("color_primary"))
+                                        .frame(width: UIScreen.main.bounds.width)
+                                    }
+                                }
+                            }
+                        if isInputActive {
                             Button(action: {
-                                if isEqual {
+                                if isInputActive {
                                     viewText.removeAll()
                                 } else if !disable {
-                                    viewStates.focusedField = focusField
+                                    isInputActive = true
                                 }
                             }, label: {
                                 Image(systemName: "x.circle")
@@ -68,7 +86,7 @@ struct CustomNumberField: View {
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 12)
                                     //.opacity(isTextFieldFocused ? 1 : 0)
-                                    .animation(.easeInOut(duration: 0.4), value: isEqual)
+                                    .animation(.easeInOut(duration: 0.4), value: isInputActive)
                             })
                         }
                     }
@@ -87,11 +105,8 @@ struct CustomNumberField: View {
         }
         .onTapGesture {
             if !disable {
-                viewStates.focusedField = focusField
+                isInputActive = true
             }
-        }
-        .onAppear {
-            viewText = formatNumber(userInput)
         }
     }
     func formatNumber(_ input: Int) -> String {
@@ -114,8 +129,7 @@ struct CustomNumberField: View {
 
 struct prevThis: View {
     var body: some View {
-        @FocusState var currentFocusField: AllFocusFields?
-        CustomNumberField(userInput: .constant(34), edited: .constant(false), focusField: .addCustomer(.apellidos), currentFocusField: $currentFocusField)
+        CustomNumberField(userInput: .constant(34), edited: .constant(false))
     }
 }
 

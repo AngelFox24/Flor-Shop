@@ -10,30 +10,18 @@ import PhotosUI
 
 struct AgregarView: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @EnvironmentObject var viewStates: ViewStates
     @FocusState var currentFocusField: AllFocusFields?
     @Binding var selectedTab: Tab
     var body: some View {
-        ZStack(content: {
+//        ZStack {
             VStack(spacing: 0) {
                 AgregarTopBar()
                 CamposProductoAgregar(agregarFields: agregarViewModel.agregarFields, selectedTab: $selectedTab, currentFocusField: $currentFocusField)
             }
             .background(Color("color_background"))
-        })
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .onChange(of: viewStates.focusedField, perform: { newVal in
-            print("Ext cambio: \(viewStates.focusedField)")
-            currentFocusField = viewStates.focusedField
-        })
-        .onChange(of: currentFocusField, perform: { newVal in
-            print("curr cambio: \(currentFocusField)")
-            viewStates.focusedField = currentFocusField
-        })
-        .onAppear {
-            self.currentFocusField = viewStates.focusedField    // << read !!
-        }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+//        }
     }
 }
 
@@ -113,7 +101,7 @@ struct CamposProductoAgregar: View {
                         }
                         VStack {
                             HStack {
-                                CustomTextField(placeHolder: "", title: "Código de barras" ,value: $agregarFields.scannedCode, edited: .constant(false), focusField: .agregar(.barcode), currentFocusField: currentFocusField)
+                                CustomTextField(placeHolder: "", title: "Código de barras" ,value: $agregarFields.scannedCode, edited: .constant(false))
                                 Button {
                                     agregarFields.isShowingScanner.toggle()
                                 } label: {
@@ -136,7 +124,7 @@ struct CamposProductoAgregar: View {
                             HStack {
                                 // El texto hace que tenga una separacion mayor del elemento
                                 HStack {
-                                    CustomTextField(title: "Nombre del Producto" ,value: $agregarFields.productName, edited: $agregarFields.productEdited, focusField: .agregar(.productName), currentFocusField: currentFocusField)
+                                    CustomTextField(title: "Nombre del Producto" ,value: $agregarFields.productName, edited: $agregarFields.productEdited)
                                         .onChange(of: agregarFields.productName, perform: { newVal in
                                             print("producto en vista: \(agregarFields.productName)")
                                         })
@@ -162,7 +150,7 @@ struct CamposProductoAgregar: View {
                         VStack {
                             HStack {
                                 HStack {
-                                    CustomTextField(title: "Disponible" ,value: .constant(agregarFields.active ? "Activo" : "Inactivo"), edited: .constant(false), focusField: .agregar(.disponible), currentFocusField: currentFocusField, disable: true)
+                                    CustomTextField(title: "Disponible" ,value: .constant(agregarFields.active ? "Activo" : "Inactivo"), edited: .constant(false), disable: true)
                                 }
                                 Toggle("", isOn: $agregarFields.active)
                                     .labelsHidden()
@@ -178,8 +166,8 @@ struct CamposProductoAgregar: View {
                         }
                         VStack {
                             HStack {
-                                CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarFields.quantityStock, edited: $agregarFields.quantityEdited, focusField: .agregar(.quantity), currentFocusField: currentFocusField, keyboardType: .numberPad)
-                                CustomNumberField(placeHolder: "0", title: "Costo Unitario" ,userInput: $agregarFields.unitCost, edited: $agregarFields.unitCostEdited, focusField: .agregar(.unitCost), currentFocusField: currentFocusField)
+                                CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarFields.quantityStock, edited: $agregarFields.quantityEdited, keyboardType: .numberPad)
+                                CustomNumberField(placeHolder: "0", title: "Costo Unitario" ,userInput: $agregarFields.unitCost, edited: $agregarFields.unitCostEdited)
                             }
                             if agregarFields.quantityError != "" {
                                 ErrorMessageText(message: agregarFields.quantityError)
@@ -192,8 +180,8 @@ struct CamposProductoAgregar: View {
                         }
                         VStack {
                             HStack {
-                                CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarFields.profitMargin), edited: .constant(false), focusField: .agregar(.margin), currentFocusField: currentFocusField, disable: true)
-                                CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarFields.unitPrice, edited: $agregarFields.unitPriceEdited, focusField: .agregar(.unitPrice), currentFocusField: currentFocusField)
+                                CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarFields.profitMargin), edited: .constant(false), disable: true)
+                                CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarFields.unitPrice, edited: $agregarFields.unitPriceEdited)
                             }
                             if agregarFields.unitPriceError != "" {
                                 ErrorMessageText(message: agregarFields.unitPriceError)
