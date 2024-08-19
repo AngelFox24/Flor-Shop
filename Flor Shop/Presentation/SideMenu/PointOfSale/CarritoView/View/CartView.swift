@@ -79,7 +79,7 @@ struct ListCartController: View {
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
                     Button(action: {
-                        selectedTab = .magnifyingglass
+                        goToProductsList()
                     }, label: {
                         CustomButton1(text: "Ir a Productos")
                     })

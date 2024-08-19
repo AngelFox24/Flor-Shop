@@ -11,6 +11,7 @@ struct ImageURLDTO: Codable {
     let id: UUID
     let imageUrl: String
     let imageHash: String
+    let imageData: Data?
     let createdAt: String
     let updatedAt: String
 }

@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct RootView: View {
-//    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-    @State var sesConfig: SessionConfig? = nil
+    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+//    @State var sesConfig: SessionConfig? = nil
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var navManager: NavManager
     

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PointOfSaleView: View {
-    @State var tabSelected: Tab = .magnifyingglass
+    @State var tabSelected: Tab = .plus
     @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
