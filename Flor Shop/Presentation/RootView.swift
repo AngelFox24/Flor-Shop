@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct RootView: View {
-    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-//    @State var sesConfig: SessionConfig? = nil
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var navManager: NavManager
     
@@ -38,9 +36,11 @@ struct RootView: View {
                         case .versionOk:
                             NavigationStack(path: $navManager.navPaths) {
                                 VStack(content: {
-                                    if logInViewModel.logInStatus == .success, let sesC = sesConfig {
-                                        let sesDep = BusinessDependencies(sessionConfig: sesC)
+                                    if let sesDep = logInViewModel.businessDependencies {
                                         MainView(dependencies: sesDep)
+                                            .onAppear {
+                                                print("Aparecio MainView")
+                                            }
                                     } else {
                                         WelcomeView()
                                             .onAppear {
@@ -51,22 +51,12 @@ struct RootView: View {
                                 .navigationDestination(for: SessionRoutes.self) { route in
                                     switch route {
                                     case .loginView:
-                                        LogInView(logInFields: logInViewModel.logInFields, sesConfig: $sesConfig)
+                                        LogInView()
                                     case .registrationView:
-                                        let dependencies: BusinessDependencies = BusinessDependencies(sessionConfig: SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID()))
-                                        AgregarView(selectedTab: .constant(.plus))
-                                            .environmentObject(dependencies.agregarViewModel)
-//                                        CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
+                                        LogInView()
                                     }
                                 }
                             }
-                            .onChange(of: logInViewModel.logInStatus, perform: { status in
-                                if status == .success {
-                                    navManager.popToRoot()
-                                    userOrEmail = logInViewModel.logInFields.userOrEmail
-                                    password = logInViewModel.logInFields.password
-                                }
-                            })
                         case .unowned:
                             LockScreenView()
                         }
@@ -88,16 +78,20 @@ struct RootView: View {
         .alert(errorState.error, isPresented: $errorState.isPresented, actions: {})
     }
     private func logIn() {
-        if let user = userOrEmail, let password = password {
+        if let user = userOrEmail, let pass = password {
             logInViewModel.logInFields.userOrEmail = user
-            logInViewModel.logInFields.password = password
+            logInViewModel.logInFields.password = pass
             Task {
+                viewStates.isLoading = true
                 print("Se logea desde guardado")
                 let ses = try await logInViewModel.logIn()
                 await MainActor.run {
-                    self.sesConfig = ses
-                    logInViewModel.logInStatus = .success
+                    navManager.popToRoot()
+                    self.userOrEmail = logInViewModel.logInFields.userOrEmail
+                    self.password = logInViewModel.logInFields.password
+                    self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
                 }
+                viewStates.isLoading = false
             }
         }
 //                                                else {//Registration not work yet

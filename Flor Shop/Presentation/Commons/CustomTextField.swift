@@ -31,8 +31,6 @@ struct CustomTextField: View {
                         .padding(.vertical, 4)
                         .disableAutocorrection(disableAutocorrection)
                         .onChange(of: value, perform: { text in
-                            print("Custom: \(text)")
-                            print("Ext: \(value)")
                             if isInputActive {
                                 if text != "" {
                                     edited = true
@@ -63,7 +61,6 @@ struct CustomTextField: View {
                     if isInputActive && !value.isEmpty {
                         Button(action: {
                             if isInputActive {
-                                print("Removed")
                                 value.removeAll()
                             } else if !disable {
                                 isInputActive = true
@@ -99,27 +96,15 @@ struct CustomTextField: View {
     }
 }
 
-class AgregarViewModelTem: ObservableObject {
-    @ObservedObject var campos = AgregarFields()
-}
-
-struct ViewCss1: View {
-    let nor = NormalDependencies()
-    @State var agregarFields: AgregarViewModelTem = AgregarViewModelTem()
-    @FocusState var currentFocusField: AllFocusFields?
-    var body: some View {
-        ViewCss2(fields: agregarFields.campos, currentFocusField: $currentFocusField)
-        .environmentObject(nor.viewStates)
-    }
-}
-
 struct ViewCss2: View {
-    @ObservedObject var fields: AgregarFields
-    @State var currentFocusField: FocusState<AllFocusFields?>.Binding
+    @State var name = ""
+    @State var qt = ""
+    @State var ed = false
+    @State var ed1 = false
     var body: some View {
         VStack(spacing: 16) {
-            CustomTextField(value: $fields.productName, edited: $fields.productEdited)
-            CustomTextField(value: $fields.quantityStock, edited: $fields.quantityEdited)
+            CustomTextField(value: $name, edited: $ed)
+            CustomTextField(value: $qt, edited: $ed1)
             //CustomText(title: "Nombre", value: "", disable: true)
             //CustomTextField(edited: .constant(false))
         }
@@ -129,5 +114,5 @@ struct ViewCss2: View {
 }
 
 #Preview {
-    ViewCss1()
+    ViewCss2()
 }

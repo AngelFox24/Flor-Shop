@@ -10,12 +10,11 @@ import SwiftUI
 struct AddCustomerView: View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var viewStates: ViewStates
-    @FocusState var currentFocusField: AllFocusFields?
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
                 AddCustomerTopBar()
-                AddCustomerFields(isPresented: $addCustomerViewModel.isPresented, currentFocusField: $currentFocusField)
+                AddCustomerFields(isPresented: $addCustomerViewModel.isPresented)
             }
             .background(Color("color_background"))
             .blur(radius: addCustomerViewModel.isPresented ? 2 : 0)
@@ -41,7 +40,6 @@ struct AddCustomerView_Previews: PreviewProvider {
 struct AddCustomerFields : View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @Binding var isPresented: Bool
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
     var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(.vertical, showsIndicators: false, content: {

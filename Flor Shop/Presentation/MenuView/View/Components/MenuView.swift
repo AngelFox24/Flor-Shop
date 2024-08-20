@@ -79,7 +79,6 @@ struct MenuView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var showMenu: Bool = false
         MenuView()
             .environmentObject(nor.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)

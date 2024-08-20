@@ -10,13 +10,10 @@ import AVFoundation
 
 struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
-    @ObservedObject var logInFields: LogInFields
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var viewStates: ViewStates
-    @FocusState var currentFocusField: AllFocusFields?
     @State private var audioPlayer: AVAudioPlayer?
-    @Binding var sesConfig: SessionConfig?
     var body: some View {
         ZStack {
             Color("color_primary")
@@ -40,16 +37,16 @@ struct LogInView: View {
                     VStack(spacing: 30) {
                         VStack(spacing: 40){
                             VStack {
-                                CustomTextField(title: "Usuario o Correo" ,value: $logInFields.userOrEmail, edited: $logInFields.userOrEmailEdited, keyboardType: .default)
-                                if logInFields.userOrEmailError != "" {
-                                    ErrorMessageText(message: logInFields.userOrEmailError)
+                                CustomTextField(title: "Usuario o Correo" ,value: $logInViewModel.logInFields.userOrEmail, edited: $logInViewModel.logInFields.userOrEmailEdited, keyboardType: .default)
+                                if logInViewModel.logInFields.userOrEmailError != "" {
+                                    ErrorMessageText(message: logInViewModel.logInFields.userOrEmailError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Contraseña" ,value: $logInFields.password, edited: $logInFields.passwordEdited, keyboardType: .default)
-                                if logInFields.passwordError != "" {
-                                    ErrorMessageText(message: logInFields.passwordError)
+                                CustomTextField(title: "Contraseña" ,value: $logInViewModel.logInFields.password, edited: $logInViewModel.logInFields.passwordEdited, keyboardType: .default)
+                                if logInViewModel.logInFields.passwordError != "" {
+                                    ErrorMessageText(message: logInViewModel.logInFields.passwordError)
                                     //.padding(.top, 18)
                                 }
                             }
@@ -62,8 +59,8 @@ struct LogInView: View {
                                 VStack {
                                     CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                         .foregroundColor(Color(.black))
-                                    if logInFields.errorLogIn != "" {
-                                        ErrorMessageText(message: logInFields.errorLogIn)
+                                    if logInViewModel.logInFields.errorLogIn != "" {
+                                        ErrorMessageText(message: logInViewModel.logInFields.errorLogIn)
                                     }
                                 }
                             })
@@ -94,11 +91,11 @@ struct LogInView: View {
             viewStates.isLoading = true
             do {
                 print("Se logeara desde Remote")
-                self.sesConfig = try await logInViewModel.logIn()
+                let ses = try await logInViewModel.logIn()
                 print("Log In Correcto")
                 playSound(named: "Success1")
                 await MainActor.run {
-                    logInViewModel.logInStatus = .success
+                    self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
                 }
             } catch {
                 await MainActor.run {
@@ -127,10 +124,8 @@ struct LogInView: View {
 
 struct LogInView_Previews: View {
     let nor = NormalDependencies()
-    @State var field = LogInFields()
-    @State var sesConfig: SessionConfig? = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
     var body: some View {
-        LogInView(logInFields: field, sesConfig: $sesConfig)
+        LogInView()
             .environmentObject(nor.logInViewModel)
             .environmentObject(nor.viewStates)
             .environmentObject(nor.navManager)

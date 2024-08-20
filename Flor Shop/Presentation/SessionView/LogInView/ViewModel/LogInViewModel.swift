@@ -14,8 +14,9 @@ enum LogInStatus {
 }
 
 class LogInViewModel: ObservableObject {
-    @Published var logInStatus: LogInStatus = .success
-    @ObservedObject var logInFields: LogInFields = LogInFields()
+//    @Published var logInStatus: LogInStatus = .success
+    @Published var logInFields: LogInFields = LogInFields()
+    @Published var businessDependencies: BusinessDependencies? = nil
     private let logInUseCase: LogInUseCase
     private let logOutUseCase: LogOutUseCase
     
@@ -36,14 +37,14 @@ class LogInViewModel: ObservableObject {
         return try await self.logInUseCase.execute(username: self.logInFields.userOrEmail, password: self.logInFields.password)
     }
     func logOut() {
-        self.logInStatus = .fail
+//        self.logInStatus = .fail
         self.logOutUseCase.execute()
     }
 }
 
-class LogInFields: ObservableObject {
-    @Published var userOrEmail: String = "curilaurente@gmail.com"
-    @Published var userOrEmailEdited: Bool = false
+struct LogInFields {
+    var userOrEmail: String = "curilaurente@gmail.com"
+    var userOrEmailEdited: Bool = false
     var userOrEmailError: String {
         if userOrEmail == "" && userOrEmailEdited {
             return "Nombre de producto no válido"
@@ -51,8 +52,8 @@ class LogInFields: ObservableObject {
             return ""
         }
     }
-    @Published var password: String = ""
-    @Published var passwordEdited: Bool = false
+    var password: String = ""
+    var passwordEdited: Bool = false
     var passwordError: String {
         if self.password == "" && self.passwordEdited {
             return "Contraseña no válido"
@@ -60,5 +61,5 @@ class LogInFields: ObservableObject {
             return ""
         }
     }
-    @Published var errorLogIn: String = ""
+    var errorLogIn: String = ""
 }

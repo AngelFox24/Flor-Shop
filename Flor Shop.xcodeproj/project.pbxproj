@@ -75,7 +75,6 @@
 		278399FF2C5E8B93000C48FA /* CustomNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278399FE2C5E8B93000C48FA /* CustomNumberField.swift */; };
 		2786CA1B2A6D44CC00A80585 /* Fail1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA192A6D44CC00A80585 /* Fail1.mp3 */; };
 		2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA1A2A6D44CC00A80585 /* Success1.mp3 */; };
-		2788A0652C668B1700FE7C0F /* AllFocusFieldsEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2788A0642C668B1700FE7C0F /* AllFocusFieldsEnum.swift */; };
 		278CA6432C42D06300C200C5 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6422C42D06300C200C5 /* Money.swift */; };
 		278CA6462C42DEA300C200C5 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6452C42DEA300C200C5 /* NetworkManager.swift */; };
 		278CA6492C42DED700C200C5 /* NetworkErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6482C42DED700C200C5 /* NetworkErrors.swift */; };
@@ -251,7 +250,6 @@
 		278399FE2C5E8B93000C48FA /* CustomNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNumberField.swift; sourceTree = "<group>"; };
 		2786CA192A6D44CC00A80585 /* Fail1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fail1.mp3; sourceTree = "<group>"; };
 		2786CA1A2A6D44CC00A80585 /* Success1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Success1.mp3; sourceTree = "<group>"; };
-		2788A0642C668B1700FE7C0F /* AllFocusFieldsEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllFocusFieldsEnum.swift; sourceTree = "<group>"; };
 		278CA6422C42D06300C200C5 /* Money.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Money.swift; sourceTree = "<group>"; };
 		278CA6452C42DEA300C200C5 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		278CA6482C42DED700C200C5 /* NetworkErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrors.swift; sourceTree = "<group>"; };
@@ -629,7 +627,6 @@
 		2788A0632C668AEB00FE7C0F /* FocusFieldsEnum */ = {
 			isa = PBXGroup;
 			children = (
-				2788A0642C668B1700FE7C0F /* AllFocusFieldsEnum.swift */,
 			);
 			path = FocusFieldsEnum;
 			sourceTree = "<group>";
@@ -1687,7 +1684,6 @@
 				27F2F4992B1E15A5003E4197 /* RegisterUserUseCase.swift in Sources */,
 				270930A22B46F4C300BDF3CD /* RemoteProductManager.swift in Sources */,
 				2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */,
-				2788A0652C668B1700FE7C0F /* AllFocusFieldsEnum.swift in Sources */,
 				278142082AC333A60093B402 /* CartViews.swift in Sources */,
 				278CA6552C432CA000C200C5 /* RemoteEmployeeManager.swift in Sources */,
 				68A4B1092A196B7500FC8D9D /* CoreDataProvider.swift in Sources */,

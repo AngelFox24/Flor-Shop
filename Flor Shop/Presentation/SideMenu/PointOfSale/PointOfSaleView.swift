@@ -18,6 +18,7 @@ struct PointOfSaleView: View {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
+//                        .ignoresSafeArea(.keyboard)
                 })
                 .ignoresSafeArea()
             }
@@ -39,14 +40,17 @@ struct PointOfSaleView: View {
                         }
                         .tag(Tab.cart)
                 }
+                .accentColor(Color("color_accent"))
             }
             .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
-            .background(Color("color_primary"))
+            .background(viewStates.isShowMenu ? Color("color_background") : Color("color_primary"))
             .cornerRadius(viewStates.isShowMenu ? 35 : 0)
             .padding(.top, viewStates.isShowMenu ? 0 : 1)
-            .disabled(viewStates.isShowMenu ? true : false)
-            .accentColor(Color("color_accent"))
+//            .disabled(viewStates.isShowMenu ? true : false)
         }
+        .onChange(of: viewStates.isShowMenu, perform: { show in
+            print("Menu is: \(show)")
+        })
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {

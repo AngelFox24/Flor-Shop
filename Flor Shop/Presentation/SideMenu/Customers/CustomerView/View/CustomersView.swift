@@ -10,7 +10,6 @@ import SwiftUI
 struct CustomersView: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var viewStates: ViewStates
-    @FocusState var currentFocusField: AllFocusFields?
     var backButton: Bool = false
     var body: some View {
         ZStack(content: {
@@ -22,7 +21,7 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(currentFocusField: $currentFocusField, backButton: backButton)
+                CustomerTopBar(backButton: backButton)
                 CustomerListController(forSelectCustomer: backButton)
             }
             .padding(.vertical, viewStates.isShowMenu ? 15 : 0)

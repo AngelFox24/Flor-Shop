@@ -43,7 +43,6 @@ struct CustomSearchField: View {
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var viewStates: ViewStates
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     var body: some View {
@@ -94,10 +93,9 @@ struct SearchTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
-        @FocusState var currentFocusField: AllFocusFields?
         @State var showMenu: Bool = false
         VStack (content: {
-            ProductSearchTopBar(currentFocusField: $currentFocusField)
+            ProductSearchTopBar()
                 .environmentObject(dependencies.productsViewModel)
                 .environmentObject(nor.viewStates)
             Spacer()

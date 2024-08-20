@@ -18,7 +18,6 @@ struct TabButton: View {
             withAnimation(.spring()){
                 viewStates.isShowMenu.toggle()
             }
-            print("Se presiono tab: \(selectedTab.rawValue) y se asigno: \(tab.rawValue)")
         }, label: {
             HStack(spacing: 10, content: {
                 Image(systemName: selectedTab == tab ? tab.iconFill : tab.icon)

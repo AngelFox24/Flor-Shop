@@ -11,7 +11,6 @@ struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var viewStates: ViewStates
-    var currentFocusField: FocusState<AllFocusFields?>.Binding
     var backButton: Bool = false
     var body: some View {
         VStack {

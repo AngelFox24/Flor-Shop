@@ -12,7 +12,6 @@ struct CreateAccountView: View {
     @EnvironmentObject var registrationViewModel: RegistrationViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var viewStates: ViewStates
-    @FocusState var currentFocusField: AllFocusFields?
     @Binding var isKeyboardVisible: Bool
     var body: some View {
         ZStack {

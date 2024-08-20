@@ -85,7 +85,6 @@ struct CustomNumberField: View {
                                     .font(.custom("Artifika-Regular", size: 16))
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 12)
-                                    //.opacity(isTextFieldFocused ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.4), value: isInputActive)
                             })
                         }

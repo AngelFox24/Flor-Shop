@@ -13,13 +13,12 @@ import StoreKit
 struct CustomProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var viewStates: ViewStates
-    @FocusState var currentFocusField: AllFocusFields?
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
     @Binding var selectedTab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar(currentFocusField: $currentFocusField)
+            ProductSearchTopBar()
             ListaControler(selectedTab: $selectedTab)
         }
         .onAppear {
