@@ -10,8 +10,8 @@ import SwiftUI
 struct CustomerTopBar: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var viewStates: ViewStates
     var backButton: Bool = false
+    @Binding var showMenu: Bool
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
@@ -24,7 +24,7 @@ struct CustomerTopBar: View {
                 } else {
                     Button(action: {
                         withAnimation(.spring()){
-                            viewStates.isShowMenu.toggle()
+                            showMenu.toggle()
                         }
                     }, label: {
                         HStack {
@@ -71,6 +71,7 @@ struct CustomerTopBar: View {
             })
             .padding(.horizontal, 10)
         }
+        .padding(.top, showMenu ? 15 : 0)
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }

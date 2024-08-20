@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CustomNumberField: View {
-    @EnvironmentObject var viewStates: ViewStates
     var placeHolder: String = "0.00"
     var title: String = "Campo"
     @State private var viewText: String = ""

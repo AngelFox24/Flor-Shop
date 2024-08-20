@@ -9,11 +9,11 @@ import SwiftUI
 
 struct CustomersView: View {
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    @EnvironmentObject var viewStates: ViewStates
     var backButton: Bool = false
+    @Binding var showMenu: Bool
     var body: some View {
         ZStack(content: {
-            if !viewStates.isShowMenu {
+            if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -21,14 +21,12 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(backButton: backButton)
+                CustomerTopBar(backButton: backButton, showMenu: $showMenu)
                 CustomerListController(forSelectCustomer: backButton)
             }
-            .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
             .background(Color("color_primary"))
-            .cornerRadius(viewStates.isShowMenu ? 35 : 0)
-            .padding(.top, viewStates.isShowMenu ? 0 : 1)
-            .disabled(viewStates.isShowMenu ? true : false)
+            .cornerRadius(showMenu ? 35 : 0)
+            .padding(.top, showMenu ? 0 : 1)
             .onAppear {
                 customerViewModel.lazyFetchList()
             }
@@ -46,13 +44,13 @@ struct CustomersView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomersView()
+        @State var showMenu = false
+        CustomersView(showMenu: $showMenu)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
             .environmentObject(dependencies.customerHistoryViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.navManager)
-            .environmentObject(nor.viewStates)
     }
 }
 

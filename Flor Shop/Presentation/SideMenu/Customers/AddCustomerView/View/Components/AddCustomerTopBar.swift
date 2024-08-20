@@ -11,14 +11,13 @@ import CoreData
 import AVFoundation
 
 struct AddCustomerTopBar: View {
-    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
-    @State private var showingErrorAlert = false
+    @Binding var loading: Bool
     var body: some View {
         HStack {
             HStack(content: {
@@ -33,7 +32,7 @@ struct AddCustomerTopBar: View {
                 }, label: {
                     CustomButton1(text: "Guardar")
                 })
-                .alert(addCustomerViewModel.fieldsAddCustomer.errorBD, isPresented: $showingErrorAlert, actions: {})
+//                .alert(addCustomerViewModel.fieldsAddCustomer.errorBD, isPresented: $showingErrorAlert, actions: {})
             })
         }
         .frame(maxWidth: .infinity)
@@ -43,7 +42,7 @@ struct AddCustomerTopBar: View {
     }
     func addCustomer() {
         Task {
-            viewStates.isLoading = true
+            loading = true
             do {
                 try await addCustomerViewModel.addCustomer()
                 playSound(named: "Success1")
@@ -55,7 +54,7 @@ struct AddCustomerTopBar: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -79,9 +78,9 @@ struct AddCustomerTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        AddCustomerTopBar()
+        @State var loading: Bool = false
+        AddCustomerTopBar(loading: $loading)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
-            .environmentObject(nor.viewStates)
     }
 }

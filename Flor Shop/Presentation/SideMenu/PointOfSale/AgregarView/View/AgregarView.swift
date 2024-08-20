@@ -9,25 +9,27 @@ import SwiftUI
 import PhotosUI
 
 struct AgregarView: View {
-    @Binding var selectedTab: Tab
+    @Binding var loading: Bool
+    @Binding var showMenu: Bool
+    @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            AgregarTopBar()
-            CamposProductoAgregar(selectedTab: $selectedTab)
+            AgregarTopBar(loading: $loading, showMenu: $showMenu)
+            CamposProductoAgregar(showMenu: $showMenu, tab: $tab)
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
     }
 }
 
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
-        AgregarView(selectedTab: .constant(.plus))
+        @State var loading: Bool = false
+        @State var showMenu: Bool = false
+        @State var tab: Tab = .plus
+        AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
             .environmentObject(dependencies.agregarViewModel)
-            .environmentObject(nor.viewStates)
+            .environmentObject(dependencies.productsViewModel)
     }
 }
 
@@ -41,8 +43,8 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @EnvironmentObject var viewStates: ViewStates
-    @Binding var selectedTab: Tab
+    @Binding var showMenu: Bool
+    @Binding var tab: Tab
     var sizeCampo: CGFloat = 150
     var body: some View {
         HStack(spacing: 0) {
@@ -183,10 +185,10 @@ struct CamposProductoAgregar: View {
         .background(Color("color_background"))
     }
     func goToSideMenu() {
-        viewStates.isShowMenu = true
+        self.showMenu = true
     }
     func goToProductList() {
-        selectedTab = .magnifyingglass
+        self.tab = .magnifyingglass
     }
     func searchFromInternet() {
         agregarViewModel.findProductNameOnInternet()

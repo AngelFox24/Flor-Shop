@@ -9,11 +9,11 @@ import SwiftUI
 
 struct SalesView: View {
     @EnvironmentObject var salesViewModel: SalesViewModel
-    @EnvironmentObject var viewStates: ViewStates
     var backButton: Bool = false
+    @Binding var showMenu: Bool
     var body: some View {
         ZStack {
-            if !viewStates.isShowMenu {
+            if showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -21,13 +21,12 @@ struct SalesView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                SalesTopBar()
+                SalesTopBar(showMenu: $showMenu)
                 SalesListController()
             }
-//            .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
             .background(Color("color_primary"))
-            .cornerRadius(viewStates.isShowMenu ? 35 : 0)
-            .padding(.top, viewStates.isShowMenu ? 0 : 1)
+            .cornerRadius(showMenu ? 35 : 0)
+            .padding(.top, showMenu ? 0 : 1)
             .onAppear {
                 salesViewModel.lazyFetchList()
             }
@@ -43,11 +42,11 @@ struct SalesView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        SalesView()
+        @State var showMenu: Bool = false
+        SalesView(showMenu: $showMenu)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(nor.navManager)
-            .environmentObject(nor.viewStates)
     }
 }
 

@@ -8,11 +8,10 @@
 import SwiftUI
 struct CustomerHistoryView: View {
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
-    //@Binding var showMenu: Bool
-    //var backButton: Bool = false
+    @Binding var loading: Bool
     var body: some View {
         VStack(spacing: 0) {
-            CustomerHistoryTopBar()
+            CustomerHistoryTopBar(loading: $loading)
             CustomerHistoryViewListController()
         }
         .onAppear(perform: {
@@ -31,7 +30,8 @@ struct CustomerHistoryView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomerHistoryView()
+        @State var loading = false
+        CustomerHistoryView(loading: $loading)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(nor.navManager)

@@ -42,13 +42,13 @@ struct CustomSearchField: View {
 
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @EnvironmentObject var viewStates: ViewStates
+    @Binding var showMenu: Bool
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
-                CustomButton5(showMenu: $viewStates.isShowMenu)
+                CustomButton5(showMenu: $showMenu)
                 CustomSearchField(text: $productsCoreDataViewModel.searchText)
                 Menu {
                     Section("Ordenamiento") {
@@ -83,6 +83,7 @@ struct ProductSearchTopBar: View {
             })
             .padding(.horizontal, 10)
         }
+        .padding(.top, showMenu ? 15 : 0)
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
@@ -90,14 +91,12 @@ struct ProductSearchTopBar: View {
 
 struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         @State var showMenu: Bool = false
         VStack (content: {
-            ProductSearchTopBar()
+            ProductSearchTopBar(showMenu: $showMenu)
                 .environmentObject(dependencies.productsViewModel)
-                .environmentObject(nor.viewStates)
             Spacer()
         })
     }

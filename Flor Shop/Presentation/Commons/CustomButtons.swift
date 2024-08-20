@@ -68,7 +68,7 @@ struct CustomButton5: View {
         ZStack(content: {
             Button(action: {
                 withAnimation(.spring()){
-                    showMenu.toggle()
+                    self.showMenu.toggle()
                     if !hasShownSideBar {
                         hasShownSideBar = true
                     }

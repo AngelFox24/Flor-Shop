@@ -8,43 +8,31 @@
 import SwiftUI
 
 struct MenuView: View {
-    @State private var selectedTab: MenuTab = .pointOfSaleTab
-    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var navManager: NavManager
     @AppStorage("userOrEmail") var userOrEmail: String?
     @AppStorage("password") var password: String?
-    @State private var tabSelected: Tab = .magnifyingglass
+    @Binding var loading: Bool
+    @Binding var showMenu: Bool
+    @State var menuTab: MenuTab = .pointOfSaleTab
+    @State var tab: Tab = .magnifyingglass
     var body: some View {
         ZStack {
-            SideMenuView(selectedTab: $selectedTab)
+            SideMenuView(menuTab: $menuTab, showMenu: $showMenu)
             ZStack {
-                if viewStates.isShowMenu {
-                    Color(.white)
-                        .opacity(0.5)
-                        .cornerRadius(viewStates.isShowMenu ? 35 : 0)
-                        .shadow(color: Color.black.opacity(0.07), radius: 5, x: -5, y: 0)
-                        .offset(x: viewStates.isShowMenu ? -25 : 0)
-                        .padding(.vertical, 30)
-                    Color(.white)
-                        .opacity(0.4)
-                        .cornerRadius(viewStates.isShowMenu ? 35 : 0)
-                        .shadow(color: Color.black.opacity(0.07), radius: 5, x: -5, y: 0)
-                        .offset(x: viewStates.isShowMenu ? -50 : 0)
-                        .padding(.vertical, 60)
-                }
+                WindowsEffect(showMenu: $showMenu)
                 VStack(spacing: 0, content: {
-                    switch selectedTab {
+                    switch menuTab {
                     case .pointOfSaleTab:
-                        PointOfSaleView()
+                        PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
                     case .salesTab:
-                        SalesView()
+                        SalesView(showMenu: $showMenu)
                     case .customersTab:
-                        CustomersView()
+                        CustomersView(showMenu: $showMenu)
                     case .employeesTab:
-                        EmployeeView()
+                        EmployeeView(showMenu: $showMenu)
                     case .settingsTab:
-                        PointOfSaleView()
+                        PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
                     case .logOut:
                         LockScreenView()
                             .onAppear(perform: {
@@ -55,21 +43,55 @@ struct MenuView: View {
                             })
                     }
                 })
-                if viewStates.isShowMenu {
-                    VStack(spacing: 0, content: {
-                        Color("color_primary")
-                            .opacity(0.001)
-                    })
-                    .onTapGesture(perform: {
-                        withAnimation(.easeInOut) {
-                            viewStates.isShowMenu = false
-                        }
-                    })
-                    .disabled(viewStates.isShowMenu ? false : true)
-                }
+                TempViewOverlay(showMenu: $showMenu)
             }
-            .scaleEffect(viewStates.isShowMenu ? 0.84 : 1)
-            .offset(x: viewStates.isShowMenu ? getRect().width - 180 : 0)
+            .scaleEffect(showMenu ? 0.84 : 1)
+            .offset(x: showMenu ? getRect().width - 180 : 0)
+        }
+        .onChange(of: showMenu, perform: { show in
+            print("Menu is: \(show)")
+        })
+    }
+}
+
+struct TempViewOverlay: View {
+    @Binding var showMenu: Bool
+    var body: some View {
+        VStack(spacing: 0) {
+            if showMenu {
+                VStack(spacing: 0, content: {
+                    Color("color_primary")
+                        .opacity(0.001)
+                })
+                .onTapGesture(perform: {
+                    withAnimation(.easeInOut) {
+                        showMenu = false
+                    }
+                })
+                .disabled(showMenu ? false : true)
+            }
+        }
+    }
+}
+
+struct WindowsEffect: View {
+    @Binding var showMenu: Bool
+    var body: some View {
+        ZStack {
+            if showMenu {
+                Color(.white)
+                    .opacity(0.5)
+                    .cornerRadius(35)
+                    .shadow(color: Color.black.opacity(0.07), radius: 5, x: -5, y: 0)
+                    .offset(x: -25)
+                    .padding(.vertical, 30)
+                Color(.white)
+                    .opacity(0.4)
+                    .cornerRadius(35)
+                    .shadow(color: Color.black.opacity(0.07), radius: 5, x: -5, y: 0)
+                    .offset(x: -50)
+                    .padding(.vertical, 60)
+            }
         }
     }
 }
@@ -79,7 +101,10 @@ struct MenuView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        MenuView()
+        @State var loading = false
+        @State var showMenu = false
+        @State var menuTab: MenuTab = .pointOfSaleTab
+        MenuView(loading: $loading, showMenu: $showMenu)
             .environmentObject(nor.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
@@ -89,7 +114,6 @@ struct MenuView_Previews: PreviewProvider {
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
             .environmentObject(nor.versionCheck)
-            .environmentObject(nor.viewStates)
             .environmentObject(nor.errorState)
             .environmentObject(nor.navManager)
     }

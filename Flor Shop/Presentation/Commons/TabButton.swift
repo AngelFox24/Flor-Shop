@@ -10,13 +10,13 @@ import SwiftUI
 struct TabButton: View {
     var tab: MenuTab
     @Binding var selectedTab: MenuTab
-    @EnvironmentObject var viewStates: ViewStates
+    @Binding var showMenu: Bool
     //var animation: Namespace.ID
     var body: some View {
         Button(action: {
             selectedTab = tab
             withAnimation(.spring()){
-                viewStates.isShowMenu.toggle()
+                showMenu.toggle()
             }
         }, label: {
             HStack(spacing: 10, content: {
@@ -47,10 +47,11 @@ struct TabButton_Previews: PreviewProvider {
     static var previews: some View {
         //@Namespace var animation
         @State var selectedTab: MenuTab = .employeesTab
+        @State var isShowMenu: Bool = false
         VStack {
-            TabButton(tab: MenuTab.employeesTab, selectedTab: $selectedTab)
-            TabButton(tab: MenuTab.pointOfSaleTab, selectedTab: $selectedTab)
-            TabButton(tab: MenuTab.settingsTab, selectedTab: $selectedTab)
+            TabButton(tab: MenuTab.employeesTab, selectedTab: $selectedTab, showMenu: $isShowMenu)
+            TabButton(tab: MenuTab.pointOfSaleTab, selectedTab: $selectedTab, showMenu: $isShowMenu)
+            TabButton(tab: MenuTab.settingsTab, selectedTab: $selectedTab, showMenu: $isShowMenu)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray)

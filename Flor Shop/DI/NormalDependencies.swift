@@ -13,7 +13,7 @@ struct NormalDependencies {
     //Estados
     let errorState: ErrorState
     let versionCheck: VersionCheck
-    let viewStates: ViewStates
+//    let viewStates: ViewStates
     //Session UseCases
     let remoteSessionManager: RemoteSessionManager
     let sessionRepository: SessionRepository
@@ -28,7 +28,7 @@ struct NormalDependencies {
         //Estados
         self.versionCheck = VersionCheck()
         self.errorState = ErrorState()
-        self.viewStates = ViewStates()
+//        self.viewStates = ViewStates()
         //Repo
         self.remoteSessionManager = RemoteSessionManagerImpl()
         self.sessionRepository = SessionRepositoryImpl(remoteManager: remoteSessionManager)
@@ -49,8 +49,10 @@ class ErrorState: ObservableObject {
     }
 }
 
-class ViewStates: ObservableObject {
-    @Published var isShowMenu: Bool = false
-    @Published var isLoading: Bool = false
-}
+//class ViewStates: ObservableObject {
+//    @Published var selectedTab: MenuTab = .pointOfSaleTab
+//    @Published var tabSelected: Tab = .plus
+//    @Published var isShowMenu: Bool = false
+//    @Published var isLoading: Bool = false
+//}
 

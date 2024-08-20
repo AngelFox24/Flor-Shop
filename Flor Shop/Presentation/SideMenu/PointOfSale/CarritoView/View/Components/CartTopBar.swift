@@ -13,12 +13,12 @@ struct CartTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var viewStates: ViewStates
     @State private var audioPlayer: AVAudioPlayer?
+    @Binding var showMenu: Bool
     var body: some View {
         HStack {
             HStack{
-                CustomButton5(showMenu: $viewStates.isShowMenu)
+                CustomButton5(showMenu: $showMenu)
                 Spacer()
                 Button(action: {
                     navManager.goToPaymentView()
@@ -54,7 +54,8 @@ struct CartTopBar: View {
                 })
             }
         }
-        .frame(maxWidth: .infinity)
+        .padding(.top, showMenu ? 15 : 0)
+        .frame(width: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
@@ -80,9 +81,9 @@ struct CartTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CartTopBar()
+        @State var showMenu = false
+        CartTopBar(showMenu: $showMenu)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.navManager)
-            .environmentObject(nor.viewStates)
     }
 }

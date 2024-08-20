@@ -9,11 +9,11 @@ import SwiftUI
 
 struct AddCustomerView: View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @EnvironmentObject var viewStates: ViewStates
+    @Binding var loading: Bool
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
-                AddCustomerTopBar()
+                AddCustomerTopBar(loading: $loading)
                 AddCustomerFields(isPresented: $addCustomerViewModel.isPresented)
             }
             .background(Color("color_background"))
@@ -32,7 +32,8 @@ struct AddCustomerView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        AddCustomerView()
+        @State var loading: Bool = false
+        AddCustomerView(loading: $loading)
             .environmentObject(dependencies.addCustomerViewModel)
     }
 }

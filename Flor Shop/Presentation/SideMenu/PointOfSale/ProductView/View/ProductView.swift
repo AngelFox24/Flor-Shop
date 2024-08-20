@@ -12,17 +12,18 @@ import StoreKit
 
 struct CustomProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
-    @Binding var selectedTab: Tab
+    @Binding var loading: Bool
+    @Binding var showMenu: Bool
+    @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar()
-            ListaControler(selectedTab: $selectedTab)
+            ProductSearchTopBar(showMenu: $showMenu)
+            ListaControler(loading: $loading, tab: $tab)
         }
         .onAppear {
-            sync()
+//            sync()
             productsCoreDataViewModel.lazyFetchProducts()
         }
         .onDisappear {
@@ -31,7 +32,7 @@ struct CustomProductView: View {
     }
     private func sync() {
         Task {
-            viewStates.isLoading = true
+            loading = true
 //            try? await Task.sleep(nanoseconds: 2_000_000_000)
             do {
                 try await productsCoreDataViewModel.sync()
@@ -42,7 +43,7 @@ struct CustomProductView: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -66,10 +67,9 @@ struct HomeView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomProductView(selectedTab: .constant(.magnifyingglass))
+        CustomProductView(loading: .constant(false), showMenu: .constant(false), tab: .constant(.magnifyingglass))
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.viewStates)
             .environmentObject(nor.errorState)
     }
 }
@@ -78,15 +78,12 @@ struct ListaControler: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
-    @State private var showingErrorAlert = false
     @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
     @Environment(\.requestReview) var requestReview
+    @Binding var loading: Bool
+    @Binding var tab: Tab
     @State private var audioPlayer: AVAudioPlayer?
-    @State var unitPoint: UnitPoint = .bottom
-    @State var lastIndex: Int = 0
-    @Binding var selectedTab: Tab
     var body: some View {
         HStack(spacing: 0) {
             if productsCoreDataViewModel.productsCoreData.count == 0 {
@@ -104,11 +101,6 @@ struct ListaControler: View {
                     }, label: {
                         CustomButton1(text: "Agregar")
                     })
-//                    Button(action: {
-//                        agregarViewModel.loadTestData()
-//                    }, label: {
-//                        CustomButton1(text: "Data de Prueba")
-//                    })
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color("color_background"))
@@ -155,7 +147,7 @@ struct ListaControler: View {
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(action: {
                                     editProduct(product: producto)
-                                    selectedTab = .plus
+                                    goToEditProduct()
                                 }, label: {
                                     Image(systemName: "pencil")
                                 })
@@ -181,14 +173,14 @@ struct ListaControler: View {
         .background(Color("color_background"))
     }
     func goToEditProduct() {
-        selectedTab = .plus
+        self.tab = .plus
     }
     func goToCart() {
-        selectedTab = .cart
+        self.tab = .cart
     }
     func editProduct(product: Product) {
         Task {
-            viewStates.isLoading = true
+            loading = true
             do {
                 try await agregarViewModel.editProduct(product: product)
                 playSound(named: "Success1")
@@ -198,12 +190,12 @@ struct ListaControler: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     func agregarProductoACarrito(producto: Product) {
         Task {
-            viewStates.isLoading = true
+            loading = true
             do {
                 try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
                 playSound(named: "Success1")
@@ -213,7 +205,7 @@ struct ListaControler: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     private func playSound(named fileName: String) {

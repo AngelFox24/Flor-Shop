@@ -69,9 +69,10 @@ enum MenuTab: String, CaseIterable {
 }
 
 struct SideMenuView: View {
-    let navTabsIter: [MenuTab] = MenuTab.navTabs()
-    @Binding var selectedTab: MenuTab
+    @Binding var menuTab: MenuTab
+    @Binding var showMenu: Bool
     @Namespace var animation
+    let navTabsIter: [MenuTab] = MenuTab.navTabs()
     var body: some View {
             ZStack {
                 Color("color_accent")
@@ -101,7 +102,7 @@ struct SideMenuView: View {
                         .padding(.leading, 15)
                         VStack(alignment: .leading, spacing: 15, content: {
                             ForEach(navTabsIter, id: \.self) {tab in
-                                    TabButton(tab: tab, selectedTab: $selectedTab)
+                                    TabButton(tab: tab, selectedTab: $menuTab, showMenu: $showMenu)
                             }
                         })
                         Spacer()
@@ -124,7 +125,8 @@ struct SideMenuView: View {
 
 struct SideMenuView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var selectedTab: MenuTab = .customersTab
-        SideMenuView(selectedTab: $selectedTab)
+        @State var menuTab: MenuTab = .customersTab
+        @State var showMenu: Bool = false
+        SideMenuView(menuTab: $menuTab, showMenu: $showMenu)
     }
 }

@@ -14,21 +14,27 @@ struct FlorShopApp: App {
     init() {
 //        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
-    let normalDependencies = NormalDependencies()
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(normalDependencies.navManager)
-                .environmentObject(normalDependencies.versionCheck)
-                .environmentObject(normalDependencies.logInViewModel)
-                .environmentObject(normalDependencies.errorState)
-                .environmentObject(normalDependencies.viewStates)
-//                .onAppear {
-//                    Task(priority: .background, operation: {
-//                        print("Se optimizara las imagenes")
-//                        await dependencies.imageManager.deleteUnusedImages()
-//                    })
-//                }
+            ContentView()
         }
+    }
+}
+
+struct ContentView: View {
+    let normalDependencies = NormalDependencies()
+    var body: some View {
+        RootView()
+            .environmentObject(normalDependencies.navManager)
+            .environmentObject(normalDependencies.versionCheck)
+            .environmentObject(normalDependencies.logInViewModel)
+            .environmentObject(normalDependencies.errorState)
+//            .environmentObject(normalDependencies.viewStates)
+        //                .onAppear {
+        //                    Task(priority: .background, operation: {
+        //                        print("Se optimizara las imagenes")
+        //                        await dependencies.imageManager.deleteUnusedImages()
+        //                    })
+        //                }
     }
 }

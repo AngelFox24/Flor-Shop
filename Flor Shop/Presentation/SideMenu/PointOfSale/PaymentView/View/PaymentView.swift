@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct PaymentView: View {
+    @Binding var loading: Bool
     var body: some View {
         VStack(spacing: 0) {
-            PaymentTopBar()
+            PaymentTopBar(loading: $loading)
             PaymentsFields()
         }
         .background(Color("color_background"))
@@ -21,12 +22,11 @@ struct PaymentView: View {
 
 struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        PaymentView()
+        @State var loading = false
+        PaymentView(loading: $loading)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.viewStates)
     }
 }
 

@@ -9,24 +9,25 @@ import SwiftUI
 
 struct SalesTopBar: View {
     @EnvironmentObject var salesCoreDataViewModel: SalesViewModel
-    @EnvironmentObject var viewStates: ViewStates
+    @Binding var showMenu: Bool
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 10, content: {
-                Button(action: {
-                    withAnimation(.spring()){
-                        viewStates.isShowMenu.toggle()
-                    }
-                }, label: {
-                    HStack {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                    .background(Color("colorlaunchbackground"))
-                    .cornerRadius(10)
-                    .frame(width: 40, height: 40)
-                })
+//                Button(action: {
+//                    withAnimation(.spring()){
+//                        isShowMenu.toggle()
+//                    }
+//                }, label: {
+//                    HStack {
+//                        Image("logo")
+//                            .resizable()
+//                            .scaledToFit()
+//                    }
+//                    .background(Color("colorlaunchbackground"))
+//                    .cornerRadius(10)
+//                    .frame(width: 40, height: 40)
+//                })
+                CustomButton5(showMenu: $showMenu)
                 HStack(spacing: 0, content: {
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.diary.description)
@@ -212,6 +213,7 @@ struct SalesTopBar: View {
             .padding(.bottom, 5)
             .background(Color("color_secondary"))
         }
+        .padding(.top, showMenu ? 15 : 0)
         .background(Color("color_primary"))
     }
     func nextDate() {
@@ -228,12 +230,11 @@ struct SalesTopBar: View {
 
 struct SalesTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
         VStack(spacing: 0, content: {
-            SalesTopBar()
+            SalesTopBar(showMenu: $showMenu)
                 .environmentObject(dependencies.salesViewModel)
             Spacer()
         })

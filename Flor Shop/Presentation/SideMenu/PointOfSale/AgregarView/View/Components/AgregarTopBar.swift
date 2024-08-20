@@ -13,36 +13,37 @@ struct AgregarTopBar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var errorState: ErrorState
-    @EnvironmentObject var viewStates: ViewStates
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showingErrorAlert = false
+    @Binding var loading: Bool
+    @Binding var showMenu: Bool
     var body: some View {
         HStack {
-            CustomButton5(showMenu: $viewStates.isShowMenu)
+            CustomButton5(showMenu: $showMenu)
             Spacer()
             Button(action: {
                 saveProduct()
             }, label: {
                 CustomButton1(text: "Guardar")
             })
-                .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
+//                .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
             Menu {
                 Button {
                     print("Cargando")
-                    viewStates.isLoading = true
+                    loading = true
                     print("Creando Directorio")
                     let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(Date().formatted(date: .abbreviated, time: .omitted)).csv")
                     print("Exportando")
                     agregarViewModel.exportCSV(url: tempURL)
                     print("Mostrando Guardador de Archivos")
-                    viewStates.isLoading = false
+                    loading = false
                     showShareSheet(url: tempURL)
                 } label: {
                     Label("Exportar", systemImage: "square.and.arrow.up")
                 }
                 Button {
                     Task {
-                        viewStates.isLoading = true
+                        loading = true
                         if await agregarViewModel.importCSV() {
                             //                        agregarViewModel.releaseResources()
                             //                        playSound(named: "Success1")
@@ -50,7 +51,7 @@ struct AgregarTopBar: View {
                             //                        playSound(named: "Fail1")
                             showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
                         }
-                        viewStates.isLoading = false
+                        loading = false
                     }
                 } label: {
                     Label("Importar", systemImage: "square.and.arrow.down")
@@ -60,6 +61,7 @@ struct AgregarTopBar: View {
                     .rotationEffect(.degrees(90))
             }
         }
+        .padding(.top, showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
@@ -67,7 +69,7 @@ struct AgregarTopBar: View {
     }
     private func saveProduct() {
         Task {
-            viewStates.isLoading = true
+            loading = true
             do {
                 try await agregarViewModel.addProduct()
                 playSound(named: "Success1")
@@ -77,7 +79,7 @@ struct AgregarTopBar: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -101,10 +103,11 @@ struct AgregarTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
+        @State var loading = false
+        @State var showMenu = false
         VStack {
-            AgregarTopBar()
+            AgregarTopBar(loading: $loading, showMenu: $showMenu)
                 .environmentObject(dependencies.agregarViewModel)
-                .environmentObject(nor.viewStates)
             Spacer()
         }
     }

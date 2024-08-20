@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject var logInViewModel: LogInViewModel
     let dependencies: BusinessDependencies
+    @Binding var loading: Bool
+    @State var showMenu: Bool = false
     var body: some View {
         VStack(spacing: 0) {
-            MenuView()
+            MenuView(loading: $loading, showMenu: $showMenu)
                 .environmentObject(dependencies.productsViewModel)
                 .environmentObject(dependencies.cartViewModel)
                 .environmentObject(dependencies.salesViewModel)
@@ -24,25 +25,25 @@ struct MainView: View {
         .navigationDestination(for: MenuRoutes.self) { routes in
             switch routes {
             case .customerView:
-                CustomersView(backButton: true)
+                CustomersView(backButton: true, showMenu: $showMenu)
                     .environmentObject(dependencies.customerViewModel)
                     .environmentObject(dependencies.cartViewModel)
                     .environmentObject(dependencies.addCustomerViewModel)
                     .environmentObject(dependencies.customerHistoryViewModel)
             case .customersForPaymentView:
-                CustomersView(backButton: true)
+                CustomersView(backButton: true, showMenu: $showMenu)
                     .environmentObject(dependencies.customerViewModel)
                     .environmentObject(dependencies.cartViewModel)
                     .environmentObject(dependencies.addCustomerViewModel)
                     .environmentObject(dependencies.customerHistoryViewModel)
             case .addCustomerView:
-                AddCustomerView()
+                AddCustomerView(loading: $loading)
                     .environmentObject(dependencies.addCustomerViewModel)
             case .paymentView:
-                PaymentView()
+                PaymentView(loading: $loading)
                     .environmentObject(dependencies.cartViewModel)
             case .customerHistoryView:
-                CustomerHistoryView()
+                CustomerHistoryView(loading: $loading)
                     .environmentObject(dependencies.customerHistoryViewModel)
             }
         }
@@ -54,11 +55,11 @@ struct MainView_Previews: PreviewProvider {
         let normalDependencies = NormalDependencies()
         let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dep = BusinessDependencies(sessionConfig: sesC)
-        MainView(dependencies: dep)
+        @State var loading = false
+        MainView(dependencies: dep, loading: $loading)
             .environmentObject(normalDependencies.navManager)
             .environmentObject(normalDependencies.versionCheck)
             .environmentObject(normalDependencies.logInViewModel)
-            .environmentObject(normalDependencies.viewStates)
             .environmentObject(normalDependencies.errorState)
     }
 }

@@ -14,7 +14,7 @@ struct RootView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var errorState: ErrorState
     
-    @EnvironmentObject var viewStates: ViewStates
+    @State var loading: Bool = false
     
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     @AppStorage("userOrEmail") var userOrEmail: String?
@@ -37,10 +37,7 @@ struct RootView: View {
                             NavigationStack(path: $navManager.navPaths) {
                                 VStack(content: {
                                     if let sesDep = logInViewModel.businessDependencies {
-                                        MainView(dependencies: sesDep)
-                                            .onAppear {
-                                                print("Aparecio MainView")
-                                            }
+                                        MainView(dependencies: sesDep, loading: $loading)
                                     } else {
                                         WelcomeView()
                                             .onAppear {
@@ -51,9 +48,9 @@ struct RootView: View {
                                 .navigationDestination(for: SessionRoutes.self) { route in
                                     switch route {
                                     case .loginView:
-                                        LogInView()
+                                        LogInView(loading: $loading)
                                     case .registrationView:
-                                        LogInView()
+                                        LogInView(loading: $loading)
                                     }
                                 }
                             }
@@ -66,7 +63,7 @@ struct RootView: View {
                     //versionCheck.checkAppVersion()
                 }
             }
-            if viewStates.isLoading {
+            if loading {
                 LoadingView()
             }
         }
@@ -82,7 +79,7 @@ struct RootView: View {
             logInViewModel.logInFields.userOrEmail = user
             logInViewModel.logInFields.password = pass
             Task {
-                viewStates.isLoading = true
+                loading = true
                 print("Se logea desde guardado")
                 let ses = try await logInViewModel.logIn()
                 await MainActor.run {
@@ -91,7 +88,7 @@ struct RootView: View {
                     self.password = logInViewModel.logInFields.password
                     self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
                 }
-                viewStates.isLoading = false
+                loading = false
             }
         }
 //                                                else {//Registration not work yet
@@ -108,13 +105,11 @@ struct RootView: View {
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        //Definimos contexto para todos
         let normalDependencies = NormalDependencies()
         RootView()
             .environmentObject(normalDependencies.navManager)
             .environmentObject(normalDependencies.versionCheck)
             .environmentObject(normalDependencies.logInViewModel)
-            .environmentObject(normalDependencies.viewStates)
             .environmentObject(normalDependencies.errorState)
     }
 }

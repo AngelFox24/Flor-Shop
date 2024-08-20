@@ -11,8 +11,6 @@ struct CreateAccountView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var registrationViewModel: RegistrationViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var viewStates: ViewStates
-    @Binding var isKeyboardVisible: Bool
     var body: some View {
         ZStack {
             Color("color_primary")
@@ -111,9 +109,7 @@ struct CreateAccountView: View {
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
         let nor = NormalDependencies()
-        let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: sesC)
-        CreateAccountView(isKeyboardVisible: .constant(true))
+        CreateAccountView()
             .environmentObject(nor.logInViewModel)
     }
 }

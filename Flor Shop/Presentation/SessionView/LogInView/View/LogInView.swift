@@ -12,8 +12,8 @@ struct LogInView: View {
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var errorState: ErrorState
-    @EnvironmentObject var viewStates: ViewStates
     @State private var audioPlayer: AVAudioPlayer?
+    @Binding var loading: Bool
     var body: some View {
         ZStack {
             Color("color_primary")
@@ -88,7 +88,7 @@ struct LogInView: View {
     }
     private func logIn() {
         Task {
-            viewStates.isLoading = true
+            loading = true
             do {
                 print("Se logeara desde Remote")
                 let ses = try await logInViewModel.logIn()
@@ -103,7 +103,7 @@ struct LogInView: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -125,9 +125,9 @@ struct LogInView: View {
 struct LogInView_Previews: View {
     let nor = NormalDependencies()
     var body: some View {
-        LogInView()
+        @State var loading = false
+        LogInView(loading: $loading)
             .environmentObject(nor.logInViewModel)
-            .environmentObject(nor.viewStates)
             .environmentObject(nor.navManager)
             .environmentObject(nor.errorState)
     }

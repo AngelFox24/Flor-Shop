@@ -8,64 +8,73 @@
 import SwiftUI
 
 struct PointOfSaleView: View {
-    @State var tabSelected: Tab = .plus
-    @EnvironmentObject var viewStates: ViewStates
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
+    @Binding var loading: Bool
+    @Binding var showMenu: Bool
+    @Binding var tab: Tab
     var body: some View {
         ZStack {
-            if !viewStates.isShowMenu {
+            if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
-                    Color("color_background")
+//                    Color("color_background")
 //                        .ignoresSafeArea(.keyboard)
                 })
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                TabView(selection: $tabSelected) {
-                    AgregarView(selectedTab: $tabSelected)
-                        .tabItem {
-                            Label("Agregar", systemImage: "plus")
-                        }
-                        .tag(Tab.plus)
-                    CustomProductView(selectedTab: $tabSelected)
-                        .tabItem {
-                            Label("Buscar", systemImage: "magnifyingglass")
-                        }
-                        .tag(Tab.magnifyingglass)
-                    CartView(selectedTab: $tabSelected)
-                        .tabItem {
-                            Label("Carro", systemImage: "cart")
-                        }
-                        .tag(Tab.cart)
+                switch tab {
+                case .plus:
+                    AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                case .magnifyingglass:
+                    CustomProductView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                case .cart:
+                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
                 }
-                .accentColor(Color("color_accent"))
+//                TabView(selection: $tab) {
+//                    AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
+//                        .tabItem {
+//                            Label("Agregar", systemImage: "plus")
+//                        }
+//                        .tag(Tab.plus)
+//                    CustomProductView(loading: $loading, showMenu: $showMenu, tab: $tab)
+//                        .tabItem {
+//                            Label("Buscar", systemImage: "magnifyingglass")
+//                        }
+//                        .tag(Tab.magnifyingglass)
+//                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
+//                        .tabItem {
+//                            Label("Carro", systemImage: "cart")
+//                        }
+//                        .tag(Tab.cart)
+//                }
+//                .accentColor(Color("color_accent"))
             }
-            .padding(.vertical, viewStates.isShowMenu ? 15 : 0)
-            .background(viewStates.isShowMenu ? Color("color_background") : Color("color_primary"))
-            .cornerRadius(viewStates.isShowMenu ? 35 : 0)
-            .padding(.top, viewStates.isShowMenu ? 0 : 1)
-//            .disabled(viewStates.isShowMenu ? true : false)
+            .cornerRadius(showMenu ? 35 : 0)
+            .padding(.top, showMenu ? 0 : 1)
+            if !showMenu {
+                VStack {
+                    Spacer()
+                    CustomTabBar(selectedTab: $tab)
+                }
+                .ignoresSafeArea(.keyboard)
+            }
         }
-        .onChange(of: viewStates.isShowMenu, perform: { show in
-            print("Menu is: \(show)")
-        })
     }
 }
 struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
         @State var isKeyboardVisible: Bool = false
+        @State var loading: Bool = false
         @State var showMenu: Bool = false
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        PointOfSaleView()
+        @State var tab: Tab = .magnifyingglass
+        PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(nor.versionCheck)
-            .environmentObject(nor.viewStates)
             .environmentObject(nor.errorState)
     }
 }

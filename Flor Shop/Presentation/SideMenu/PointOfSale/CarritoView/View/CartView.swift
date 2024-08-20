@@ -10,15 +10,17 @@ import CoreData
 
 struct CartView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
-    @Binding var selectedTab: Tab
+    @Binding var loading: Bool
+    @Binding var showMenu: Bool
+    @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            CartTopBar()
-            ListCartController(selectedTab: $selectedTab)
+            CartTopBar(showMenu: $showMenu)
+            ListCartController(loading: $loading, tab: $tab)
         }
-        .onAppear {
-            cartViewModel.lazyFetchCart()
-        }
+//        .onAppear {
+//            cartViewModel.lazyFetchCart()
+//        }
     }
 }
 
@@ -27,16 +29,18 @@ struct CartView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let nor = NormalDependencies()
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CartView(selectedTab: .constant(.cart))
+        @State var loading: Bool = false
+        @State var showMenu: Bool = false
+        @State var tab: Tab = .magnifyingglass
+        CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.viewStates)
     }
 }
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var viewStates: ViewStates
-    @Binding var selectedTab: Tab
+    @Binding var loading: Bool
+    @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
             if let cart = cartViewModel.cartCoreData {
@@ -90,30 +94,30 @@ struct ListCartController: View {
         .background(Color("color_background"))
     }
     func goToProductsList() {
-        selectedTab = .magnifyingglass
+        self.tab = .magnifyingglass
     }
     func goToPay() {
         navManager.goToPaymentView()
     }
     func deleteCartDetail(cartDetail: CartDetail) {
         Task {
-            viewStates.isLoading = true
+            loading = true
             await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
-            viewStates.isLoading = false
+            loading = false
         }
     }
     func decreceProductAmount(cartDetail: CartDetail) {
         Task {
-            viewStates.isLoading = true
+            loading = true
             await cartViewModel.changeProductAmount(cartDetail: cartDetail)
-            viewStates.isLoading = false
+            loading = false
         }
     }
     func increaceProductAmount(cartDetail: CartDetail) {
         Task {
-            viewStates.isLoading = true
+            loading = true
             await cartViewModel.changeProductAmount(cartDetail: cartDetail)
-            viewStates.isLoading = false
+            loading = false
         }
     }
 }

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CustomHideKeyboard: View {
-    @EnvironmentObject var viewStates: ViewStates
     var body: some View {
         ZStack {
             VStack {

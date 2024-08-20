@@ -13,9 +13,9 @@ struct CustomerHistoryTopBar: View {
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var viewStates: ViewStates
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
+    @Binding var loading: Bool
     var body: some View {
         HStack {
             HStack(content: {
@@ -65,7 +65,7 @@ struct CustomerHistoryTopBar: View {
     }
     private func editCustomer(customer: Customer) {
         Task {
-            viewStates.isLoading = true
+            loading = true
             do {
                 try await addCustomerViewModel.editCustomer(customer: customer)
                 navManager.goToAddCustomerView()
@@ -76,7 +76,7 @@ struct CustomerHistoryTopBar: View {
                 }
                 playSound(named: "Fail1")
             }
-            viewStates.isLoading = false
+            loading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -99,7 +99,8 @@ struct CustomerHistoryTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomerHistoryTopBar()
+        @State var loading = false
+        CustomerHistoryTopBar(loading: $loading)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerHistoryViewModel)
