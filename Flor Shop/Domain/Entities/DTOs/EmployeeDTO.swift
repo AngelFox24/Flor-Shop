@@ -17,7 +17,7 @@ struct EmployeeDTO: Codable {
     let role: String
     let active: Bool
     let subsidiaryID: UUID
-    let imageUrl: ImageURLDTO?
+    let imageUrlId: UUID?
     let createdAt: String
     let updatedAt: String
 }
@@ -31,7 +31,7 @@ extension EmployeeDTO {
             email: email,
             lastName: lastName,
             role: role,
-            image: imageUrl?.toImageUrl(),
+            image: nil,
             active: active,
             phoneNumber: phoneNumber,
             createdAt: createdAt.internetDateTime() ?? minimunDate(),

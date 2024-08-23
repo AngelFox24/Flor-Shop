@@ -51,7 +51,12 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
                 throw LocalStorageError.notFound("La subsidiaria no es la misma")
             }
+            guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: employeeDTO.subsidiaryID) else {
+                rollback()
+                throw LocalStorageError.notFound("La subsidiaria no existe en la BD local")
+            }
             if let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employeeDTO.id) {
+                print("Empleado actualizado")
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
@@ -62,6 +67,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
                 employeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
             } else {
+                print("Empleado creado")
                 let newEmployeeEntity = Tb_Employee(context: self.mainContext)
                 newEmployeeEntity.idEmployee = employeeDTO.id
                 newEmployeeEntity.name = employeeDTO.name
@@ -71,6 +77,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.phoneNumber = employeeDTO.phoneNumber
                 newEmployeeEntity.role = employeeDTO.role
                 newEmployeeEntity.user = employeeDTO.user
+                newEmployeeEntity.toSubsidiary = subsidiaryEntity
                 newEmployeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
                 newEmployeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
             }

@@ -11,7 +11,7 @@ struct SubsidiaryDTO: Codable {
     let id: UUID
     let name: String
     let companyID: UUID
-    let imageUrl: ImageURLDTO?
+    let imageUrlId: UUID?
     let createdAt: String
     let updatedAt: String
 }
@@ -21,7 +21,7 @@ extension SubsidiaryDTO {
         return Subsidiary(
             id: id,
             name: name,
-            image: imageUrl?.toImageUrl(),
+            image: nil,
             createdAt: createdAt.internetDateTime() ?? minimunDate(),
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
         )

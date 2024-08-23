@@ -30,8 +30,8 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
         var items = 0
         repeat {
             counter += 1
-            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
-            let subsidiaresDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            let updatedSince = self.localManager.getLastUpdated()
+            let subsidiaresDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = subsidiaresDTOs.count
             print("Items Sync: \(items)")
             try self.localManager.sync(subsidiariesDTOs: subsidiaresDTOs)

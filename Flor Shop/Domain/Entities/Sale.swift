@@ -34,8 +34,8 @@ extension Sale {
             customerId: customerId,
             employeeId: employeeId,
             saleDetail: saleDetail.mapToListSaleDetailDTO(saleID: id),
-            createdAt: createdAt.description,
-            updatedAt: updatedAt.description
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
         )
     }
 }

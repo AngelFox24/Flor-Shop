@@ -43,6 +43,8 @@ struct CustomAsyncImageView: View {
                             self.image = Image(uiImage: uiImage)
                         }
                     }
+                } else {
+                    print("Imagen Nula")
                 }
                 self.isLoading = false
             }

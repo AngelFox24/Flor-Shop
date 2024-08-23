@@ -43,7 +43,7 @@ class LogInViewModel: ObservableObject {
 }
 
 struct LogInFields {
-    var userOrEmail: String = "curilaurente@gmail.com"
+    var userOrEmail: String = "angel.curi"
     var userOrEmailEdited: Bool = false
     var userOrEmailError: String {
         if userOrEmail == "" && userOrEmailEdited {
@@ -52,7 +52,7 @@ struct LogInFields {
             return ""
         }
     }
-    var password: String = ""
+    var password: String = "asd"
     var passwordEdited: Bool = false
     var passwordError: String {
         if self.password == "" && self.passwordEdited {

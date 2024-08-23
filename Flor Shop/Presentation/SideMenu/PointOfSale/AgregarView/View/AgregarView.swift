@@ -15,7 +15,7 @@ struct AgregarView: View {
     var body: some View {
         VStack(spacing: 0) {
             AgregarTopBar(loading: $loading, showMenu: $showMenu)
-            CamposProductoAgregar(showMenu: $showMenu, tab: $tab)
+            CamposProductoAgregar(loading: $loading, showMenu: $showMenu, tab: $tab)
         }
     }
 }
@@ -43,6 +43,8 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
+    @EnvironmentObject var errorState: ErrorState
+    @Binding var loading: Bool
     @Binding var showMenu: Bool
     @Binding var tab: Tab
     var sizeCampo: CGFloat = 150
@@ -77,7 +79,7 @@ struct CamposProductoAgregar: View {
                         HStack {
                             HStack {
                                 Button(action: {
-                                    agregarViewModel.pasteFromInternet()
+                                    pasteFromInternet()
                                 }, label: {
                                     Text("Pegar Imagen")
                                         .foregroundColor(.black)
@@ -183,6 +185,22 @@ struct CamposProductoAgregar: View {
             SideSwipeView(swipeDirection: .left, swipeAction: goToProductList)
         }
         .background(Color("color_background"))
+    }
+    func pasteFromInternet() {
+        Task {
+            loading = true
+//            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            do {
+                try await agregarViewModel.pasteFromInternet()
+//                playSound(named: "Success1")
+            } catch {
+                await MainActor.run {
+                    errorState.processError(error: error)
+                }
+//                playSound(named: "Fail1")
+            }
+            loading = false
+        }
     }
     func goToSideMenu() {
         self.showMenu = true

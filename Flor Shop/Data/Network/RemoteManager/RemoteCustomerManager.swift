@@ -9,7 +9,8 @@ import Foundation
 
 protocol RemoteCustomerManager {
     func save(customer: Customer) async throws
-    func sync(updatedSince: String) async throws -> [CustomerDTO]
+    func payDebt(customerId: UUID, amount: Int) async throws -> Int
+    func sync(updatedSince: Date) async throws -> [CustomerDTO]
 }
 
 final class RemoteCustomerManagerImpl: RemoteCustomerManager {
@@ -25,11 +26,25 @@ final class RemoteCustomerManagerImpl: RemoteCustomerManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: customerDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: String) async throws -> [CustomerDTO] {
+    func payDebt(customerId: UUID, amount: Int) async throws -> Int {
+        let urlRoute = "/customers/payDebt"
+        let payCustomerDebt = PayCustomerDebt(customerId: customerId, amount: amount, change: nil)
+        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: payCustomerDebt)
+        let response: PayCustomerDebt = try await NetworkManager.shared.perform(request, decodeTo: PayCustomerDebt.self)
+        return response.change ?? 0
+    }
+    func sync(updatedSince: Date) async throws -> [CustomerDTO] {
         let urlRoute = "/customers/sync"
-        let syncParameters = SyncFromCompanyParameters(companyId: self.sessionConfig.companyId, updatedSince: updatedSince)
+        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
+        let syncParameters = SyncFromCompanyParameters(companyId: self.sessionConfig.companyId, updatedSince: updatedSinceFormated)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: [CustomerDTO] = try await NetworkManager.shared.perform(request, decodeTo: [CustomerDTO].self)
         return data
     }
+}
+
+struct PayCustomerDebt: Codable {
+    let customerId: UUID
+    let amount: Int
+    let change: Int?
 }

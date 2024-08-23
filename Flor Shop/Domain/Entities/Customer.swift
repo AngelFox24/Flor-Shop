@@ -79,9 +79,9 @@ extension Customer {
             phoneNumber: phoneNumber,
             creditLimit: creditLimit.cents,
             companyID: companyId,
-            imageUrl: image?.toImageUrlDTO(),
-            createdAt: createdAt.description,
-            updatedAt: updatedAt.description
+            imageUrlId: image?.id,
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
         )
     }
 }

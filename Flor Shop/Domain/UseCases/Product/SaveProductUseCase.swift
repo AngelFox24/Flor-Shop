@@ -23,7 +23,7 @@ final class SaveProductInteractor: SaveProductUseCase {
     func execute(product: Product) async throws {
         var productIn = product
         if let image = productIn.image {
-            productIn.image = try self.imageRepository.save(image: image)
+            productIn.image = try await self.imageRepository.save(image: image)
         }
         try await self.productRepository.save(product: productIn)
     }

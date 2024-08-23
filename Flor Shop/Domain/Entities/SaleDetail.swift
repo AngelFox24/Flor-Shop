@@ -40,9 +40,9 @@ extension SaleDetail {
             unitCost: unitCost.cents,
             unitPrice: unitPrice.cents,
             saleID: saleID,
-            imageUrl: image?.toImageUrlDTO(),
-            createdAt: createdAt.description,
-            updatedAt: updatedAt.description
+            imageUrlId: image?.id,
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
         )
     }
 }

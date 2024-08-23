@@ -13,7 +13,7 @@ struct SalesView: View {
     @Binding var showMenu: Bool
     var body: some View {
         ZStack {
-            if showMenu {
+            if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -74,7 +74,7 @@ struct SalesListController: View {
                             imageUrl: saleDetail.image,
                             mainText: saleDetail.productName,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(saleDetail.subtotal.cents),
+                            mainIndicator: String(format: "%.2f", saleDetail.subtotal.soles),
                             mainIndicatorAlert: false,
                             secondaryIndicatorSuffix: " u",
                             secondaryIndicator: String(saleDetail.quantitySold),

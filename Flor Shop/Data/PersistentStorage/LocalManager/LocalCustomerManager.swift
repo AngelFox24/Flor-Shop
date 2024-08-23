@@ -9,9 +9,10 @@ import Foundation
 import CoreData
 
 protocol LocalCustomerManager {
-    func getLastUpdated() -> Date
-    func sync(customersDTOs: [CustomerDTO]) throws
     func save(customer: Customer)
+    func payClientTotalDebt(customer: Customer) throws -> Bool
+    func sync(customersDTOs: [CustomerDTO]) throws
+    func getLastUpdated() -> Date
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func getCustomer(customer: Customer) -> Customer?
@@ -53,6 +54,10 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             guard self.sessionConfig.companyId == customerDTO.companyID else {
                 throw LocalStorageError.notFound("La compañia no es la misma")
             }
+            guard let companyEntity = self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: customerDTO.companyID) else {
+                rollback()
+                throw LocalStorageError.notFound("La compañia no existe en la bd local")
+            }
             if let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerDTO.id) {
                 customerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 customerEntity.creditScore = Int64(customerDTO.creditScore)
@@ -65,7 +70,9 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.lastName = customerDTO.lastName
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
-                customerEntity.toImageUrl?.idImageUrl = customerDTO.imageUrl?.id
+                if let imageId = customerDTO.imageUrlId {
+                    customerEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                }
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -85,7 +92,10 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.lastName = customerDTO.lastName
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
-                newCustomerEntity.toImageUrl?.idImageUrl = customerDTO.imageUrl?.id
+                if let imageId = customerDTO.imageUrlId {
+                    newCustomerEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                }
+                newCustomerEntity.toCompany = companyEntity
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 newCustomerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -94,6 +104,80 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             }
         }
         saveData()
+    }
+    func payClientTotalDebt(customer: Customer) throws -> Bool {
+        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
+        if customer.totalDebt.cents <= 0 {
+            return false
+        }
+        let totalDebtDB: Int = try getTotalDebtByCustomer(customer: customer)
+        if totalDebtDB == customer.totalDebt.cents && totalDebtDB != 0 {
+            guard let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
+                print("No se encontró sucursal")
+                return false
+            }
+            let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
+            let predicate = NSPredicate(format: "paymentType == %@ AND toSubsidiary == %@ AND toCustomer == %@", PaymentType.loan.description, subsidiaryEntity, customerEntity)
+            request.predicate = predicate
+            do {
+                let salesDetailList = try self.mainContext.fetch(request)
+                for saleDetail in salesDetailList {
+                    saleDetail.paymentType = PaymentType.cash.description
+                }
+                customerEntity.totalDebt = 0
+                customerEntity.isCreditLimit = false
+                saveData()
+                return true
+            } catch let error {
+                print("Error fetching. \(error)")
+                rollback()
+                return false
+            }
+        } else {
+            print("El monto de deuda en la vista: \(customer.totalDebt) no coincide con la BD: \(totalDebtDB)")
+            return false
+        }
+    }
+    private func getTotalDebtByCustomer(customer: Customer) throws -> Int {
+        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
+        guard let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
+            print("No se encontró sucursal")
+            return 0
+        }
+        let request = NSFetchRequest<NSDictionary>(entityName: "Tb_Sale")
+        let predicate = NSPredicate(format: "paymentType == %@ AND toSubsidiary == %@ AND toCustomer == %@", PaymentType.loan.description, subsidiaryEntity, customerEntity)
+        request.predicate = predicate
+        
+        let keyPathExpression = NSExpression(forKeyPath: "total")
+        let sumExpression = NSExpression(forFunction: "sum:", arguments: [keyPathExpression])
+        
+        let sumDescription = NSExpressionDescription()
+        sumDescription.name = "TotalDebt"
+        sumDescription.expression = sumExpression
+        sumDescription.expressionResultType = .doubleAttributeType
+        
+        request.resultType = .dictionaryResultType
+        request.propertiesToFetch = [sumDescription]
+        
+        do {
+            let result = try self.mainContext.fetch(request)
+            
+            // Obtiene la suma de valorVenta
+            if let firstResult = result.first,
+               let totalDebt = firstResult["TotalDebt"] as? Int {
+                return totalDebt
+            } else {
+                print("No se encontraron registros de este cliente")
+                return 0
+            }
+        } catch {
+            print("Error al obtener registros del Cliente: \(error)")
+            return 0
+        }
     }
     func save(customer: Customer) {
         if let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) { //Busqueda por id

@@ -76,8 +76,8 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
             }
             if let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: subsidiaryDTO.id) {
                 subsidiaryEntity.name = subsidiaryDTO.name
-                if let imageId = subsidiaryDTO.imageUrl?.id, let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId) {
-                    subsidiaryEntity.toImageUrl = imageEntity
+                if let imageId = subsidiaryDTO.imageUrlId{
+                    subsidiaryEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
                 subsidiaryEntity.toCompany = companyEntity
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
@@ -88,8 +88,8 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
                 newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
                 newSubsidiaryEntity.name = subsidiaryDTO.name
-                if let imageId = subsidiaryDTO.imageUrl?.id, let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId) {
-                    newSubsidiaryEntity.toImageUrl = imageEntity
+                if let imageId = subsidiaryDTO.imageUrlId {
+                    newSubsidiaryEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
                 newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()

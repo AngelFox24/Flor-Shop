@@ -18,10 +18,9 @@ struct CartDetail: Identifiable {
 extension CartDetail {
     func toCartDetailDTO(subsidiaryId: UUID) -> CartDetailDTO {
         return CartDetailDTO(
-            id: id,
             quantity: quantity,
             subtotal: subtotal.cents,
-            product: product.toProductDTO(subsidiaryId: subsidiaryId)
+            productId: product.id
         )
     }
 }

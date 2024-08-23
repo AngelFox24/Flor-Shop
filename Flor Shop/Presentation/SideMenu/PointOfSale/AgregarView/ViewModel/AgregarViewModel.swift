@@ -33,6 +33,7 @@ class AgregarViewModel: ObservableObject {
     }
     //MARK: Funtions
     func releaseResources() {
+        self.selectedLocalImage = nil
         self.agregarFields = AgregarFields()
     }
     func findProductNameOnInternet() {
@@ -42,14 +43,29 @@ class AgregarViewModel: ObservableObject {
             self.agregarFields.productEdited = true
         }
     }
-    func pasteFromInternet() {
+    func pasteFromInternet() async throws {
         print("Se ejecuta pegar")
         if self.agregarFields.productName != "" {
-            self.selectedLocalImage = nil
-            self.agregarFields.imageUrl = pasteFromClipboard()
+            let urlPasted = pasteFromClipboard()
+//            LocalImageManagerImpl.loadImage(image: imageUrl)
+            if let url = URL(string: urlPasted) {
+                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(url: url)
+                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
+                let imageHash = LocalImageManagerImpl.generarHash(data: imageDataTreated)
+                await MainActor.run {
+                    print("Se le asigno la imagen")
+                    self.agregarFields.imageUrl = urlPasted
+                    self.agregarFields.imageHash = imageHash
+                    self.selectedLocalImage = uiImageTreated
+                }
+            } else {
+                print("NO es URL")
+            }
             print("Se pego imagen: \(self.agregarFields.imageUrl.description)")
         } else {
-            self.agregarFields.productEdited = true
+            await MainActor.run {
+                self.agregarFields.productEdited = true
+            }
         }
     }
     func addProduct() async throws {
@@ -130,10 +146,12 @@ class AgregarViewModel: ObservableObject {
                     print("Imagen vacia")
                     return
                 }
-                let imagen = try await LocalImageManagerImpl.getEfficientImage(uiImage: uiImage)
+                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
+                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
                 await MainActor.run {
                     print("Se le asigno la imagen")
-                    self.selectedLocalImage = imagen
+                    self.agregarFields.imageUrl = ""
+                    self.selectedLocalImage = uiImageTreated
                 }
             } catch {
                 print("Error: \(error)")
@@ -147,7 +165,11 @@ class AgregarViewModel: ObservableObject {
         return true
     }
     func getImageIfExist() async throws -> ImageUrl? {
-        if let uiImage = self.selectedLocalImage {
+        //Verificar si hay URL, se da prioridad
+        if self.agregarFields.imageUrl != "" {
+            //Devolver ImageUrl nuevo
+            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: self.agregarFields.imageHash, createdAt: Date(), updatedAt: Date())
+        } else if let uiImage = self.selectedLocalImage {
             return try await self.saveImageUseCase.execute(uiImage: uiImage)
         } else {
             return nil
@@ -226,6 +248,7 @@ struct AgregarFields {
     }
     var idImage: UUID?
     var imageUrl: String = ""
+    var imageHash: String = ""
     var imageURLEdited: Bool = false
     var imageURLError: String = ""
     var unitType: UnitTypeEnum = .unit

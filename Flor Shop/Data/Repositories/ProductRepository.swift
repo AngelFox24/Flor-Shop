@@ -46,8 +46,8 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
         repeat {
             print("Counter: \(counter)")
             counter += 1
-            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
-            let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            let updatedSince = self.localManager.getLastUpdated()
+            let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = productsDTOs.count
             print("Items: \(items)")
             try self.localManager.sync(productsDTOs: productsDTOs)

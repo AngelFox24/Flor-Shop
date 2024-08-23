@@ -22,8 +22,8 @@ extension Company {
             id: id,
             companyName: companyName,
             ruc: ruc,
-            createdAt: createdAt.description,
-            updatedAt: updatedAt.description
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
         )
     }
 }

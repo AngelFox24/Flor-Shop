@@ -124,7 +124,7 @@ struct BusinessDependencies {
         self.saveCustomerUseCase = SaveCustomerInteractor(customerRepository: customerRepository, imageRepository: imageRepository)
         self.getSalesDetailsUseCase = GetSalesDetailsInteractor(saleRepository: salesRepository)
         self.getCustomerSalesUseCase = GetCustomerSalesInteractor(customerRepository: customerRepository)
-        self.payClientDebtUseCase = PayClientDebtInteractor(saleRepository: salesRepository)
+        self.payClientDebtUseCase = PayClientDebtInteractor(customerRepository: customerRepository)
         self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)

@@ -119,8 +119,10 @@ class ProductViewModel: ObservableObject {
         self.lastCarge = 0
     }
     func lazyFetchProducts() {
+        print("Empezo a fetch")
         if productsCoreData.isEmpty {
             fetchProducts()
         }
+        print("Termino a fetch")
     }
 }

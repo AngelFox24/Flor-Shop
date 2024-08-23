@@ -11,53 +11,55 @@ struct PointOfSaleView: View {
     @Binding var loading: Bool
     @Binding var showMenu: Bool
     @Binding var tab: Tab
+    @EnvironmentObject var cartViewModel: CartViewModel
     var body: some View {
         ZStack {
             if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
-//                    Color("color_background")
+                    Color("color_background")
 //                        .ignoresSafeArea(.keyboard)
                 })
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                switch tab {
-                case .plus:
-                    AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
-                case .magnifyingglass:
-                    CustomProductView(loading: $loading, showMenu: $showMenu, tab: $tab)
-                case .cart:
-                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
-                }
-//                TabView(selection: $tab) {
+//                switch tab {
+//                case .plus:
 //                    AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
-//                        .tabItem {
-//                            Label("Agregar", systemImage: "plus")
-//                        }
-//                        .tag(Tab.plus)
+//                case .magnifyingglass:
 //                    CustomProductView(loading: $loading, showMenu: $showMenu, tab: $tab)
-//                        .tabItem {
-//                            Label("Buscar", systemImage: "magnifyingglass")
-//                        }
-//                        .tag(Tab.magnifyingglass)
+//                case .cart:
 //                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
-//                        .tabItem {
-//                            Label("Carro", systemImage: "cart")
-//                        }
-//                        .tag(Tab.cart)
 //                }
-//                .accentColor(Color("color_accent"))
+                TabView(selection: $tab) {
+                    AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                        .tabItem {
+                            Label("Agregar", systemImage: "plus")
+                        }
+                        .tag(Tab.plus)
+                    CustomProductView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                        .tabItem {
+                            Label("Buscar", systemImage: "magnifyingglass")
+                        }
+                        .tag(Tab.magnifyingglass)
+                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                        .badge(cartViewModel.cartCoreData?.cartDetails.count ?? 0)
+                        .tabItem {
+                            Label("Carro", systemImage: "cart")
+                        }
+                        .tag(Tab.cart)
+                }
+                .accentColor(Color("color_accent"))
             }
             .cornerRadius(showMenu ? 35 : 0)
             .padding(.top, showMenu ? 0 : 1)
-            if !showMenu {
-                VStack {
-                    Spacer()
-                    CustomTabBar(selectedTab: $tab)
-                }
-                .ignoresSafeArea(.keyboard)
-            }
+//            if !showMenu {
+//                VStack {
+//                    Spacer()
+//                    CustomTabBar(selectedTab: $tab)
+//                }
+//                .ignoresSafeArea(.keyboard)
+//            }
         }
     }
 }

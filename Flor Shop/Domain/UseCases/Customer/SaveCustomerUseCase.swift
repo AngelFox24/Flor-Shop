@@ -28,8 +28,8 @@ final class SaveCustomerInteractor: SaveCustomerUseCase {
     func execute(customer: Customer) async throws {
         var customerIn = customer
         if let image = customerIn.image {
-            customerIn.image = try self.imageRepository.save(image: image)
+            customerIn.image = try await self.imageRepository.save(image: image)
         }
-        return self.customerRepository.save(customer: customerIn)
+        try await self.customerRepository.save(customer: customerIn)
     }
 }

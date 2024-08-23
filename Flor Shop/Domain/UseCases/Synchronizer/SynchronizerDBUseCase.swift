@@ -45,10 +45,13 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
         try await self.companyRepository.sync()
         print("Subsidiaria sincronizando ...")
         try await self.subsidiaryRepository.sync()
-//        try await self.customerRepository.sync()
-//        try await self.employeeRepository.sync()
+        print("Customers sincronizando ...")
+        try await self.customerRepository.sync()
+        print("Employees sincronizando ...")
+        try await self.employeeRepository.sync()
         print("Productos sincronizando ...")
         try await self.productRepository.sync()
-//        try await self.saleRepository.sync()
+        print("Sales sincronizando ...")
+        try await self.saleRepository.sync()
     }
 }

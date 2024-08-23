@@ -12,7 +12,7 @@ struct CustomersView: View {
     var backButton: Bool = false
     @Binding var showMenu: Bool
     var body: some View {
-        ZStack(content: {
+        ZStack {
             if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
@@ -33,7 +33,7 @@ struct CustomersView: View {
             .onDisappear {
                 customerViewModel.releaseResources()
             }
-        })
+        }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }

@@ -9,7 +9,7 @@ import Foundation
 
 protocol RemoteEmployeeManager {
     func save(employee: Employee) async throws
-    func sync(updatedSince: String) async throws -> [EmployeeDTO]
+    func sync(updatedSince: Date) async throws -> [EmployeeDTO]
 }
 
 final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
@@ -25,9 +25,10 @@ final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: employeeDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: String) async throws -> [EmployeeDTO] {
+    func sync(updatedSince: Date) async throws -> [EmployeeDTO] {
         let urlRoute = "/employees/sync"
-        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSince)
+        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
+        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: [EmployeeDTO] = try await NetworkManager.shared.perform(request, decodeTo: [EmployeeDTO].self)
         return data

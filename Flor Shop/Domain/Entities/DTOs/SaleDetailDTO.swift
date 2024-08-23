@@ -17,7 +17,7 @@ struct SaleDetailDTO: Codable {
     let unitCost: Int
     let unitPrice: Int
     let saleID: UUID
-    let imageUrl: ImageURLDTO?
+    let imageUrlId: UUID?
     let createdAt: String
     let updatedAt: String
 }
@@ -26,7 +26,7 @@ extension SaleDetailDTO {
     func toSaleDetail(paymentType: String, saleDate: Date) -> SaleDetail {
         return SaleDetail(
             id: id,
-            image: imageUrl?.toImageUrl(),
+            image: nil,
             barCode: barCode,
             productName: productName,
             unitType: unitType == UnitTypeEnum.unit.rawValue ? .unit : .kilo,

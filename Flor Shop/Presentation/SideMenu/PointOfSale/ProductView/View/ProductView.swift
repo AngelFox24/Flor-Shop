@@ -13,7 +13,7 @@ import StoreKit
 struct CustomProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var errorState: ErrorState
-    @State private var audioPlayer: AVAudioPlayer?
+//    @State private var audioPlayer: AVAudioPlayer?
     @Binding var loading: Bool
     @Binding var showMenu: Bool
     @Binding var tab: Tab
@@ -23,8 +23,8 @@ struct CustomProductView: View {
             ListaControler(loading: $loading, tab: $tab)
         }
         .onAppear {
-//            sync()
-            productsCoreDataViewModel.lazyFetchProducts()
+            sync()
+//            productsCoreDataViewModel.lazyFetchProducts()
         }
         .onDisappear {
             productsCoreDataViewModel.releaseResources()
@@ -35,31 +35,38 @@ struct CustomProductView: View {
             loading = true
 //            try? await Task.sleep(nanoseconds: 2_000_000_000)
             do {
+//                print("ProductState: Empezo a releaseResources")
+                await productsCoreDataViewModel.releaseResources()
+//                print("ProductState: Empezo a sync")
                 try await productsCoreDataViewModel.sync()
-                playSound(named: "Success1")
+//                print("ProductState: Empezo a fetchProducts")
+                await productsCoreDataViewModel.fetchProducts()
+//                print("ProductState: Termino a fetchProducts")
+//                print("Termino de sycronizar")
+//                playSound(named: "Success1")
             } catch {
                 await MainActor.run {
                     errorState.processError(error: error)
                 }
-                playSound(named: "Fail1")
+//                playSound(named: "Fail1")
             }
             loading = false
         }
     }
-    private func playSound(named fileName: String) {
-        var soundURL: URL?
-        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
-        guard let url = soundURL else {
-            print("No se pudo encontrar el archivo de sonido.")
-            return
-        }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
-        }
-    }
+//    private func playSound(named fileName: String) {
+//        var soundURL: URL?
+//        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
+//        guard let url = soundURL else {
+//            print("No se pudo encontrar el archivo de sonido.")
+//            return
+//        }
+//        do {
+//            audioPlayer = try AVAudioPlayer(contentsOf: url)
+//            audioPlayer?.play()
+//        } catch {
+//            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
+//        }
+//    }
 }
 
 struct HomeView_Previews: PreviewProvider {

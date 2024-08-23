@@ -30,14 +30,16 @@ extension ImageUrl {
             return nil
         }
     }
-    func toImageUrlDTO() -> ImageURLDTO {
+    func toImageUrlDTO(imageData: Data?) -> ImageURLDTO {
         return ImageURLDTO(
             id: id,
             imageUrl: imageUrl,
             imageHash: imageHash,
-            imageData: nil,
-            createdAt: createdAt.description,
-            updatedAt: updatedAt.description
+            imageData: imageData,
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+//            createdAt: createdAt.description,
+//            updatedAt: updatedAt.description
         )
     }
 }

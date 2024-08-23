@@ -98,14 +98,7 @@ class LocalImageManagerImpl: LocalImageManager {
         }
     }
     func saveImage(image: UIImage) async throws -> ImageUrl {
-        let originalImageData = try LocalImageManagerImpl.getImageData(uiImage: image)
-        //Extraer la orientacion
-        let orientation = try LocalImageManagerImpl.extractOrientation(from: originalImageData)
-        //Hacerlo eficiente
-        let imagen = try await LocalImageManagerImpl.getEfficientImage(uiImage: image)
-        var imageData = try LocalImageManagerImpl.getImageData(uiImage: imagen)
-        //Asignar la orientacion original
-        try LocalImageManagerImpl.editOrientation(imageData: &imageData, newOrientation: orientation)
+        let imageData = try await LocalImageManagerImpl.getEfficientImageTreated(image: image)
         //Obtener hash
         let imageHash = LocalImageManagerImpl.generarHash(data: imageData)
         //Buscar imagen por hash
@@ -258,13 +251,14 @@ class LocalImageManagerImpl: LocalImageManager {
             guard let url = URL(string: image.imageUrl) else {
                 throw LocalStorageError.notFound("No se pudo crear la url")
             }
-            let uiImage = try await LocalImageManagerImpl.getEfficientImage(url: url)
+            let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(url: url)
+            let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
             do {
-                try LocalImageManagerImpl.saveImageInLocal(id: image.id, image: uiImage)
+                try LocalImageManagerImpl.saveImageInLocal(id: image.id, image: uiImageTreated)
             } catch {
                 print("No se pudo guardar la imagen: \(error)")
             }
-            return uiImage
+            return uiImageTreated
         }
     }
     static func getUIImage(data: Data) throws -> UIImage {
@@ -279,18 +273,51 @@ class LocalImageManagerImpl: LocalImageManager {
         }
         return imageData
     }
-    static func getEfficientImage(url: URL) async throws -> UIImage {
-        //Descargar de internet
-        let imageData = try await LocalImageManagerImpl.downloadImage(url: url)
-        //Tratar la imagen
-        let uiImage = try LocalImageManagerImpl.getUIImage(data: imageData)
-        return try await LocalImageManagerImpl.getEfficientImage(uiImage: uiImage)
+    static func getEfficientImageTreated(image: UIImage) async throws -> Data {
+        let originalImageData = try LocalImageManagerImpl.getImageData(uiImage: image)
+        //Extraer la orientacion
+        let orientation = try LocalImageManagerImpl.extractOrientation(from: originalImageData)
+        print("Orientacion: \(orientation)")
+        //Hacerlo eficiente
+        let imagen = try await LocalImageManagerImpl.getEfficientImage(uiImage: image)
+        var imageData = try LocalImageManagerImpl.getImageData(uiImage: imagen)
+        //Asignar la orientacion original
+        try LocalImageManagerImpl.editOrientation(imageData: &imageData, newOrientation: orientation)
+        print("Se aplico orientacion")
+        //Guardar imagen en Local
+        return imageData
     }
-    static func getEfficientImage(uiImage: UIImage) async throws -> UIImage {
+//    static func getImageData(url: URL) async throws -> Data {
+//        //Descargar de internet
+//        let imageData = try await LocalImageManagerImpl.downloadImage(url: url)
+//        //Tratar la imagen
+//        let uiImage = try LocalImageManagerImpl.getUIImage(data: imageData)
+//        let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
+//        let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
+//        return uiImageTreated
+//    }
+    static func getEfficientImageTreated(url: URL) async throws -> Data {
+        //        //Descargar de internet
+        let imageData = try await LocalImageManagerImpl.downloadImage(url: url)
+        let uiImage = try LocalImageManagerImpl.getUIImage(data: imageData)
+        let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
+        return imageDataTreated
+    }
+    static private func getEfficientImage(uiImage: UIImage) async throws -> UIImage {
         var imageData = try LocalImageManagerImpl.getImageData(uiImage: uiImage)
         //Redimensionar
         try LocalImageManagerImpl.resizeImage(data: &imageData, maxWidth: 200, maxHeight: 200)
         return try LocalImageManagerImpl.getUIImage(data: imageData)
+    }
+    static func generarHash(data: Data) -> String {
+        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        data.withUnsafeBytes {
+            _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
+        }
+        let hashData = Data(hash)
+        let hashString = hashData.map { String(format: "%02hhx", $0) }.joined()
+        print("Se genero hash: \(hashString)")
+        return hashString
     }
     //MARK: Static Private Funtions
     static private func saveImageInLocal(id: UUID, image: UIImage) throws {
@@ -392,16 +419,6 @@ class LocalImageManagerImpl: LocalImageManager {
         CGImageDestinationFinalize(destination)
         
         data = resizedData as Data
-    }
-    static private func generarHash(data: Data) -> String {
-        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-        data.withUnsafeBytes {
-            _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
-        }
-        let hashData = Data(hash)
-        let hashString = hashData.map { String(format: "%02hhx", $0) }.joined()
-        print("Se genero hash: \(hashString)")
-        return hashString
     }
     static private func loadSavedImage(id: UUID) -> Data? {
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {

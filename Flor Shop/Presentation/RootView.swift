@@ -83,10 +83,10 @@ struct RootView: View {
                 print("Se logea desde guardado")
                 let ses = try await logInViewModel.logIn()
                 await MainActor.run {
-                    navManager.popToRoot()
                     self.userOrEmail = logInViewModel.logInFields.userOrEmail
                     self.password = logInViewModel.logInFields.password
                     self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
+                    navManager.popToRoot()
                 }
                 loading = false
             }

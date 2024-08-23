@@ -9,9 +9,8 @@ import Foundation
 import CoreData
 
 protocol LocalSaleManager {
-    func registerSale (cart: Car, paymentType:PaymentType, customerId: UUID?) throws
+    func registerSale(cart: Car, paymentType:PaymentType, customerId: UUID?) throws
     func sync(salesDTOs: [SaleDTO]) throws
-    func payClientTotalDebt(customer: Customer) throws -> Bool
     func getLastUpdated() -> Date
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -106,86 +105,14 @@ class LocalSaleManagerImpl: LocalSaleManager {
         do {
             let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
             guard let dateNN = date else {
+                print("Sale Manager getLastUpdated vacio")
                 return dateFrom!
             }
+            print("Sale Manager getLastUpdated tiene date \(dateNN.description)")
             return dateNN
         } catch let error {
             print("Error fetching. \(error)")
             return dateFrom!
-        }
-    }
-    func payClientTotalDebt(customer: Customer) throws -> Bool {
-        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
-            throw LocalStorageError.notFound("No se encontro la subisidiaria")
-        }
-        if customer.totalDebt.cents <= 0 {
-            return false
-        }
-        let totalDebtDB: Int = try getTotalDebtByCustomer(customer: customer)
-        if totalDebtDB == customer.totalDebt.cents && totalDebtDB != 0 {
-            guard let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
-                print("No se encontró sucursal")
-                return false
-            }
-            let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
-            let predicate = NSPredicate(format: "paymentType == %@ AND toSubsidiary == %@ AND toCustomer == %@", PaymentType.loan.description, subsidiaryEntity, customerEntity)
-            request.predicate = predicate
-            do {
-                let salesDetailList = try self.mainContext.fetch(request)
-                for saleDetail in salesDetailList {
-                    saleDetail.paymentType = PaymentType.cash.description
-                }
-                customerEntity.totalDebt = 0
-                customerEntity.isCreditLimit = false
-                saveData()
-                return true
-            } catch let error {
-                print("Error fetching. \(error)")
-                rollback()
-                return false
-            }
-        } else {
-            print("El monto de deuda en la vista: \(customer.totalDebt) no coincide con la BD: \(totalDebtDB)")
-            return false
-        }
-    }
-    func getTotalDebtByCustomer(customer: Customer) throws -> Int {
-        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
-            throw LocalStorageError.notFound("No se encontro la subisidiaria")
-        }
-        guard let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
-            print("No se encontró sucursal")
-            return 0
-        }
-        let request = NSFetchRequest<NSDictionary>(entityName: "Tb_Sale")
-        let predicate = NSPredicate(format: "paymentType == %@ AND toSubsidiary == %@ AND toCustomer == %@", PaymentType.loan.description, subsidiaryEntity, customerEntity)
-        request.predicate = predicate
-        
-        let keyPathExpression = NSExpression(forKeyPath: "total")
-        let sumExpression = NSExpression(forFunction: "sum:", arguments: [keyPathExpression])
-        
-        let sumDescription = NSExpressionDescription()
-        sumDescription.name = "TotalDebt"
-        sumDescription.expression = sumExpression
-        sumDescription.expressionResultType = .doubleAttributeType
-        
-        request.resultType = .dictionaryResultType
-        request.propertiesToFetch = [sumDescription]
-        
-        do {
-            let result = try self.mainContext.fetch(request)
-            
-            // Obtiene la suma de valorVenta
-            if let firstResult = result.first,
-               let totalDebt = firstResult["TotalDebt"] as? Int {
-                return totalDebt
-            } else {
-                print("No se encontraron registros de este cliente")
-                return 0
-            }
-        } catch {
-            print("Error al obtener registros del Cliente: \(error)")
-            return 0
         }
     }
     func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double {
@@ -335,7 +262,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return []
         }
     }
-    func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+    func getSalesDetailsGroupedByProductBK(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
             throw LocalStorageError.notFound("No se encontro la subisidiaria")
         }
@@ -384,9 +311,99 @@ class LocalSaleManagerImpl: LocalSaleManager {
                       let totalByProduct = result["totalByProduct"] as? Int else {
                     return nil
                 }
+                if let saleDetailIdS = result["idSaleDetail"] as? String {
+                    print("Hay idS!!!!! \(saleDetailIdS)")
+                } else if let saleDetailId = result["idSaleDetail"] as? UUID {
+                    print("Hay id!!!!! \(saleDetailId.uuidString)")
+                } else {
+                    print("No hay Id pipipi")
+                }
                 return SaleDetail(
                     id: UUID(),
                     image: completeImageSaleDetail(productName: productName),
+                    productName: productName,
+                    unitType: UnitTypeEnum.unit,
+                    unitCost: Money(0),
+                    unitPrice: Money(0),
+                    quantitySold: totalQuantity,
+                    paymentType: PaymentType.cash,
+                    saleDate: Date(),
+                    subtotal: Money(totalByProduct),
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
+            }
+        } catch {
+            print("Error al recuperar datos: \(error.localizedDescription)")
+            return []
+        }
+    }
+    func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
+        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
+            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        }
+        let startDate = getStartDate(date: date, interval: interval)
+        let endDate = getEndDate(date: date, interval: interval)
+        
+        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Tb_SaleDetail")
+        fetchRequest.fetchLimit = pageSize
+        fetchRequest.fetchOffset = (page - 1) * pageSize
+        
+        // Especifica el predicado para filtrar por fecha, sucursal y venta
+        var predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity)
+        print("Star: \(startDate), End: \(endDate)")
+        if let saleNN = sale, let saleEntity = self.sessionConfig.getSaleEntityById(context: self.mainContext, saleId: saleNN.id) {
+            predicate = NSPredicate(format: "toSale.saleDate >= %@ AND toSale.saleDate <= %@ AND toSale.toSubsidiary == %@ AND toSale == %@", startDate as NSDate, endDate as NSDate, subsidiaryEntity, saleEntity)
+        }
+        fetchRequest.predicate = predicate
+        let quantityExpression = NSExpression(forKeyPath: "quantitySold")
+        let subTotalExpression = NSExpression(forKeyPath: "subtotal")
+        
+        let sumQuantityExpression = NSExpression(forFunction: "sum:", arguments: [quantityExpression])
+        let sumSubTotalExpression = NSExpression(forFunction: "sum:", arguments: [subTotalExpression])
+        
+        let sumQuantityDescription = NSExpressionDescription()
+        sumQuantityDescription.name = "totalQuantity"
+        sumQuantityDescription.expression = sumQuantityExpression
+        sumQuantityDescription.expressionResultType = .integer32AttributeType
+        
+        let sumSubTotalDescription = NSExpressionDescription()
+        sumSubTotalDescription.name = "totalByProduct"
+        sumSubTotalDescription.expression = sumSubTotalExpression
+        sumSubTotalDescription.expressionResultType = .doubleAttributeType
+        
+        fetchRequest.propertiesToGroupBy = ["toImageUrl.idImageUrl", "productName"]
+        fetchRequest.propertiesToFetch = ["toImageUrl.idImageUrl", "productName", sumQuantityDescription, sumSubTotalDescription]
+        fetchRequest.resultType = .dictionaryResultType
+        
+        let sortDescriptor = getOrder(order: order)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let results = try self.mainContext.fetch(fetchRequest)
+            return results.compactMap { result in
+                guard let productName = result["productName"] as? String,
+                      let totalQuantity = result["totalQuantity"] as? Int,
+                      let totalByProduct = result["totalByProduct"] as? Int else {
+                    return nil
+                }
+                var imageUrl: ImageUrl?
+                if let saleDetailId = result["toImageUrl.idImageUrl"] as? UUID {
+                    print("Hay id!!!!! \(saleDetailId.uuidString)")
+                    imageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: saleDetailId)?.toImage()
+                    if imageUrl == nil {
+                        print("Error: Se intentara completar con nombre")
+                        imageUrl = completeImageSaleDetail(productName: productName)
+                    } else {
+                        print("Se encontro imagen de forma legal xd")
+                    }
+                } else {
+                    print("No hay Id pipipi, se intentara completar con nombre")
+                    imageUrl = completeImageSaleDetail(productName: productName)
+                }
+                return SaleDetail(
+                    id: UUID(),
+                    image: imageUrl,
                     productName: productName,
                     unitType: UnitTypeEnum.unit,
                     unitCost: Money(0),
@@ -504,36 +521,66 @@ class LocalSaleManagerImpl: LocalSaleManager {
         }
     }
     func sync(salesDTOs: [SaleDTO]) throws {
+        print("Entro a sale unos: \(salesDTOs.count)")
         for saleDTO in salesDTOs {
+            print("Se procesara saleDTO: \(saleDTO.subsidiaryId.uuidString)")
             guard self.sessionConfig.subsidiaryId == saleDTO.subsidiaryId else {
+                print("La subsidiaria no es la misma")
                 throw RepositoryError.syncFailed("La subsidiaria no es la misma")
             }
-            guard saleDTO.saleDetail.isEmpty else {
+            guard !saleDTO.saleDetail.isEmpty else {
+                print("El detalle de las ventas esta vacio")
                 throw RepositoryError.syncFailed("El detalle de las ventas esta vacio")
             }
-            let newSaleEntity = Tb_Sale(context: self.mainContext)
-            newSaleEntity.idSale = saleDTO.id
-            newSaleEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
-            newSaleEntity.toEmployee?.idEmployee = self.sessionConfig.employeeId
-            if let customerId = saleDTO.customerId, let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerId) {
-                newSaleEntity.toCustomer = customerEntity
+            guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: saleDTO.subsidiaryId) else {
+                print("La subsidiaria no existe en la BD local: \(saleDTO.subsidiaryId.uuidString)")
+                throw LocalStorageError.notFound("La subsidiaria no existe en la BD local")
             }
-            newSaleEntity.paymentType = saleDTO.paymentType
-            newSaleEntity.saleDate = saleDTO.saleDate
-            newSaleEntity.total = Int64(saleDTO.total)
-            for saleDetailDTO in saleDTO.saleDetail {
-                let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
-                newSaleDetailEntity.idSaleDetail = saleDetailDTO.id
-                newSaleDetailEntity.toImageUrl?.idImageUrl = saleDetailDTO.imageUrl?.id
-                newSaleDetailEntity.productName = saleDetailDTO.productName
-                newSaleDetailEntity.unitCost = Int64(saleDetailDTO.unitCost)
-                newSaleDetailEntity.unitPrice = Int64(saleDetailDTO.unitPrice)
-                newSaleDetailEntity.quantitySold = Int64(saleDetailDTO.quantitySold)
-                newSaleDetailEntity.subtotal = Int64(saleDetailDTO.subtotal)
-                newSaleDetailEntity.toSale?.idSale = saleDetailDTO.saleID
+            guard let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: saleDTO.employeeId) else {
+                print("El empleado no existe")
+                throw LocalStorageError.notFound("El empleado no existe")
+            }
+            if let saleEntity = self.sessionConfig.getSaleEntityById(context: self.mainContext, saleId: saleDTO.id) {
+                //Update
+                print("Se actualiza sale")
+                saleEntity.paymentType = saleDTO.paymentType
+                saleEntity.createdAt = saleDTO.createdAt.internetDateTime()
+                saleEntity.updatedAt = saleDTO.updatedAt.internetDateTime()
+                saveData()
+            } else {
+                //Create
+                print("Se crea sale")
+                let newSaleEntity = Tb_Sale(context: self.mainContext)
+                newSaleEntity.idSale = saleDTO.id
+                newSaleEntity.toSubsidiary = subsidiaryEntity
+                newSaleEntity.toEmployee = employeeEntity
+                if let customerId = saleDTO.customerId, let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerId) {
+                    newSaleEntity.toCustomer = customerEntity
+                }
+                newSaleEntity.paymentType = saleDTO.paymentType
+                newSaleEntity.saleDate = saleDTO.saleDate
+                newSaleEntity.createdAt = saleDTO.createdAt.internetDateTime()
+                newSaleEntity.updatedAt = saleDTO.updatedAt.internetDateTime()
+                newSaleEntity.total = Int64(saleDTO.total)
+                for saleDetailDTO in saleDTO.saleDetail {
+                    let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
+                    newSaleDetailEntity.idSaleDetail = saleDetailDTO.id
+                    if let imageId = saleDetailDTO.imageUrlId {
+                        newSaleDetailEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    }
+                    newSaleDetailEntity.productName = saleDetailDTO.productName
+                    newSaleDetailEntity.unitCost = Int64(saleDetailDTO.unitCost)
+                    newSaleDetailEntity.unitPrice = Int64(saleDetailDTO.unitPrice)
+                    newSaleDetailEntity.quantitySold = Int64(saleDetailDTO.quantitySold)
+                    newSaleDetailEntity.subtotal = Int64(saleDetailDTO.subtotal)
+                    newSaleDetailEntity.toSale = newSaleEntity
+                    newSaleDetailEntity.createdAt = saleDetailDTO.createdAt.internetDateTime()
+                    newSaleDetailEntity.updatedAt = saleDetailDTO.updatedAt.internetDateTime()
+                    saveData()
+                }
+                saveData()
             }
         }
-        saveData()
     }
     //MARK: Private Functions
     private func saveData () {
@@ -620,14 +667,18 @@ class LocalSaleManagerImpl: LocalSaleManager {
     }
     private func completeImageSaleDetail(productName: String) -> ImageUrl? {
         let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
-        let filterAtt = NSPredicate(format: "productName == %@", productName)
+        let filterAtt = NSPredicate(format: "productName == %@ AND toImageUrl != nil", productName)
         let sortDescriptor = NSSortDescriptor(key: "toSale.saleDate", ascending: false)
         request.predicate = filterAtt
         request.sortDescriptors = [sortDescriptor]
         do {
             let saleDetailOut = try self.mainContext.fetch(request).first
-            if let saleDetailNN = saleDetailOut, let image = saleDetailNN.toImageUrl?.toImage() {
-                return image
+            if let saleDetailNN = saleDetailOut {
+                if let image = saleDetailNN.toImageUrl?.toImage() {
+                    return image
+                } else {
+                    return nil
+                }
             } else {
                 return nil
             }

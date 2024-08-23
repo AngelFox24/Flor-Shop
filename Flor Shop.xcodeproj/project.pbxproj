@@ -422,6 +422,7 @@
 				2735768C2B1F860D00E9CF12 /* GetCustomersUseCase.swift */,
 				2735768E2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift */,
 				27F321D22BAE097500296E50 /* GetCustomerSalesUseCase.swift */,
+				279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */,
 			);
 			path = Customer;
 			sourceTree = "<group>";
@@ -460,7 +461,6 @@
 			children = (
 				273576862B1F71F800E9CF12 /* RegisterSaleUseCase.swift */,
 				273576882B1F72CE00E9CF12 /* GetSalesUseCase.swift */,
-				279D1FB22BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift */,
 			);
 			path = Sale;
 			sourceTree = "<group>";

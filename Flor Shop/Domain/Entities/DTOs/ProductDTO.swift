@@ -18,7 +18,7 @@ struct ProductDTO: Codable {
     let unitCost: Int
     let unitPrice: Int
     let subsidiaryId: UUID
-    let imageUrl: ImageURLDTO?
+    let imageUrlId: UUID?
     let createdAt: String
     let updatedAt: String
 }
@@ -35,7 +35,7 @@ extension ProductDTO {
             unitCost: Money(unitCost),
             unitPrice: Money(unitPrice),
             expirationDate: expirationDate,
-            image: imageUrl?.toImageUrl(),
+            image: nil,
             createdAt: createdAt.internetDateTime() ?? minimunDate(),
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
         )

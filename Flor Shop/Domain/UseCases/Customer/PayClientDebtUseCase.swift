@@ -14,15 +14,15 @@ protocol PayClientDebtUseCase {
 
 final class PayClientDebtInteractor: PayClientDebtUseCase {
     
-    private let saleRepository: SaleRepository
+    private let customerRepository: CustomerRepository
     
-    init(saleRepository: SaleRepository) {
-        self.saleRepository = saleRepository
+    init(customerRepository: CustomerRepository) {
+        self.customerRepository = customerRepository
     }
     
     func total(customer: Customer) -> Bool {
         do {
-            return try saleRepository.payClientTotalDebt(customer: customer)
+            return try customerRepository.payClientTotalDebt(customer: customer)
         } catch {
             return false
         }

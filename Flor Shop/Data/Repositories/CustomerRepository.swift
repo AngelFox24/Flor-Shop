@@ -9,8 +9,9 @@ import Foundation
 import CoreData
 
 protocol CustomerRepository {
+    func save(customer: Customer) async throws
+    func payClientTotalDebt(customer: Customer) throws -> Bool
     func sync() async throws
-    func save(customer: Customer)
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func getCustomer(customer: Customer) -> Customer?
@@ -34,14 +35,21 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
         repeat {
             print("Counter: \(counter)")
             counter += 1
-            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
-            let customersDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            let updatedSince = self.localManager.getLastUpdated()
+            let customersDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = customersDTOs.count
             try self.localManager.sync(customersDTOs: customersDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func save(customer: Customer) {
-        self.localManager.save(customer: customer)
+    func payClientTotalDebt(customer: Customer) throws -> Bool {
+        return try self.localManager.payClientTotalDebt(customer: customer)
+    }
+    func save(customer: Customer) async throws {
+        if cloudBD {
+            try await self.remoteManager.save(customer: customer)
+        } else {
+            self.localManager.save(customer: customer)
+        }
     }
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
         return self.localManager.getCustomers(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)

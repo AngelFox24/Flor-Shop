@@ -24,7 +24,7 @@ struct CustomerDTO: Codable {
     let phoneNumber: String
     let creditLimit: Int
     let companyID: UUID
-    let imageUrl: ImageURLDTO?
+    let imageUrlId: UUID?
     let createdAt: String
     let updatedAt: String
 }
@@ -35,7 +35,7 @@ extension CustomerDTO {
             id: id,
             name: name,
             lastName: lastName,
-            image: imageUrl?.toImageUrl(),
+            image: nil,
             creditLimit: Money(creditLimit),
             isCreditLimit: isCreditLimit,
             creditDays: creditDays,

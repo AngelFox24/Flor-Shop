@@ -11,7 +11,6 @@ import CoreData
 protocol SaleRepository {
     func sync() async throws
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
-    func payClientTotalDebt(customer: Customer) throws -> Bool
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -43,15 +42,12 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
         var items = 0
         repeat {
             counter += 1
-            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
-            let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            let updatedSince = self.localManager.getLastUpdated()
+            let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = salesDTOs.count
-            print("Items Sync: \(items)")
+            print("Items Sync Sale: \(items)")
             try self.localManager.sync(salesDTOs: salesDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
-    }
-    func payClientTotalDebt(customer: Customer) throws -> Bool {
-        return try self.localManager.payClientTotalDebt(customer: customer)
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         return try self.localManager.getSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)

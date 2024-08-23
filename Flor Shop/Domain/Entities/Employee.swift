@@ -34,9 +34,9 @@ extension Employee {
             role: role,
             active: active,
             subsidiaryID: subsidiaryId,
-            imageUrl: image?.toImageUrlDTO(),
-            createdAt: createdAt.description,
-            updatedAt: updatedAt.description
+            imageUrlId: image?.id,
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
         )
     }
 }

@@ -96,6 +96,7 @@ struct LogInView: View {
                 playSound(named: "Success1")
                 await MainActor.run {
                     self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
+                    navManager.popToRoot()
                 }
             } catch {
                 await MainActor.run {

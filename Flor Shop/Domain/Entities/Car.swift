@@ -17,7 +17,6 @@ struct Car: Identifiable {
 extension Car {
     func toCartDTO(subsidiaryId: UUID) -> CartDTO {
         return CartDTO(
-            id: id,
             cartDetails: cartDetails.mapToListCartDetailsDTOs(subsidiaryId: subsidiaryId),
             total: total.cents
         )

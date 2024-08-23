@@ -10,7 +10,7 @@ import CoreData
 
 protocol EmployeeRepository {
     func sync() async throws
-    func save(employee: Employee)
+    func save(employee: Employee) async throws
     func getEmployees() -> [Employee]
 }
 
@@ -32,14 +32,18 @@ class EmployeeRepositoryImpl: EmployeeRepository, Syncronizable {
         repeat {
             print("Counter: \(counter)")
             counter += 1
-            let updatedSinceString = ISO8601DateFormatter().string(from: localManager.getLastUpdated())
-            let employeesDTOs = try await self.remoteManager.sync(updatedSince: updatedSinceString)
+            let updatedSince = self.localManager.getLastUpdated()
+            let employeesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = employeesDTOs.count
             try self.localManager.sync(employeesDTOs: employeesDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func save(employee: Employee) {
-        self.localManager.save(employee: employee)
+    func save(employee: Employee) async throws {
+        if cloudBD {
+            try await self.remoteManager.save(employee: employee)
+        } else {
+            self.localManager.save(employee: employee)
+        }
     }
     func getEmployees() -> [Employee] {
         return self.localManager.getEmployees()

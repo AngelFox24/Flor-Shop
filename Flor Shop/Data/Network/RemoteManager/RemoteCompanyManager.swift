@@ -9,7 +9,7 @@ import Foundation
 
 protocol RemoteCompanyManager {
     func save(company: Company) async throws
-    func sync(updatedSince: String) async throws -> CompanyDTO
+    func sync(updatedSince: Date) async throws -> CompanyDTO
 }
 
 final class RemoteCompanyManagerImpl: RemoteCompanyManager {
@@ -19,9 +19,10 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: companyDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: String) async throws -> CompanyDTO {
+    func sync(updatedSince: Date) async throws -> CompanyDTO {
         let urlRoute = "/companies/sync"
-        let syncParameters = SyncCompanyParameters(updatedSince: updatedSince)
+        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
+        let syncParameters = SyncCompanyParameters(updatedSince: updatedSinceFormated)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         let data: CompanyDTO = try await NetworkManager.shared.perform(request, decodeTo: CompanyDTO.self)
         return data

@@ -8,7 +8,7 @@ import Foundation
 
 protocol RemoteProductManager {
     func save(product: Product) async throws
-    func sync(updatedSince: String) async throws -> [ProductDTO]
+    func sync(updatedSince: Date) async throws -> [ProductDTO]
 }
 
 final class RemoteProductManagerImpl: RemoteProductManager {
@@ -22,9 +22,10 @@ final class RemoteProductManagerImpl: RemoteProductManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: productDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: String) async throws -> [ProductDTO] {
+    func sync(updatedSince: Date) async throws -> [ProductDTO] {
         let urlRoute = "/products/sync"
-        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSince)
+        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
+        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
         print("Antes del pedido")
         let data: [ProductDTO] = try await NetworkManager.shared.perform(request, decodeTo: [ProductDTO].self)

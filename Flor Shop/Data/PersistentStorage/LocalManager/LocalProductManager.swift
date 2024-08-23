@@ -129,8 +129,8 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
-                if let imageId = productDTO.imageUrl?.id, let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId) {
-                    productEntity.toImageUrl = imageEntity
+                if let imageId = productDTO.imageUrlId {
+                    productEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
 //                productEntity.toSubsidiary = subsidiaryEntity
                 saveData()
@@ -146,8 +146,8 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
-                if let imageId = productDTO.imageUrl?.id, let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId) {
-                    productEntity.toImageUrl = imageEntity
+                if let imageId = productDTO.imageUrlId {
+                    productEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
                 productEntity.toSubsidiary = subsidiaryEntity
                 saveData()
