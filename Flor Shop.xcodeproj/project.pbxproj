@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B360B5E2CAA1A19008BECFB /* BusinessLogicError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */; };
 		2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */; };
 		2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */; };
 		2705BC412B77D0D900A0CD42 /* SalesTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2705BC402B77D0D900A0CD42 /* SalesTopBar.swift */; };
 		2705BC442B77D1FE00A0CD42 /* SalesEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2705BC432B77D1FE00A0CD42 /* SalesEnums.swift */; };
 		270930A22B46F4C300BDF3CD /* RemoteProductManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */; };
 		270B71CD2BBB8202002D79D6 /* OptimizeLocalImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B71CC2BBB8202002D79D6 /* OptimizeLocalImages.swift */; };
+		270D7D3C2C7B522B0051AF08 /* ImportProductsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D7D3B2C7B522B0051AF08 /* ImportProductsUseCase.swift */; };
+		270D7D3E2C7B5EFE0051AF08 /* ExportButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D7D3D2C7B5EFE0051AF08 /* ExportButtonView.swift */; };
+		270D7D402C7B64800051AF08 /* ImportButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D7D3F2C7B64800051AF08 /* ImportButtonView.swift */; };
 		2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */; };
 		271A7E1529F0FA3300BBAEA3 /* ImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A7E1429F0FA3300BBAEA3 /* ImageViewModel.swift */; };
 		271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271BA1542A58799800572674 /* AgregarViewModel.swift */; };
@@ -180,6 +184,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessLogicError.swift; sourceTree = "<group>"; };
 		2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerView.swift; sourceTree = "<group>"; };
 		2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerViewModel.swift; sourceTree = "<group>"; };
 		2705BC402B77D0D900A0CD42 /* SalesTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesTopBar.swift; sourceTree = "<group>"; };
@@ -187,6 +192,9 @@
 		270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteProductManager.swift; sourceTree = "<group>"; };
 		270B71CC2BBB8202002D79D6 /* OptimizeLocalImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizeLocalImages.swift; sourceTree = "<group>"; };
 		270C3E242A617FDC0086557A /* Flor Shop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Flor Shop.entitlements"; sourceTree = "<group>"; };
+		270D7D3B2C7B522B0051AF08 /* ImportProductsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportProductsUseCase.swift; sourceTree = "<group>"; };
+		270D7D3D2C7B5EFE0051AF08 /* ExportButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportButtonView.swift; sourceTree = "<group>"; };
+		270D7D3F2C7B64800051AF08 /* ImportButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportButtonView.swift; sourceTree = "<group>"; };
 		2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarTopBar.swift; sourceTree = "<group>"; };
 		271A7E1429F0FA3300BBAEA3 /* ImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewModel.swift; sourceTree = "<group>"; };
 		271BA1542A58799800572674 /* AgregarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgregarViewModel.swift; sourceTree = "<group>"; };
@@ -365,6 +373,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B360B5C2CAA1A03008BECFB /* BusinessLogicError */ = {
+			isa = PBXGroup;
+			children = (
+				0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */,
+			);
+			path = BusinessLogicError;
+			sourceTree = "<group>";
+		};
 		2705BC3F2B77D0B400A0CD42 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -412,6 +428,7 @@
 				27F2F4882B1DFABA003E4197 /* GetProductsUseCase.swift */,
 				2777D77B2B1EF408003C2FCA /* SaveProductUseCase.swift */,
 				27A62A5A2C2F6912009425DB /* ExportProductsUseCase.swift */,
+				270D7D3B2C7B522B0051AF08 /* ImportProductsUseCase.swift */,
 			);
 			path = Product;
 			sourceTree = "<group>";
@@ -790,6 +807,8 @@
 				2715F2FE2A31482F00D3C918 /* AgregarTopBar.swift */,
 				27A62A5C2C2F6B2E009425DB /* CSVDocument.swift */,
 				271FE6762C3663CE00BADA74 /* BarcodeScannerView.swift */,
+				270D7D3D2C7B5EFE0051AF08 /* ExportButtonView.swift */,
+				270D7D3F2C7B64800051AF08 /* ImportButtonView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -969,6 +988,7 @@
 		27F2F4592B1DECCA003E4197 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				0B360B5C2CAA1A03008BECFB /* BusinessLogicError */,
 				27F2F45A2B1DECF0003E4197 /* Entities */,
 				27F2F45B2B1DED15003E4197 /* UseCases */,
 			);
@@ -1551,6 +1571,7 @@
 				27448D772C4F134E00F1BEE6 /* MainView.swift in Sources */,
 				27CC2E0D2A884C66000EDB64 /* CustomCorners.swift in Sources */,
 				2737E57E2AF6FD6900179D51 /* UploadOptionsView.swift in Sources */,
+				270D7D402C7B64800051AF08 /* ImportButtonView.swift in Sources */,
 				2728EAAE2A1B0BC2002B534A /* SaleRepository.swift in Sources */,
 				27C33D8F2BE5672B00395B38 /* SideSwipeView.swift in Sources */,
 				27D2564D2ADB11DE004FB365 /* PaymentEnums.swift in Sources */,
@@ -1592,6 +1613,7 @@
 				279C64A62A8D97E1003B29BC /* Customer.swift in Sources */,
 				27B125CE2C41BFCD00E6EAA2 /* CustomerDTO.swift in Sources */,
 				68A4B1132A19835200FC8D9D /* Product.swift in Sources */,
+				270D7D3C2C7B522B0051AF08 /* ImportProductsUseCase.swift in Sources */,
 				27C7B9D62A60F99400CA2818 /* OnboardViewModel.swift in Sources */,
 				27F321CC2BADF4F200296E50 /* CustomerHistoryTopBar.swift in Sources */,
 				27395AC02A8463F100A91420 /* CustomTextField.swift in Sources */,
@@ -1616,6 +1638,7 @@
 				27CC2E092A883C1C000EDB64 /* SideMenuView.swift in Sources */,
 				2737740E2A97E58F004C0BD1 /* MenuView.swift in Sources */,
 				27D2564B2ADB0087004FB365 /* AddCustomerTopBar.swift in Sources */,
+				270D7D3E2C7B5EFE0051AF08 /* ExportButtonView.swift in Sources */,
 				2748918C2AD7063E004D6C6C /* CustomerTopBar.swift in Sources */,
 				27A146082C5D5334007D9F18 /* SaveImageUseCase.swift in Sources */,
 				27F2F4892B1DFABA003E4197 /* GetProductsUseCase.swift in Sources */,
@@ -1639,6 +1662,7 @@
 				278CA6532C43119E00C200C5 /* RemoteCustomerManager.swift in Sources */,
 				27B3936E29F74E4B0085D4EC /* RootView.swift in Sources */,
 				273774102A980781004C0BD1 /* CustomBackButton.swift in Sources */,
+				0B360B5E2CAA1A19008BECFB /* BusinessLogicError.swift in Sources */,
 				278399FF2C5E8B93000C48FA /* CustomNumberField.swift in Sources */,
 				68D990C22A1ADEA700A3A393 /* LocalProductManager.swift in Sources */,
 				68A4B1102A197BFB00FC8D9D /* ProductRepository.swift in Sources */,

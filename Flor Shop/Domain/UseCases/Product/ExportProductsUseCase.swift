@@ -9,7 +9,7 @@ import Foundation
 import UniformTypeIdentifiers
 
 protocol ExportProductsUseCase {
-    func execute(url: URL)
+    func execute(url: URL) async
 }
 
 final class ExportProductsInteractor: ExportProductsUseCase {
@@ -19,12 +19,12 @@ final class ExportProductsInteractor: ExportProductsUseCase {
         self.productRepository = productRepository
     }
     
-    func execute(url: URL) {
+    func execute(url: URL) async {
         print("Creando CSV")
-        createCSVFile(at: url)
+        await createCSVFile(at: url)
     }
 
-    private func createCSVFile(at url: URL) {
+    private func createCSVFile(at url: URL) async {
         let header = "Id,URL,Nombre,Precio,Costo,Activo,Cantidad,TipoUnidad\n"
         do {
             // Crear el archivo y escribir el encabezado

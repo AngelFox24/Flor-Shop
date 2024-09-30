@@ -55,7 +55,7 @@ struct CartTopBar: View {
             }
         }
         .padding(.top, showMenu ? 15 : 0)
-        .frame(width: .infinity)
+        .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))

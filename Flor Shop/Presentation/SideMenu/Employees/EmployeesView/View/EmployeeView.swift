@@ -11,11 +11,12 @@ import AVFoundation
 
 struct EmployeeView: View {
     @EnvironmentObject var employeeViewModel: EmployeeViewModel
+    @Binding var loading: Bool
     @Binding var showMenu: Bool
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                ProductSearchTopBar(showMenu: $showMenu)
+                ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
                 EmployeeListController()
             }
             .onAppear {
@@ -27,8 +28,9 @@ struct EmployeeView: View {
 
 struct EmployeeView_Previews: PreviewProvider {
     static var previews: some View {
+        @State var loading: Bool = false
         @State var showMenu: Bool = false
-        EmployeeView(showMenu: $showMenu)
+        EmployeeView(loading: $loading, showMenu: $showMenu)
     }
 }
 

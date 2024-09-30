@@ -21,15 +21,18 @@ class AgregarViewModel: ObservableObject {
     private let saveProductUseCase: SaveProductUseCase
     let saveImageUseCase: SaveImageUseCase
     let exportProductsUseCase: ExportProductsUseCase
+    let importProductsUseCase: ImportProductsUseCase
     
     init(
         saveProductUseCase: SaveProductUseCase,
         saveImageUseCase: SaveImageUseCase,
-        exportProductsUseCase: ExportProductsUseCase
+        exportProductsUseCase: ExportProductsUseCase,
+        importProductsUseCase: ImportProductsUseCase
     ) {
         self.saveProductUseCase = saveProductUseCase
         self.saveImageUseCase = saveImageUseCase
         self.exportProductsUseCase = exportProductsUseCase
+        self.importProductsUseCase = importProductsUseCase
     }
     //MARK: Funtions
     func releaseResources() {
@@ -74,7 +77,7 @@ class AgregarViewModel: ObservableObject {
         }
         guard let product = try await createProduct() else {
             print("No se pudo crear producto")
-            throw LocalStorageError.notFound("No se pudo crear el producto")
+            throw LocalStorageError.saveFailed("No se pudo crear el producto")
         }
         try await self.saveProductUseCase.execute(product: product)
         await MainActor.run {
@@ -91,7 +94,6 @@ class AgregarViewModel: ObservableObject {
         self.agregarFields.unitPriceEdited = true
     }
     func editProduct(product: Product) async throws {
-        print("Se edito producto: \(product.name)")
         await MainActor.run {
             self.agregarFields.idImage = product.image?.id
             self.agregarFields.productId = product.id
@@ -158,11 +160,11 @@ class AgregarViewModel: ObservableObject {
             }
         }
     }
-    func exportCSV(url: URL) {
-        self.exportProductsUseCase.execute(url: url)
+    func exportCSV(url: URL) async {
+        await self.exportProductsUseCase.execute(url: url)
     }
-    func importCSV() async -> Bool {
-        return true
+    func importCSV(url: URL) async {
+        await self.importProductsUseCase.execute(url: url)
     }
     func getImageIfExist() async throws -> ImageUrl? {
         //Verificar si hay URL, se da prioridad
@@ -175,42 +177,6 @@ class AgregarViewModel: ObservableObject {
             return nil
         }
     }
-//    func loadTestData() {
-//        if let path = Bundle.main.path(forResource: "BD_Flor_Shop", ofType: "csv", inDirectory: nil) {
-//            do {
-//                let content = try String(contentsOfFile: path, encoding: .utf8)
-//                let lines = content.components(separatedBy: "\n")
-//                var countSucc: Int = 0
-//                var countFail: Int = 0
-//                for line in lines {
-//                    let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-//                    if elements.count != 3 {
-//                        print("Count: \(elements.count)")
-//                        countFail = countFail + 1
-//                        continue
-//                    }
-//                    guard let price = Double(elements[2].replacingOccurrences(of: ",", with: "")) else {
-//                        print("Esta mal?: \(elements[2])")
-//                        countFail = countFail + 1
-//                        continue
-//                    }
-//                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0], imageHash: ""))
-//                    let result = self.saveProductUseCase.execute(product: product)
-//                    if result == "Success" {
-//                        countSucc = countSucc + 1
-//                    } else {
-//                        print("Error: \(result)")
-//                        countFail = countFail + 1
-//                    }
-//                }
-//                print("Total: \(lines.count), Success: \(countSucc), Fails: \(countFail)")
-//            } catch {
-//                print("Error al leer el archivo: \(error)")
-//            }
-//        } else {
-//            print("No se encuentra el archivo")
-//        }
-//    }
 }
 //MARK: Fields
 struct AgregarFields {

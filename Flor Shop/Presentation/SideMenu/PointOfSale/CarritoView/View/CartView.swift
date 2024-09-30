@@ -18,9 +18,13 @@ struct CartView: View {
             CartTopBar(showMenu: $showMenu)
             ListCartController(loading: $loading, tab: $tab)
         }
-//        .onAppear {
-//            cartViewModel.lazyFetchCart()
-//        }
+        .onAppear {
+            Task {
+                loading = true
+                await cartViewModel.lazyFetchCart()
+                loading = false
+            }
+        }
     }
 }
 
@@ -39,13 +43,13 @@ struct CartView_Previews: PreviewProvider {
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
+    @EnvironmentObject var errorState: ErrorState
     @Binding var loading: Bool
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
             if let cart = cartViewModel.cartCoreData {
-                HStack(spacing: 0,
-                       content: {
+                HStack(spacing: 0) {
                     SideSwipeView(swipeDirection: .right, swipeAction: goToProductsList)
                     List {
                         ForEach(cart.cartDetails) { cartDetail in
@@ -71,7 +75,7 @@ struct ListCartController: View {
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
                     SideSwipeView(swipeDirection: .left, swipeAction: goToPay)
-                })
+                }
             } else {
                 VStack {
                     Image("groundhog-money")
@@ -102,21 +106,36 @@ struct ListCartController: View {
     func deleteCartDetail(cartDetail: CartDetail) {
         Task {
             loading = true
-            await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+            do {
+                try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+                await cartViewModel.fetchCart()
+            } catch {
+                await errorState.processError(error: error)
+            }
             loading = false
         }
     }
     func decreceProductAmount(cartDetail: CartDetail) {
         Task {
             loading = true
-            await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+            do {
+                try await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+                await cartViewModel.fetchCart()
+            } catch {
+                await errorState.processError(error: error)
+            }
             loading = false
         }
     }
     func increaceProductAmount(cartDetail: CartDetail) {
         Task {
             loading = true
-            await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+            do {
+                try await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+                await cartViewModel.fetchCart()
+            } catch {
+                await errorState.processError(error: error)
+            }
             loading = false
         }
     }

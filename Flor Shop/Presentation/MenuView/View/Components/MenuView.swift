@@ -30,7 +30,7 @@ struct MenuView: View {
                     case .customersTab:
                         CustomersView(showMenu: $showMenu)
                     case .employeesTab:
-                        EmployeeView(showMenu: $showMenu)
+                        EmployeeView(loading: $loading, showMenu: $showMenu)
                     case .settingsTab:
                         PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
                     case .logOut:

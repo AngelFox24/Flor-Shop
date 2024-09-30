@@ -62,6 +62,7 @@ struct BusinessDependencies {
     private let deleteUnusedImagesUseCase: DeleteUnusedImagesUseCase
     private let saveImageUseCase: SaveImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
+    private let importProductsUseCase: ImportProductsUseCase
 //    private let logInUseCase: LogInUseCase
 //    private let logOutUseCase: LogOutUseCase
 //    let logInViewModel: LogInViewModel
@@ -128,12 +129,13 @@ struct BusinessDependencies {
         self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
+        self.importProductsUseCase = ImportProductsInteractor(productRepository: productRepository)
 //        self.logInUseCase = LogInInteractor(sessionRepository: ses)
 //        self.logOutUseCase = LogOutInteractor()
         //MARK: ViewModels
 //        self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
 //        self.registrationViewModel = RegistrationViewModel()
-        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase)
+        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase, importProductsUseCase: importProductsUseCase)
         self.productsViewModel = ProductViewModel(synchronizerDBUseCase: synchronizerDBUseCase, getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)

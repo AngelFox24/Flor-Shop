@@ -25,6 +25,7 @@ protocol LocalImageManager {
 class LocalImageManagerImpl: LocalImageManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
+    let className = "LocalImageManager"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -55,12 +56,12 @@ class LocalImageManagerImpl: LocalImageManager {
     }
     func sync(imageURLsDTOs: [ImageURLDTO]) throws {
         for imageURLDTO in imageURLsDTOs {
-            if let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            if let imageEntity = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
-                saveData()
+                try saveData()
             } else {
                 let imageEntity = Tb_ImageUrl(context: self.mainContext)
                 imageEntity.idImageUrl = imageURLDTO.id
@@ -68,15 +69,15 @@ class LocalImageManagerImpl: LocalImageManager {
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
-                saveData()
+                try saveData()
             }
         }
     }
     func save(image: ImageUrl) throws -> ImageUrl {
         let url = image.imageUrl.trimmingCharacters(in: .whitespacesAndNewlines)
         let hash = image.imageHash.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard url == "" else {
-            throw LocalStorageError.notFound("La URL no es valida")
+        guard url != "" else {
+            throw LocalStorageError.invalidInput("La URL no es valida")
         }
         if let imageEntity = getImageEntityByURL(imageURL: url) {
             imageEntity.idImageUrl = image.id
@@ -84,7 +85,7 @@ class LocalImageManagerImpl: LocalImageManager {
             imageEntity.imageUrl = image.imageUrl
             imageEntity.createdAt = image.createdAt
             imageEntity.updatedAt = image.updatedAt
-            saveData()
+            try saveData()
             return imageEntity.toImage()
         } else {
             let newImageEntity = Tb_ImageUrl(context: self.mainContext)
@@ -93,7 +94,7 @@ class LocalImageManagerImpl: LocalImageManager {
             newImageEntity.imageHash = image.imageHash
             newImageEntity.createdAt = image.createdAt
             newImageEntity.updatedAt = image.updatedAt
-            saveData()
+            try saveData()
             return newImageEntity.toImage()
         }
     }
@@ -127,12 +128,13 @@ class LocalImageManagerImpl: LocalImageManager {
         await deleteImageFile(imagesNames: imagesToDelete)
     }
     //MARK: Private Funtions
-    private func saveData() {
+    private func saveData() throws {
         do {
             try self.mainContext.save()
         } catch {
             rollback()
-            print("Error al guardar en LocalImageManager: \(error)")
+            let cusError: String = "\(className): \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
         }
     }
     private func rollback() {
@@ -249,7 +251,7 @@ class LocalImageManagerImpl: LocalImageManager {
             return try LocalImageManagerImpl.getUIImage(data: savedImage)
         } else {
             guard let url = URL(string: image.imageUrl) else {
-                throw LocalStorageError.notFound("No se pudo crear la url")
+                throw LocalStorageError.invalidInput("No se pudo crear la url")
             }
             let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(url: url)
             let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
@@ -263,13 +265,13 @@ class LocalImageManagerImpl: LocalImageManager {
     }
     static func getUIImage(data: Data) throws -> UIImage {
         guard let uiImage = UIImage(data: data) else {
-            throw LocalStorageError.notFound("No se puede convertir de Data a UIImage")
+            throw LocalStorageError.invalidInput("No se puede convertir de Data a UIImage")
         }
         return uiImage
     }
     static func getImageData(uiImage: UIImage) throws -> Data {
         guard let imageData = uiImage.jpegData(compressionQuality: 1.0) else {
-            throw LocalStorageError.notFound("No se puede convertir de Data a UIImage")
+            throw LocalStorageError.invalidInput("No se puede convertir de Data a UIImage")
         }
         return imageData
     }
@@ -324,14 +326,14 @@ class LocalImageManagerImpl: LocalImageManager {
         //Validar antes de guardar que la imagen no sea muy grande
         //Tamaño maximo permitido es 1920x1080
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
-            throw LocalStorageError.notFound("No se puedo obtener el directorio de imagenes")
+            throw LocalStorageError.fileSaveFailed("No se puedo obtener el directorio de imagenes")
         }
         let imagesDirectory = libraryDirectory.appendingPathComponent("Images")
         do {
             try FileManager.default.createDirectory(at: imagesDirectory, withIntermediateDirectories: true, attributes: nil)
         } catch {
             print("Error al crear el directorio de imágenes: \(error)")
-            throw LocalStorageError.notFound("Error al crear el directorio de imágenes: \(error)")
+            throw LocalStorageError.fileSaveFailed("Error al crear el directorio de imágenes: \(error)")
         }
         let fileURL = imagesDirectory.appendingPathComponent(id.uuidString + ".jpeg")
         let data = try LocalImageManagerImpl.getImageData(uiImage: image)
@@ -341,7 +343,7 @@ class LocalImageManagerImpl: LocalImageManager {
             return
         } catch {
             print("Error al guardar la imagen: \(error)")
-            throw LocalStorageError.notFound("Error al guardar la imagen: \(error)")
+            throw LocalStorageError.fileSaveFailed("Error al guardar la imagen: \(error)")
         }
     }
     static private func editOrientation(imageData: inout Data, newOrientation: Int) throws {
@@ -349,7 +351,7 @@ class LocalImageManagerImpl: LocalImageManager {
               let sourceType = CGImageSourceGetType(source),
               let mutableData = CFDataCreateMutableCopy(nil, 0, imageData as CFData),
               let destination = CGImageDestinationCreateWithData(mutableData, sourceType, 1, nil) else {
-            throw LocalStorageError.notFound("No se puede obtener CGImageDestination en editOrientation")
+            throw LocalStorageError.fileSaveFailed("No se puede obtener CGImageDestination en editOrientation")
         }
         
         let options = [kCGImagePropertyOrientation: NSNumber(value: newOrientation)]
@@ -364,14 +366,14 @@ class LocalImageManagerImpl: LocalImageManager {
               let metaData = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
               let tiffData = metaData[kCGImagePropertyTIFFDictionary as String] as? [String: Any],
               let orientation = tiffData[kCGImagePropertyTIFFOrientation as String] as? Int else {
-            throw LocalStorageError.notFound("No se puede extraer la orientacion")
+            throw LocalStorageError.fileSaveFailed("No se puede extraer la orientacion")
         }
         return orientation
     }
     static private func resizeImage(data: inout Data, maxWidth: CGFloat, maxHeight: CGFloat) throws {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
               let image = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
-            throw LocalStorageError.notFound("No se puede convertir Data a Image")
+            throw LocalStorageError.fileSaveFailed("No se puede convertir Data a Image")
         }
         
         let width = CGFloat(image.width)
@@ -395,23 +397,23 @@ class LocalImageManagerImpl: LocalImageManager {
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
         guard let context = CGContext(data: nil, width: Int(newSize.width), height: Int(newSize.height), bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else {
-            throw LocalStorageError.notFound("No se puede crear CGContext")
+            throw LocalStorageError.fileSaveFailed("No se puede crear CGContext")
         }
         
         context.interpolationQuality = .high
         context.draw(image, in: CGRect(origin: .zero, size: newSize))
         
         guard let newImage = context.makeImage() else {
-            throw LocalStorageError.notFound("No se puede crear CGImage")
+            throw LocalStorageError.fileSaveFailed("No se puede crear CGImage")
         }
         
         let resizedImageData = CFDataCreateMutable(nil, 0)
         guard let resizedData = resizedImageData else {
-            throw LocalStorageError.notFound("No se puede crear CFMutableData")
+            throw LocalStorageError.fileSaveFailed("No se puede crear CFMutableData")
         }
         let dest = CGImageDestinationCreateWithData(resizedData, UTType.jpeg.identifier as CFString, 1, nil)
         guard let destination = dest else {
-            throw LocalStorageError.notFound("No se puede crear CGImageDestination")
+            throw LocalStorageError.fileSaveFailed("No se puede crear CGImageDestination")
         }
         // Configurar opciones para eliminar los metadatos
         let options: [CFString: Any] = [kCGImageDestinationLossyCompressionQuality: 0.7, kCGImageDestinationMetadata: true]
@@ -440,7 +442,7 @@ class LocalImageManagerImpl: LocalImageManager {
             let (data, _) = try await URLSession.shared.data(for: request)
             return data
         } catch {
-            throw LocalStorageError.notFound("Error al descargar la imagen: \(error)")
+            throw LocalStorageError.fileSaveFailed("Error al descargar la imagen: \(error)")
         }
     }
     static private func extractMetadata(from imageData: Data) -> [CFString: Any]? {

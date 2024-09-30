@@ -42,10 +42,11 @@ struct NormalDependencies {
 class ErrorState: ObservableObject {
     @Published var isPresented: Bool = false
     var error: String = ""
-    func processError(error: Error) {
-        self.isPresented = true
-        print("Error Description: \(error.localizedDescription)")
-        self.error = "Un error inesperado"
+    func processError(error: Error) async {
+        await MainActor.run {
+            self.isPresented = true
+            self.error = error.localizedDescription
+        }
     }
 }
 

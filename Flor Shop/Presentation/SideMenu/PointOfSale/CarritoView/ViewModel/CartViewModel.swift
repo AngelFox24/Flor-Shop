@@ -11,7 +11,6 @@ class CartViewModel: ObservableObject {
     @Published var cartCoreData: Car?
     @Published var customerInCar: Customer?
     @Published var paymentType: PaymentType = .cash
-    @Published var error: String = ""
     var paymentTypes: [PaymentType] {
         guard let customer = customerInCar else {
             return [.cash]
@@ -43,42 +42,24 @@ class CartViewModel: ObservableObject {
     }
     
     // MARK: CRUD Core Data
-    func fetchCart() {
-        self.cartCoreData = self.getCartUseCase.execute()
-    }
-    func deleteCartDetail(cartDetail: CartDetail) async {
-        do {
-            try self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)
-        } catch {
-            await MainActor.run {
-                self.error = "Error Inesperado"
-            }
+    func fetchCart() async {
+        await MainActor.run {
+            self.cartCoreData = self.getCartUseCase.execute()
         }
-        fetchCart()
+    }
+    func deleteCartDetail(cartDetail: CartDetail) async throws {
+        try self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)
     }
     func addProductoToCarrito(product: Product) async throws {
         try self.addProductoToCartUseCase.execute(product: product)
-        fetchCart()
+        await fetchCart()
     }
-    func emptyCart() async {
-        do {
-            try self.emptyCartUseCase.execute()
-        } catch {
-            await MainActor.run {
-                self.error = "Error Inesperado"
-            }
-        }
-        fetchCart()
+    func emptyCart() async throws {
+        try self.emptyCartUseCase.execute()
+        await fetchCart()
     }
-    func changeProductAmount(cartDetail: CartDetail) async {
-        do {
-            try self.changeProductAmountInCartUseCase.execute(cartDetail: cartDetail)
-        } catch {
-            await MainActor.run {
-                self.error = "Error Inesperado"
-            }
-        }
-        fetchCart()
+    func changeProductAmount(cartDetail: CartDetail) async throws {
+        try self.changeProductAmountInCartUseCase.execute(cartDetail: cartDetail)
     }
     func releaseResources() {
         self.cartCoreData = nil
@@ -87,9 +68,9 @@ class CartViewModel: ObservableObject {
     func releaseCustomer() {
         self.customerInCar = nil
     }
-    func lazyFetchCart() {
+    func lazyFetchCart() async {
         if cartCoreData == nil {
-            fetchCart()
+            await fetchCart()
         }
     }
 }

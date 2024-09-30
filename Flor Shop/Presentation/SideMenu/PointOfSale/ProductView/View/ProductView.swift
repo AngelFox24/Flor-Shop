@@ -12,6 +12,7 @@ import StoreKit
 
 struct CustomProductView: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var errorState: ErrorState
 //    @State private var audioPlayer: AVAudioPlayer?
     @Binding var loading: Bool
@@ -19,7 +20,7 @@ struct CustomProductView: View {
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar(showMenu: $showMenu)
+            ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
             ListaControler(loading: $loading, tab: $tab)
         }
         .onAppear {
@@ -27,28 +28,23 @@ struct CustomProductView: View {
 //            productsCoreDataViewModel.lazyFetchProducts()
         }
         .onDisappear {
-            productsCoreDataViewModel.releaseResources()
+            Task {
+                loading = true
+                await productsCoreDataViewModel.releaseResources()
+                loading = false
+            }
         }
     }
     private func sync() {
         Task {
             loading = true
-//            try? await Task.sleep(nanoseconds: 2_000_000_000)
             do {
-//                print("ProductState: Empezo a releaseResources")
                 await productsCoreDataViewModel.releaseResources()
-//                print("ProductState: Empezo a sync")
                 try await productsCoreDataViewModel.sync()
-//                print("ProductState: Empezo a fetchProducts")
                 await productsCoreDataViewModel.fetchProducts()
-//                print("ProductState: Termino a fetchProducts")
-//                print("Termino de sycronizar")
-//                playSound(named: "Success1")
+                await cartViewModel.lazyFetchCart() //Para que apareces el badge
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
-//                playSound(named: "Fail1")
+                await errorState.processError(error: error)
             }
             loading = false
         }
@@ -103,28 +99,26 @@ struct ListaControler: View {
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
                         .font(.custom("Artifika-Regular", size: 18))
-                    Button(action: {
-                        goToEditProduct()
-                    }, label: {
+                    Button(action: goToEditProduct) {
                         CustomButton1(text: "Agregar")
-                    })
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color("color_background"))
                 .onAppear {
-                    productsCoreDataViewModel.lazyFetchProducts()
+                    Task{
+                        await productsCoreDataViewModel.lazyFetchProducts()
+                    }
                 }
             } else {
                 SideSwipeView(swipeDirection: .right, swipeAction: goToEditProduct)
                 HStack(spacing: 0, content: {
                     List {
                         ForEach(0 ..< productsCoreDataViewModel.deleteCount, id: \.self) { _ in
-                            let _ = print("Spacios: \(productsCoreDataViewModel.deleteCount.description)")
                             Spacer()
                                 .frame(maxWidth: .infinity, minHeight: 80)
                                 .onAppear {
-                                    productsCoreDataViewModel.releaseResources()
-                                    productsCoreDataViewModel.lazyFetchProducts()
+                                    loadProducts()
                                 }
                         }
                         ForEach(productsCoreDataViewModel.productsCoreData) { producto in
@@ -154,15 +148,13 @@ struct ListaControler: View {
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(action: {
                                     editProduct(product: producto)
-                                    goToEditProduct()
                                 }, label: {
                                     Image(systemName: "pencil")
                                 })
                                 .tint(Color("color_accent"))
                             }
                             .onAppear(perform: {
-                                print("Aparece item con Id: \(producto.id)")
-                                productsCoreDataViewModel.shouldLoadData(product: producto)
+                                shouldLoadData(product: producto)
                                 if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
                                     requestReview()
                                     isRequested20AppRatingReview = false
@@ -185,16 +177,30 @@ struct ListaControler: View {
     func goToCart() {
         self.tab = .cart
     }
+    func shouldLoadData(product: Product) {
+        Task {
+            loading = true
+            await productsCoreDataViewModel.shouldLoadData(product: product)
+            loading = false
+        }
+    }
+    func loadProducts() {
+        Task {
+            loading = true
+            await productsCoreDataViewModel.releaseResources()
+            await productsCoreDataViewModel.lazyFetchProducts()
+            loading = false
+        }
+    }
     func editProduct(product: Product) {
         Task {
             loading = true
             do {
                 try await agregarViewModel.editProduct(product: product)
                 playSound(named: "Success1")
+                self.tab = .plus
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
             loading = false
@@ -207,9 +213,7 @@ struct ListaControler: View {
                 try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
                 playSound(named: "Success1")
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
             loading = false

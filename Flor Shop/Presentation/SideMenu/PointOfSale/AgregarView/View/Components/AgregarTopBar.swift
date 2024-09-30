@@ -11,55 +11,28 @@ import AVFoundation
 
 struct AgregarTopBar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
-    @State private var showingErrorAlert = false
     @Binding var loading: Bool
     @Binding var showMenu: Bool
     var body: some View {
         HStack {
             CustomButton5(showMenu: $showMenu)
             Spacer()
-            Button(action: {
-                saveProduct()
-            }, label: {
+            Button(action: saveProduct) {
                 CustomButton1(text: "Guardar")
-            })
-//                .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
-            Menu {
-                Button {
-                    print("Cargando")
-                    loading = true
-                    print("Creando Directorio")
-                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(Date().formatted(date: .abbreviated, time: .omitted)).csv")
-                    print("Exportando")
-                    agregarViewModel.exportCSV(url: tempURL)
-                    print("Mostrando Guardador de Archivos")
-                    loading = false
-                    showShareSheet(url: tempURL)
-                } label: {
-                    Label("Exportar", systemImage: "square.and.arrow.up")
-                }
-                Button {
-                    Task {
-                        loading = true
-                        if await agregarViewModel.importCSV() {
-                            //                        agregarViewModel.releaseResources()
-                            //                        playSound(named: "Success1")
-                        } else {
-                            //                        playSound(named: "Fail1")
-                            showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
-                        }
-                        loading = false
-                    }
-                } label: {
-                    Label("Importar", systemImage: "square.and.arrow.down")
-                }
-            } label: {
-                CustomButton3(simbol: "ellipsis")
-                    .rotationEffect(.degrees(90))
             }
+//            Menu {
+//                Button(action: exportProducts) {
+//                    Label("Exportar", systemImage: "square.and.arrow.up")
+//                }
+//                Button(action: importProducts) {
+//                    Label("Importar", systemImage: "square.and.arrow.down")
+//                }
+//            } label: {
+//                CustomButton3(simbol: "ellipsis")
+//                    .rotationEffect(.degrees(90))
+//            }
         }
         .padding(.top, showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
@@ -67,6 +40,41 @@ struct AgregarTopBar: View {
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
+//    private func exportProducts() {
+//        Task {
+//            loading = true
+//            do {
+//                let dateFormatter = DateFormatter()
+//                dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+//                let currentDate = Date()
+//                let formattedDate = dateFormatter.string(from: currentDate)
+//                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(formattedDate).csv")
+//                await agregarViewModel.exportCSV(url: tempURL)
+//                loading = false
+//                showShareSheet(url: tempURL)
+//            } catch {
+//                await MainActor.run {
+//                    errorState.processError(error: error)
+//                }
+//            }
+//            loading = false
+//        }
+//    }
+//    private func importProducts() {
+//        Task {
+//            loading = true
+//            do {
+//                await agregarViewModel.importCSV()
+//                playSound(named: "Success1")
+//            } catch {
+//                await MainActor.run {
+//                    errorState.processError(error: error)
+//                }
+//                playSound(named: "Fail1")
+//            }
+//            loading = false
+//        }
+//    }
     private func saveProduct() {
         Task {
             loading = true
@@ -74,9 +82,7 @@ struct AgregarTopBar: View {
                 try await agregarViewModel.addProduct()
                 playSound(named: "Success1")
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
             loading = false

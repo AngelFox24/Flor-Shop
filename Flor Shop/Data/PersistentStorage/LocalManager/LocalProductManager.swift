@@ -18,6 +18,7 @@ protocol LocalProductManager {
 class LocalProductManagerImpl: LocalProductManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
+    let className = "LocalProductManager"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -69,26 +70,55 @@ class LocalProductManagerImpl: LocalProductManager {
         }
     }
     func save(product: Product) throws {
-        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
+        guard product.name != "" else {
+            print("El nombre del producto no puede ser vacio")
+            rollback()
+            throw LocalStorageError.invalidInput("El nombre del producto no puede ser vacio")
+        }
+        guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
             print("No se pudo obtener la subsidiaria")
             rollback()
-            throw LocalStorageError.notFound("No se pudo obtener la subsidiaria")
+            throw LocalStorageError.entityNotFound("No se pudo obtener la subsidiaria")
         }
-        if let productEntity = self.sessionConfig.getProductEntityById(context: self.mainContext, productId: product.id) {
-            productEntity.productName = product.name
+        if let productEntity = try self.sessionConfig.getProductEntityById(context: self.mainContext, productId: product.id) {
+            if productEntity.productName != product.name {
+                guard !productNameExist(name: product.name, subsidiary: subsidiaryEntity) else {
+                    print("El nombre del producto ya existe en otro producto")
+                    rollback()
+                    throw BusinessLogicError.duplicateProductName("El nombre del producto ya existe en otro producto")
+                }
+                productEntity.productName = product.name
+            }
+            if productEntity.barCode != product.barCode {
+                guard !productBarCodeExist(barcode: product.barCode ?? "", subsidiary: subsidiaryEntity) else {
+                    print("El codigo de barras ya existe en otro producto")
+                    rollback()
+                    throw BusinessLogicError.duplicateBarCode("El codigo de barras ya existe en otro producto")
+                }
+                productEntity.barCode = product.barCode
+            }
             productEntity.active = product.active
             productEntity.quantityStock = Int64(product.qty)
-            productEntity.barCode = product.barCode
             productEntity.unitCost = Int64(product.unitCost.cents)
             productEntity.expirationDate = product.expirationDate
             productEntity.unitPrice = Int64(product.unitPrice.cents)
-            if let imageId = product.image?.id, let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId) {
-                productEntity.toImageUrl = imageEntity
+            if let imageId = product.image?.id  {
+                productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
             }
             productEntity.createdAt = product.createdAt
             productEntity.updatedAt = product.updatedAt
-            saveData()
+            try saveData()
         } else {
+            guard !productNameExist(name: product.name, subsidiary: subsidiaryEntity) else {
+                print("El nombre del producto ya existe en otro producto")
+                rollback()
+                throw BusinessLogicError.duplicateProductName("El nombre del producto ya existe en otro producto")
+            }
+            guard !productBarCodeExist(barcode: product.barCode ?? "", subsidiary: subsidiaryEntity) else {
+                print("El codigo de barras ya existe en otro producto")
+                rollback()
+                throw BusinessLogicError.duplicateBarCode("El codigo de barras ya existe en otro producto")
+            }
             let newProductEntity = Tb_Product(context: mainContext)
             newProductEntity.idProduct = product.id
             newProductEntity.productName = product.name
@@ -99,12 +129,12 @@ class LocalProductManagerImpl: LocalProductManager {
             newProductEntity.unitPrice = Int64(product.unitPrice.cents)
             newProductEntity.expirationDate = product.expirationDate
             newProductEntity.toSubsidiary = subsidiaryEntity
-            if let imageId = product.image?.id, let imageEntity = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId) {
-                newProductEntity.toImageUrl = imageEntity
+            if let imageId = product.image?.id {
+                newProductEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
             }
             newProductEntity.createdAt = product.createdAt
             newProductEntity.updatedAt = product.updatedAt
-            saveData()
+            try saveData()
         }
     }
     func sync(productsDTOs: [ProductDTO]) throws {
@@ -112,14 +142,14 @@ class LocalProductManagerImpl: LocalProductManager {
             guard self.sessionConfig.subsidiaryId == productDTO.subsidiaryId else {
                 print("Error en la sincronizacion, la subsidiaria no es la misma")
                 rollback()
-                throw LocalStorageError.notFound("Error en la sincronizacion, la subsidiaria no es la misma")
+                throw LocalStorageError.syncFailed("Error en la sincronizacion, la subsidiaria no es la misma")
             }
-            guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: productDTO.subsidiaryId) else {
+            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: productDTO.subsidiaryId) else {
                 print("No se pudo obtener la subsidiaria")
                 rollback()
-                throw LocalStorageError.notFound("No se pudo obtener la subsidiaria")
+                throw LocalStorageError.entityNotFound("No se pudo obtener la subsidiaria")
             }
-            if let productEntity = self.sessionConfig.getProductEntityById(context: self.mainContext, productId: productDTO.id) {
+            if let productEntity = try self.sessionConfig.getProductEntityById(context: self.mainContext, productId: productDTO.id) {
                 productEntity.productName = productDTO.productName
                 productEntity.active = productDTO.active
                 productEntity.quantityStock = Int64(productDTO.quantityStock)
@@ -130,10 +160,10 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
                 if let imageId = productDTO.imageUrlId {
-                    productEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
 //                productEntity.toSubsidiary = subsidiaryEntity
-                saveData()
+                try saveData()
             } else {
                 let productEntity = Tb_Product(context: self.mainContext)
                 productEntity.idProduct = productDTO.id
@@ -147,20 +177,55 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
                 if let imageId = productDTO.imageUrlId {
-                    productEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
                 productEntity.toSubsidiary = subsidiaryEntity
-                saveData()
+                try saveData()
             }
         }
     }
     //MARK: Private Functions
-    private func saveData () {
+    private func productNameExist(name: String, subsidiary: Tb_Subsidiary) -> Bool {
+        guard name != "" else {
+            print("Producto existe vacio aunque no exista xd")
+            return true
+        }
+        let filterAtt = NSPredicate(format: "name == %@ AND toSubsidiary == %@", name, subsidiary)
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        request.predicate = filterAtt
+        request.fetchLimit = 1
+        do {
+            let total = try self.mainContext.fetch(request).count
+            return total == 0 ? false : true
+        } catch let error {
+            print("Error fetching. \(error)")
+            return false
+        }
+    }
+    private func productBarCodeExist(barcode: String, subsidiary: Tb_Subsidiary) -> Bool {
+        guard barcode != "" else {
+            print("Producto barcode vacio aunque no exista xd")
+            return false
+        }
+        let filterAtt = NSPredicate(format: "barCode == %@ AND toSubsidiary == %@", barcode, subsidiary)
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        request.predicate = filterAtt
+        request.fetchLimit = 1
+        do {
+            let total = try self.mainContext.fetch(request).count
+            return total == 0 ? false : true
+        } catch let error {
+            print("Error fetching. \(error)")
+            return false
+        }
+    }
+    private func saveData() throws {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en ProductRepositoryImpl \(error)")
             rollback()
+            let cusError: String = "\(className): \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
         }
     }
     private func rollback() {

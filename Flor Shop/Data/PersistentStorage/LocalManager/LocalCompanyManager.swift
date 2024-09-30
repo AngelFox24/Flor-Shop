@@ -17,6 +17,7 @@ protocol LocalCompanyManager {
 class LocalCompanyManagerImpl: LocalCompanyManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
+    let className = "LocalCompanyManager"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -49,16 +50,17 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         guard self.sessionConfig.companyId == companyDTO.id else {
             print("La compañia no es la misma")
             rollback()
-            throw LocalStorageError.notFound("La compañia no es la misma")
+            let cusError: String = "\(className): La compañia no es la misma"
+            throw LocalStorageError.syncFailed(cusError)
         }
-        if let companyEntity = self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: companyDTO.id) {
-            print("Se actualiza la compañia")
+        if let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: companyDTO.id) {
+//            print("Se actualiza la compañia")
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
             companyEntity.createdAt = companyDTO.createdAt.internetDateTime()
             companyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
         } else {
-            print("Se crea la compañia")
+//            print("Se crea la compañia")
             let newCompanyEntity = Tb_Company(context: self.mainContext)
             newCompanyEntity.idCompany = companyDTO.id
             newCompanyEntity.companyName = companyDTO.companyName
@@ -66,35 +68,37 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             newCompanyEntity.createdAt = companyDTO.createdAt.internetDateTime()
             newCompanyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
         }
-        print("Se guardara los datos en LocalCompanyManager")
-        saveData()
+//        print("Se guardara los datos en LocalCompanyManager")
+        try saveData()
     }
     func save(company: Company) throws {
-        if let companyEntity = self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: company.id) { //Comprobacion Inicial por Id
+        if let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: company.id) { //Comprobacion Inicial por Id
             companyEntity.companyName = company.companyName
             companyEntity.ruc = company.ruc
-        } else if companyExist(company: company) { //Buscamos compañia por otros atributos
-            throw LocalStorageError.notFound("La compañia ya existe")
+        } else if try companyExist(company: company) { //Buscamos compañia por otros atributos
+            throw LocalStorageError.saveFailed("La compañia ya existe")
         } else { //Creamos una nueva comañia
             let newCompany = Tb_Company(context: mainContext)
             newCompany.idCompany = company.id
             newCompany.companyName = company.companyName
             newCompany.ruc = company.ruc
         }
-        saveData()
+        try saveData()
     }
     //MARK: Private Funtions
-    private func saveData() {
+    private func saveData() throws {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalCompanyManager: \(error)")
+            rollback()
+            let cusError: String = "\(className): \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
         }
     }
     private func rollback() {
         self.mainContext.rollback()
     }
-    private func companyExist(company: Company) -> Bool {
+    private func companyExist(company: Company) throws -> Bool {
         let filterAtt = NSPredicate(format: "companyName == %@ OR ruc == %@", company.companyName, company.ruc)
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
         request.predicate = filterAtt
@@ -102,8 +106,8 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             let total = try self.mainContext.fetch(request).count
             return total == 0 ? false : true
         } catch let error {
-            print("Error fetching. \(error)")
-            return false
+            let cusError: String = "\(className): \(error.localizedDescription)"
+            throw LocalStorageError.fetchFailed(cusError)
         }
     }
 }

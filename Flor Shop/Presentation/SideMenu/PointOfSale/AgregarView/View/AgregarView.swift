@@ -57,9 +57,12 @@ struct CamposProductoAgregar: View {
                 VStack(spacing: 23,
                        content: {
                     HStack {
-                        AgregarViewPopoverHelp()
-                            .disabled(true)
-                            .opacity(0)
+                        VStack(spacing: 0) {
+                            Spacer()
+                            Button(action: exportProducts, label: {
+                                CustomButton6(simbol: "square.and.arrow.up")
+                            })
+                        }
                         Spacer()
                         CustomImageView(
                             uiImage: $agregarViewModel.selectedLocalImage,
@@ -73,6 +76,9 @@ struct CamposProductoAgregar: View {
                         VStack(spacing: 0) {
                             AgregarViewPopoverHelp()
                             Spacer()
+                            ExportButtonView() { result in
+                                handleFileImport(result: result)
+                            }
                         }
                     }
                     VStack {
@@ -114,7 +120,6 @@ struct CamposProductoAgregar: View {
                                 }
                                 .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
                             })
-                            
                         }
                     }
                     VStack {
@@ -123,10 +128,7 @@ struct CamposProductoAgregar: View {
                             HStack {
                                 CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
                             }
-                            Button(action: {
-                                print("Se presiono Buscar Imagen")
-                                agregarViewModel.findProductNameOnInternet()
-                            }, label: {
+                            Button(action: findImageOnInternet) {
                                 Text("Buscar Imagen")
                                     .foregroundColor(.black)
                                     .font(.custom("Artifika-Regular", size: 16))
@@ -134,7 +136,7 @@ struct CamposProductoAgregar: View {
                                     .padding(.horizontal, 5)
                                     .background(Color("color_secondary"))
                                     .cornerRadius(10)
-                            })
+                            }
                         }
                         if agregarViewModel.agregarFields.productError != "" {
                             ErrorMessageText(message: agregarViewModel.agregarFields.productError)
@@ -186,18 +188,48 @@ struct CamposProductoAgregar: View {
         }
         .background(Color("color_background"))
     }
+    private func findImageOnInternet() {
+        agregarViewModel.findProductNameOnInternet()
+    }
+    private func handleFileImport(result: Result<[URL], Error>) {
+        Task {
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    loading = true
+                    await agregarViewModel.importCSV(url: url)
+                    loading = false
+                }
+            case .failure(let error):
+                await errorState.processError(error: error)
+            }
+        }
+    }
+    private func exportProducts() {
+        Task {
+            loading = true
+            do {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+                let currentDate = Date()
+                let formattedDate = dateFormatter.string(from: currentDate)
+                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(formattedDate).csv")
+                await agregarViewModel.exportCSV(url: tempURL)
+                loading = false
+                showShareSheet(url: tempURL)
+            } catch {
+                await errorState.processError(error: error)
+            }
+            loading = false
+        }
+    }
     func pasteFromInternet() {
         Task {
             loading = true
-//            try? await Task.sleep(nanoseconds: 2_000_000_000)
             do {
                 try await agregarViewModel.pasteFromInternet()
-//                playSound(named: "Success1")
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
-//                playSound(named: "Fail1")
+                await errorState.processError(error: error)
             }
             loading = false
         }

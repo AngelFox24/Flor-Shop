@@ -42,7 +42,7 @@ class EmployeeRepositoryImpl: EmployeeRepository, Syncronizable {
         if cloudBD {
             try await self.remoteManager.save(employee: employee)
         } else {
-            self.localManager.save(employee: employee)
+            try self.localManager.save(employee: employee)
         }
     }
     func getEmployees() -> [Employee] {

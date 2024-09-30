@@ -65,11 +65,11 @@ class CustomerHistoryViewModel: ObservableObject {
         //self.customer = nil
         self.salesDetail = []
     }
-    func updateData() {
+    func updateData() throws {
         guard let customerNN = customer else {
             return
         }
-        self.customer = self.getCustomersUseCase.getCustomer(customer: customerNN)
+        self.customer = try self.getCustomersUseCase.getCustomer(customer: customerNN)
         self.salesDetail = []
         lazyFetch()
     }

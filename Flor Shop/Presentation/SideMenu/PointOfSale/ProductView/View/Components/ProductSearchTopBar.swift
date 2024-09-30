@@ -42,6 +42,7 @@ struct CustomSearchField: View {
 
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @Binding var loading: Bool
     @Binding var showMenu: Bool
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
@@ -73,12 +74,10 @@ struct ProductSearchTopBar: View {
                     CustomButton3(simbol: "slider.horizontal.3")
                 }
                 .onChange(of: productsCoreDataViewModel.primaryOrder, perform: { item in
-                    productsCoreDataViewModel.releaseResources()
-                    productsCoreDataViewModel.fetchProducts()
+                    loadProducts()
                 })
                 .onChange(of: productsCoreDataViewModel.filterAttribute, perform: { item in
-                    productsCoreDataViewModel.releaseResources()
-                    productsCoreDataViewModel.fetchProducts()
+                    loadProducts()
                 })
             })
             .padding(.horizontal, 10)
@@ -87,15 +86,24 @@ struct ProductSearchTopBar: View {
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
+    func loadProducts() {
+        Task {
+            loading = true
+            await productsCoreDataViewModel.releaseResources()
+            await productsCoreDataViewModel.fetchProducts()
+            loading = false
+        }
+    }
 }
 
 struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
+        @State var loading: Bool = false
         @State var showMenu: Bool = false
         VStack (content: {
-            ProductSearchTopBar(showMenu: $showMenu)
+            ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
                 .environmentObject(dependencies.productsViewModel)
             Spacer()
         })

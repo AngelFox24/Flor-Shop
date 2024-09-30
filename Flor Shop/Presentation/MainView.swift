@@ -21,6 +21,8 @@ struct MainView: View {
                 .environmentObject(dependencies.addCustomerViewModel)
                 .environmentObject(dependencies.employeeViewModel)
                 .environmentObject(dependencies.agregarViewModel)
+                .environmentObject(dependencies.customerHistoryViewModel)
+                .environmentObject(dependencies.addCustomerViewModel)
         }
         .navigationDestination(for: MenuRoutes.self) { routes in
             switch routes {
@@ -45,6 +47,7 @@ struct MainView: View {
             case .customerHistoryView:
                 CustomerHistoryView(loading: $loading)
                     .environmentObject(dependencies.customerHistoryViewModel)
+                    .environmentObject(dependencies.addCustomerViewModel)
             }
         }
     }

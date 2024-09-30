@@ -27,13 +27,7 @@ struct CustomerHistoryTopBar: View {
                 Spacer()
                 Button(action: {
                     print("Se presiono cobrar")
-                    if customerHistoryViewModel.payTotalAmount() {
-                        customerHistoryViewModel.updateData()
-                        playSound(named: "Success1")
-                    } else {
-                        customerHistoryViewModel.updateData()
-                        playSound(named: "Fail1")
-                    }
+                    payDebt()
                 }, label: {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
@@ -63,6 +57,24 @@ struct CustomerHistoryTopBar: View {
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
+    private func payDebt() {
+        Task {
+            loading = true
+            do {
+                if customerHistoryViewModel.payTotalAmount() {
+                    try customerHistoryViewModel.updateData()
+                    playSound(named: "Success1")
+                } else {
+                    try customerHistoryViewModel.updateData()
+                    playSound(named: "Fail1")
+                }
+            } catch {
+                await errorState.processError(error: error)
+                playSound(named: "Fail1")
+            }
+            loading = false
+        }
+    }
     private func editCustomer(customer: Customer) {
         Task {
             loading = true
@@ -71,9 +83,7 @@ struct CustomerHistoryTopBar: View {
                 navManager.goToAddCustomerView()
                 playSound(named: "Success1")
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
             loading = false

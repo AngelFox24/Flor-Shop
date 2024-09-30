@@ -89,7 +89,7 @@ class AddCustomerViewModel: ObservableObject {
         }
         guard let customer = try await createCustomer() else {
             print("No se pudo crear Cliente")
-            throw LocalStorageError.notFound("No se pudo crear Cliente")
+            throw LocalStorageError.saveFailed("No se pudo crear Cliente")
         }
         try await self.saveCustomerUseCase.execute(customer: customer)
         await releaseResources()

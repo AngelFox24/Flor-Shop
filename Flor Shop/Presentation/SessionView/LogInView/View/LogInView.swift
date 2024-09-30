@@ -53,9 +53,7 @@ struct LogInView: View {
                         }
                         .padding(.horizontal, 30)
                         VStack(spacing: 30) {
-                            Button(action: {
-                                logIn()
-                            }, label: {
+                            Button(action: logIn) {
                                 VStack {
                                     CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                         .foregroundColor(Color(.black))
@@ -63,7 +61,7 @@ struct LogInView: View {
                                         ErrorMessageText(message: logInViewModel.logInFields.errorLogIn)
                                     }
                                 }
-                            })
+                            }
                             Color(.gray)
                                 .frame(width: 280, height: 2)
                             Button(action: {}, label: {
@@ -99,10 +97,9 @@ struct LogInView: View {
                     navManager.popToRoot()
                 }
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
+                loading = false
             }
             loading = false
         }

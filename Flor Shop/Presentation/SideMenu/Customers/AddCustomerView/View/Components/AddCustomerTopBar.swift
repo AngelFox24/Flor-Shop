@@ -46,12 +46,10 @@ struct AddCustomerTopBar: View {
             do {
                 try await addCustomerViewModel.addCustomer()
                 playSound(named: "Success1")
-                customerHistoryViewModel.updateData()
+                try customerHistoryViewModel.updateData()
                 navManager.goToBack()
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
             loading = false

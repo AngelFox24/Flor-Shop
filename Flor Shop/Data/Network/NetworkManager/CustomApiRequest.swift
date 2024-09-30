@@ -12,7 +12,7 @@ struct CustomAPIRequest: NetworkRequest {
     var parameter: Encodable
     var sendMethod: HTTPMethod = .post
     var url: URL? {
-        return URL(string: "http://192.168.2.15:8080\(urlRoute)")
+        return URL(string: "http://192.168.2.13:8080\(urlRoute)")
     }
     var method: HTTPMethod {
         return sendMethod

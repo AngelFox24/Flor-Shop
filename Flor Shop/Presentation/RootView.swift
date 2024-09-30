@@ -35,7 +35,7 @@ struct RootView: View {
                             LockScreenView()
                         case .versionOk:
                             NavigationStack(path: $navManager.navPaths) {
-                                VStack(content: {
+                                VStack {
                                     if let sesDep = logInViewModel.businessDependencies {
                                         MainView(dependencies: sesDep, loading: $loading)
                                     } else {
@@ -44,7 +44,7 @@ struct RootView: View {
                                                 logIn()
                                             }
                                     }
-                                })
+                                }
                                 .navigationDestination(for: SessionRoutes.self) { route in
                                     switch route {
                                     case .loginView:

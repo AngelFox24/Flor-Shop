@@ -9,18 +9,19 @@ import Foundation
 import CoreData
 
 protocol LocalCustomerManager {
-    func save(customer: Customer)
+    func save(customer: Customer) throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
     func sync(customersDTOs: [CustomerDTO]) throws
     func getLastUpdated() -> Date
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
-    func getCustomer(customer: Customer) -> Customer?
+    func getCustomer(customer: Customer) throws -> Customer?
 }
 
 class LocalCustomerManagerImpl: LocalCustomerManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
+    let className = "LocalCustomerManager"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -52,13 +53,13 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
     func sync(customersDTOs: [CustomerDTO]) throws {
         for customerDTO in customersDTOs {
             guard self.sessionConfig.companyId == customerDTO.companyID else {
-                throw LocalStorageError.notFound("La compañia no es la misma")
+                throw LocalStorageError.syncFailed("La compañia no es la misma")
             }
-            guard let companyEntity = self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: customerDTO.companyID) else {
+            guard let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: customerDTO.companyID) else {
                 rollback()
-                throw LocalStorageError.notFound("La compañia no existe en la bd local")
+                throw LocalStorageError.entityNotFound("La compañia no existe en la bd local")
             }
-            if let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerDTO.id) {
+            if let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerDTO.id) {
                 customerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 customerEntity.creditScore = Int64(customerDTO.creditScore)
                 customerEntity.creditDays = Int64(customerDTO.creditDays)
@@ -71,13 +72,14 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    customerEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    customerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
                 customerEntity.createdAt = customerDTO.createdAt.internetDateTime()
                 customerEntity.updatedAt = customerDTO.updatedAt.internetDateTime()
+                try saveData()
             } else {
                 let newCustomerEntity = Tb_Customer(context: self.mainContext)
                 newCustomerEntity.idCustomer = customerDTO.id
@@ -93,7 +95,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    newCustomerEntity.toImageUrl = self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
                 }
                 newCustomerEntity.toCompany = companyEntity
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
@@ -101,20 +103,20 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.totalDebt = Int64(customerDTO.totalDebt)
                 newCustomerEntity.createdAt = customerDTO.createdAt.internetDateTime()
                 newCustomerEntity.updatedAt = customerDTO.updatedAt.internetDateTime()
+                try saveData()
             }
         }
-        saveData()
     }
     func payClientTotalDebt(customer: Customer) throws -> Bool {
-        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
-            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
+            throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
         }
         if customer.totalDebt.cents <= 0 {
             return false
         }
         let totalDebtDB: Int = try getTotalDebtByCustomer(customer: customer)
         if totalDebtDB == customer.totalDebt.cents && totalDebtDB != 0 {
-            guard let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
+            guard let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
                 print("No se encontró sucursal")
                 return false
             }
@@ -128,7 +130,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 }
                 customerEntity.totalDebt = 0
                 customerEntity.isCreditLimit = false
-                saveData()
+                try saveData()
                 return true
             } catch let error {
                 print("Error fetching. \(error)")
@@ -141,10 +143,10 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
     }
     private func getTotalDebtByCustomer(customer: Customer) throws -> Int {
-        guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
-            throw LocalStorageError.notFound("No se encontro la subisidiaria")
+        guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
+            throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
         }
-        guard let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
+        guard let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) else {
             print("No se encontró sucursal")
             return 0
         }
@@ -179,8 +181,8 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             return 0
         }
     }
-    func save(customer: Customer) {
-        if let customerEntity = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) { //Busqueda por id
+    func save(customer: Customer) throws {
+        if let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) { //Busqueda por id
             customerEntity.name = customer.name
             customerEntity.lastName = customer.lastName
             customerEntity.creditDays = Int64(customer.creditDays)
@@ -190,19 +192,15 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             customerEntity.phoneNumber = customer.phoneNumber
             customerEntity.toImageUrl?.idImageUrl = customer.image?.id
             //TODO: Segregate this
-            if customer.isDateLimitActive && customerEntity.totalDebt > 0 && customerEntity.firstDatePurchaseWithCredit != nil {
+            if customer.isDateLimitActive && customerEntity.totalDebt > 0, let firstDatePurchaseWithCredit = customerEntity.firstDatePurchaseWithCredit {
                 var calendar = Calendar.current
                 calendar.timeZone = TimeZone(identifier: "UTC")!
-                customerEntity.dateLimit = calendar.date(byAdding: .day, value: Int(customerEntity.creditDays), to: customerEntity.firstDatePurchaseWithCredit!)!
+                customerEntity.dateLimit = calendar.date(byAdding: .day, value: Int(customerEntity.creditDays), to: firstDatePurchaseWithCredit)!
                 let finalDelDia = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: Date())!
                 customerEntity.isDateLimit = customerEntity.dateLimit ?? Date() < finalDelDia
             }
-            if customerEntity.isCreditLimitActive {
-                customerEntity.isCreditLimit = customerEntity.totalDebt >= customerEntity.creditLimit
-            } else {
-                customerEntity.isCreditLimit = false
-            }
-            saveData()
+            customerEntity.isCreditLimit = customerEntity.isCreditLimitActive ? customerEntity.totalDebt >= customerEntity.creditLimit : false
+            try saveData()
         } else if customerExist(customer: customer) { //Comprobamos si existe el mismo empleado por otros atributos
             rollback()
         } else { //Creamos un nuevo empleado
@@ -215,16 +213,18 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             newCustomerEntity.creditScore = 50
             newCustomerEntity.dateLimit = Date()
             newCustomerEntity.phoneNumber = customer.phoneNumber
-            newCustomerEntity.toImageUrl?.idImageUrl = customer.image?.id
+            if let imageId = customer.image?.id  {
+                newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+            }
             newCustomerEntity.totalDebt = 0
             newCustomerEntity.isDateLimitActive = customer.isDateLimitActive
             newCustomerEntity.isCreditLimitActive = customer.isCreditLimitActive
             newCustomerEntity.toCompany?.idCompany = self.sessionConfig.companyId
-            saveData()
+            try saveData()
         }
     }
-    func getCustomer(customer: Customer) -> Customer? {
-        if let customerNN = self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) {
+    func getCustomer(customer: Customer) throws -> Customer? {
+        if let customerNN = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) {
             return customerNN.toCustomer()
         } else {
             return nil
@@ -283,11 +283,13 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
     }
     //MARK: Private Funtions
-    private func saveData() {
+    private func saveData() throws {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalCustomerManager: \(error)")
+            rollback()
+            let cusError: String = "\(className): \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
         }
     }
     private func rollback() {

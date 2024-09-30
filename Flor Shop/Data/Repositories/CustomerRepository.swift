@@ -14,7 +14,7 @@ protocol CustomerRepository {
     func sync() async throws
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
-    func getCustomer(customer: Customer) -> Customer?
+    func getCustomer(customer: Customer) throws -> Customer?
 }
 
 class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
@@ -48,7 +48,7 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
         if cloudBD {
             try await self.remoteManager.save(customer: customer)
         } else {
-            self.localManager.save(customer: customer)
+            try self.localManager.save(customer: customer)
         }
     }
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
@@ -57,7 +57,7 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail] {
         return self.localManager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
     }
-    func getCustomer(customer: Customer) -> Customer? {
-        return self.localManager.getCustomer(customer: customer)
+    func getCustomer(customer: Customer) throws -> Customer? {
+        return try self.localManager.getCustomer(customer: customer)
     }
 }

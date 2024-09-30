@@ -43,16 +43,14 @@ struct PaymentTopBar: View {
             loading = true
             do {
                 guard let cart = carritoCoreDataViewModel.cartCoreData else {
-                    throw LocalStorageError.notFound("No se encontro carrito configurado en viewModel")
+                    throw LocalStorageError.entityNotFound("No se encontro carrito configurado en viewModel")
                 }
                 try await ventasCoreDataViewModel.registerSale(cart: cart, customerId: carritoCoreDataViewModel.customerInCar?.id, paymentType: carritoCoreDataViewModel.paymentType)
                 carritoCoreDataViewModel.releaseResources()
                 carritoCoreDataViewModel.releaseCustomer()
                 playSound(named: "Success1")
             } catch {
-                await MainActor.run {
-                    errorState.processError(error: error)
-                }
+                await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
             loading = false

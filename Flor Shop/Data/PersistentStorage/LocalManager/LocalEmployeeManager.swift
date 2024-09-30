@@ -11,13 +11,14 @@ import CoreData
 protocol LocalEmployeeManager {
     func sync(employeesDTOs: [EmployeeDTO]) throws
     func getLastUpdated() -> Date
-    func save(employee: Employee)
+    func save(employee: Employee) throws
     func getEmployees() -> [Employee]
 }
 
 class LocalEmployeeManagerImpl: LocalEmployeeManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
+    let className = "LocalEmployeeManager"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -49,14 +50,17 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
     func sync(employeesDTOs: [EmployeeDTO]) throws {
         for employeeDTO in employeesDTOs {
             guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
-                throw LocalStorageError.notFound("La subsidiaria no es la misma")
-            }
-            guard let subsidiaryEntity = self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: employeeDTO.subsidiaryID) else {
                 rollback()
-                throw LocalStorageError.notFound("La subsidiaria no existe en la BD local")
+                let cusError: String = "\(className): La subsidiaria no es la misma"
+                throw LocalStorageError.syncFailed(cusError)
             }
-            if let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employeeDTO.id) {
-                print("Empleado actualizado")
+            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: employeeDTO.subsidiaryID) else {
+                rollback()
+                let cusError: String = "\(className): La subsidiaria no existe en la BD local"
+                throw LocalStorageError.syncFailed(cusError)
+            }
+            if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employeeDTO.id) {
+//                print("Empleado actualizado")
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
@@ -66,8 +70,9 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.user = employeeDTO.user
                 employeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
                 employeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
+                try saveData()
             } else {
-                print("Empleado creado")
+//                print("Empleado creado")
                 let newEmployeeEntity = Tb_Employee(context: self.mainContext)
                 newEmployeeEntity.idEmployee = employeeDTO.id
                 newEmployeeEntity.name = employeeDTO.name
@@ -78,14 +83,15 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.role = employeeDTO.role
                 newEmployeeEntity.user = employeeDTO.user
                 newEmployeeEntity.toSubsidiary = subsidiaryEntity
+                newEmployeeEntity.toCart = Tb_Cart(context: self.mainContext)
                 newEmployeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
                 newEmployeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
+                try saveData()
             }
         }
-        saveData()
     }
-    func save(employee: Employee) {
-        if let employeeEntity = self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employee.id) { //Busqueda por id
+    func save(employee: Employee) throws {
+        if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employee.id) { //Busqueda por id
             employeeEntity.name = employee.name
             employeeEntity.lastName = employee.lastName
             employeeEntity.active = employee.active
@@ -95,7 +101,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             employeeEntity.user = employee.user
             employeeEntity.toImageUrl?.idImageUrl = employee.image?.id
             employeeEntity.updatedAt = Date()
-            saveData()
+            try saveData()
         } else if employeeExist(employee: employee) { //Comprobamos si existe el mismo empleado por otros atributos
             rollback()
         } else { //Creamos un nuevo empleado
@@ -106,9 +112,10 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             newEmployeeEntity.lastName = employee.lastName
             newEmployeeEntity.role = employee.role
             newEmployeeEntity.active = employee.active
+            newEmployeeEntity.toCart = Tb_Cart(context: self.mainContext)
             newEmployeeEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
             newEmployeeEntity.toImageUrl?.idImageUrl = employee.image?.id
-            saveData()
+            try saveData()
         }
     }
     func getEmployees() -> [Employee] {
@@ -136,12 +143,13 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         }
     }
     //MARK: Private Funtions
-    private func saveData() {
+    private func saveData() throws {
         do {
             try self.mainContext.save()
         } catch {
-            print("Error al guardar en LocalEmployeeManager: \(error)")
             rollback()
+            let cusError: String = "\(className): \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
         }
     }
     private func rollback() {

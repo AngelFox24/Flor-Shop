@@ -41,7 +41,7 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
         if cloudBD {
             try await self.remoteManager.save(subsidiary: subsidiary)
         } else {
-            self.localManager.save(subsidiary: subsidiary)
+            try self.localManager.save(subsidiary: subsidiary)
         }
     }
     func getSubsidiaries() -> [Subsidiary] {

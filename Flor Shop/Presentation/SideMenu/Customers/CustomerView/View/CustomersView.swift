@@ -118,8 +118,8 @@ struct CustomerListController: View {
                     Button(action: {
                         Task {
                             await addCustomerViewModel.releaseResources()
+                            navManager.goToAddCustomerView()
                         }
-                        navManager.goToAddCustomerView()
                     }, label: {
                         CustomButton4(simbol: "plus")
                     })
