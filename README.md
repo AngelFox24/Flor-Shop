@@ -39,7 +39,7 @@ Flor Shop es una App gratuita para **[iOS]** que se ha desarrollado para ayudar 
 > La idea fundamental es evolucionar la App progresivamente hasta cubrir todas las funcionalidades de los usuarios.
 
 ### ¿Cómo puedo contactarte?
-
+<img src="Perfil.jpeg" alt="Texto alternativo" height="100"/>
 ## Hola, mi nombre es Angel Curi. Soy el creador de Flor Shop.
 
 Soy ingeniero de sistemas desde hace 3 años. Combino mi trabajo como desarrollador RPA y desarrollando Apps en mis tiempos libres y estoy escuchando ofertas sobre Programacíon iOS puedes contactarme desde mi perfil de **[![Web](https://img.shields.io/badge/Linkeding-blue?logo=Linkeding)](https://www.linkedin.com/in/angel-curi-laurente-408b13177/)**.
