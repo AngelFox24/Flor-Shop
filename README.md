@@ -21,6 +21,15 @@ Flor Shop es una App gratuita para **[iOS]** que se ha desarrollado para ayudar 
 * Un diseño simple y fresco.
 * Y muchos detalles más ...
 
+## Imagen de Muestra
+<div style="display: flex; justify-content: space-between;">
+  <img src="FlorCaptura1.png" alt="Texto alternativo" height="500"/>
+  <img src="FlorCaptura2.png" alt="Texto alternativo" height="500"/>
+  <img src="FlorCaptura3.png" alt="Texto alternativo" height="500"/>
+  <img src="FlorCaptura4.png" alt="Texto alternativo" height="500"/>
+  <img src="FlorCaptura5.png" alt="Texto alternativo" height="500"/>
+</div>
+
 ### Sobre Pull Request al proyecto
 
 * **NO SE ACEPTAN PR** de código sobre el proyecto.
