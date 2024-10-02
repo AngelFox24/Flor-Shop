@@ -79,6 +79,7 @@ struct AgregarTopBar: View {
         Task {
             loading = true
             do {
+//                UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first?.endEditing(true)
                 try await agregarViewModel.addProduct()
                 playSound(named: "Success1")
             } catch {

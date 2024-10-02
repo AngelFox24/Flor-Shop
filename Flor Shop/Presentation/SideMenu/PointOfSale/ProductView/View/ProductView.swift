@@ -147,16 +147,16 @@ struct ListaControler: View {
     }
     func editProduct(product: Product) {
         Task {
-            loading = true
+//            loading = true
             do {
                 try await agregarViewModel.editProduct(product: product)
-                playSound(named: "Success1")
+//                playSound(named: "Success1")
                 self.tab = .plus
             } catch {
                 await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
-            loading = false
+//            loading = false
         }
     }
     func agregarProductoACarrito(producto: Product) {

@@ -32,11 +32,13 @@ struct CustomNumberField: View {
                             .disableAutocorrection(true)
                             .onChange(of: viewText, perform: { newValue in
                                 if isInputActive {
+                                    print("isInputActive")
                                     if newValue != "" {
                                         edited = true
                                     }
                                     let stringsito = newValue.replacingOccurrences(of: ".", with: "")
                                     if let val = Int(stringsito) {
+                                        print("Updated userIput")
                                         userInput = val
                                         viewText = formatNumber(val)
                                     } else {
@@ -48,6 +50,19 @@ struct CustomNumberField: View {
                                 if focus == false {
                                     print("Se ejecuta UnFocused")
                                     onUnFocused?()
+                                    if userInput == 0 {//Cuando el teclado desaparece que aparesca el placeholder
+                                        viewText = ""
+                                        edited = false
+                                    }
+                                }
+                            })
+                            .onChange(of: userInput, perform: { newValue in
+                                if newValue == 0 {
+                                    if isInputActive {//Si el teclado esta en pantalla no se puede limpiar el texto porque ocurre errores
+                                        viewText = "0"
+                                    } else {
+                                        viewText = ""
+                                    }
                                 }
                             })
                             .disabled(disable)
@@ -105,6 +120,9 @@ struct CustomNumberField: View {
             if !disable {
                 isInputActive = true
             }
+        }
+        .onAppear() {
+            viewText = formatNumber(userInput)
         }
     }
     func formatNumber(_ input: Int) -> String {

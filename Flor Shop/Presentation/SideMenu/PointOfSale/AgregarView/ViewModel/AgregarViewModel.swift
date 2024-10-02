@@ -102,7 +102,9 @@ class AgregarViewModel: ObservableObject {
             self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
             self.agregarFields.quantityStock = String(product.qty)
             self.agregarFields.unitType = product.unitType
+            print("UnitCost: \(product.unitCost.cents)")
             self.agregarFields.unitCost = product.unitCost.cents
+            print("UnitPrice: \(product.unitPrice.cents)")
             self.agregarFields.unitPrice = product.unitPrice.cents
             self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
             self.agregarFields.errorBD = ""

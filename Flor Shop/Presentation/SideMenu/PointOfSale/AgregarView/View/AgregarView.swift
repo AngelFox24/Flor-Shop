@@ -58,6 +58,9 @@ struct CamposProductoAgregar: View {
                        content: {
                     HStack {
                         VStack(spacing: 0) {
+                            Button(action: debugButton) {
+                                CustomButton6(simbol: "arrow.trianglehead.2.clockwise.rotate.90")
+                            }
                             Spacer()
                             Button(action: exportProducts, label: {
                                 CustomButton6(simbol: "square.and.arrow.up")
@@ -160,7 +163,7 @@ struct CamposProductoAgregar: View {
                     VStack {
                         HStack {
                             CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
-                            CustomNumberField(placeHolder: "0", title: "Costo Unitario" ,userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
+                            CustomNumberField(placeHolder: "0", title: "Costo Unitario", userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
                         }
                         if agregarViewModel.agregarFields.quantityError != "" {
                             ErrorMessageText(message: agregarViewModel.agregarFields.quantityError)
@@ -187,6 +190,11 @@ struct CamposProductoAgregar: View {
             SideSwipeView(swipeDirection: .left, swipeAction: goToProductList)
         }
         .background(Color("color_background"))
+    }
+    private func debugButton() {
+        print("QuantityField: \(agregarViewModel.agregarFields.quantityStock)")
+        print("UnitPriceField: \(agregarViewModel.agregarFields.unitPrice)")
+        print("UnitCostField: \(agregarViewModel.agregarFields.unitCost)")
     }
     private func findImageOnInternet() {
         agregarViewModel.findProductNameOnInternet()
