@@ -74,8 +74,8 @@ class ProductViewModel: ObservableObject {
         await fetchProducts(page: lastPage + 1)
         if lastCarge > 0 {
             if self.currentPagesInScreen.count > self.maxPagesToLoad {
-                self.deleteCount = self.deleteCount + firstCharge
                 await MainActor.run {
+                    self.deleteCount = self.deleteCount + firstCharge
                     self.productsCoreData.removeFirst(firstCharge)
                 }
                 self.currentPagesInScreen.removeFirst()
