@@ -132,17 +132,17 @@ struct ListaControler: View {
     }
     func shouldLoadData(product: Product) {
         Task {
-            loading = true
+//            loading = true
             await productsCoreDataViewModel.shouldLoadData(product: product)
-            loading = false
+//            loading = false
         }
     }
     func loadProducts() {
         Task {
-            loading = true
+//            loading = true
             await productsCoreDataViewModel.releaseResources()
             await productsCoreDataViewModel.lazyFetchProducts()
-            loading = false
+//            loading = false
         }
     }
     func editProduct(product: Product) {
@@ -161,7 +161,7 @@ struct ListaControler: View {
     }
     func agregarProductoACarrito(producto: Product) {
         Task {
-            loading = true
+//            loading = true
             do {
                 try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
                 await carritoCoreDataViewModel.fetchCart()
@@ -170,7 +170,7 @@ struct ListaControler: View {
                 await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
-            loading = false
+//            loading = false
         }
     }
     private func playSound(named fileName: String) {

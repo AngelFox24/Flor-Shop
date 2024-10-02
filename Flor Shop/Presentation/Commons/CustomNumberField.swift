@@ -122,7 +122,11 @@ struct CustomNumberField: View {
             }
         }
         .onAppear() {
-            viewText = formatNumber(userInput)
+            if userInput == 0 {
+                viewText = ""
+            } else {
+                viewText = formatNumber(userInput)
+            }
         }
     }
     func formatNumber(_ input: Int) -> String {
