@@ -63,6 +63,11 @@ struct PointOfSaleView: View {
             }
             .cornerRadius(showMenu ? 35 : 0)
             .padding(.top, showMenu ? 0 : 1)
+            .onAppear {
+                Task {
+                    await cartViewModel.lazyFetchCart()
+                }
+            }
 //            if !showMenu {
 //                VStack {
 //                    Spacer()

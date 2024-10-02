@@ -18,13 +18,13 @@ struct CartView: View {
             CartTopBar(showMenu: $showMenu)
             ListCartController(loading: $loading, tab: $tab)
         }
-        .onAppear {
-            Task {
-                loading = true
-                await cartViewModel.lazyFetchCart()
-                loading = false
-            }
-        }
+//        .onAppear {
+//            Task {
+//                loading = true
+//                await cartViewModel.lazyFetchCart()
+//                loading = false
+//            }
+//        }
     }
 }
 
