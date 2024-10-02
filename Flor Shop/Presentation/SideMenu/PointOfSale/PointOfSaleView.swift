@@ -12,6 +12,16 @@ struct PointOfSaleView: View {
     @Binding var showMenu: Bool
     @Binding var tab: Tab
     @EnvironmentObject var cartViewModel: CartViewModel
+    init(
+        loading: Binding<Bool>,
+        showMenu: Binding<Bool>,
+        tab: Binding<Tab>
+    ) {
+        _loading = loading
+        _showMenu = showMenu
+        _tab = tab
+        UITabBar.appearance().barTintColor = UIColor(named: "color_background")
+    }
     var body: some View {
         ZStack {
             if !showMenu {

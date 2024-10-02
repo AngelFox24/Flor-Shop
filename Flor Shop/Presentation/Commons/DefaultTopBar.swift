@@ -24,8 +24,6 @@ struct DefaultTopBar: View {
     }
 }
 
-struct DefaultTopBar_Previews: PreviewProvider {
-    static var previews: some View {
-        DefaultTopBar(titleBar: "Agregar Producto")
-    }
+#Preview {
+    DefaultTopBar(titleBar: "Agregar Producto")
 }
