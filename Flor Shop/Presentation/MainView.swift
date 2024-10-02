@@ -44,6 +44,8 @@ struct MainView: View {
             case .paymentView:
                 PaymentView(loading: $loading)
                     .environmentObject(dependencies.cartViewModel)
+                    .environmentObject(dependencies.salesViewModel)
+
             case .customerHistoryView:
                 CustomerHistoryView(loading: $loading)
                     .environmentObject(dependencies.customerHistoryViewModel)

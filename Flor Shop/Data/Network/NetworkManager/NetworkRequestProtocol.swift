@@ -57,7 +57,7 @@ extension NetworkRequest {
             } else {
                 do {
                     let jsonData = try JSONEncoder().encode(parameters)
-//                    print(jsonData.jsonString()) //TODO: Print Parameters Json -------------------------------------------------------------------------
+                    print(jsonData.jsonString()) //TODO: Print Send Parameters Json -------------------------------------------------------------------------
                     request.httpBody = jsonData
                 } catch {
                     throw NetworkError.encodingFailed(error)

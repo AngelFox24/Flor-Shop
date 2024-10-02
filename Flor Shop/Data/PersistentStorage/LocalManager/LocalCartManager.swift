@@ -97,15 +97,22 @@ class LocalCartManagerImpl: LocalCartManager {
         try saveData()
     }
     func emptyCart() throws {
-//        try ensureCartExist()
         guard let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: self.sessionConfig.employeeId) else {
             throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
         }
         guard let cartEntity = employeeEntity.toCart else {
             throw LocalStorageError.entityNotFound("El empleado por defecto no tiene carrito asignado")
         }
-        cartEntity.toCartDetail = nil
-        cartEntity.total = 0
+        if let cartDetails = cartEntity.toCartDetail?.compactMap({ $0 as? Tb_CartDetail }) {
+            for cartDetail in cartDetails {
+                self.mainContext.delete(cartDetail)
+            }
+        }
+        self.mainContext.delete(cartEntity)
+        let newCartEntity = Tb_Cart(context: self.mainContext)
+        newCartEntity.idCart = UUID()
+        newCartEntity.total = 0
+        employeeEntity.toCart = newCartEntity
         try saveData()
     }
     func updateCartTotal() throws {

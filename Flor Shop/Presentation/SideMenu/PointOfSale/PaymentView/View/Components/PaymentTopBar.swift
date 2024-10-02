@@ -11,8 +11,8 @@ import AVFoundation
 
 struct PaymentTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
-    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var ventasCoreDataViewModel: SalesViewModel
+    @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var salesViewModel: SalesViewModel
     @EnvironmentObject var errorState: ErrorState
     @EnvironmentObject var navManager: NavManager
     @Binding var loading: Bool
@@ -26,11 +26,9 @@ struct PaymentTopBar: View {
                     CustomButton3()
                 })
                 Spacer()
-                Button(action: {
-                    registerSale()
-                }, label: {
+                Button(action: registerSale) {
                     CustomButton1(text: "Finalizar")
-                })
+                }
             })
         }
         .frame(maxWidth: .infinity)
@@ -42,12 +40,15 @@ struct PaymentTopBar: View {
         Task {
             loading = true
             do {
-                guard let cart = carritoCoreDataViewModel.cartCoreData else {
+                guard let cart = cartViewModel.cartCoreData else {
                     throw LocalStorageError.entityNotFound("No se encontro carrito configurado en viewModel")
                 }
-                try await ventasCoreDataViewModel.registerSale(cart: cart, customerId: carritoCoreDataViewModel.customerInCar?.id, paymentType: carritoCoreDataViewModel.paymentType)
-                carritoCoreDataViewModel.releaseResources()
-                carritoCoreDataViewModel.releaseCustomer()
+                try await salesViewModel.registerSale(cart: cart, customerId: cartViewModel.customerInCar?.id, paymentType: cartViewModel.paymentType)
+                cartViewModel.releaseResources()
+                try await cartViewModel.emptyCart()
+                cartViewModel.releaseCustomer()
+                await cartViewModel.lazyFetchCart()
+                navManager.goToBack()
                 playSound(named: "Success1")
             } catch {
                 await errorState.processError(error: error)

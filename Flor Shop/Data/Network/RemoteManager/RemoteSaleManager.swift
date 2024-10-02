@@ -20,7 +20,14 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
     func save(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
         let urlRoute = "/sales"
         let cartDTO = cart.toCartDTO(subsidiaryId: self.sessionConfig.subsidiaryId)
-        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: cartDTO)
+        let saleTransactionDTO = SaleTransactionDTO(
+            subsidiaryId: self.sessionConfig.subsidiaryId,
+            employeeId: self.sessionConfig.employeeId,
+            customerId: customerId,
+            paymentType: paymentType.description,
+            cart: cartDTO
+        )
+        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: saleTransactionDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func sync(updatedSince: Date) async throws -> [SaleDTO] {
