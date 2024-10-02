@@ -10,7 +10,7 @@ import CoreData
 
 protocol LocalSaleManager {
     func registerSale(cart: Car, paymentType:PaymentType, customerId: UUID?) throws
-    func sync(salesDTOs: [SaleDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleDTO]) throws
     func getLastUpdated() -> Date
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -521,7 +521,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return []
         }
     }
-    func sync(salesDTOs: [SaleDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleDTO]) throws {
         print("Entro a sale unos: \(salesDTOs.count)")
         for saleDTO in salesDTOs {
             print("Se procesara saleDTO: \(saleDTO.subsidiaryId.uuidString)")
@@ -533,29 +533,29 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 print("El detalle de las ventas esta vacio")
                 throw RepositoryError.syncFailed("El detalle de las ventas esta vacio")
             }
-            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: saleDTO.subsidiaryId) else {
+            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: backgroundContext, subsidiaryId: saleDTO.subsidiaryId) else {
                 print("La subsidiaria no existe en la BD local: \(saleDTO.subsidiaryId.uuidString)")
                 throw LocalStorageError.entityNotFound("La subsidiaria no existe en la BD local")
             }
-            guard let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: saleDTO.employeeId) else {
+            guard let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: backgroundContext, employeeId: saleDTO.employeeId) else {
                 print("El empleado no existe")
                 throw LocalStorageError.entityNotFound("El empleado no existe")
             }
-            if let saleEntity = try self.sessionConfig.getSaleEntityById(context: self.mainContext, saleId: saleDTO.id) {
+            if let saleEntity = try self.sessionConfig.getSaleEntityById(context: backgroundContext, saleId: saleDTO.id) {
                 //Update
                 print("Se actualiza sale")
                 saleEntity.paymentType = saleDTO.paymentType
                 saleEntity.createdAt = saleDTO.createdAt.internetDateTime()
                 saleEntity.updatedAt = saleDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             } else {
                 //Create
                 print("Se crea sale")
-                let newSaleEntity = Tb_Sale(context: self.mainContext)
+                let newSaleEntity = Tb_Sale(context: backgroundContext)
                 newSaleEntity.idSale = saleDTO.id
                 newSaleEntity.toSubsidiary = subsidiaryEntity
                 newSaleEntity.toEmployee = employeeEntity
-                if let customerId = saleDTO.customerId, let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerId) {
+                if let customerId = saleDTO.customerId, let customerEntity = try self.sessionConfig.getCustomerEntityById(context: backgroundContext, customerId: customerId) {
                     newSaleEntity.toCustomer = customerEntity
                 }
                 newSaleEntity.paymentType = saleDTO.paymentType
@@ -564,10 +564,10 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 newSaleEntity.updatedAt = saleDTO.updatedAt.internetDateTime()
                 newSaleEntity.total = Int64(saleDTO.total)
                 for saleDetailDTO in saleDTO.saleDetail {
-                    let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
+                    let newSaleDetailEntity = Tb_SaleDetail(context: backgroundContext)
                     newSaleDetailEntity.idSaleDetail = saleDetailDTO.id
                     if let imageId = saleDetailDTO.imageUrlId {
-                        newSaleDetailEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                        newSaleDetailEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                     }
                     newSaleDetailEntity.productName = saleDetailDTO.productName
                     newSaleDetailEntity.unitCost = Int64(saleDetailDTO.unitCost)
@@ -577,9 +577,9 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     newSaleDetailEntity.toSale = newSaleEntity
                     newSaleDetailEntity.createdAt = saleDetailDTO.createdAt.internetDateTime()
                     newSaleDetailEntity.updatedAt = saleDetailDTO.updatedAt.internetDateTime()
-                    try saveData()
+                    try saveData(context: backgroundContext)
                 }
-                try saveData()
+                try saveData(context: backgroundContext)
             }
         }
     }
@@ -595,6 +595,18 @@ class LocalSaleManagerImpl: LocalSaleManager {
     }
     private func rollback() {
         self.mainContext.rollback()
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
     private func getStartDate(date: Date, interval: SalesDateInterval) -> Date {
         var calendar = Calendar.current

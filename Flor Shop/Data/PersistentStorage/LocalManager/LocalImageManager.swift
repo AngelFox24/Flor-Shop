@@ -15,7 +15,7 @@ import UniformTypeIdentifiers
 import CommonCrypto
 
 protocol LocalImageManager {
-    func sync(imageURLsDTOs: [ImageURLDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLDTO]) throws
     func getLastUpdated() -> Date
     func save(image: ImageUrl) throws -> ImageUrl
     func saveImage(image: UIImage) async throws -> ImageUrl
@@ -54,14 +54,14 @@ class LocalImageManagerImpl: LocalImageManager {
             return dateFrom!
         }
     }
-    func sync(imageURLsDTOs: [ImageURLDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLDTO]) throws {
         for imageURLDTO in imageURLsDTOs {
-            if let imageEntity = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            if let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             } else {
                 let imageEntity = Tb_ImageUrl(context: self.mainContext)
                 imageEntity.idImageUrl = imageURLDTO.id
@@ -69,7 +69,7 @@ class LocalImageManagerImpl: LocalImageManager {
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             }
         }
     }
@@ -139,6 +139,18 @@ class LocalImageManagerImpl: LocalImageManager {
     }
     private func rollback() {
         self.mainContext.rollback()
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
     private func getImageEntityByHash(imageHash: String) -> Tb_ImageUrl? {
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()

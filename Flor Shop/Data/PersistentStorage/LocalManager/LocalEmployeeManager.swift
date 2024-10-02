@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol LocalEmployeeManager {
-    func sync(employeesDTOs: [EmployeeDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeDTO]) throws
     func getLastUpdated() -> Date
     func save(employee: Employee) throws
     func getEmployees() -> [Employee]
@@ -47,20 +47,20 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             return dateFrom!
         }
     }
-    func sync(employeesDTOs: [EmployeeDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeDTO]) throws {
         for employeeDTO in employeesDTOs {
             guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
-                rollback()
+                rollback(context: backgroundContext)
                 let cusError: String = "\(className): La subsidiaria no es la misma"
                 throw LocalStorageError.syncFailed(cusError)
             }
-            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: employeeDTO.subsidiaryID) else {
-                rollback()
+            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: backgroundContext, subsidiaryId: employeeDTO.subsidiaryID) else {
+                rollback(context: backgroundContext)
                 let cusError: String = "\(className): La subsidiaria no existe en la BD local"
                 throw LocalStorageError.syncFailed(cusError)
             }
-            if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employeeDTO.id) {
-//                print("Empleado actualizado")
+            if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: backgroundContext, employeeId: employeeDTO.id) {
+                //Create Employee
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
@@ -70,10 +70,13 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.user = employeeDTO.user
                 employeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
                 employeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             } else {
-//                print("Empleado creado")
-                let newEmployeeEntity = Tb_Employee(context: self.mainContext)
+                //Create cart
+                let cartEntity = Tb_Cart(context: backgroundContext)
+                cartEntity.idCart = UUID()
+                cartEntity.total = 0
+                let newEmployeeEntity = Tb_Employee(context: backgroundContext)
                 newEmployeeEntity.idEmployee = employeeDTO.id
                 newEmployeeEntity.name = employeeDTO.name
                 newEmployeeEntity.lastName = employeeDTO.lastName
@@ -83,10 +86,10 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.role = employeeDTO.role
                 newEmployeeEntity.user = employeeDTO.user
                 newEmployeeEntity.toSubsidiary = subsidiaryEntity
-                newEmployeeEntity.toCart = Tb_Cart(context: self.mainContext)
+                newEmployeeEntity.toCart = cartEntity
                 newEmployeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
                 newEmployeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             }
         }
     }
@@ -154,6 +157,18 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
     }
     private func rollback() {
         self.mainContext.rollback()
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
 }
 

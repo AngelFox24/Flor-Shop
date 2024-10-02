@@ -76,7 +76,7 @@ struct CamposProductoAgregar: View {
                         VStack(spacing: 0) {
                             AgregarViewPopoverHelp()
                             Spacer()
-                            ExportButtonView() { result in
+                            ImportButtonView() { result in
                                 handleFileImport(result: result)
                             }
                         }

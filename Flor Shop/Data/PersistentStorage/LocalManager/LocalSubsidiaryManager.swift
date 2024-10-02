@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 protocol LocalSubsidiaryManager {
-    func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, subsidiariesDTOs: [SubsidiaryDTO]) throws
     func save(subsidiary: Subsidiary) throws
     func getLastUpdated() -> Date
     func getSubsidiaries() -> [Subsidiary]
@@ -62,42 +62,42 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         }
         try saveData()
     }
-    func sync(subsidiariesDTOs: [SubsidiaryDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, subsidiariesDTOs: [SubsidiaryDTO]) throws {
 //        print("Local Sync: se sincronizara la subsidiaria")
         for subsidiaryDTO in subsidiariesDTOs {
             guard self.sessionConfig.companyId == subsidiaryDTO.companyID else {
                 print("La compañia no es la misma")
-                rollback()
+                rollback(context: backgroundContext)
                 let cusError: String = "\(className): La compañia no es la misma"
                 throw LocalStorageError.syncFailed(cusError)
             }
-            guard let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: subsidiaryDTO.companyID) else {
+            guard let companyEntity = try self.sessionConfig.getCompanyEntityById(context: backgroundContext, companyId: subsidiaryDTO.companyID) else {
                 print("No se pudo obtener la compañia: \(subsidiaryDTO.companyID)")
-                rollback()
+                rollback(context: backgroundContext)
                 let cusError: String = "\(className): No se pudo obtener la compañia de la BD"
                 throw LocalStorageError.syncFailed(cusError)
             }
-            if let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: subsidiaryDTO.id) {
+            if let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: backgroundContext, subsidiaryId: subsidiaryDTO.id) {
                 subsidiaryEntity.name = subsidiaryDTO.name
                 if let imageId = subsidiaryDTO.imageUrlId {
-                    subsidiaryEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    subsidiaryEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
 //                print("Local Sync: Se guardara en LocalSubsidiaryManager")
-                try saveData()
+                try saveData(context: backgroundContext)
             } else {
-                let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
+                let newSubsidiaryEntity = Tb_Subsidiary(context: backgroundContext)
                 newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
                 newSubsidiaryEntity.name = subsidiaryDTO.name
                 if let imageId = subsidiaryDTO.imageUrlId {
-                    newSubsidiaryEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    newSubsidiaryEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
                 newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 newSubsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
 //                print("Local Sync: Se guardara en LocalSubsidiaryManager")
-                try saveData()
+                try saveData(context: backgroundContext)
             }
         }
     }
@@ -125,5 +125,17 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
     }
     private func rollback() {
         self.mainContext.rollback()
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
 }

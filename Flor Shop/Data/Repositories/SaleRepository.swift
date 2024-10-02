@@ -9,7 +9,6 @@ import Foundation
 import CoreData
 
 protocol SaleRepository {
-    func sync() async throws
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -37,7 +36,7 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
             try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
         }
     }
-    func sync() async throws {
+    func sync(backgroundContext: NSManagedObjectContext) async throws {
         var counter = 0
         var items = 0
         repeat {
@@ -46,7 +45,7 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
             let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = salesDTOs.count
             print("Items Sync Sale: \(items)")
-            try self.localManager.sync(salesDTOs: salesDTOs)
+            try self.localManager.sync(backgroundContext: backgroundContext, salesDTOs: salesDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {

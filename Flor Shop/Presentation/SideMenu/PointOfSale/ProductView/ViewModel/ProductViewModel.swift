@@ -133,10 +133,10 @@ class ProductViewModel: ObservableObject {
         }
     }
     func lazyFetchProducts() async {
-        print("Empezo a fetch")
+        print("Empezo a fetch lazy")
         if productsCoreData.isEmpty {
             await fetchProducts()
         }
-        print("Termino a fetch")
+        print("Termino a fetch lazy")
     }
 }

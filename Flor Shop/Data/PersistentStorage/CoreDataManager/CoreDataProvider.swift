@@ -18,6 +18,10 @@ class CoreDataProvider {
                 fatalError("Unable to initialize data \(error)")
             }
         }
+        persistentContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        persistentContainer.viewContext.undoManager = nil
+        persistentContainer.viewContext.shouldDeleteInaccessibleFaults = true
+        persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
     }
     var viewContext: NSManagedObjectContext {
         persistentContainer.viewContext

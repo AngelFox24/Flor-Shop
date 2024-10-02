@@ -42,6 +42,7 @@ struct CustomSearchField: View {
 
 struct ProductSearchTopBar: View {
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @EnvironmentObject var errorState: ErrorState
     @Binding var loading: Bool
     @Binding var showMenu: Bool
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
@@ -70,6 +71,13 @@ struct ProductSearchTopBar: View {
                             }
                         }
                     }
+                    Section("Sync") {
+                        Button {
+                            sync()
+                        } label: {
+                            Label("Sync", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                        }
+                    }
                 } label: {
                     CustomButton3(simbol: "slider.horizontal.3")
                 }
@@ -91,6 +99,19 @@ struct ProductSearchTopBar: View {
             loading = true
             await productsCoreDataViewModel.releaseResources()
             await productsCoreDataViewModel.fetchProducts()
+            loading = false
+        }
+    }
+    private func sync() {
+        Task {
+            loading = true
+            do {
+                await productsCoreDataViewModel.releaseResources()
+                try await productsCoreDataViewModel.sync()
+                await productsCoreDataViewModel.fetchProducts()
+            } catch {
+                await errorState.processError(error: error)
+            }
             loading = false
         }
     }

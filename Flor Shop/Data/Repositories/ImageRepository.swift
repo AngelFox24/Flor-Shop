@@ -7,11 +7,11 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 
 protocol ImageRepository {
     func save(image: ImageUrl) async throws -> ImageUrl
     func saveImage(image: UIImage) async throws -> ImageUrl
-    func sync() async throws
     func deleteUnusedImages() async
 }
 
@@ -43,7 +43,7 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
             return try await self.localManager.saveImage(image: image)
         }
     }
-    func sync() async throws {
+    func sync(backgroundContext: NSManagedObjectContext) async throws {
         var counter = 0
         var items = 0
         
@@ -53,8 +53,8 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
             let updatedSince = self.localManager.getLastUpdated()
             let imagesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = imagesDTOs.count
-            try self.localManager.sync(imageURLsDTOs: imagesDTOs)
-        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+            try self.localManager.sync(backgroundContext: backgroundContext, imageURLsDTOs: imagesDTOs)
+        } while (counter < 200 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func deleteUnusedImages() async {
         await self.localManager.deleteUnusedImages()

@@ -11,7 +11,6 @@ import CoreData
 protocol CustomerRepository {
     func save(customer: Customer) async throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
-    func sync() async throws
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func getCustomer(customer: Customer) throws -> Customer?
@@ -28,7 +27,7 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync() async throws {
+    func sync(backgroundContext: NSManagedObjectContext) async throws {
         var counter = 0
         var items = 0
         
@@ -38,7 +37,7 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
             let updatedSince = self.localManager.getLastUpdated()
             let customersDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = customersDTOs.count
-            try self.localManager.sync(customersDTOs: customersDTOs)
+            try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: customersDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func payClientTotalDebt(customer: Customer) throws -> Bool {

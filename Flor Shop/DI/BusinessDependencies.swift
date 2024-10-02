@@ -107,7 +107,7 @@ struct BusinessDependencies {
         self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
         self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
         //MARK: UseCases
-        self.synchronizerDBUseCase = SynchronizerDBInteractor(imageRepository: imageRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository, employeeRepository: employeeRepository, productRepository: productRepository, saleRepository: salesRepository)
+        self.synchronizerDBUseCase = SynchronizerDBInteractor(persistentContainer: CoreDataProvider.shared.persistContainer, imageRepository: imageRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository, employeeRepository: employeeRepository, productRepository: productRepository, saleRepository: salesRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
         self.createSubsidiaryUseCase = CreateSubsidiaryInteractor(subsidiaryRepository: subsidiaryRepository)
@@ -129,7 +129,7 @@ struct BusinessDependencies {
         self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
-        self.importProductsUseCase = ImportProductsInteractor(productRepository: productRepository)
+        self.importProductsUseCase = ImportProductsInteractor(imageRepository: imageRepository, productRepository: productRepository)
 //        self.logInUseCase = LogInInteractor(sessionRepository: ses)
 //        self.logOutUseCase = LogOutInteractor()
         //MARK: ViewModels

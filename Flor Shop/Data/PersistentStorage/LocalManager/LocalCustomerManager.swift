@@ -11,7 +11,7 @@ import CoreData
 protocol LocalCustomerManager {
     func save(customer: Customer) throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
-    func sync(customersDTOs: [CustomerDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, customersDTOs: [CustomerDTO]) throws
     func getLastUpdated() -> Date
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
@@ -50,16 +50,16 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             return dateFrom!
         }
     }
-    func sync(customersDTOs: [CustomerDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, customersDTOs: [CustomerDTO]) throws {
         for customerDTO in customersDTOs {
             guard self.sessionConfig.companyId == customerDTO.companyID else {
                 throw LocalStorageError.syncFailed("La compañia no es la misma")
             }
-            guard let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: customerDTO.companyID) else {
-                rollback()
+            guard let companyEntity = try self.sessionConfig.getCompanyEntityById(context: backgroundContext, companyId: customerDTO.companyID) else {
+                rollback(context: backgroundContext)
                 throw LocalStorageError.entityNotFound("La compañia no existe en la bd local")
             }
-            if let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customerDTO.id) {
+            if let customerEntity = try self.sessionConfig.getCustomerEntityById(context: backgroundContext, customerId: customerDTO.id) {
                 customerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 customerEntity.creditScore = Int64(customerDTO.creditScore)
                 customerEntity.creditDays = Int64(customerDTO.creditDays)
@@ -72,16 +72,16 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    customerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    customerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
                 customerEntity.createdAt = customerDTO.createdAt.internetDateTime()
                 customerEntity.updatedAt = customerDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             } else {
-                let newCustomerEntity = Tb_Customer(context: self.mainContext)
+                let newCustomerEntity = Tb_Customer(context: backgroundContext)
                 newCustomerEntity.idCustomer = customerDTO.id
                 newCustomerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 newCustomerEntity.creditScore = Int64(customerDTO.creditScore)
@@ -95,7 +95,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
                 newCustomerEntity.toCompany = companyEntity
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
@@ -103,7 +103,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.totalDebt = Int64(customerDTO.totalDebt)
                 newCustomerEntity.createdAt = customerDTO.createdAt.internetDateTime()
                 newCustomerEntity.updatedAt = customerDTO.updatedAt.internetDateTime()
-                try saveData()
+                try saveData(context: backgroundContext)
             }
         }
     }
@@ -294,6 +294,18 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
     }
     private func rollback() {
         self.mainContext.rollback()
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
     private func getFilter(filter: CustomerFilterAttributes) -> NSPredicate {
         var filterAtt = NSPredicate(format: "name != ''")

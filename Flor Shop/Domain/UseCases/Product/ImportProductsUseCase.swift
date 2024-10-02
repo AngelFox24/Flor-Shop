@@ -13,9 +13,14 @@ protocol ImportProductsUseCase {
 }
 
 final class ImportProductsInteractor: ImportProductsUseCase {
+    private let imageRepository: ImageRepository
     private let productRepository: ProductRepository
     
-    init(productRepository: ProductRepository) {
+    init(
+        imageRepository: ImageRepository,
+        productRepository: ProductRepository
+    ) {
+        self.imageRepository = imageRepository
         self.productRepository = productRepository
     }
     
@@ -24,47 +29,104 @@ final class ImportProductsInteractor: ImportProductsUseCase {
         await loadTestData(url: url)
     }
     private func loadTestData(url: URL) async {
-        if let content = try? String(contentsOfFile: url.absoluteString, encoding: .utf8) {
-            do {
-                let lines = content.components(separatedBy: "\n")
-                var countSucc: Int = 0
-                var countFail: Int = 0
-                for line in lines {
-                    let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                    if elements.count != 3 {
-                        print("Count: \(elements.count)")
-                        countFail = countFail + 1
-                        continue
-                    }
-                    let date = Date()
-                    let unitType = getTreatedUnitType(elements[2])
-                    let quantity = getTreatedQuantity(quantity: elements[2], unitType: unitType)
-                    let product = Product(
-                        id: UUID(),
-                        active: true,
-                        name: elements[1],
-                        qty: quantity,
-                        unitType: unitType,
-                        unitCost: getTreatedAmount(elements[2]),
-                        unitPrice: getTreatedAmount(elements[2]),
-                        expirationDate: nil,
-                        image: ImageUrl(id: UUID(), imageUrl: elements[0], imageHash: "", createdAt: date, updatedAt: date),
-                        createdAt: date,
-                        updatedAt: date
-                    )
-                    do {
-//                        try await productRepository.save(product: product)
-                        countSucc += 1
-                    } catch {
-                        countFail += 1
-                    }
+        do {
+            let urlLocalFile = try copyFileToLocalFolder(url: url)
+            defer {
+                do {
+                    try deleteLocalFile(url: urlLocalFile)
+                } catch {
+                    print("Defered can't delete file")
                 }
-                print("Total: \(lines.count), Success: \(countSucc), Fails: \(countFail)")
-            } catch {
-                print("Error al leer el archivo: \(error)")
             }
-        } else {
-            print("No se encuentra el archivo")
+            var lineCount = 0
+            var countSucc: Int = 0
+            var countFail: Int = 0
+            for try await line in urlLocalFile.lines {
+                lineCount += 1
+                guard lineCount > 1 else { continue }
+                let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                if elements.count != 3 {
+                    print("To much elements: \(elements.count), line: \(lineCount)")
+                    countFail = countFail + 1
+                    continue
+                }
+                let date = Date()
+                let unitType = getTreatedUnitType(elements[2])
+                let quantity = getTreatedQuantity(quantity: elements[2], unitType: unitType)
+                let imageUrl = ImageUrl(
+                    id: UUID(),
+                    imageUrl: elements[0],
+                    imageHash: "",
+                    createdAt: date,
+                    updatedAt: date
+                )
+                var product = Product(
+                    id: UUID(),
+                    active: true,
+                    name: elements[1],
+                    qty: quantity,
+                    unitType: unitType,
+                    unitCost: getTreatedAmount(elements[2]),
+                    unitPrice: getTreatedAmount(elements[2]),
+                    expirationDate: nil,
+                    image: imageUrl,
+                    createdAt: date,
+                    updatedAt: date
+                )
+                do {
+                    let newImage = try await imageRepository.save(image: imageUrl)
+                    product.image = newImage
+                    try await productRepository.save(product: product)
+                    countSucc += 1
+                } catch {
+                    countFail += 1
+                }
+            }
+            print("Total: \(countSucc + countFail), Success: \(countSucc), Fails: \(countFail), lines: \(lineCount)")
+        } catch {
+            print("Error al leer el archivo: \(error)")
+        }
+    }
+    private func deleteLocalFile(url: URL) throws {
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: url.path(percentEncoded: false)) {
+            // Si existe, eliminar el archivo actual
+            do {
+                try fileManager.removeItem(at: url)
+            } catch {
+                print("Error al eliminar el archivo: \(error)")
+                throw LocalStorageError.fileSaveFailed("Error al guardar el archivo: \(error)")
+            }
+        }
+    }
+    private func copyFileToLocalFolder(url: URL) throws -> URL {
+        guard url.startAccessingSecurityScopedResource() else {
+            throw LocalStorageError.fileSaveFailed("No se puede acceder al archivo de forma segura")
+        }
+        let fileManager = FileManager.default
+        guard let libraryDirectory = fileManager.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+            throw LocalStorageError.fileSaveFailed("No se puedo obtener el directorio de Files")
+        }
+        let fileName = url.lastPathComponent + url.pathExtension
+        let fileDirectory = libraryDirectory.appendingPathComponent("Files")
+        do {
+            try FileManager.default.createDirectory(at: fileDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            print("Error al crear el directorio de Files: \(error)")
+            throw LocalStorageError.fileSaveFailed("Error al crear el directorio de Files: \(error)")
+        }
+        let fileURL = fileDirectory.appendingPathComponent(fileName)
+        if fileManager.fileExists(atPath: fileURL.path(percentEncoded: false)) {
+            // Si existe, eliminar el archivo actual
+            try deleteLocalFile(url: fileURL)
+        }
+        do {
+            // Copiar el archivo desde la URL de origen a la de destino
+            try fileManager.copyItem(at: url, to: fileURL)
+            return fileURL
+        } catch {
+            print("Error al guardar el archivo: \(error)")
+            throw LocalStorageError.fileSaveFailed("Error al guardar el archivo: \(error)")
         }
     }
     private func getTreatedUnitType(_ input: String) -> UnitTypeEnum {

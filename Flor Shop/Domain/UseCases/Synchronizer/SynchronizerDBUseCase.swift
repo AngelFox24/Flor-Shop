@@ -6,29 +6,33 @@
 //
 
 import Foundation
+import CoreData
 
 protocol SynchronizerDBUseCase {
     func sync() async throws
 }
 
 final class SynchronizerDBInteractor: SynchronizerDBUseCase {
-    private let imageRepository: ImageRepository
-    private let companyRepository: CompanyRepository
-    private let subsidiaryRepository: SubsidiaryRepository
-    private let customerRepository: CustomerRepository
-    private let employeeRepository: EmployeeRepository
-    private let productRepository: ProductRepository
-    private let saleRepository: SaleRepository
+    private let persistentContainer: NSPersistentContainer
+    private let imageRepository: Syncronizable
+    private let companyRepository: Syncronizable
+    private let subsidiaryRepository: Syncronizable
+    private let customerRepository: Syncronizable
+    private let employeeRepository: Syncronizable
+    private let productRepository: Syncronizable
+    private let saleRepository: Syncronizable
     
     init(
-        imageRepository: ImageRepository,
-        companyRepository: CompanyRepository,
-        subsidiaryRepository: SubsidiaryRepository,
-        customerRepository: CustomerRepository,
-        employeeRepository: EmployeeRepository,
-        productRepository: ProductRepository,
-        saleRepository: SaleRepository
+        persistentContainer: NSPersistentContainer,
+        imageRepository: Syncronizable,
+        companyRepository: Syncronizable,
+        subsidiaryRepository: Syncronizable,
+        customerRepository: Syncronizable,
+        employeeRepository: Syncronizable,
+        productRepository: Syncronizable,
+        saleRepository: Syncronizable
     ) {
+        self.persistentContainer = persistentContainer
         self.imageRepository = imageRepository
         self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
@@ -39,19 +43,26 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
     }
     
     func sync() async throws {
+        let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
+        backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        backgroundTaskContext.undoManager = nil
         print("Imagenes sincronizando ...")
-        try await self.imageRepository.sync()
+        try await self.imageRepository.sync(backgroundContext: backgroundTaskContext)
         print("Compania sincronizando ...")
-        try await self.companyRepository.sync()
+        try await self.companyRepository.sync(backgroundContext: backgroundTaskContext)
         print("Subsidiaria sincronizando ...")
-        try await self.subsidiaryRepository.sync()
+        try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext)
         print("Customers sincronizando ...")
-        try await self.customerRepository.sync()
+        try await self.customerRepository.sync(backgroundContext: backgroundTaskContext)
         print("Employees sincronizando ...")
-        try await self.employeeRepository.sync()
+        try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext)
         print("Productos sincronizando ...")
-        try await self.productRepository.sync()
+        try await self.productRepository.sync(backgroundContext: backgroundTaskContext)
         print("Sales sincronizando ...")
-        try await self.saleRepository.sync()
+        try await self.saleRepository.sync(backgroundContext: backgroundTaskContext)
+        // Guarda los cambios en el contexto de fondo
+        if backgroundTaskContext.hasChanges {
+            try backgroundTaskContext.save()
+        }
     }
 }

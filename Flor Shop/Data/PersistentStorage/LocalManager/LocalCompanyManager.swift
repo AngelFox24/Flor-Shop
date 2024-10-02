@@ -10,7 +10,7 @@ import CoreData
 
 protocol LocalCompanyManager {
     func getLastUpdated() -> Date
-    func sync(companyDTO: CompanyDTO) throws
+    func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyDTO) throws
     func save(company: Company) throws
 }
 
@@ -46,14 +46,14 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             return dateFrom!
         }
     }
-    func sync(companyDTO: CompanyDTO) throws {
+    func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyDTO) throws {
         guard self.sessionConfig.companyId == companyDTO.id else {
             print("La compañia no es la misma")
-            rollback()
+            rollback(context: backgroundContext)
             let cusError: String = "\(className): La compañia no es la misma"
             throw LocalStorageError.syncFailed(cusError)
         }
-        if let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: companyDTO.id) {
+        if let companyEntity = try self.sessionConfig.getCompanyEntityById(context: backgroundContext, companyId: companyDTO.id) {
 //            print("Se actualiza la compañia")
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
@@ -69,7 +69,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             newCompanyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
         }
 //        print("Se guardara los datos en LocalCompanyManager")
-        try saveData()
+        try saveData(context: backgroundContext)
     }
     func save(company: Company) throws {
         if let companyEntity = try self.sessionConfig.getCompanyEntityById(context: self.mainContext, companyId: company.id) { //Comprobacion Inicial por Id
@@ -94,6 +94,18 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             let cusError: String = "\(className): \(error.localizedDescription)"
             throw LocalStorageError.saveFailed(cusError)
         }
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
     private func rollback() {
         self.mainContext.rollback()

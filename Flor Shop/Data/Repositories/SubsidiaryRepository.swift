@@ -9,7 +9,6 @@ import Foundation
 import CoreData
 
 protocol SubsidiaryRepository {
-    func sync() async throws
     func save(subsidiary: Subsidiary) async throws
     func getSubsidiaries() -> [Subsidiary]
 }
@@ -25,7 +24,7 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync() async throws {
+    func sync(backgroundContext: NSManagedObjectContext) async throws {
         var counter = 0
         var items = 0
         repeat {
@@ -34,7 +33,7 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
             let subsidiaresDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = subsidiaresDTOs.count
             print("Items Sync: \(items)")
-            try self.localManager.sync(subsidiariesDTOs: subsidiaresDTOs)
+            try self.localManager.sync(backgroundContext: backgroundContext, subsidiariesDTOs: subsidiaresDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func save(subsidiary: Subsidiary) async throws {

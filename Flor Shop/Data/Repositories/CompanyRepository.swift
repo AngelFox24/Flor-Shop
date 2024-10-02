@@ -9,7 +9,6 @@ import Foundation
 import CoreData
 
 protocol CompanyRepository {
-    func sync() async throws
     func save(company: Company) async throws
 }
 
@@ -24,7 +23,7 @@ class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync() async throws {
+    func sync(backgroundContext: NSManagedObjectContext) async throws {
         var counter = 0
         var items = 0
         
@@ -34,7 +33,7 @@ class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
             let updatedSince = self.localManager.getLastUpdated()
             let companyDTO = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = 1
-            try self.localManager.sync(companyDTO: companyDTO)
+            try self.localManager.sync(backgroundContext: backgroundContext, companyDTO: companyDTO)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func save(company: Company) async throws {

@@ -11,10 +11,6 @@ import AVFoundation
 import StoreKit
 
 struct CustomProductView: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var errorState: ErrorState
-//    @State private var audioPlayer: AVAudioPlayer?
     @Binding var loading: Bool
     @Binding var showMenu: Bool
     @Binding var tab: Tab
@@ -23,46 +19,7 @@ struct CustomProductView: View {
             ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
             ListaControler(loading: $loading, tab: $tab)
         }
-        .onAppear {
-            sync()
-//            productsCoreDataViewModel.lazyFetchProducts()
-        }
-        .onDisappear {
-            Task {
-                loading = true
-                await productsCoreDataViewModel.releaseResources()
-                loading = false
-            }
-        }
     }
-    private func sync() {
-        Task {
-            loading = true
-            do {
-                await productsCoreDataViewModel.releaseResources()
-                try await productsCoreDataViewModel.sync()
-                await productsCoreDataViewModel.fetchProducts()
-                await cartViewModel.lazyFetchCart() //Para que apareces el badge
-            } catch {
-                await errorState.processError(error: error)
-            }
-            loading = false
-        }
-    }
-//    private func playSound(named fileName: String) {
-//        var soundURL: URL?
-//        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
-//        guard let url = soundURL else {
-//            print("No se pudo encontrar el archivo de sonido.")
-//            return
-//        }
-//        do {
-//            audioPlayer = try AVAudioPlayer(contentsOf: url)
-//            audioPlayer?.play()
-//        } catch {
-//            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
-//        }
-//    }
 }
 
 struct HomeView_Previews: PreviewProvider {
@@ -105,11 +62,6 @@ struct ListaControler: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color("color_background"))
-                .onAppear {
-                    Task{
-                        await productsCoreDataViewModel.lazyFetchProducts()
-                    }
-                }
             } else {
                 SideSwipeView(swipeDirection: .right, swipeAction: goToEditProduct)
                 HStack(spacing: 0, content: {
@@ -118,6 +70,7 @@ struct ListaControler: View {
                             Spacer()
                                 .frame(maxWidth: .infinity, minHeight: 80)
                                 .onAppear {
+                                    print("Products gosht")
                                     loadProducts()
                                 }
                         }

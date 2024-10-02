@@ -8,7 +8,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ExportButtonView: View {
+struct ImportButtonView: View {
     @State private var isFileImporterPresented = false
     var onCompletion: (Result<[URL], Error>) -> Void
     var body: some View {
@@ -27,5 +27,5 @@ struct ExportButtonView: View {
 }
 
 #Preview {
-    ExportButtonView() { _ in }
+    ImportButtonView() { _ in }
 }

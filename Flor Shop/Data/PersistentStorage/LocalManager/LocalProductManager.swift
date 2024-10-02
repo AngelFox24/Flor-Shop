@@ -10,7 +10,7 @@ import CoreData
 
 protocol LocalProductManager {
     func save(product: Product) throws
-    func sync(productsDTOs: [ProductDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductDTO]) throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     func getLastUpdated() -> Date
 }
@@ -137,19 +137,19 @@ class LocalProductManagerImpl: LocalProductManager {
             try saveData()
         }
     }
-    func sync(productsDTOs: [ProductDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductDTO]) throws {
         for productDTO in productsDTOs {
             guard self.sessionConfig.subsidiaryId == productDTO.subsidiaryId else {
                 print("Error en la sincronizacion, la subsidiaria no es la misma")
-                rollback()
+                rollback(context: backgroundContext)
                 throw LocalStorageError.syncFailed("Error en la sincronizacion, la subsidiaria no es la misma")
             }
-            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: productDTO.subsidiaryId) else {
+            guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: backgroundContext, subsidiaryId: productDTO.subsidiaryId) else {
                 print("No se pudo obtener la subsidiaria")
-                rollback()
+                rollback(context: backgroundContext)
                 throw LocalStorageError.entityNotFound("No se pudo obtener la subsidiaria")
             }
-            if let productEntity = try self.sessionConfig.getProductEntityById(context: self.mainContext, productId: productDTO.id) {
+            if let productEntity = try self.sessionConfig.getProductEntityById(context: backgroundContext, productId: productDTO.id) {
                 productEntity.productName = productDTO.productName
                 productEntity.active = productDTO.active
                 productEntity.quantityStock = Int64(productDTO.quantityStock)
@@ -160,13 +160,16 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
                 if let imageId = productDTO.imageUrlId {
-                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
-//                productEntity.toSubsidiary = subsidiaryEntity
-                try saveData()
+                try saveData(context: backgroundContext)
             } else {
-                let productEntity = Tb_Product(context: self.mainContext)
+                print("Product try saved: \(String(describing: productDTO.productName))")
+                let productEntity = Tb_Product(context: backgroundContext)
                 productEntity.idProduct = productDTO.id
+                print("productEntity.toSubsidiary: \(String(describing: productEntity.toSubsidiary?.idSubsidiary)), subsidiaryEntity.id: \(String(describing: subsidiaryEntity.idSubsidiary?.uuidString))")
+                productEntity.toSubsidiary = subsidiaryEntity
+                print("productEntity.toSubsidiary: \(String(describing: productEntity.toSubsidiary?.idSubsidiary)), subsidiaryEntity.id: \(String(describing: subsidiaryEntity.idSubsidiary?.uuidString))")
                 productEntity.productName = productDTO.productName
                 productEntity.active = productDTO.active
                 productEntity.quantityStock = Int64(productDTO.quantityStock)
@@ -177,10 +180,11 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
                 if let imageId = productDTO.imageUrlId {
-                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
+                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
+                    print("productEntity.toImageUrl: \(String(describing: productEntity.toImageUrl?.idImageUrl)), imageId: \(imageId.uuidString)")
                 }
-                productEntity.toSubsidiary = subsidiaryEntity
-                try saveData()
+                try saveData(context: backgroundContext)
+                print("Product saved: \(String(describing: productEntity.productName))")
             }
         }
     }
@@ -230,6 +234,18 @@ class LocalProductManagerImpl: LocalProductManager {
     }
     private func rollback() {
         self.mainContext.rollback()
+    }
+    private func saveData(context: NSManagedObjectContext) throws {
+        do {
+            try context.save()
+        } catch {
+            rollback(context: context)
+            let cusError: String = "\(className) - BackgroundContext: \(error.localizedDescription)"
+            throw LocalStorageError.saveFailed(cusError)
+        }
+    }
+    private func rollback(context: NSManagedObjectContext) {
+        context.rollback()
     }
     private func getOrderFilter(order: PrimaryOrder) -> NSSortDescriptor {
         var sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)

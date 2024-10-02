@@ -5,6 +5,7 @@
 //  Created by Rodil Pampañaupa Velasque on 20/05/23.
 
 import Foundation
+import CoreData
 
 enum RepositoryError: Error {
     case syncFailed(String)
@@ -12,13 +13,12 @@ enum RepositoryError: Error {
 }
 
 protocol ProductRepository {
-    func sync() async throws
     func save(product: Product) async throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
 }
 
 protocol Syncronizable {
-    func sync() async throws
+    func sync(backgroundContext: NSManagedObjectContext) async throws
 }
 
 public class ProductRepositoryImpl: ProductRepository, Syncronizable {
@@ -39,7 +39,7 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             try self.localManager.save(product: product)
         }
     }
-    func sync() async throws {
+    func sync(backgroundContext: NSManagedObjectContext) async throws {
         var counter = 0
         var items = 0
         
@@ -50,8 +50,8 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = productsDTOs.count
             print("Items: \(items)")
-            try self.localManager.sync(productsDTOs: productsDTOs)
-        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+            try self.localManager.sync(backgroundContext: backgroundContext, productsDTOs: productsDTOs)
+        } while (counter < 200 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         return localManager.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)
