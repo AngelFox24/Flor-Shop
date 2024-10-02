@@ -31,7 +31,6 @@ struct CartView: View {
 struct CartView_Previews: PreviewProvider {
     static var previews: some View {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let nor = NormalDependencies()
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var loading: Bool = false
         @State var showMenu: Bool = false
@@ -117,26 +116,30 @@ struct ListCartController: View {
     }
     func decreceProductAmount(cartDetail: CartDetail) {
         Task {
-            loading = true
+//            loading = true
             do {
-                try await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+                if cartDetail.quantity - 1 <= 0 {
+                    try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+                } else {
+                    try await cartViewModel.changeProductAmount(productId: cartDetail.product.id, amount: cartDetail.quantity - 1)
+                }
                 await cartViewModel.fetchCart()
             } catch {
                 await errorState.processError(error: error)
             }
-            loading = false
+//            loading = false
         }
     }
     func increaceProductAmount(cartDetail: CartDetail) {
         Task {
-            loading = true
+//            loading = true
             do {
-                try await cartViewModel.changeProductAmount(cartDetail: cartDetail)
+                try await cartViewModel.changeProductAmount(productId: cartDetail.product.id, amount: cartDetail.quantity + 1)
                 await cartViewModel.fetchCart()
             } catch {
                 await errorState.processError(error: error)
             }
-            loading = false
+//            loading = false
         }
     }
 }

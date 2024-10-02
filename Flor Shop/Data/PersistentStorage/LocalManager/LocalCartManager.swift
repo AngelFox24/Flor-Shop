@@ -77,7 +77,7 @@ class LocalCartManagerImpl: LocalCartManager {
         }
     }
     func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws {
-//        try ensureCartExist()
+        print("changeProductAmountInCartDetail: productId: \(productId), amount: \(amount)")
         guard let cartDetailEntity = try getCartDetail(productId: productId) else {
             print("Detalle de producto no existe en carrito")
             throw LocalStorageError.invalidInput("Detalle de producto no existe en carrito")

@@ -164,6 +164,7 @@ struct ListaControler: View {
             loading = true
             do {
                 try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+                await carritoCoreDataViewModel.fetchCart()
                 playSound(named: "Success1")
             } catch {
                 await errorState.processError(error: error)

@@ -14,7 +14,7 @@ protocol CarRepository {
     func addProductoToCarrito(product: Product) throws
     func emptyCart() throws
     func updateCartTotal() throws
-    func changeProductAmountInCartDetail(cartDetail: CartDetail) throws
+    func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -39,7 +39,7 @@ class CarRepositoryImpl: CarRepository {
     func updateCartTotal() throws {
         try self.localManager.updateCartTotal()
     }
-    func changeProductAmountInCartDetail(cartDetail: CartDetail) throws {
-        try self.localManager.changeProductAmountInCartDetail(productId: cartDetail.product.id, amount: cartDetail.quantity)
+    func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws {
+        try self.localManager.changeProductAmountInCartDetail(productId: productId, amount: amount)
     }
 }

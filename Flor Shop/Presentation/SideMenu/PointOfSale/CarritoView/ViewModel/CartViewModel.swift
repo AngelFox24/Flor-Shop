@@ -58,8 +58,9 @@ class CartViewModel: ObservableObject {
         try self.emptyCartUseCase.execute()
         await fetchCart()
     }
-    func changeProductAmount(cartDetail: CartDetail) async throws {
-        try self.changeProductAmountInCartUseCase.execute(cartDetail: cartDetail)
+    func changeProductAmount(productId: UUID, amount: Int) async throws {
+        print("CartViewModel: changeProductAmount")
+        try self.changeProductAmountInCartUseCase.execute(productId: productId, amount: amount)
     }
     func releaseResources() {
         self.cartCoreData = nil
