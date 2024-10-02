@@ -104,14 +104,14 @@ struct ListCartController: View {
     }
     func deleteCartDetail(cartDetail: CartDetail) {
         Task {
-            loading = true
+//            loading = true
             do {
                 try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
                 await cartViewModel.fetchCart()
             } catch {
                 await errorState.processError(error: error)
             }
-            loading = false
+//            loading = false
         }
     }
     func decreceProductAmount(cartDetail: CartDetail) {

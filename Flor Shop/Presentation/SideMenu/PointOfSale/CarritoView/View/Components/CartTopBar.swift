@@ -13,7 +13,6 @@ struct CartTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
-    @State private var audioPlayer: AVAudioPlayer?
     @Binding var showMenu: Bool
     var body: some View {
         HStack {
@@ -27,7 +26,9 @@ struct CartTopBar: View {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
-                            Text(String(format: "%.2f", carritoCoreDataViewModel.cartCoreData?.total.cents ?? 0.0))
+                        let total = carritoCoreDataViewModel.cartCoreData?.total.cents ?? 0
+                        let totalD = Double(total/100)
+                        Text(String(format: "%.2f", totalD))
                             .font(.custom("Artifika-Regular", size: 20))
                     })
                     .padding(.horizontal, 10)
@@ -59,21 +60,6 @@ struct CartTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
-    }
-    
-    private func playSound(named fileName: String) {
-        var soundURL: URL?
-        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
-        guard let url = soundURL else {
-            print("No se pudo encontrar el archivo de sonido.")
-            return
-        }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
-        }
     }
 }
 struct CartTopBar_Previews: PreviewProvider {
