@@ -61,7 +61,7 @@ struct CustomerHistoryTopBar: View {
         Task {
             loading = true
             do {
-                if customerHistoryViewModel.payTotalAmount() {
+                if try await customerHistoryViewModel.payTotalAmount() {
                     try customerHistoryViewModel.updateData()
                     playSound(named: "Success1")
                 } else {

@@ -10,7 +10,7 @@ import CoreData
 
 protocol CustomerRepository {
     func save(customer: Customer) async throws
-    func payClientTotalDebt(customer: Customer) throws -> Bool
+    func payClientTotalDebt(customer: Customer) async throws -> Bool
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func getCustomer(customer: Customer) throws -> Customer?
@@ -40,8 +40,18 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
             try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: customersDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }
-    func payClientTotalDebt(customer: Customer) throws -> Bool {
-        return try self.localManager.payClientTotalDebt(customer: customer)
+    func payClientTotalDebt(customer: Customer) async throws -> Bool {
+        if cloudBD {
+            let change = try await self.remoteManager.payDebt(customerId: customer.id, amount: customer.totalDebt.cents)
+            //TODO: Improve error throwing
+            if change != 0 {
+                throw LocalStorageError.saveFailed("Quedo vuelto para el cliente: \(Money(change).solesString)")
+            } else {
+                return true
+            }
+        } else {
+            return try self.localManager.payClientTotalDebt(customer: customer)
+        }
     }
     func save(customer: Customer) async throws {
         if cloudBD {

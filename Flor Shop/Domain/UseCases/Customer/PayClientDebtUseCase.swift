@@ -8,8 +8,7 @@
 import Foundation
 
 protocol PayClientDebtUseCase {
-    
-    func total(customer: Customer) -> Bool
+    func total(customer: Customer) async throws -> Bool
 }
 
 final class PayClientDebtInteractor: PayClientDebtUseCase {
@@ -20,12 +19,8 @@ final class PayClientDebtInteractor: PayClientDebtUseCase {
         self.customerRepository = customerRepository
     }
     
-    func total(customer: Customer) -> Bool {
-        do {
-            return try customerRepository.payClientTotalDebt(customer: customer)
-        } catch {
-            return false
-        }
+    func total(customer: Customer) async throws -> Bool {
+        return try await customerRepository.payClientTotalDebt(customer: customer)
     }
 }
 
