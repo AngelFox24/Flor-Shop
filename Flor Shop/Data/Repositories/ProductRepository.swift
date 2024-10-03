@@ -49,7 +49,6 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             let updatedSince = self.localManager.getLastUpdated()
             let productsDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = productsDTOs.count
-            print("Items: \(items)")
             try self.localManager.sync(backgroundContext: backgroundContext, productsDTOs: productsDTOs)
         } while (counter < 200 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }

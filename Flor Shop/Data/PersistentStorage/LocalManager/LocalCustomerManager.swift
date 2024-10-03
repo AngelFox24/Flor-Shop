@@ -72,14 +72,8 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                    if imageEntity == nil {
-                        print("ImageEntity is nil")
-                    }
-                    print("ImageEntity: \(String(describing: imageEntity?.idImageUrl?.uuidString)), imageId: \(String(describing: imageId.uuidString))")
-                    customerEntity.toImageUrl = imageEntity
+                    customerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
-                print("customerEntity.toImageUrl: \(String(describing: customerEntity.toImageUrl?.idImageUrl)), imageId: \(String(describing: customerDTO.imageUrlId?.uuidString))")
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase.internetDateTime()
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -101,14 +95,8 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                    if imageEntity == nil {
-                        print("ImageEntity is nil")
-                    }
-                    print("ImageEntity: \(String(describing: imageEntity?.idImageUrl?.uuidString)), imageId: \(String(describing: imageId.uuidString))")
-                    newCustomerEntity.toImageUrl = imageEntity
+                    newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
                 }
-                print("newCustomerEntity.toImageUrl: \(String(describing: newCustomerEntity.toImageUrl?.idImageUrl)), imageId: \(String(describing: customerDTO.imageUrlId?.uuidString))")
                 newCustomerEntity.toCompany = companyEntity
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase.internetDateTime()
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit

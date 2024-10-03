@@ -69,14 +69,14 @@ class AddCustomerViewModel: ObservableObject {
             fieldsAddCustomer.name = customer.name
             fieldsAddCustomer.lastname = customer.lastName
             fieldsAddCustomer.phoneNumber = customer.phoneNumber
-            fieldsAddCustomer.totalDebt = String(customer.totalDebt.cents)
+            fieldsAddCustomer.totalDebt = customer.totalDebt.cents
             fieldsAddCustomer.dateLimit = customer.dateLimit
             fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
             fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
             fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
             fieldsAddCustomer.creditDays = String(customer.creditDays)
             fieldsAddCustomer.creditScore = customer.creditScore
-            fieldsAddCustomer.creditLimit = String(customer.creditLimit.cents)
+            fieldsAddCustomer.creditLimit = customer.creditLimit.cents
         }     }
     func addCustomer() async throws {
         await MainActor.run {
@@ -90,14 +90,6 @@ class AddCustomerViewModel: ObservableObject {
         await releaseResources()
     }
     func createCustomer() async throws -> Customer? {
-        guard let totalDebt = Int(fieldsAddCustomer.totalDebt) else {
-            print("Los valores no se pueden convertir correctamente")
-            return nil
-        }
-        guard let creditLimitInt = Int(fieldsAddCustomer.creditLimit) else {
-            print("Los valores no se pueden convertir correctamente")
-            return nil
-        }
         guard let creditDaysInt = Int(fieldsAddCustomer.creditDays) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
@@ -108,7 +100,7 @@ class AddCustomerViewModel: ObservableObject {
                 name: fieldsAddCustomer.name,
                 lastName: fieldsAddCustomer.lastname,
                 image: try await getImageIfExist(),
-                creditLimit: Money(creditLimitInt),
+                creditLimit: Money(fieldsAddCustomer.creditLimit),
                 isCreditLimit: false,
                 creditDays: creditDaysInt,
                 isDateLimit: false,
@@ -116,7 +108,7 @@ class AddCustomerViewModel: ObservableObject {
                 dateLimit: fieldsAddCustomer.dateLimit,
                 phoneNumber: fieldsAddCustomer.phoneNumber,
                 lastDatePurchase: Date(),
-                totalDebt: Money(totalDebt),
+                totalDebt: Money(fieldsAddCustomer.totalDebt),
                 isCreditLimitActive: fieldsAddCustomer.creditLimitFlag,
                 isDateLimitActive: fieldsAddCustomer.dateLimitFlag,
                 createdAt: Date(),
@@ -174,7 +166,7 @@ struct FieldsAddCustomer {
     }
     var phoneNumber: String = ""
     var phoneNumberEdited: Bool = false
-    var totalDebt: String = "0"
+    var totalDebt: Int = 0
     //TODO: Cambiar de Fecha a dias de Credito, luego calcular fecha
     var dateLimit: Date = Date()
     var firstDatePurchaseWithCredit: Date?
@@ -209,14 +201,11 @@ struct FieldsAddCustomer {
         }
     }
     var creditScore: Int = 50
-    var creditLimit: String = "100"
+    var creditLimit: Int = 10000
     var creditLimitEdited: Bool = false
     var creditLimitFlag: Bool = false
     var creditLimitError: String {
-        guard let creditLimitDouble = Double(creditLimit) else {
-            return "Debe ser número decimal o entero"
-        }
-        if creditLimitDouble <= 0 && creditLimitEdited {
+        if creditLimit <= 0 && creditLimitEdited {
             return "Debe ser mayor a 0: \(creditLimitEdited)"
         } else {
             return ""

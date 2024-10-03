@@ -70,7 +70,8 @@ struct AddCustomerFields : View {
                 }
                 HStack(content: {
                     CustomTextField(title: "Móvil" ,value: $addCustomerViewModel.fieldsAddCustomer.phoneNumber, edited: $addCustomerViewModel.fieldsAddCustomer.phoneNumberEdited, keyboardType: .numberPad)
-                    CustomTextField(title: "Deuda Total" ,value: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
+//                    CustomTextField(title: "Deuda Total" ,value: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
+                    CustomNumberField(placeHolder: "0", title: "Deuda Total", userInput: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
                 })
                 HStack(content: {
                     CustomTextField(title: "Fecha Límite" ,value: .constant(addCustomerViewModel.fieldsAddCustomer.dateLimitString), edited: .constant(false), disable: true)
@@ -88,7 +89,7 @@ struct AddCustomerFields : View {
                     ErrorMessageText(message: addCustomerViewModel.fieldsAddCustomer.creditDaysError)
                 }
                 HStack(content: {
-                    CustomTextField(title: "Límite de Crédito" ,value: $addCustomerViewModel.fieldsAddCustomer.creditLimit, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.creditLimitFlag, keyboardType: .numberPad)
+                    CustomNumberField(placeHolder: "0", title: "Límite de Crédito", userInput: $addCustomerViewModel.fieldsAddCustomer.creditLimit, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
                     Toggle("", isOn: $addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
                         .labelsHidden()
                         .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))

@@ -60,14 +60,5 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
         try await self.productRepository.sync(backgroundContext: backgroundTaskContext)
         print("Sales sincronizando ...")
         try await self.saleRepository.sync(backgroundContext: backgroundTaskContext)
-        // Guarda los cambios en el contexto de fondo
-        if backgroundTaskContext.hasChanges {
-            print("Save changes WTF")
-            try backgroundTaskContext.save()
-        }
-        try persistentContainer.viewContext.performAndWait {
-            print("Save changes in Main Thread")
-            try persistentContainer.viewContext.save()
-        }
     }
 }

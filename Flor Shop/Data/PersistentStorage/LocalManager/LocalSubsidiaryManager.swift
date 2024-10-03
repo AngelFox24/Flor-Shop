@@ -84,7 +84,6 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 }
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
-//                print("Local Sync: Se guardara en LocalSubsidiaryManager")
                 try saveData(context: backgroundContext)
             } else {
                 let newSubsidiaryEntity = Tb_Subsidiary(context: backgroundContext)
@@ -96,7 +95,6 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 newSubsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
-//                print("Local Sync: Se guardara en LocalSubsidiaryManager")
                 try saveData(context: backgroundContext)
             }
         }

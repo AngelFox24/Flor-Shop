@@ -77,16 +77,16 @@ struct CustomerHistoryTopBar: View {
     }
     private func editCustomer(customer: Customer) {
         Task {
-            loading = true
+//            loading = true
             do {
                 try await addCustomerViewModel.editCustomer(customer: customer)
                 navManager.goToAddCustomerView()
-                playSound(named: "Success1")
+//                playSound(named: "Success1")
             } catch {
                 await errorState.processError(error: error)
                 playSound(named: "Fail1")
             }
-            loading = false
+//            loading = false
         }
     }
     private func playSound(named fileName: String) {

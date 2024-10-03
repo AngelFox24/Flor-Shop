@@ -178,10 +178,8 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
                 if let imageId = productDTO.imageUrlId {
                     productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                    print("productEntity.toImageUrl: \(String(describing: productEntity.toImageUrl?.idImageUrl)), imageId: \(imageId.uuidString)")
                 }
                 try saveData(context: backgroundContext)
-                print("Product saved: \(String(describing: productEntity.productName))")
             }
         }
     }
