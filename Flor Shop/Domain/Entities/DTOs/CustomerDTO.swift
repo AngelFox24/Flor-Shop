@@ -18,9 +18,9 @@ struct CustomerDTO: Codable {
     let isCreditLimit: Bool
     let isDateLimitActive: Bool
     let isDateLimit: Bool
-    let dateLimit: Date
+    let dateLimit: String
     var firstDatePurchaseWithCredit: Date?
-    let lastDatePurchase: Date
+    let lastDatePurchase: String
     let phoneNumber: String
     let creditLimit: Int
     let companyID: UUID
@@ -41,10 +41,10 @@ extension CustomerDTO {
             creditDays: creditDays,
             isDateLimit: isDateLimit,
             creditScore: creditScore,
-            dateLimit: dateLimit,
+            dateLimit: dateLimit.internetDateTime() ?? minimunDate(),
             firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
             phoneNumber: phoneNumber,
-            lastDatePurchase: lastDatePurchase,
+            lastDatePurchase: lastDatePurchase.internetDateTime() ?? minimunDate(),
             totalDebt: Money(totalDebt),
             isCreditLimitActive: isCreditLimitActive,
             isDateLimitActive: isDateLimitActive,

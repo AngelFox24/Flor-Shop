@@ -164,12 +164,9 @@ class LocalProductManagerImpl: LocalProductManager {
                 }
                 try saveData(context: backgroundContext)
             } else {
-                print("Product try saved: \(String(describing: productDTO.productName))")
                 let productEntity = Tb_Product(context: backgroundContext)
                 productEntity.idProduct = productDTO.id
-                print("productEntity.toSubsidiary: \(String(describing: productEntity.toSubsidiary?.idSubsidiary)), subsidiaryEntity.id: \(String(describing: subsidiaryEntity.idSubsidiary?.uuidString))")
                 productEntity.toSubsidiary = subsidiaryEntity
-                print("productEntity.toSubsidiary: \(String(describing: productEntity.toSubsidiary?.idSubsidiary)), subsidiaryEntity.id: \(String(describing: subsidiaryEntity.idSubsidiary?.uuidString))")
                 productEntity.productName = productDTO.productName
                 productEntity.active = productDTO.active
                 productEntity.quantityStock = Int64(productDTO.quantityStock)

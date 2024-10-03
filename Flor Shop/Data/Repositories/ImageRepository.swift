@@ -53,6 +53,7 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
             let updatedSince = self.localManager.getLastUpdated()
             let imagesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
             items = imagesDTOs.count
+            print("Images to sync: \(items)")
             try self.localManager.sync(backgroundContext: backgroundContext, imageURLsDTOs: imagesDTOs)
         } while (counter < 200 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
     }

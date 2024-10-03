@@ -10,7 +10,6 @@ import _PhotosUI_SwiftUI
 
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
-//    @Published var isLoading: Bool = false
     @Published var isPresented: Bool = false
     @Published var selectedImage: UIImage?
     @Published var selectionImage: PhotosPickerItem? = nil {
@@ -30,7 +29,6 @@ class AddCustomerViewModel: ObservableObject {
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
-//        self.isLoading = true
         Task {
             do {
                 let data = try await selection.loadTransferable(type: Data.self)
@@ -38,17 +36,16 @@ class AddCustomerViewModel: ObservableObject {
                     print("Imagen vacia")
                     return
                 }
-                //selectedImage = uiImage
-                //TODO: Save image with id
+                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
+                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
                 await MainActor.run {
-                    isPresented = false
-                    selectedImage = uiImage
+                    print("Se le asigno la imagen")
+                    self.selectedImage = uiImageTreated
                 }
             } catch {
                 print("Error: \(error)")
             }
         }
-//        self.isLoading = false
     }
     func fieldsTrue() {
         print("All value true")
@@ -80,9 +77,7 @@ class AddCustomerViewModel: ObservableObject {
             fieldsAddCustomer.creditDays = String(customer.creditDays)
             fieldsAddCustomer.creditScore = customer.creditScore
             fieldsAddCustomer.creditLimit = String(customer.creditLimit.cents)
-        }
-        
-    }
+        }     }
     func addCustomer() async throws {
         await MainActor.run {
             fieldsTrue()
@@ -137,25 +132,8 @@ class AddCustomerViewModel: ObservableObject {
         self.fieldsAddCustomer.errorBD.isEmpty &&
         self.fieldsAddCustomer.creditDaysError.isEmpty &&
         self.fieldsAddCustomer.creditLimitError.isEmpty
-        
         return isEmpty
     }
-    /*
-    func saveSelectedImage() -> ImageUrl? {
-        guard let image = self.selectedImage else {
-            return nil
-        }
-        guard let idImage = fieldsAddCustomer.idImage else {
-            print("Se crea nuevo id")
-            let newIdImage = UUID()
-            let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: image, resize: true)
-            return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
-        }
-        print("Se usa el mismo id")
-        let imageHash = self.saveImageUseCase.execute(id: idImage, image: image, resize: true)
-        return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
-    }
-     */
     func getImageIfExist() async throws -> ImageUrl? {
         guard let image = self.selectedImage else {
             return nil
@@ -172,9 +150,10 @@ class AddCustomerViewModel: ObservableObject {
     }
 }
 
-class FieldsAddCustomer {
+struct FieldsAddCustomer {
     var id: UUID?
     var idImage: UUID?
+    var isShowingPicker = false
     var name: String = ""
     var nameEdited: Bool = false
     var nameError: String {

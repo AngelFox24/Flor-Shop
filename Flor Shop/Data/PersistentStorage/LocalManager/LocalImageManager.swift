@@ -56,20 +56,29 @@ class LocalImageManagerImpl: LocalImageManager {
     }
     func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLDTO]) throws {
         for imageURLDTO in imageURLsDTOs {
-            if let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageURLDTO.id) { //Comprobamos si la imagen o la URL existe para asignarle el mismo
+            if let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageURLDTO.id) {
+                print("Image already exists. \(imageURLDTO.id.uuidString)")
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
                 try saveData(context: backgroundContext)
             } else {
-                let imageEntity = Tb_ImageUrl(context: self.mainContext)
+                print("Creating new image. \(imageURLDTO.id.uuidString)")
+                let imageEntity = Tb_ImageUrl(context: backgroundContext)
                 imageEntity.idImageUrl = imageURLDTO.id
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
                 imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
                 try saveData(context: backgroundContext)
+                //Verify image exist
+                if let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageURLDTO.id) {
+                    print("Image already exists in BackgroundContext. \(String(describing: imageEntity.idImageUrl?.uuidString))")
+                }
+                if let imageEntity = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageURLDTO.id) {
+                    print("Image already exists in MainContext. \(String(describing: imageEntity.idImageUrl?.uuidString))")
+                }
             }
         }
     }

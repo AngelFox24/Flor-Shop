@@ -8,19 +8,14 @@
 import SwiftUI
 
 struct AddCustomerView: View {
-    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @Binding var loading: Bool
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
                 AddCustomerTopBar(loading: $loading)
-                AddCustomerFields(isPresented: $addCustomerViewModel.isPresented)
+                AddCustomerFields()
             }
             .background(Color("color_background"))
-            .blur(radius: addCustomerViewModel.isPresented ? 2 : 0)
-            if addCustomerViewModel.isPresented {
-                SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented, fromInternet: false, selectionImage: $addCustomerViewModel.selectionImage)
-            }
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
@@ -29,7 +24,6 @@ struct AddCustomerView: View {
 
 struct AddCustomerView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var loading: Bool = false
@@ -40,30 +34,22 @@ struct AddCustomerView_Previews: PreviewProvider {
 
 struct AddCustomerFields : View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @Binding var isPresented: Bool
     var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(.vertical, showsIndicators: false, content: {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()
-                    Button(action: {
-                        withAnimation(.easeIn) {
-                            isPresented = true
-                        }
-                    }, label: {
-                        VStack(content: {
-                            if let imageC = addCustomerViewModel.selectedImage {
-                                Image(uiImage: imageC)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: sizeCampo, height: sizeCampo)
-                                    .cornerRadius(15.0)
-                            } else {
-                                CardViewPlaceHolder2(size: sizeCampo)
-                            }
-                        })
-                    })
+                    CustomImageView(
+                        uiImage: $addCustomerViewModel.selectedImage,
+                        size: sizeCampo,
+                        searchFromInternet: nil,
+                        searchFromGallery: searchFromGallery,
+                        takePhoto: takePhoto
+                    )
+                    .photosPicker(isPresented: $addCustomerViewModel.fieldsAddCustomer.isShowingPicker,
+                                  selection: $addCustomerViewModel.selectionImage,
+                                  matching: .any(of: [.images, .screenshots]))
                     Spacer()
                 }
                 HStack {
@@ -118,5 +104,11 @@ struct AddCustomerFields : View {
                 await addCustomerViewModel.releaseResources()
             }
         }
+    }
+    func searchFromGallery() {
+        addCustomerViewModel.fieldsAddCustomer.isShowingPicker = true
+    }
+    func takePhoto() {
+        
     }
 }

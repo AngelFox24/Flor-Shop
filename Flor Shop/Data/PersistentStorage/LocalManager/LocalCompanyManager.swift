@@ -61,7 +61,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             companyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
         } else {
 //            print("Se crea la compañia")
-            let newCompanyEntity = Tb_Company(context: self.mainContext)
+            let newCompanyEntity = Tb_Company(context: backgroundContext)
             newCompanyEntity.idCompany = companyDTO.id
             newCompanyEntity.companyName = companyDTO.companyName
             newCompanyEntity.ruc = companyDTO.ruc

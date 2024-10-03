@@ -41,6 +41,7 @@ struct MainView: View {
             case .addCustomerView:
                 AddCustomerView(loading: $loading)
                     .environmentObject(dependencies.addCustomerViewModel)
+                    .environmentObject(dependencies.customerHistoryViewModel)
             case .paymentView:
                 PaymentView(loading: $loading)
                     .environmentObject(dependencies.cartViewModel)

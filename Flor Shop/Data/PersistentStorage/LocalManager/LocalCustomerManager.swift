@@ -65,16 +65,22 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.creditDays = Int64(customerDTO.creditDays)
                 customerEntity.isCreditLimitActive = customerDTO.isCreditLimitActive
                 customerEntity.isCreditLimit = customerDTO.isCreditLimit
-                customerEntity.dateLimit = customerDTO.dateLimit
+                customerEntity.dateLimit = customerDTO.dateLimit.internetDateTime()
                 customerEntity.isDateLimitActive = customerDTO.isDateLimitActive
                 customerEntity.isDateLimit = customerDTO.isDateLimit
                 customerEntity.lastName = customerDTO.lastName
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    customerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
+                    let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
+                    if imageEntity == nil {
+                        print("ImageEntity is nil")
+                    }
+                    print("ImageEntity: \(String(describing: imageEntity?.idImageUrl?.uuidString)), imageId: \(String(describing: imageId.uuidString))")
+                    customerEntity.toImageUrl = imageEntity
                 }
-                customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
+                print("customerEntity.toImageUrl: \(String(describing: customerEntity.toImageUrl?.idImageUrl)), imageId: \(String(describing: customerDTO.imageUrlId?.uuidString))")
+                customerEntity.lastDatePurchase = customerDTO.lastDatePurchase.internetDateTime()
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
                 customerEntity.createdAt = customerDTO.createdAt.internetDateTime()
@@ -88,17 +94,23 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.creditDays = Int64(customerDTO.creditDays)
                 newCustomerEntity.isCreditLimitActive = customerDTO.isCreditLimitActive
                 newCustomerEntity.isCreditLimit = customerDTO.isCreditLimit
-                newCustomerEntity.dateLimit = customerDTO.dateLimit
+                newCustomerEntity.dateLimit = customerDTO.dateLimit.internetDateTime()
                 newCustomerEntity.isDateLimitActive = customerDTO.isDateLimitActive
                 newCustomerEntity.isDateLimit = customerDTO.isDateLimit
                 newCustomerEntity.lastName = customerDTO.lastName
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
                 if let imageId = customerDTO.imageUrlId {
-                    newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
+                    let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
+                    if imageEntity == nil {
+                        print("ImageEntity is nil")
+                    }
+                    print("ImageEntity: \(String(describing: imageEntity?.idImageUrl?.uuidString)), imageId: \(String(describing: imageId.uuidString))")
+                    newCustomerEntity.toImageUrl = imageEntity
                 }
+                print("newCustomerEntity.toImageUrl: \(String(describing: newCustomerEntity.toImageUrl?.idImageUrl)), imageId: \(String(describing: customerDTO.imageUrlId?.uuidString))")
                 newCustomerEntity.toCompany = companyEntity
-                newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
+                newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase.internetDateTime()
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 newCustomerEntity.totalDebt = Int64(customerDTO.totalDebt)
                 newCustomerEntity.createdAt = customerDTO.createdAt.internetDateTime()

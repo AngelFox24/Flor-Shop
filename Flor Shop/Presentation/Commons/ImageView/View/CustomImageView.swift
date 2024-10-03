@@ -11,15 +11,17 @@ import PhotosUI
 struct CustomImageView: View {
     @Binding var uiImage: UIImage?
     let size: CGFloat
-    let searchFromInternet: () -> Void
+    let searchFromInternet: (() -> Void)?
     let searchFromGallery: () -> Void
     let takePhoto: () -> Void
     var body: some View {
         Menu {
-            Button(action: {
-                searchFromInternet()
-            }) {
-                Label("Buscar en Internet", systemImage: "globe")
+            if let searchAction = searchFromInternet {
+                Button(action: {
+                    searchAction()
+                }) {
+                    Label("Buscar en Internet", systemImage: "globe")
+                }
             }
             Button(action: {
                 searchFromGallery()
