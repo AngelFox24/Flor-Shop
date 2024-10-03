@@ -13,9 +13,9 @@ protocol SaleRepository {
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
-    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double
-    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
+    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Money
+    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Money
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money
 }
 
 class SaleRepositoryImpl: SaleRepository, Syncronizable {
@@ -57,13 +57,13 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         return try self.localManager.getSalesDetailsGroupedByCustomer(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
     }
-    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double {
+    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Money {
         return try self.localManager.getSalesAmount(date: date, interval: interval)
     }
-    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double {
+    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Money {
         return try self.localManager.getCostAmount(date: date, interval: interval)
     }
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money {
         return self.localManager.getRevenueAmount(date: date, interval: interval)
     }
 }

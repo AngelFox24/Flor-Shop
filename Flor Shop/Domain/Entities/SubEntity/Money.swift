@@ -20,6 +20,11 @@ struct Money: Codable {
         return Double(cents) / 100.0
     }
     
+    // Propiedad computada para obtener el valor en soles (opcional, según necesidad)
+    var solesString: String {
+        return String(format: "%.2f", soles)
+    }
+    
     // Implementación de Codable para personalizar la serialización
     private enum CodingKeys: String, CodingKey {
         case cents

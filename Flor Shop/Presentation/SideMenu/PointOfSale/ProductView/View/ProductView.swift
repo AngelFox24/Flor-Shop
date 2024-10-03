@@ -81,7 +81,7 @@ struct ListaControler: View {
                                 topStatus: nil,
                                 mainText: producto.name,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(format: "%.2f", producto.unitPrice.soles),
+                                mainIndicator: producto.unitPrice.solesString,
                                 mainIndicatorAlert: false,
                                 secondaryIndicatorSuffix: " u",
                                 secondaryIndicator: String(producto.qty),

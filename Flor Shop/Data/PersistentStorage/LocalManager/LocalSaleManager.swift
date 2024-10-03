@@ -15,9 +15,9 @@ protocol LocalSaleManager {
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
-    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double
-    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
+    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Money
+    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Money
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money
 }
 
 class LocalSaleManagerImpl: LocalSaleManager {
@@ -116,7 +116,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return dateFrom!
         }
     }
-    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Double {
+    func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Money {
         guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
             throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
         }
@@ -133,7 +133,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
         let sumDescription = NSExpressionDescription()
         sumDescription.name = "SalesAmount"
         sumDescription.expression = sumExpression
-        sumDescription.expressionResultType = .doubleAttributeType
+        sumDescription.expressionResultType = .integer64AttributeType
 
         // Asigna la descripción de expresión al fetchRequest
         request.resultType = .dictionaryResultType
@@ -144,18 +144,18 @@ class LocalSaleManagerImpl: LocalSaleManager {
             
             // Obtiene la suma de valorVenta
             if let firstResult = result.first,
-               let salesAmount = firstResult["SalesAmount"] as? Double {
-                return salesAmount
+               let salesAmount = firstResult["SalesAmount"] as? Int64 {
+                return Money(Int(salesAmount))
             } else {
                 print("No se encontraron registros dentro del rango de fechas.")
-                return 0
+                return Money(0)
             }
         } catch {
             print("Error al obtener registros dentro del rango de fechas: \(error)")
-            return 0
+            return Money(0)
         }
     }
-    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Double {
+    func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Money {
         guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
             throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
         }
@@ -172,7 +172,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
         let sumDescription = NSExpressionDescription()
         sumDescription.name = "SalesCost"
         sumDescription.expression = sumExpression
-        sumDescription.expressionResultType = .doubleAttributeType
+        sumDescription.expressionResultType = .integer64AttributeType
         
         request.resultType = .dictionaryResultType
         request.propertiesToFetch = [sumDescription]
@@ -181,19 +181,19 @@ class LocalSaleManagerImpl: LocalSaleManager {
             let result = try self.mainContext.fetch(request)
             
             if let firstResult = result.first,
-               let salesCost = firstResult["SalesCost"] as? Double {
-                return salesCost
+               let salesCost = firstResult["SalesCost"] as? Int64 {
+                return Money(Int(salesCost))
             } else {
                 print("No se encontraron registros de detalles de ventas dentro del rango de fechas.")
-                return 0
+                return Money(0)
             }
         } catch {
             print("Error al obtener registros de detalles de ventas dentro del rango de fechas: \(error)")
-            return 0
+            return Money(0)
         }
     }
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return 0
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money {
+        return Money(0)
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {
