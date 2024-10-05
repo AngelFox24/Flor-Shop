@@ -10,7 +10,6 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var navManager: NavManager
-    
     @EnvironmentObject var logInViewModel: LogInViewModel
     @EnvironmentObject var errorState: ErrorState
     

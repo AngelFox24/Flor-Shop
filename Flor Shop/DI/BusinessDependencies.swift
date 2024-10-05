@@ -40,7 +40,7 @@ struct BusinessDependencies {
     private let salesRepository: SaleRepositoryImpl
     private let imageRepository: ImageRepositoryImpl
     //UseCases
-    private let synchronizerDBUseCase: SynchronizerDBUseCase
+    let synchronizerDBUseCase: SynchronizerDBUseCase
     private let getProductsUseCase: GetProductsUseCase
     private let createCompanyUseCase: CreateCompanyUseCase
     private let createSubsidiaryUseCase: CreateSubsidiaryUseCase
@@ -111,21 +111,21 @@ struct BusinessDependencies {
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
         self.createSubsidiaryUseCase = CreateSubsidiaryInteractor(subsidiaryRepository: subsidiaryRepository)
-        self.createEmployeeUseCase = CreateEmployeeInteractor(employeeRepository: employeeRepository, imageRepository: imageRepository)
-        self.saveProductUseCase = SaveProductInteractor(productRepository: productRepository, imageRepository: imageRepository)
+        self.createEmployeeUseCase = CreateEmployeeInteractor(synchronizerDBUseCase: synchronizerDBUseCase, employeeRepository: employeeRepository, imageRepository: imageRepository)
+        self.saveProductUseCase = SaveProductInteractor(synchronizerDBUseCase: synchronizerDBUseCase, productRepository: productRepository, imageRepository: imageRepository)
         self.getCartUseCase = GetCartInteractor(cartRepository: cartRepository)
         self.deleteCartDetailUseCase = DeleteCartDetailInteractor(cartRepository: cartRepository)
         self.addProductoToCartUseCase = AddProductoToCartInteractor(cartRepository: cartRepository)
         self.emptyCartUseCase = EmptyCartInteractor(cartRepository: cartRepository)
         self.changeProductAmountInCartUseCase = ChangeProductAmountInCartInteractor(cartRepository: cartRepository)
-        self.registerSaleUseCase = RegisterSaleInteractor(saleRepository: salesRepository)
+        self.registerSaleUseCase = RegisterSaleInteractor(synchronizerDBUseCase: synchronizerDBUseCase, saleRepository: salesRepository)
         self.getSalesUseCase = GetSalesInteractor(saleRepository: salesRepository)
         self.getEmployeesUseCase = GetEmployeesUseCaseInteractor(employeeRepository: employeeRepository)
         self.getCustomersUseCase = GetCustomersInteractor(customerRepository: customerRepository)
-        self.saveCustomerUseCase = SaveCustomerInteractor(customerRepository: customerRepository, imageRepository: imageRepository)
+        self.saveCustomerUseCase = SaveCustomerInteractor(synchronizerDBUseCase: synchronizerDBUseCase, customerRepository: customerRepository, imageRepository: imageRepository)
         self.getSalesDetailsUseCase = GetSalesDetailsInteractor(saleRepository: salesRepository)
         self.getCustomerSalesUseCase = GetCustomerSalesInteractor(customerRepository: customerRepository)
-        self.payClientDebtUseCase = PayClientDebtInteractor(customerRepository: customerRepository)
+        self.payClientDebtUseCase = PayClientDebtInteractor(synchronizerDBUseCase: synchronizerDBUseCase, customerRepository: customerRepository)
         self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)

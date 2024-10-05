@@ -27,25 +27,27 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync(backgroundContext: NSManagedObjectContext) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
         var counter = 0
         var items = 0
-        
+        var responseSyncTokens = syncTokens
         repeat {
             print("Counter: \(counter)")
             counter += 1
             let updatedSince = self.localManager.getLastUpdated()
-            let customersDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
-            items = customersDTOs.count
-            try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: customersDTOs)
+            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
+            items = response.customersDTOs.count
+            responseSyncTokens = response.syncIds
+            try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: response.customersDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+        return responseSyncTokens
     }
     func payClientTotalDebt(customer: Customer) async throws -> Bool {
         if cloudBD {
             let change = try await self.remoteManager.payDebt(customerId: customer.id, amount: customer.totalDebt.cents)
             //TODO: Improve error throwing
             if change != 0 {
-                throw LocalStorageError.saveFailed("Quedo vuelto para el cliente: \(Money(change).solesString)")
+                throw LocalStorageError.invalidInput("Quedo vuelto para el cliente: \(Money(change).solesString)")
             } else {
                 return true
             }

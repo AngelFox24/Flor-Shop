@@ -36,17 +36,20 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
             try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
         var counter = 0
         var items = 0
+        var responseSyncTokens = syncTokens
         repeat {
             counter += 1
             let updatedSince = self.localManager.getLastUpdated()
-            let salesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
-            items = salesDTOs.count
+            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
+            items = response.salesDTOs.count
+            responseSyncTokens = response.syncIds
             print("Items Sync Sale: \(items)")
-            try self.localManager.sync(backgroundContext: backgroundContext, salesDTOs: salesDTOs)
+            try self.localManager.sync(backgroundContext: backgroundContext, salesDTOs: response.salesDTOs)
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+        return responseSyncTokens
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         return try self.localManager.getSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)

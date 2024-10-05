@@ -17,7 +17,7 @@ class NetworkManager {
     func perform<T: Decodable>(_ request: NetworkRequest, decodeTo type: T.Type) async throws -> T {
         let urlRequest = try request.urlRequest()
         let (data, response) = try await urlSession.data(for: urlRequest)
-//        print(data.jsonString()) //TODO: Print Parameters Json -------------------------------------------------------------------------
+        print(data.jsonString()) //TODO: Print Parameters Json -------------------------------------------------------------------------
         try processResponse(response: response)
         return try decodeData(data: data, type: T.self)
     }

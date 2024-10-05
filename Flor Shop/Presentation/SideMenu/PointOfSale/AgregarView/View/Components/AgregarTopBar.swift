@@ -11,6 +11,7 @@ import AVFoundation
 
 struct AgregarTopBar: View {
     @EnvironmentObject var agregarViewModel: AgregarViewModel
+    @EnvironmentObject var productViewModel: ProductViewModel
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
     @Binding var loading: Bool
@@ -22,17 +23,6 @@ struct AgregarTopBar: View {
             Button(action: saveProduct) {
                 CustomButton1(text: "Guardar")
             }
-//            Menu {
-//                Button(action: exportProducts) {
-//                    Label("Exportar", systemImage: "square.and.arrow.up")
-//                }
-//                Button(action: importProducts) {
-//                    Label("Importar", systemImage: "square.and.arrow.down")
-//                }
-//            } label: {
-//                CustomButton3(simbol: "ellipsis")
-//                    .rotationEffect(.degrees(90))
-//            }
         }
         .padding(.top, showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
@@ -40,47 +30,13 @@ struct AgregarTopBar: View {
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
     }
-//    private func exportProducts() {
-//        Task {
-//            loading = true
-//            do {
-//                let dateFormatter = DateFormatter()
-//                dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-//                let currentDate = Date()
-//                let formattedDate = dateFormatter.string(from: currentDate)
-//                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(formattedDate).csv")
-//                await agregarViewModel.exportCSV(url: tempURL)
-//                loading = false
-//                showShareSheet(url: tempURL)
-//            } catch {
-//                await MainActor.run {
-//                    errorState.processError(error: error)
-//                }
-//            }
-//            loading = false
-//        }
-//    }
-//    private func importProducts() {
-//        Task {
-//            loading = true
-//            do {
-//                await agregarViewModel.importCSV()
-//                playSound(named: "Success1")
-//            } catch {
-//                await MainActor.run {
-//                    errorState.processError(error: error)
-//                }
-//                playSound(named: "Fail1")
-//            }
-//            loading = false
-//        }
-//    }
     private func saveProduct() {
         Task {
             loading = true
             do {
 //                UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first?.endEditing(true)
                 try await agregarViewModel.addProduct()
+                await productViewModel.releaseResources()
                 playSound(named: "Success1")
             } catch {
                 await errorState.processError(error: error)

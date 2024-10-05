@@ -9,8 +9,11 @@ import SwiftUI
 
 struct MainView: View {
     let dependencies: BusinessDependencies
+    @EnvironmentObject var errorState: ErrorState
+    @Environment(\.scenePhase) var scenePhase
     @Binding var loading: Bool
     @State var showMenu: Bool = false
+    @State private var syncTask: Task<Void, Never>?
     var body: some View {
         VStack(spacing: 0) {
             MenuView(loading: $loading, showMenu: $showMenu)
@@ -46,12 +49,64 @@ struct MainView: View {
                 PaymentView(loading: $loading)
                     .environmentObject(dependencies.cartViewModel)
                     .environmentObject(dependencies.salesViewModel)
-
+                
             case .customerHistoryView:
                 CustomerHistoryView(loading: $loading)
                     .environmentObject(dependencies.customerHistoryViewModel)
                     .environmentObject(dependencies.addCustomerViewModel)
             }
+        }
+        .onAppear {
+            if scenePhase == .active {
+                print("=====================OnAppear Schedule a Task to Sync=====================")
+                syncTask?.cancel()
+                syncTask = Task(priority: .background) {
+                    await syncInBackground()
+                }
+            }
+        }
+        .onChange(of: scenePhase) { newValue in
+            switch newValue {
+            case .active:
+                print("=====================OnChange Schedule a Task to Sync=====================")
+                syncTask?.cancel()
+                syncTask = Task(priority: .background) {
+                    await syncInBackground()
+                }
+            case .inactive:
+                syncTask?.cancel()
+            case .background:
+                syncTask?.cancel()
+            default:
+                syncTask?.cancel()
+            }
+        }
+    }
+    private func syncInBackground() async {
+        while !Task.isCancelled {
+            print("=====================Synchronizing...=====================")
+            let lastDate = await dependencies.synchronizerDBUseCase.lastSyncDate
+            if let lastDateSync = lastDate {
+                let now = Date()
+                let differenceInSeconds = now.timeIntervalSince(lastDateSync)
+                if differenceInSeconds >= 3 {//3 segundos
+                    do {
+                        try await dependencies.synchronizerDBUseCase.sync()
+                        print("=====================Syncronized=====================")
+                    } catch {
+                        await errorState.processError(error: error)
+                    }
+                }
+            } else {
+                do {
+                    try await dependencies.synchronizerDBUseCase.sync()
+                    print("=====================Syncronized=====================")
+                } catch {
+                    await errorState.processError(error: error)
+                }
+            }
+            // Esperar 10 segundos
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
         }
     }
 }

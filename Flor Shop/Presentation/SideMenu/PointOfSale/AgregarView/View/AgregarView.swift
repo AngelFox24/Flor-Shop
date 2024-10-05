@@ -51,20 +51,14 @@ struct CamposProductoAgregar: View {
     var body: some View {
         HStack(spacing: 0) {
             SideSwipeView(swipeDirection: .right, swipeAction: goToSideMenu)
-            ScrollView(.vertical,
-                       showsIndicators: false,
-                       content: {
-                VStack(spacing: 23,
-                       content: {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 23) {
                     HStack {
                         VStack(spacing: 0) {
-                            Button(action: debugButton) {
-                                CustomButton6(simbol: "arrow.trianglehead.2.clockwise.rotate.90")
-                            }
                             Spacer()
-                            Button(action: exportProducts, label: {
+                            Button(action: exportProducts) {
                                 CustomButton6(simbol: "square.and.arrow.up")
-                            })
+                            }
                         }
                         Spacer()
                         CustomImageView(
@@ -87,9 +81,7 @@ struct CamposProductoAgregar: View {
                     VStack {
                         HStack {
                             HStack {
-                                Button(action: {
-                                    pasteFromInternet()
-                                }, label: {
+                                Button(action: pasteFromInternet) {
                                     Text("Pegar Imagen")
                                         .foregroundColor(.black)
                                         .font(.custom("Artifika-Regular", size: 16))
@@ -97,7 +89,7 @@ struct CamposProductoAgregar: View {
                                         .padding(.horizontal, 5)
                                         .background(Color("color_secondary"))
                                         .cornerRadius(10)
-                                })
+                                }
                             }
                         }
                         if agregarViewModel.agregarFields.imageURLError != "" {
@@ -116,13 +108,13 @@ struct CamposProductoAgregar: View {
                                     .foregroundStyle(Color("color_accent"))
                                     .padding(.horizontal, 5)
                             }
-                            .sheet(isPresented: $agregarViewModel.agregarFields.isShowingScanner, content: {
+                            .sheet(isPresented: $agregarViewModel.agregarFields.isShowingScanner) {
                                 BarcodeScannerView { code in
                                     agregarViewModel.agregarFields.scannedCode = code
                                     agregarViewModel.agregarFields.isShowingScanner = false
                                 }
                                 .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
-                            })
+                            }
                         }
                     }
                     VStack {
@@ -184,17 +176,12 @@ struct CamposProductoAgregar: View {
                                 .padding(.top, 6)
                         }
                     }
-                })
+                }
                 .padding(.top, 10)
-            })
+            }
             SideSwipeView(swipeDirection: .left, swipeAction: goToProductList)
         }
         .background(Color("color_background"))
-    }
-    private func debugButton() {
-        print("QuantityField: \(agregarViewModel.agregarFields.quantityStock)")
-        print("UnitPriceField: \(agregarViewModel.agregarFields.unitPrice)")
-        print("UnitCostField: \(agregarViewModel.agregarFields.unitCost)")
     }
     private func findImageOnInternet() {
         agregarViewModel.findProductNameOnInternet()
@@ -216,7 +203,7 @@ struct CamposProductoAgregar: View {
     private func exportProducts() {
         Task {
             loading = true
-            do {
+//            do {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
                 let currentDate = Date()
@@ -225,21 +212,21 @@ struct CamposProductoAgregar: View {
                 await agregarViewModel.exportCSV(url: tempURL)
                 loading = false
                 showShareSheet(url: tempURL)
-            } catch {
-                await errorState.processError(error: error)
-            }
-            loading = false
+//            } catch {
+//                await errorState.processError(error: error)
+//            }
+//            loading = false
         }
     }
     func pasteFromInternet() {
         Task {
-            loading = true
+//            loading = true
             do {
                 try await agregarViewModel.pasteFromInternet()
             } catch {
                 await errorState.processError(error: error)
             }
-            loading = false
+//            loading = false
         }
     }
     func goToSideMenu() {

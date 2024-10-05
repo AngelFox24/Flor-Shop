@@ -28,7 +28,7 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
     }
     func save(image: ImageUrl) async throws -> ImageUrl {
         if cloudBD {
-            return try await self.remoteManager.save(imageUrl: image, imageData: nil)
+            return try await self.remoteManager.save(imageUrl: image, imageData: nil).toImageUrl()
         } else {
             return try self.localManager.save(image: image)
         }
@@ -38,23 +38,25 @@ class ImageRepositoryImpl: ImageRepository, Syncronizable {
             let imageData = try await LocalImageManagerImpl.getEfficientImageTreated(image: image)
             let imageHash = LocalImageManagerImpl.generarHash(data: imageData)
             let imageUrl = ImageUrl(id: UUID(), imageUrl: "", imageHash: imageHash, createdAt: Date(), updatedAt: Date())
-            return try await self.remoteManager.save(imageUrl: imageUrl, imageData: imageData)
+            return try await self.remoteManager.save(imageUrl: imageUrl, imageData: imageData).toImageUrl()
         } else {
             return try await self.localManager.saveImage(image: image)
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
         var counter = 0
         var items = 0
-        
+        var responseSyncTokens = syncTokens
         repeat {
             print("Counter: \(counter)")
             counter += 1
             let updatedSince = self.localManager.getLastUpdated()
-            let imagesDTOs = try await self.remoteManager.sync(updatedSince: updatedSince)
-            items = imagesDTOs.count
-            try self.localManager.sync(backgroundContext: backgroundContext, imageURLsDTOs: imagesDTOs)
+            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
+            items = response.imagesUrlDTOs.count
+            responseSyncTokens = response.syncIds
+            try self.localManager.sync(backgroundContext: backgroundContext, imageURLsDTOs: response.imagesUrlDTOs)
         } while (counter < 200 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+        return responseSyncTokens
     }
     func deleteUnusedImages() async {
         await self.localManager.deleteUnusedImages()

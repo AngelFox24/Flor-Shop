@@ -11,6 +11,7 @@ import AVFoundation
 import StoreKit
 
 struct CustomProductView: View {
+    @EnvironmentObject var productViewModel: ProductViewModel
     @Binding var loading: Bool
     @Binding var showMenu: Bool
     @Binding var tab: Tab
@@ -18,6 +19,11 @@ struct CustomProductView: View {
         VStack(spacing: 0) {
             ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
             ListaControler(loading: $loading, tab: $tab)
+        }
+        .onAppear {
+            Task {
+                await productViewModel.lazyFetchProducts()
+            }
         }
     }
 }

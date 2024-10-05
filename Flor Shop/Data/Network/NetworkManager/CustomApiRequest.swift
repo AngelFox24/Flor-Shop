@@ -24,31 +24,3 @@ struct CustomAPIRequest: NetworkRequest {
         return parameter
     }
 }
-
-struct LogInParameters: Encodable {
-    let username: String
-    let password: String
-}
-
-struct SyncFromSubsidiaryParameters: Encodable {
-    let subsidiaryId: UUID
-    let updatedSince: String
-}
-
-struct SyncFromCompanyParameters: Encodable {
-    let companyId: UUID
-    let updatedSince: String
-}
-
-struct SyncImageParameters: Encodable {
-    let updatedSince: String
-}
-
-struct SyncCompanyParameters: Encodable {
-    let updatedSince: String
-}
-
-struct DefaultResponse: Decodable {
-    let code: Int
-    let message: String
-}

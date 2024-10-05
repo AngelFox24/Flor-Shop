@@ -9,7 +9,8 @@ import Foundation
 
 protocol RemoteCompanyManager {
     func save(company: Company) async throws
-    func sync(updatedSince: Date) async throws -> CompanyDTO
+    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncCompanyResponse
+    func getTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters
 }
 
 final class RemoteCompanyManagerImpl: RemoteCompanyManager {
@@ -19,12 +20,19 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: companyDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: Date) async throws -> CompanyDTO {
+    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncCompanyResponse {
         let urlRoute = "/companies/sync"
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
-        let syncParameters = SyncCompanyParameters(updatedSince: updatedSinceFormated)
+        let syncParameters = SyncCompanyParameters(updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
-        let data: CompanyDTO = try await NetworkManager.shared.perform(request, decodeTo: CompanyDTO.self)
+        let data: SyncCompanyResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncCompanyResponse.self)
+        return data
+    }
+    func getTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
+        let urlRoute = "/verifySync"
+        let requestParameters = localTokens
+        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: requestParameters)
+        let data: VerifySyncParameters = try await NetworkManager.shared.perform(request, decodeTo: VerifySyncParameters.self)
         return data
     }
 }

@@ -20,7 +20,6 @@ struct LaunchScreenView: View {
                 .rotationEffect(rotationAngle)
         }
         .onReceive(timer) { _ in
-            // First phase with continuos scaling
             withAnimation(.spring()) {
                 firstPhaseIsAnimating.toggle()
             }
@@ -46,7 +45,6 @@ struct LoadingView: View {
                 .rotationEffect(rotationAngle)
         }
         .onReceive(timer) { _ in
-            // First phase with continuos scaling
             withAnimation(.spring()) {
                 firstPhaseIsAnimating.toggle()
             }
@@ -68,6 +66,7 @@ struct LoadingFotoView: View {
             ZStack {
                 Color("colorlaunchbackground")
                     .opacity(0.8)
+                    .disabled(true)
                 Image("logo")
                     .resizable()
                     .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)

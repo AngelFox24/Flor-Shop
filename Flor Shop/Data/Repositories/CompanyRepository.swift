@@ -10,6 +10,7 @@ import CoreData
 
 protocol CompanyRepository {
     func save(company: Company) async throws
+    func getSyncTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters
 }
 
 class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
@@ -23,18 +24,22 @@ class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync(backgroundContext: NSManagedObjectContext) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
         var counter = 0
         var items = 0
-        
+        var responseSyncTokens = syncTokens
         repeat {
             print("Counter: \(counter)")
             counter += 1
             let updatedSince = self.localManager.getLastUpdated()
-            let companyDTO = try await self.remoteManager.sync(updatedSince: updatedSince)
+            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
             items = 1
-            try self.localManager.sync(backgroundContext: backgroundContext, companyDTO: companyDTO)
+            responseSyncTokens = response.syncIds
+            if let companyDTO = response.companyDTO {
+                try self.localManager.sync(backgroundContext: backgroundContext, companyDTO: companyDTO)
+            }
         } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
+        return responseSyncTokens
     }
     func save(company: Company) async throws {
         if cloudBD {
@@ -42,5 +47,8 @@ class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
         } else {
             try self.localManager.save(company: company)
         }
+    }
+    func getSyncTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
+        return try await self.remoteManager.getTokens(localTokens: localTokens)
     }
 }

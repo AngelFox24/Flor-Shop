@@ -9,7 +9,7 @@ import Foundation
 
 protocol RemoteSaleManager {
     func save(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
-    func sync(updatedSince: Date) async throws -> [SaleDTO]
+    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncSalesResponse
 }
 
 final class RemoteSaleManagerImpl: RemoteSaleManager {
@@ -20,7 +20,7 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
     func save(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
         let urlRoute = "/sales"
         let cartDTO = cart.toCartDTO(subsidiaryId: self.sessionConfig.subsidiaryId)
-        let saleTransactionDTO = SaleTransactionDTO(
+        let saleTransactionDTO = RegisterSaleParameters(
             subsidiaryId: self.sessionConfig.subsidiaryId,
             employeeId: self.sessionConfig.employeeId,
             customerId: customerId,
@@ -30,20 +30,12 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: saleTransactionDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: Date) async throws -> [SaleDTO] {
+    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncSalesResponse {
         let urlRoute = "/sales/sync"
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
-        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated)
+        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
-        let data: [SaleDTO] = try await NetworkManager.shared.perform(request, decodeTo: [SaleDTO].self)
+        let data: SyncSalesResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncSalesResponse.self)
         return data
     }
-}
-
-struct SaleTransactionDTO: Codable {
-    let subsidiaryId: UUID
-    let employeeId: UUID
-    let customerId: UUID?
-    let paymentType: String
-    let cart: CartDTO
 }
