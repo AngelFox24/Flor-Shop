@@ -26,9 +26,8 @@ struct CartTopBar: View {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
-                        let total = carritoCoreDataViewModel.cartCoreData?.total.cents ?? 0
-                        let totalD = Double(total/100)
-                        Text(String(format: "%.2f", totalD))
+                        let total = carritoCoreDataViewModel.cartCoreData?.total.solesString ?? "0"
+                        Text(total)
                             .font(.custom("Artifika-Regular", size: 20))
                     })
                     .padding(.horizontal, 10)

@@ -11,8 +11,11 @@ import CoreData
 struct CartDetail: Identifiable {
     let id: UUID
     let quantity: Int
-    let subtotal: Money
     let product: Product
+    var subtotal: Money {
+        var subTotal = quantity * product.unitPrice.cents
+        return Money(subTotal)
+    }
 }
 
 extension CartDetail {

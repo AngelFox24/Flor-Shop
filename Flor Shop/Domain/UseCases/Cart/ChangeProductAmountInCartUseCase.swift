@@ -21,6 +21,5 @@ final class ChangeProductAmountInCartInteractor: ChangeProductAmountInCartUseCas
     func execute(productId: UUID, amount: Int) throws {
         print("ChangeProductAmountInCartUseCase: execute")
         try self.cartRepository.changeProductAmountInCartDetail(productId: productId, amount: amount)
-        try self.cartRepository.updateCartTotal()
     }
 }

@@ -28,17 +28,16 @@ struct CartView: View {
     }
 }
 
-struct CartView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var loading: Bool = false
-        @State var showMenu: Bool = false
-        @State var tab: Tab = .magnifyingglass
-        CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
-            .environmentObject(dependencies.cartViewModel)
-    }
+#Preview {
+    @Previewable @State var loading: Bool = false
+    @Previewable @State var showMenu: Bool = false
+    @Previewable @State var tab: Tab = .magnifyingglass
+    let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+    let dependencies = BusinessDependencies(sessionConfig: ses)
+    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
+        .environmentObject(dependencies.cartViewModel)
 }
+
 struct ListCartController: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var navManager: NavManager
@@ -97,10 +96,32 @@ struct ListCartController: View {
         .background(Color("color_background"))
     }
     func goToProductsList() {
-        self.tab = .magnifyingglass
+//        self.tab = .magnifyingglass
+        addProductToCart()
     }
     func goToPay() {
         navManager.goToPaymentView()
+    }
+    func addProductToCart() {
+        let car = Car(
+            id: UUID(),
+            cartDetails: [.init(
+                id: UUID(),
+                quantity: 3,
+                product: .init(
+                    id: UUID(),
+                    active: true,
+                    name: "Test PRoduct",
+                    qty: 23,
+                    unitType: .unit,
+                    unitCost: .init(3450),
+                    unitPrice: .init(5650),
+                    createdAt: .init(),
+                    updatedAt: .init()
+                )
+            )]
+        )
+        cartViewModel.cartCoreData = car
     }
     func deleteCartDetail(cartDetail: CartDetail) {
         Task {

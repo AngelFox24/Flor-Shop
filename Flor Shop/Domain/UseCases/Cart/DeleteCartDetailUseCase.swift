@@ -22,6 +22,5 @@ final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
     
     func execute(cartDetail: CartDetail) throws {
         try self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
-        try self.cartRepository.updateCartTotal()
     }
 }

@@ -84,7 +84,7 @@ struct MainView: View {
     }
     private func syncInBackground() async {
         while !Task.isCancelled {
-            print("=====================Synchronizing...=====================")
+//            print("=====================Synchronizing...=====================")
             let lastDate = await dependencies.synchronizerDBUseCase.lastSyncDate
             if let lastDateSync = lastDate {
                 let now = Date()
@@ -92,7 +92,7 @@ struct MainView: View {
                 if differenceInSeconds >= 3 {//3 segundos
                     do {
                         try await dependencies.synchronizerDBUseCase.sync()
-                        print("=====================Syncronized=====================")
+//                        print("=====================Syncronized=====================")
                     } catch {
                         await errorState.processError(error: error)
                     }
@@ -100,13 +100,13 @@ struct MainView: View {
             } else {
                 do {
                     try await dependencies.synchronizerDBUseCase.sync()
-                    print("=====================Syncronized=====================")
+//                    print("=====================Syncronized=====================")
                 } catch {
                     await errorState.processError(error: error)
                 }
             }
-            // Esperar 10 segundos
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            // Esperar 5 segundos
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
         }
     }
 }

@@ -42,11 +42,10 @@ class CartViewModel: ObservableObject {
     }
     
     // MARK: CRUD Core Data
+    @MainActor
     func fetchCart() async {
-        await MainActor.run {
-            self.cartCoreData = self.getCartUseCase.execute()
-            print("When fecthing cart, totalInCart: \(self.cartCoreData?.total.cents ?? 0)")
-        }
+        self.cartCoreData = self.getCartUseCase.execute()
+        print("When fecthing cart, totalInCart: \(self.cartCoreData?.total.cents ?? 0)")
     }
     func deleteCartDetail(cartDetail: CartDetail) async throws {
         try self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)

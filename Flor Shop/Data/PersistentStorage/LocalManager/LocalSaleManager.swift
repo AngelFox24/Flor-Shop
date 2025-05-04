@@ -89,7 +89,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 throw LocalStorageError.saveFailed("No se encontro el detalle del carrito")
             }
         }
-        cartEntity.total = 0
         print("Se vendio correctamente")
         try saveData()
     }

@@ -13,7 +13,6 @@ protocol CarRepository {
     func deleteCartDetail(cartDetail: CartDetail) throws
     func addProductoToCarrito(product: Product) throws
     func emptyCart() throws
-    func updateCartTotal() throws
     func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws
 }
 
@@ -35,9 +34,6 @@ class CarRepositoryImpl: CarRepository {
     }
     func emptyCart() throws {
         try self.localManager.emptyCart()
-    }
-    func updateCartTotal() throws {
-        try self.localManager.updateCartTotal()
     }
     func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws {
         try self.localManager.changeProductAmountInCartDetail(productId: productId, amount: amount)

@@ -22,6 +22,5 @@ final class AddProductoToCartInteractor: AddProductoToCartUseCase {
     
     func execute(product: Product) throws {
         try self.cartRepository.addProductoToCarrito(product: product)
-        try self.cartRepository.updateCartTotal()
     }
 }

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24E248" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tb_Cart" representedClassName=".Tb_Cart" syncable="YES" codeGenerationType="class">
         <attribute name="idCart" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="total" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toCart" inverseEntity="Tb_CartDetail"/>
         <relationship name="toEmployee" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toCart" inverseEntity="Tb_Employee"/>
     </entity>
     <entity name="Tb_CartDetail" representedClassName=".Tb_CartDetail" syncable="YES" codeGenerationType="class">
         <attribute name="idCartDetail" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="quantityAdded" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="subtotal" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toCartDetail" inverseEntity="Tb_Cart"/>
         <relationship name="toProduct" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toCartDetail" inverseEntity="Tb_Product"/>
     </entity>

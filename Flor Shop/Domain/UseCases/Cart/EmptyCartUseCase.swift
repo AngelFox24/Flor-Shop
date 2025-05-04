@@ -22,6 +22,5 @@ final class EmptyCartInteractor: EmptyCartUseCase {
     
     func execute() throws {
         try self.cartRepository.emptyCart()
-        try self.cartRepository.updateCartTotal()
     }
 }

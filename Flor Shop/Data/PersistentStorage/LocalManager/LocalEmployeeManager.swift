@@ -75,7 +75,6 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 //Create cart
                 let cartEntity = Tb_Cart(context: backgroundContext)
                 cartEntity.idCart = UUID()
-                cartEntity.total = 0
                 let newEmployeeEntity = Tb_Employee(context: backgroundContext)
                 newEmployeeEntity.idEmployee = employeeDTO.id
                 newEmployeeEntity.name = employeeDTO.name

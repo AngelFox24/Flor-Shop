@@ -14,7 +14,6 @@ protocol LocalCartManager {
     func addProductToCart(productIn: Product) throws
     func changeProductAmountInCartDetail(productId: UUID, amount: Int) throws
     func emptyCart() throws
-    func updateCartTotal() throws
 }
 
 class LocalCartManagerImpl: LocalCartManager {
@@ -37,7 +36,6 @@ class LocalCartManagerImpl: LocalCartManager {
             return
         }
         self.mainContext.delete(cartDetailEntity)
-        try updateCartTotal()
         try saveData()
     }
     func addProductToCart(productIn: Product) throws {
@@ -60,7 +58,6 @@ class LocalCartManagerImpl: LocalCartManager {
                 let newCarDetail = Tb_CartDetail(context: self.mainContext)
                 newCarDetail.idCartDetail = UUID() // Genera un nuevo UUID para el detalle del carrito
                 newCarDetail.quantityAdded = 1
-                newCarDetail.subtotal = Int64(productIn.unitPrice.cents) * newCarDetail.quantityAdded
                 newCarDetail.toProduct = productEntity
                 newCarDetail.toCart = cartEntity
                 success = true
@@ -70,7 +67,6 @@ class LocalCartManagerImpl: LocalCartManager {
             }
         }
         if success {
-            try updateCartTotal()
             try saveData()
         } else {
             rollback()
@@ -88,12 +84,10 @@ class LocalCartManagerImpl: LocalCartManager {
         }
         if productEntity.quantityStock >= Int64(amount) {
             cartDetailEntity.quantityAdded = Int64(amount)
-            cartDetailEntity.subtotal = cartDetailEntity.quantityAdded * productEntity.unitPrice
         } else {
             print("Producto no tiene stock suficiente")
             throw BusinessLogicError.outOfStock("Producto no tiene stock suficiente")
         }
-        try updateCartTotal()
         try saveData()
     }
     func emptyCart() throws {
@@ -111,26 +105,7 @@ class LocalCartManagerImpl: LocalCartManager {
         self.mainContext.delete(cartEntity)
         let newCartEntity = Tb_Cart(context: self.mainContext)
         newCartEntity.idCart = UUID()
-        newCartEntity.total = 0
         employeeEntity.toCart = newCartEntity
-        try saveData()
-    }
-    func updateCartTotal() throws {
-//        try ensureCartExist()
-        guard let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: self.sessionConfig.employeeId) else {
-            throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
-        }
-        guard let cartEntity = employeeEntity.toCart else {
-            print("El empleado por defecto no tiene carrito")
-            throw LocalStorageError.entityNotFound("El empleado por defecto no tiene carrito")
-        }
-        guard let cartDetailEntityList = cartEntity.toCartDetail?.compactMap({ $0 as? Tb_CartDetail }) else {
-            print("El carrito no tiene detalle")
-            cartEntity.total = 0
-            try saveData()
-            return
-        }
-        cartEntity.total = cartDetailEntityList.reduce(0) {$0 + $1.subtotal}
         try saveData()
     }
     //MARK: Private Functions
@@ -154,7 +129,6 @@ class LocalCartManagerImpl: LocalCartManager {
         }
         let newCart: Tb_Cart = Tb_Cart(context: self.mainContext)
         newCart.idCart = UUID()
-        newCart.total = 0
         newCart.toEmployee = employeeEntity
         try saveData()
     }

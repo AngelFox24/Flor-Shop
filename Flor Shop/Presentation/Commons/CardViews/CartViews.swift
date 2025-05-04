@@ -313,7 +313,6 @@ struct CardViews_Previews: PreviewProvider {
             let cartDetail = CartDetail(
                 id: UUID(),
                 quantity: 24,
-                subtotal: Money(3400),
                 product: Product.getDummyProduct()
             )
             CardViewTipe3(cartDetail: cartDetail, size: 80, decreceProductAmount: {_ in }, increaceProductAmount: {_ in })

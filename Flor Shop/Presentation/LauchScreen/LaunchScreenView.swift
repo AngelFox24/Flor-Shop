@@ -40,6 +40,7 @@ struct LoadingView: View {
             Color("colorlaunchbackground")
                 .edgesIgnoringSafeArea(.all)
                 .opacity(0.5)
+                .disabled(true)
             Image("logo")
                 .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)
                 .rotationEffect(rotationAngle)
@@ -66,7 +67,6 @@ struct LoadingFotoView: View {
             ZStack {
                 Color("colorlaunchbackground")
                     .opacity(0.8)
-                    .disabled(true)
                 Image("logo")
                     .resizable()
                     .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)

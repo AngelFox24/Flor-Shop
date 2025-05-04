@@ -11,7 +11,13 @@ import CoreData
 struct Car: Identifiable {
     let id: UUID
     let cartDetails: [CartDetail]
-    let total: Money
+    var total: Money {
+        return cartDetails.reduce(Money(0)) { subtotal, cartDetail in
+            var sub = subtotal.cents
+            sub += cartDetail.subtotal.cents
+            return Money(sub)
+        }
+    }
 }
 
 extension Car {
