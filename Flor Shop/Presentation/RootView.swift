@@ -85,6 +85,7 @@ struct RootView: View {
                     self.userOrEmail = logInViewModel.logInFields.userOrEmail
                     self.password = logInViewModel.logInFields.password
                     self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
+                    self.logInViewModel.businessDependencies?.webSocket.connect()
                     navManager.popToRoot()
                 }
                 loading = false

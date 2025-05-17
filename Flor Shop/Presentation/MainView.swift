@@ -56,57 +56,15 @@ struct MainView: View {
                     .environmentObject(dependencies.addCustomerViewModel)
             }
         }
-        .onAppear {
-            if scenePhase == .active {
-                print("=====================OnAppear Schedule a Task to Sync=====================")
-                syncTask?.cancel()
-                syncTask = Task(priority: .background) {
-                    await syncInBackground()
-                }
-            }
-        }
-        .onChange(of: scenePhase) { newValue in
+        .onChange(of: scenePhase) { oldValue, newValue in
             switch newValue {
             case .active:
-                print("=====================OnChange Schedule a Task to Sync=====================")
-                syncTask?.cancel()
-                syncTask = Task(priority: .background) {
-                    await syncInBackground()
-                }
-            case .inactive:
-                syncTask?.cancel()
-            case .background:
-                syncTask?.cancel()
+                dependencies.webSocket.connect()
+            case .inactive, .background:
+                dependencies.webSocket.disconnect()
             default:
-                syncTask?.cancel()
+                dependencies.webSocket.disconnect()
             }
-        }
-    }
-    private func syncInBackground() async {
-        while !Task.isCancelled {
-//            print("=====================Synchronizing...=====================")
-            let lastDate = await dependencies.synchronizerDBUseCase.lastSyncDate
-            if let lastDateSync = lastDate {
-                let now = Date()
-                let differenceInSeconds = now.timeIntervalSince(lastDateSync)
-                if differenceInSeconds >= 3 {//3 segundos
-                    do {
-                        try await dependencies.synchronizerDBUseCase.sync()
-//                        print("=====================Syncronized=====================")
-                    } catch {
-                        await errorState.processError(error: error)
-                    }
-                }
-            } else {
-                do {
-                    try await dependencies.synchronizerDBUseCase.sync()
-//                    print("=====================Syncronized=====================")
-                } catch {
-                    await errorState.processError(error: error)
-                }
-            }
-            // Esperar 5 segundos
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
         }
     }
 }

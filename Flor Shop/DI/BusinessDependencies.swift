@@ -13,6 +13,8 @@ struct BusinessDependencies {
     let sessionConfig: SessionConfig
     //Main Context
     private let mainContext: NSManagedObjectContext
+    //WebSocket
+    let webSocket: SyncWebSocketClient
     //Local Managers
     private let localCompanyManager: LocalCompanyManagerImpl
     private let localSubsidiaryManager: LocalSubsidiaryManagerImpl
@@ -40,7 +42,7 @@ struct BusinessDependencies {
     private let salesRepository: SaleRepositoryImpl
     private let imageRepository: ImageRepositoryImpl
     //UseCases
-    let synchronizerDBUseCase: SynchronizerDBUseCase
+    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let getProductsUseCase: GetProductsUseCase
     private let createCompanyUseCase: CreateCompanyUseCase
     private let createSubsidiaryUseCase: CreateSubsidiaryUseCase
@@ -143,5 +145,7 @@ struct BusinessDependencies {
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
         self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, saveImageUseCase: saveImageUseCase)
+        //WebSocket Init
+        self.webSocket = SyncWebSocketClient(synchronizerDBUseCase: synchronizerDBUseCase)
     }
 }

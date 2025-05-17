@@ -71,13 +71,13 @@ struct ProductSearchTopBar: View {
                             }
                         }
                     }
-                    Section("Sync") {
-                        Button {
-                            sync()
-                        } label: {
-                            Label("Sync", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
-                        }
-                    }
+//                    Section("Sync") {
+//                        Button {
+//                            sync()
+//                        } label: {
+//                            Label("Sync", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+//                        }
+//                    }
                 } label: {
                     CustomButton3(simbol: "slider.horizontal.3")
                 }

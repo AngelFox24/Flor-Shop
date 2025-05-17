@@ -10,6 +10,7 @@ import CoreData
 
 protocol SynchronizerDBUseCase {
     func sync() async throws
+    func sync(verifySyncParameters: VerifySyncParameters) async throws
     var lastSyncDate: Date? { get async }  // Solo lectura
     var syncTokens: VerifySyncParameters { get set }
 }
@@ -69,6 +70,52 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
         self.employeeRepository = employeeRepository
         self.productRepository = productRepository
         self.saleRepository = saleRepository
+    }
+    
+    func sync(verifySyncParameters: VerifySyncParameters) async throws {
+        try await syncController.performSync {
+            let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
+            backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+            backgroundTaskContext.undoManager = nil
+            for _ in 0..<3 {
+                do {
+                    let newSyncTokens = verifySyncParameters
+                    if newSyncTokens.companyLastUpdate != self.syncTokens.companyLastUpdate {
+                        print("Compania sincronizando ...")
+                        self.syncTokens = try await self.companyRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    if newSyncTokens.imageLastUpdate != self.syncTokens.imageLastUpdate {
+                        print("Imagenes sincronizando ...")
+                        self.syncTokens = try await self.imageRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    if newSyncTokens.subsidiaryLastUpdate != self.syncTokens.subsidiaryLastUpdate {
+                        print("Subsidiaria sincronizando ...")
+                        self.syncTokens = try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    if newSyncTokens.customerLastUpdate != self.syncTokens.customerLastUpdate {
+                        print("Customers sincronizando ...")
+                        self.syncTokens = try await self.customerRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    if newSyncTokens.employeeLastUpdate != self.syncTokens.employeeLastUpdate {
+                        print("Employees sincronizando ...")
+                        self.syncTokens = try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    if newSyncTokens.productLastUpdate != self.syncTokens.productLastUpdate {
+                        print("Productos sincronizando ...")
+                        self.syncTokens = try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    if newSyncTokens.saleLastUpdate != self.syncTokens.saleLastUpdate {
+                        print("Sales sincronizando ...")
+                        self.syncTokens = try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+                    }
+                    break
+                } catch {
+                    if !error.localizedDescription.contains("Parents are not up to date") {
+                        throw error
+                    }
+                }
+            }
+        }
     }
     
     func sync() async throws {

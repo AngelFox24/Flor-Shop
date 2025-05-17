@@ -29,12 +29,5 @@ struct ContentView: View {
             .environmentObject(normalDependencies.versionCheck)
             .environmentObject(normalDependencies.logInViewModel)
             .environmentObject(normalDependencies.errorState)
-//            .environmentObject(normalDependencies.viewStates)
-        //                .onAppear {
-        //                    Task(priority: .background, operation: {
-        //                        print("Se optimizara las imagenes")
-        //                        await dependencies.imageManager.deleteUnusedImages()
-        //                    })
-        //                }
     }
 }
