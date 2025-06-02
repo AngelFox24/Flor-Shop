@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CreateAccountView: View {
-    @EnvironmentObject var logInViewModel: LogInViewModel
+    @Environment(LogInViewModel.self) var logInViewModel
     @EnvironmentObject var registrationViewModel: RegistrationViewModel
     @EnvironmentObject var navManager: NavManager
     var body: some View {
@@ -110,6 +110,6 @@ struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
         let nor = NormalDependencies()
         CreateAccountView()
-            .environmentObject(nor.logInViewModel)
+            .environment(nor.logInViewModel)
     }
 }

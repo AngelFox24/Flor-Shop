@@ -389,6 +389,21 @@
 			path = BusinessLogicError;
 			sourceTree = "<group>";
 		};
+		0BA05A852DEB8103007F9CF5 /* Dependency Injection */ = {
+			isa = PBXGroup;
+			children = (
+				0BA05A872DEB82FB007F9CF5 /* Auth */,
+			);
+			path = "Dependency Injection";
+			sourceTree = "<group>";
+		};
+		0BA05A872DEB82FB007F9CF5 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
 		2705BC3F2B77D0B400A0CD42 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -536,6 +551,7 @@
 			isa = PBXGroup;
 			children = (
 				270C3E242A617FDC0086557A /* Flor Shop.entitlements */,
+				0BA05A852DEB8103007F9CF5 /* Dependency Injection */,
 				27F2F4512B1DE5EE003E4197 /* DI */,
 				68A4B10A2A196BD800FC8D9D /* Data */,
 				27F2F4592B1DECCA003E4197 /* Domain */,

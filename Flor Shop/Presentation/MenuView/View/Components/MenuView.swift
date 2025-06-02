@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MenuView: View {
-    @EnvironmentObject var logInViewModel: LogInViewModel
+    @Environment(LogInViewModel.self) var logInViewModel
     @EnvironmentObject var navManager: NavManager
     @AppStorage("userOrEmail") var userOrEmail: String?
     @AppStorage("password") var password: String?
@@ -105,7 +105,7 @@ struct MenuView_Previews: PreviewProvider {
         @State var showMenu = false
         @State var menuTab: MenuTab = .pointOfSaleTab
         MenuView(loading: $loading, showMenu: $showMenu)
-            .environmentObject(nor.logInViewModel)
+            .environment(nor.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)

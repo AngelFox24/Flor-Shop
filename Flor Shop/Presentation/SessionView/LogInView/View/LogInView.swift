@@ -8,8 +8,17 @@
 import SwiftUI
 import AVFoundation
 
+struct LogInView2: View {
+    @Environment(LogInViewModel.self) private var logInViewModel
+    var body: some View {
+        @Bindable var viewModel = logInViewModel
+        TextField("Nombre", text: $viewModel.userOrEmail)
+    }
+}
+
 struct LogInView: View {
-    @EnvironmentObject var logInViewModel: LogInViewModel
+//    @EnvironmentObject var logInViewModel: LogInViewModel
+    @Environment(LogInViewModel.self) private var logInViewModel
     @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
@@ -18,35 +27,47 @@ struct LogInView: View {
         ZStack {
             Color("color_primary")
                 .ignoresSafeArea()
-            VStack(content: {
-                HStack(content: {
-                    Button(action: {
-                        navManager.goToBack()
-                    }, label: {
-                        CustomButton3()
+            VStack(
+                content: {
+                    HStack(content: {
+                        Button(action: {
+                            navManager.goToBack()
+                        }, label: {
+                            CustomButton3()
+                        })
+                        Spacer()
+                        Text("Iniciar Sesión")
+                            .font(.custom("Artifika-Regular", size: 25))
+                        Spacer()
+                        Spacer()
+                            .frame(width: 40, height: 40)
                     })
-                    Spacer()
-                    Text("Iniciar Sesión")
-                        .font(.custom("Artifika-Regular", size: 25))
-                    Spacer()
-                    Spacer()
-                        .frame(width: 40, height: 40)
-                })
-                .padding(.horizontal, 15)
-                ScrollView {
-                    VStack(spacing: 30) {
-                        VStack(spacing: 40){
-                            VStack {
-                                CustomTextField(title: "Usuario o Correo" ,value: $logInViewModel.logInFields.userOrEmail, edited: $logInViewModel.logInFields.userOrEmailEdited, keyboardType: .default)
-                                if logInViewModel.logInFields.userOrEmailError != "" {
-                                    ErrorMessageText(message: logInViewModel.logInFields.userOrEmailError)
+                    .padding(.horizontal, 15)
+                    ScrollView {
+                        VStack(spacing: 30) {
+                            VStack(spacing: 40){
+                                VStack {
+                                    TextField("Nombre", text: $logInViewModel.userOrEmail)
+//                                    CustomTextField(
+//                                        title: "Usuario o Correo" ,
+//                                        value: $logInViewModel.userOrEmail,
+//                                        edited: $logInViewModel.userOrEmailEdited,
+//                                        keyboardType: .default
+//                                    )
+                                if logInViewModel.userOrEmailError != "" {
+                                    ErrorMessageText(message: logInViewModel.userOrEmailError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Contraseña" ,value: $logInViewModel.logInFields.password, edited: $logInViewModel.logInFields.passwordEdited, keyboardType: .default)
-                                if logInViewModel.logInFields.passwordError != "" {
-                                    ErrorMessageText(message: logInViewModel.logInFields.passwordError)
+//                                CustomTextField(
+//                                    title: "Contraseña" ,
+//                                    value: $logInViewModel.password,
+//                                    edited: $logInViewModel.passwordEdited,
+//                                    keyboardType: .default
+//                                )
+                                if logInViewModel.passwordError != "" {
+                                    ErrorMessageText(message: logInViewModel.passwordError)
                                     //.padding(.top, 18)
                                 }
                             }
@@ -57,8 +78,8 @@ struct LogInView: View {
                                 VStack {
                                     CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                         .foregroundColor(Color(.black))
-                                    if logInViewModel.logInFields.errorLogIn != "" {
-                                        ErrorMessageText(message: logInViewModel.logInFields.errorLogIn)
+                                    if logInViewModel.errorLogIn != "" {
+                                        ErrorMessageText(message: logInViewModel.errorLogIn)
                                     }
                                 }
                             }
@@ -94,6 +115,7 @@ struct LogInView: View {
                 playSound(named: "Success1")
                 await MainActor.run {
                     self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
+                    self.logInViewModel.businessDependencies?.webSocket.connect()
                     navManager.popToRoot()
                 }
             } catch {
@@ -125,7 +147,7 @@ struct LogInView_Previews: View {
     var body: some View {
         @State var loading = false
         LogInView(loading: $loading)
-            .environmentObject(nor.logInViewModel)
+            .environment(nor.logInViewModel)
             .environmentObject(nor.navManager)
             .environmentObject(nor.errorState)
     }

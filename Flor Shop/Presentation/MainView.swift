@@ -78,7 +78,7 @@ struct MainView_Previews: PreviewProvider {
         MainView(dependencies: dep, loading: $loading)
             .environmentObject(normalDependencies.navManager)
             .environmentObject(normalDependencies.versionCheck)
-            .environmentObject(normalDependencies.logInViewModel)
+            .environment(normalDependencies.logInViewModel)
             .environmentObject(normalDependencies.errorState)
     }
 }

@@ -22,12 +22,13 @@ struct FlorShopApp: App {
 }
 
 struct ContentView: View {
-    let normalDependencies = NormalDependencies()
+//    let normalDependencies = NormalDependencies()
+    private let normalDependencies = NormalDependencies()
     var body: some View {
         RootView()
             .environmentObject(normalDependencies.navManager)
             .environmentObject(normalDependencies.versionCheck)
-            .environmentObject(normalDependencies.logInViewModel)
+            .environment(normalDependencies.logInViewModel)
             .environmentObject(normalDependencies.errorState)
     }
 }

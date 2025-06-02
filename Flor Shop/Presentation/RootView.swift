@@ -10,7 +10,7 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject var versionCheck: VersionCheck
     @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var logInViewModel: LogInViewModel
+    @Environment(LogInViewModel.self) var logInViewModel
     @EnvironmentObject var errorState: ErrorState
     
     @State var loading: Bool = false
@@ -75,15 +75,15 @@ struct RootView: View {
     }
     private func logIn() {
         if let user = userOrEmail, let pass = password {
-            logInViewModel.logInFields.userOrEmail = user
-            logInViewModel.logInFields.password = pass
+            logInViewModel.userOrEmail = user
+            logInViewModel.password = pass
             Task {
                 loading = true
                 print("Se logea desde guardado")
                 let ses = try await logInViewModel.logIn()
                 await MainActor.run {
-                    self.userOrEmail = logInViewModel.logInFields.userOrEmail
-                    self.password = logInViewModel.logInFields.password
+                    self.userOrEmail = logInViewModel.userOrEmail
+                    self.password = logInViewModel.password
                     self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
                     self.logInViewModel.businessDependencies?.webSocket.connect()
                     navManager.popToRoot()
@@ -109,7 +109,7 @@ struct RootView_Previews: PreviewProvider {
         RootView()
             .environmentObject(normalDependencies.navManager)
             .environmentObject(normalDependencies.versionCheck)
-            .environmentObject(normalDependencies.logInViewModel)
+            .environment(normalDependencies.logInViewModel)
             .environmentObject(normalDependencies.errorState)
     }
 }
