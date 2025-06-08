@@ -26,8 +26,7 @@ class SyncWebSocketClient {
             return
         }
 
-        guard let url = URL(string: "wss://pizzarely.mrangel.dev/verifySync/ws") else {
-//        guard let url = URL(string: "ws://192.168.2.5:8080/verifySync/ws") else {
+        guard let url = URL(string: "\(AppConfig.wsBaseURL)\(APIEndpoint.Sync.webSocekt)") else {
             print("\(logPrefix) URL inválida")
             return
         }

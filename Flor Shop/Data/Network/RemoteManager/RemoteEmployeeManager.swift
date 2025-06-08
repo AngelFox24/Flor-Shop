@@ -20,13 +20,13 @@ final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
         self.sessionConfig = sessionConfig
     }
     func save(employee: Employee) async throws {
-        let urlRoute = "/employees"
+        let urlRoute = APIEndpoint.Employee.base
         let employeeDTO = employee.toEmployeeDTO(subsidiaryId: self.sessionConfig.subsidiaryId)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: employeeDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncEmployeesResponse {
-        let urlRoute = "/employees/sync"
+        let urlRoute = APIEndpoint.Employee.sync
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
         let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)

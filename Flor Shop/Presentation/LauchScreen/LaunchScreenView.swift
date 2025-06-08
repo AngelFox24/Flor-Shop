@@ -13,7 +13,7 @@ struct LaunchScreenView: View {
     private let timer = Timer.publish(every: 0.65, on: .main, in: .common).autoconnect()
     var body: some View {
         ZStack {
-            Color("colorlaunchbackground")
+            Color.launchBackground
                 .edgesIgnoringSafeArea(.all)
             Image("logo")
                 .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)
@@ -37,7 +37,7 @@ struct LoadingView: View {
     private let timer = Timer.publish(every: 0.65, on: .main, in: .common).autoconnect()
     var body: some View {
         ZStack {
-            Color("colorlaunchbackground")
+            Color.launchBackground
                 .edgesIgnoringSafeArea(.all)
                 .opacity(0.5)
                 .disabled(true)
@@ -65,7 +65,7 @@ struct LoadingFotoView: View {
     var body: some View {
         VStack(spacing: 0, content: {
             ZStack {
-                Color("colorlaunchbackground")
+                Color.launchBackground
                     .opacity(0.8)
                 Image("logo")
                     .resizable()

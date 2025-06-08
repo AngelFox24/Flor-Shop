@@ -21,20 +21,20 @@ final class RemoteCustomerManagerImpl: RemoteCustomerManager {
         self.sessionConfig = sessionConfig
     }
     func save(customer: Customer) async throws {
-        let urlRoute = "/customers"
+        let urlRoute = APIEndpoint.Customer.base
         let customerDTO = customer.toCustomerDTO(companyId: self.sessionConfig.companyId)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: customerDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func payDebt(customerId: UUID, amount: Int) async throws -> Int {
-        let urlRoute = "/customers/payDebt"
+        let urlRoute = APIEndpoint.Customer.payDebt
         let payCustomerDebt = PayCustomerDebtParameters(customerId: customerId, amount: amount)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: payCustomerDebt)
         let response: PayCustomerDebtResponse = try await NetworkManager.shared.perform(request, decodeTo: PayCustomerDebtResponse.self)
         return response.change
     }
     func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncCustomersResponse {
-        let urlRoute = "/customers/sync"
+        let urlRoute = APIEndpoint.Customer.sync
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
         let syncParameters = SyncFromCompanyParameters(companyId: self.sessionConfig.companyId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)

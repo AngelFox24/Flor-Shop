@@ -18,7 +18,7 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
         self.sessionConfig = sessionConfig
     }
     func save(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
-        let urlRoute = "/sales"
+        let urlRoute = APIEndpoint.Sale.base
         let cartDTO = cart.toCartDTO(subsidiaryId: self.sessionConfig.subsidiaryId)
         let saleTransactionDTO = RegisterSaleParameters(
             subsidiaryId: self.sessionConfig.subsidiaryId,
@@ -31,7 +31,7 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncSalesResponse {
-        let urlRoute = "/sales/sync"
+        let urlRoute = APIEndpoint.Sale.sync
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
         let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)

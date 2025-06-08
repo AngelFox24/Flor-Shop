@@ -66,7 +66,7 @@ struct CreateAccountView: View {
                                     Image("logo")
                                         .resizable()
                                         .scaledToFit()
-                                        .background(Color("colorlaunchbackground"))
+                                        .background(Color.launchBackground)
                                         .cornerRadius(10)
                                         .frame(width: 50, height: 50)
                                 })

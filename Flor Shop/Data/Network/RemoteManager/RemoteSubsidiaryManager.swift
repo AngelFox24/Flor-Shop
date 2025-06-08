@@ -20,13 +20,13 @@ final class RemoteSubsidiaryManagerImpl: RemoteSubsidiaryManager {
         self.sessionConfig = sessionConfig
     }
     func save(subsidiary: Subsidiary) async throws {
-        let urlRoute = "/subsidiaries"
+        let urlRoute = APIEndpoint.Subsidiary.base
         let subsidiaryDTO = subsidiary.toSubsidiaryDTO(companyId: self.sessionConfig.companyId)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: subsidiaryDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncSubsidiariesResponse {
-        let urlRoute = "/subsidiaries/sync"
+        let urlRoute = APIEndpoint.Subsidiary.sync
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
         let syncParameters = SyncFromCompanyParameters(companyId: self.sessionConfig.companyId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)

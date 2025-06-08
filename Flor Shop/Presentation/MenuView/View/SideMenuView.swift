@@ -83,7 +83,7 @@ struct SideMenuView: View {
                             Image("logo")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .background(Color("colorlaunchbackground"))
+                                .background(Color.launchBackground)
                                 .frame(width: 80, height: 80)
                                 .cornerRadius(15)
                                 .padding(.top, 50)

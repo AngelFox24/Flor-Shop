@@ -79,7 +79,7 @@ struct CustomButton5: View {
                         .resizable()
                         .scaledToFit()
                 }
-                .background(Color("colorlaunchbackground"))
+                .background(Color.launchBackground)
                 .cornerRadius(10)
                 .frame(width: 40, height: 40)
             })

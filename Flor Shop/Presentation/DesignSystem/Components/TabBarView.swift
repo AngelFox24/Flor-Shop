@@ -1,12 +1,7 @@
-//
-//  CustomTabBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 24/04/23.
-//
-
 import SwiftUI
-
+extension CGFloat {
+  public static let tabBarHeight: CGFloat = 70
+}
 enum Tab: String, CaseIterable {
     case plus
     case magnifyingglass

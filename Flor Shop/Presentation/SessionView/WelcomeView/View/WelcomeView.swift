@@ -15,7 +15,7 @@ struct WelcomeView: View {
             Image("logo")
                 .resizable()
                 .scaledToFit()
-                .background(Color("colorlaunchbackground"))
+                .background(Color.launchBackground)
                 .cornerRadius(30)
                 .frame(width: 200, height: 200)
             Spacer()

@@ -12,8 +12,7 @@ struct CustomAPIRequest: NetworkRequest {
     var parameter: Encodable
     var sendMethod: HTTPMethod = .post
     var url: URL? {
-        return URL(string: "https://pizzarely.mrangel.dev\(urlRoute)")
-//        return URL(string: "http://192.168.2.5:8080\(urlRoute)")
+        return URL(string: "\(AppConfig.baseURL)\(urlRoute)")
     }
     var method: HTTPMethod {
         return sendMethod

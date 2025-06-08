@@ -24,6 +24,7 @@ struct LogInView: View {
     @State private var audioPlayer: AVAudioPlayer?
     @Binding var loading: Bool
     var body: some View {
+        @Bindable var logInViewModel = logInViewModel
         ZStack {
             Color("color_primary")
                 .ignoresSafeArea()
@@ -47,25 +48,24 @@ struct LogInView: View {
                         VStack(spacing: 30) {
                             VStack(spacing: 40){
                                 VStack {
-                                    TextField("Nombre", text: $logInViewModel.userOrEmail)
-//                                    CustomTextField(
-//                                        title: "Usuario o Correo" ,
-//                                        value: $logInViewModel.userOrEmail,
-//                                        edited: $logInViewModel.userOrEmailEdited,
-//                                        keyboardType: .default
-//                                    )
+                                    CustomTextField(
+                                        title: "Usuario o Correo" ,
+                                        value: $logInViewModel.userOrEmail,
+                                        edited: $logInViewModel.userOrEmailEdited,
+                                        keyboardType: .default
+                                    )
                                 if logInViewModel.userOrEmailError != "" {
                                     ErrorMessageText(message: logInViewModel.userOrEmailError)
                                     //.padding(.top, 18)
                                 }
                             }
                             VStack {
-//                                CustomTextField(
-//                                    title: "Contraseña" ,
-//                                    value: $logInViewModel.password,
-//                                    edited: $logInViewModel.passwordEdited,
-//                                    keyboardType: .default
-//                                )
+                                CustomTextField(
+                                    title: "Contraseña" ,
+                                    value: $logInViewModel.password,
+                                    edited: $logInViewModel.passwordEdited,
+                                    keyboardType: .default
+                                )
                                 if logInViewModel.passwordError != "" {
                                     ErrorMessageText(message: logInViewModel.passwordError)
                                     //.padding(.top, 18)

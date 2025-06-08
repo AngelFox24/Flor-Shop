@@ -17,13 +17,13 @@ final class RemoteProductManagerImpl: RemoteProductManager {
         self.sessionConfig = sessionConfig
     }
     func save(product: Product) async throws {
-        let urlRoute = "/products"
+        let urlRoute = APIEndpoint.Product.base
         let productDTO = product.toProductDTO(subsidiaryId: self.sessionConfig.subsidiaryId)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: productDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncProductsResponse {
-        let urlRoute = "/products/sync"
+        let urlRoute = APIEndpoint.Product.sync
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
         let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)

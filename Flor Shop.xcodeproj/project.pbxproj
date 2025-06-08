@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,8 @@
 		0B555A102DD8733E001F5BE0 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B555A0F2DD87338001F5BE0 /* SyncManager.swift */; };
 		0B7C515B2CB181E8005C655A /* Request Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7C515A2CB181D9005C655A /* Request Parameters.swift */; };
 		0B7C515D2CB181F9005C655A /* Response Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7C515C2CB181F4005C655A /* Response Parameters.swift */; };
+		0BC1C2E32DF508C600BAFCC8 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC1C2E22DF508C600BAFCC8 /* APIEndpoint.swift */; };
+		0BE1D84C2DF4C0CE0074B309 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE1D84B2DF4C0CE0074B309 /* AppRouter */; };
 		2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */; };
 		2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */; };
 		2705BC412B77D0D900A0CD42 /* SalesTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2705BC402B77D0D900A0CD42 /* SalesTopBar.swift */; };
@@ -72,8 +74,6 @@
 		274C65A52AC48B4800B778A2 /* EmployeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274C65A42AC48B4800B778A2 /* EmployeeViewModel.swift */; };
 		274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29929E6D792007C703D /* FlorShopApp.swift */; };
 		274CE29C29E6D792007C703D /* ProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE29B29E6D792007C703D /* ProductView.swift */; };
-		274CE29E29E6D793007C703D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE29D29E6D793007C703D /* Assets.xcassets */; };
-		274CE2A129E6D793007C703D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 274CE2A029E6D793007C703D /* Preview Assets.xcassets */; };
 		274D4EED2C45BACA00C54430 /* SessionConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274D4EEC2C45BACA00C54430 /* SessionConfig.swift */; };
 		275212992BC968DE005E2016 /* ImageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275212982BC968DE005E2016 /* ImageRepository.swift */; };
 		2752129C2BC969F4005E2016 /* DeleteUnusedImagesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2752129B2BC969F4005E2016 /* DeleteUnusedImagesUseCase.swift */; };
@@ -125,7 +125,6 @@
 		27B125D82C41C04A00E6EAA2 /* SubsidiaryDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */; };
 		27B125DA2C41CAE400E6EAA2 /* RemoteSaleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */; };
 		27B2DCC12A353EA00042485D /* CustomAsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */; };
-		27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936B29F73B510085D4EC /* CustomTabBar.swift */; };
 		27B3936E29F74E4B0085D4EC /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936D29F74E4B0085D4EC /* RootView.swift */; };
 		27B3937029F7575C0085D4EC /* ProductSearchTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B3936F29F7575C0085D4EC /* ProductSearchTopBar.swift */; };
 		27B796B92BBEF47100AC45D0 /* SourceSelecctionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B796B82BBEF47100AC45D0 /* SourceSelecctionView.swift */; };
@@ -193,6 +192,8 @@
 		0B555A0F2DD87338001F5BE0 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 		0B7C515A2CB181D9005C655A /* Request Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request Parameters.swift"; sourceTree = "<group>"; };
 		0B7C515C2CB181F4005C655A /* Response Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Response Parameters.swift"; sourceTree = "<group>"; };
+		0BC1C2E22DF508C600BAFCC8 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
+		0BE1D84D2DF4C0F10074B309 /* AppRouter */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AppRouter; path = Packages/AppRouter; sourceTree = "<group>"; };
 		2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerView.swift; sourceTree = "<group>"; };
 		2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerViewModel.swift; sourceTree = "<group>"; };
 		2705BC402B77D0D900A0CD42 /* SalesTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesTopBar.swift; sourceTree = "<group>"; };
@@ -255,8 +256,6 @@
 		274CE29629E6D792007C703D /* Flor Shop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flor Shop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		274CE29929E6D792007C703D /* FlorShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlorShopApp.swift; sourceTree = "<group>"; };
 		274CE29B29E6D792007C703D /* ProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductView.swift; sourceTree = "<group>"; };
-		274CE29D29E6D793007C703D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		274CE2A029E6D793007C703D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		274D4EEC2C45BACA00C54430 /* SessionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionConfig.swift; sourceTree = "<group>"; };
 		275212982BC968DE005E2016 /* ImageRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRepository.swift; sourceTree = "<group>"; };
 		2752129B2BC969F4005E2016 /* DeleteUnusedImagesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUnusedImagesUseCase.swift; sourceTree = "<group>"; };
@@ -308,7 +307,6 @@
 		27B125D72C41C04A00E6EAA2 /* SubsidiaryDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubsidiaryDTO.swift; sourceTree = "<group>"; };
 		27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSaleManager.swift; sourceTree = "<group>"; };
 		27B2DCC02A353EA00042485D /* CustomAsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAsyncImageView.swift; sourceTree = "<group>"; };
-		27B3936B29F73B510085D4EC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		27B3936D29F74E4B0085D4EC /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		27B3936F29F7575C0085D4EC /* ProductSearchTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSearchTopBar.swift; sourceTree = "<group>"; };
 		27B796B82BBEF47100AC45D0 /* SourceSelecctionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceSelecctionView.swift; sourceTree = "<group>"; };
@@ -361,6 +359,11 @@
 		68D990C42A1AE98A00A3A393 /* ModelMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0BC1C2CC2DF4F23C00BAFCC8 /* DesignSystem */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DesignSystem; sourceTree = "<group>"; };
+		0BC1C2D72DF4FCF600BAFCC8 /* Configurations */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Configurations; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		274CE29329E6D792007C703D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -369,6 +372,7 @@
 				27E9FD232A582DDB0070216B /* FirebaseAnalyticsSwift in Frameworks */,
 				27E9FD272A582DDB0070216B /* FirebaseCrashlytics in Frameworks */,
 				27E9FD252A582DDB0070216B /* FirebaseAuth in Frameworks */,
+				0BE1D84C2DF4C0CE0074B309 /* AppRouter in Frameworks */,
 				27E9FD352A5838430070216B /* FirebaseDatabaseSwift in Frameworks */,
 				27E9FD292A582DDB0070216B /* FirebaseFirestore in Frameworks */,
 				27E9FD2D2A582DDB0070216B /* FirebaseStorage in Frameworks */,
@@ -533,9 +537,11 @@
 		274CE28D29E6D792007C703D = {
 			isa = PBXGroup;
 			children = (
+				274CE29929E6D792007C703D /* FlorShopApp.swift */,
 				274CE29829E6D792007C703D /* Flor Shop */,
 				274CE29729E6D792007C703D /* Products */,
 				27E9FD312A5838430070216B /* Frameworks */,
+				0BE1D84D2DF4C0F10074B309 /* AppRouter */,
 			);
 			sourceTree = "<group>";
 		};
@@ -550,6 +556,7 @@
 		274CE29829E6D792007C703D /* Flor Shop */ = {
 			isa = PBXGroup;
 			children = (
+				0BC1C2D72DF4FCF600BAFCC8 /* Configurations */,
 				270C3E242A617FDC0086557A /* Flor Shop.entitlements */,
 				0BA05A852DEB8103007F9CF5 /* Dependency Injection */,
 				27F2F4512B1DE5EE003E4197 /* DI */,
@@ -557,23 +564,13 @@
 				27F2F4592B1DECCA003E4197 /* Domain */,
 				27F2F4582B1DEB3D003E4197 /* Resources */,
 				274CE2A929E6D81E007C703D /* Presentation */,
-				274CE29F29E6D793007C703D /* Preview Content */,
 			);
 			path = "Flor Shop";
-			sourceTree = "<group>";
-		};
-		274CE29F29E6D793007C703D /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				274CE2A029E6D793007C703D /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		274CE2A929E6D81E007C703D /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				274CE29929E6D792007C703D /* FlorShopApp.swift */,
 				27B3936D29F74E4B0085D4EC /* RootView.swift */,
 				27448D762C4F134E00F1BEE6 /* MainView.swift */,
 				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
@@ -582,6 +579,7 @@
 				27F2F4692B1DF00E003E4197 /* MenuView */,
 				27CC2E032A883B98000EDB64 /* SideMenu */,
 				27C241F52A0088A70045B2A0 /* Commons */,
+				0BC1C2CC2DF4F23C00BAFCC8 /* DesignSystem */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -689,6 +687,7 @@
 				278CA64E2C42FBF700C200C5 /* CustomApiRequest.swift */,
 				0B7C515A2CB181D9005C655A /* Request Parameters.swift */,
 				0B7C515C2CB181F4005C655A /* Response Parameters.swift */,
+				0BC1C2E22DF508C600BAFCC8 /* APIEndpoint.swift */,
 			);
 			path = NetworkManager;
 			sourceTree = "<group>";
@@ -775,7 +774,6 @@
 				27F68FBC2AD84EC700D917FF /* Navigation */,
 				27BF2C832ADB6ADE00D4C5F6 /* CardViews */,
 				27C318E129F34498004CC146 /* DefaultTopBar.swift */,
-				27B3936B29F73B510085D4EC /* CustomTabBar.swift */,
 				2734B2332A300FF2003EA365 /* CustomHideKeyboard.swift */,
 				27CB99C42A3354F60083CAB7 /* CustomButtons.swift */,
 				27E9FD362A583AB30070216B /* VersionLockView.swift */,
@@ -1007,7 +1005,6 @@
 				2777DB162B55CF2700F6CAC3 /* TestData */,
 				2786CA182A6D44CC00A80585 /* Alerts */,
 				27BA28172A79BF3B008F3F08 /* Fonts */,
-				274CE29D29E6D793007C703D /* Assets.xcassets */,
 				27E9FD1D2A582C710070216B /* GoogleService-Info.plist */,
 			);
 			path = Resources;
@@ -1509,6 +1506,10 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				0BC1C2CC2DF4F23C00BAFCC8 /* DesignSystem */,
+				0BC1C2D72DF4FCF600BAFCC8 /* Configurations */,
+			);
 			name = "Flor Shop";
 			packageProductDependencies = (
 				27E9FD202A582DDB0070216B /* FirebaseAnalytics */,
@@ -1520,6 +1521,7 @@
 				27E9FD2C2A582DDB0070216B /* FirebaseStorage */,
 				27E9FD322A5838430070216B /* FirebaseDatabase */,
 				27E9FD342A5838430070216B /* FirebaseDatabaseSwift */,
+				0BE1D84B2DF4C0CE0074B309 /* AppRouter */,
 			);
 			productName = "Flor Shop";
 			productReference = 274CE29629E6D792007C703D /* Flor Shop.app */;
@@ -1567,9 +1569,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2786CA1B2A6D44CC00A80585 /* Fail1.mp3 in Resources */,
-				274CE2A129E6D793007C703D /* Preview Assets.xcassets in Resources */,
 				2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */,
-				274CE29E29E6D793007C703D /* Assets.xcassets in Resources */,
 				27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */,
 				27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */,
 			);
@@ -1651,7 +1651,6 @@
 				279C64A42A8D977C003B29BC /* Employee.swift in Sources */,
 				27B88E942C2E233F00B17E52 /* TypeUnitView.swift in Sources */,
 				27CC2DFF2A881BA1000EDB64 /* LogInView.swift in Sources */,
-				27B3936C29F73B510085D4EC /* CustomTabBar.swift in Sources */,
 				273576892B1F72CE00E9CF12 /* GetSalesUseCase.swift in Sources */,
 				0B555A0E2DD86420001F5BE0 /* SyncWebSocketClient.swift in Sources */,
 				270B71CD2BBB8202002D79D6 /* OptimizeLocalImages.swift in Sources */,
@@ -1713,6 +1712,7 @@
 				271FE6772C3663CE00BADA74 /* BarcodeScannerView.swift in Sources */,
 				2735768D2B1F860D00E9CF12 /* GetCustomersUseCase.swift in Sources */,
 				273576852B1F507A00E9CF12 /* ChangeProductAmountInCartUseCase.swift in Sources */,
+				0BC1C2E32DF508C600BAFCC8 /* APIEndpoint.swift in Sources */,
 				27C241FF2A00A89C0045B2A0 /* CartViewModel.swift in Sources */,
 				272066802A094D6A00E0CCA8 /* SalesViewModel.swift in Sources */,
 				27A62A5B2C2F6912009425DB /* ExportProductsUseCase.swift in Sources */,
@@ -1870,13 +1870,13 @@
 		274CE2A529E6D793007C703D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Flor Shop/Flor Shop.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Flor Shop/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 9TAXVQDQJU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1892,7 +1892,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2.0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop;
+				PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1913,7 +1913,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Flor Shop/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 9TAXVQDQJU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1976,6 +1976,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0BE1D84B2DF4C0CE0074B309 /* AppRouter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppRouter;
+		};
 		27E9FD202A582DDB0070216B /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 27E9FD1F2A582DDB0070216B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
