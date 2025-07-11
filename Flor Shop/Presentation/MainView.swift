@@ -1,124 +1,69 @@
 //
-//  MenuView.swift
+//  MainView.swift
 //  Flor Shop
 //
-//  Created by Angel Curi Laurente on 24/04/23.
+//  Created by Angel Curi Laurente on 22/07/2024.
 //
 
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject var versionCheck: VersionCheck
-    @EnvironmentObject var logInViewModel: LogInViewModel
-    @EnvironmentObject var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject var navManager: NavManager
-    @State private var isKeyboardVisible: Bool = false
-    @State private var showMenu: Bool = false
-    @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
-    @AppStorage("userOrEmail") var userOrEmail: String?
-    @AppStorage("password") var password: String?
+    @Environment(LogInViewModel.self) var logInViewModel
+    @Environment(PersistenceSessionConfig.self) private var sessionConfig
     var body: some View {
-        VStack(spacing: 0, content: {
-                VStack(spacing: 0) {
-                    if !hasShownOnboarding {
-                        OnboardingView(onAction: {
-                            hasShownOnboarding = true
-                        })
-                    } else {
-                        switch versionCheck.versionIsOk {
-                        case .loading:
-                            LaunchScreenView()
-                        case .lockVersion:
-                            LockScreenView()
-                        case .versionOk:
-                            //Etapa del LogIn o Registro
-                            NavigationStack(path: $navManager.navPaths) {
-                                ZStack(content: {
-                                    if logInViewModel.logInStatus == .success {
-                                        MenuView(showMenu: $showMenu, isKeyboardVisible: $isKeyboardVisible)
-                                    } else {
-                                        WelcomeView(isKeyboardVisible: $isKeyboardVisible)
-                                            .onAppear(perform: {
-                                                if let user = userOrEmail, let password = password {
-                                                    logInViewModel.logInFields.userOrEmail = user
-                                                    logInViewModel.logInFields.password = password
-                                                    logInViewModel.logIn()
-                                                } else {
-                                                    let reg = registrationViewModel.registerUser()
-                                                    print("\(reg)")
-                                                    logInViewModel.logInFields.userOrEmail = registrationViewModel.registrationFields.email
-                                                    logInViewModel.logInFields.password = registrationViewModel.registrationFields.password
-                                                    print("User: \(registrationViewModel.registrationFields.email)")
-                                                    print("Pass: \(registrationViewModel.registrationFields.password)")
-                                                    logInViewModel.logIn()
-                                                }
-                                            })
-                                    }
-                                })
-                                .navigationDestination(for: NavPathsEnum.self, destination: { viewArc in
-                                    switch viewArc {
-                                    case .loginView:
-                                        LogInView(isKeyboardVisible: $isKeyboardVisible)
-                                    case .registrationView:
-                                        CreateAccountView(isKeyboardVisible: $isKeyboardVisible)
-                                    case .customerView:
-                                        CustomersView(showMenu: $showMenu, backButton: true)
-                                    case .customersForPaymentView:
-                                        CustomersView(showMenu: .constant(false), backButton: true)
-                                    case .addCustomerView:
-                                        AddCustomerView()
-                                    case .paymentView:
-                                        PaymentView()
-                                    case .customerHistoryView:
-                                        CustomerHistoryView()
-                                    }
-                                })
-                            }
-                            .onChange(of: logInViewModel.logInStatus, perform: { status in
-                                if status == .success {
-                                    navManager.popToRoot()
-                                    userOrEmail = logInViewModel.logInFields.userOrEmail
-                                    password = logInViewModel.logInFields.password
-                                }
-                            })
-                        case .unowned:
-                            LockScreenView()
-                        }
-                    }
-                }
-                .onAppear {
-                    versionCheck.checkAppVersion()
-                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
-                        isKeyboardVisible = true
-                    }
-                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-                        isKeyboardVisible = false
-                    }
-                }
-                if isKeyboardVisible {
-                    CustomHideKeyboard()
-                }
-            })
+        VStack {
+            if let sessionConfig = sessionConfig.session {
+                MainContendView(sessionConfig: sessionConfig)
+            } else {
+                WelcomeView()
+            }
+        }
+    }
+}
+
+struct MainContendView: View {
+    let sessionConfig: SessionConfig
+    let dependencies: BusinessDependencies
+    @Environment(\.scenePhase) var scenePhase
+    init(sessionConfig: SessionConfig) {
+        self.sessionConfig = sessionConfig
+        self.dependencies = BusinessDependencies(sessionConfig: sessionConfig)
+    }
+    var body: some View {
+        VStack(spacing: 0) {
+            MenuView()
+                .environmentObject(dependencies.productsViewModel)
+                .environmentObject(dependencies.cartViewModel)
+                .environmentObject(dependencies.salesViewModel)
+                .environmentObject(dependencies.customerViewModel)
+                .environmentObject(dependencies.addCustomerViewModel)
+                .environmentObject(dependencies.employeeViewModel)
+                .environmentObject(dependencies.agregarViewModel)
+                .environmentObject(dependencies.customerHistoryViewModel)
+                .environmentObject(dependencies.addCustomerViewModel)
+                .environment(dependencies.webSocket)
+        }
+        .onChange(of: scenePhase) { oldValue, newValue in
+            switch newValue {
+            case .active:
+                dependencies.webSocket.connect()
+            case .inactive, .background:
+                print("[WebScoket] Se desconetará por: \(newValue)")
+                dependencies.webSocket.disconnect()
+                print("[WebScoket] Desconectado")
+            default:
+                dependencies.webSocket.disconnect()
+            }
+        }
     }
 }
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        //Definimos contexto para todos
-        let dependencies = Dependencies()
+        let normalDependencies = NormalDependencies()
+        let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dep = BusinessDependencies(sessionConfig: sesC)
         MainView()
-            .environmentObject(dependencies.logInViewModel)
-            .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.productsViewModel)
-            .environmentObject(dependencies.versionCheck)
-            .environmentObject(dependencies.registrationViewModel)
-            .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.navManager)
-    }
-}
-
-extension View {
-    func getRect() -> CGRect {
-        return UIScreen.main.bounds
+            .environment(normalDependencies.logInViewModel)
     }
 }

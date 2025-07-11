@@ -2,14 +2,14 @@
 //  SaveImageUseCase.swift
 //  Flor Shop
 //
-//  Created by Angel Curi Laurente on 12/04/24.
+//  Created by Angel Curi Laurente on 02/08/2024.
 //
 
 import Foundation
 import SwiftUI
 
 protocol SaveImageUseCase {
-    func execute(idImage: UUID, image: UIImage) -> ImageUrl?
+    func execute(uiImage: UIImage) async throws -> ImageUrl
 }
 
 final class SaveImageInteractor: SaveImageUseCase {
@@ -19,8 +19,7 @@ final class SaveImageInteractor: SaveImageUseCase {
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
     }
-    @discardableResult
-    func execute(idImage: UUID, image: UIImage) -> ImageUrl? {
-        return self.imageRepository.saveImage(idImage: idImage, image: image)
+    func execute(uiImage: UIImage) async throws -> ImageUrl {
+        return try await self.imageRepository.saveImage(image: uiImage)
     }
 }

@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import CoreData
 
 struct Customer: Identifiable {
     var id: UUID
     var name: String
     var lastName: String
     var image: ImageUrl?
-    var creditLimit: Double
+    var creditLimit: Money
     var isCreditLimit: Bool
     var creditDays: Int
     var isDateLimit: Bool
@@ -29,11 +30,58 @@ struct Customer: Identifiable {
     var dateLimit: Date
     var firstDatePurchaseWithCredit: Date?
     var phoneNumber: String
-    var totalDebt: Double
+    var lastDatePurchase: Date
+    var totalDebt: Money
     var isCreditLimitActive: Bool
     var isDateLimitActive: Bool
+    let createdAt: Date
+    let updatedAt: Date
     
     static func getDummyCustomer() -> Customer {
-        return Customer(id: UUID(), name: "Desconocido", lastName: "Desconocido", image: nil, creditLimit: 12.0, isCreditLimit: false, creditDays: 30, isDateLimit: false, creditScore: 50, dateLimit: Date(), phoneNumber: "994947825", totalDebt: 23.53, isCreditLimitActive: false, isDateLimitActive: false)
+        return Customer(
+            id: UUID(),
+            name: "Desconocido",
+            lastName: "Desconocido",
+            image: nil,
+            creditLimit: Money(1200),
+            isCreditLimit: false,
+            creditDays: 30,
+            isDateLimit: false,
+            creditScore: 50,
+            dateLimit: Date(),
+            phoneNumber: "994947825",
+            lastDatePurchase: Date(),
+            totalDebt: Money(2300),
+            isCreditLimitActive: false,
+            isDateLimitActive: false,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+    }
+}
+
+extension Customer {
+    func toCustomerDTO(companyId: UUID) -> CustomerDTO {
+        return CustomerDTO(
+            id: id,
+            name: name,
+            lastName: lastName,
+            totalDebt: totalDebt.cents,
+            creditScore: creditScore,
+            creditDays: creditDays,
+            isCreditLimitActive: isCreditLimitActive,
+            isCreditLimit: isCreditLimit,
+            isDateLimitActive: isDateLimitActive,
+            isDateLimit: isDateLimit,
+            dateLimit: ISO8601DateFormatter().string(from: dateLimit),
+            firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
+            lastDatePurchase: ISO8601DateFormatter().string(from: lastDatePurchase),
+            phoneNumber: phoneNumber,
+            creditLimit: creditLimit.cents,
+            companyID: companyId,
+            imageUrl: image?.toImageUrlDTO(imageData: nil),
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+        )
     }
 }

@@ -1,20 +1,16 @@
-//
-//  RegistrationViewModel.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/08/23.
-//
-
 import Foundation
+import Observation
 
-class RegistrationViewModel: ObservableObject {
-    @Published var registrationFields: RegistrationFields = RegistrationFields()
-    private let registerUserUseCase: RegisterUserUseCase
-    init(registerUserUseCase: RegisterUserUseCase) {
-        self.registerUserUseCase = registerUserUseCase
+@Observable
+class RegistrationViewModel {
+    var registrationFields: RegistrationFields = RegistrationFields()
+    private let registerUseCase: RegisterUseCase
+    init(
+        registerUseCase: RegisterUseCase
+    ) {
+        self.registerUseCase = registerUseCase
     }
     func fieldsTrue() {
-        print("All value true")
         registrationFields.emailEdited = true
         registrationFields.userEdited = true
         registrationFields.passwordEdited = true
@@ -23,15 +19,59 @@ class RegistrationViewModel: ObservableObject {
         registrationFields.managerLastNameEdited = true
         registrationFields.companyRUCEdited = true
     }
-    func registerUser() -> Bool {
-        let companyRegistration: Company = Company(id: UUID(), companyName: registrationFields.companyName, ruc: registrationFields.companyRUC)
-        let subsidiaryRegistration: Subsidiary = Subsidiary(id: UUID(), name: registrationFields.companyName, image: nil)
-        let userRegistration: Employee = Employee(id: UUID(), name: registrationFields.managerName, user: registrationFields.user, email: registrationFields.email, lastName: registrationFields.managerLastName, role: "Manager", image: nil, active: true, phoneNumber: "")
-        return self.registerUserUseCase.execute(company: companyRegistration, subsidiary: subsidiaryRegistration, employee: userRegistration)
+    func registerUser() async throws -> SessionConfig {
+        let newCompany = Company(
+            id: UUID(),
+            companyName: registrationFields.companyName,
+            ruc: registrationFields.companyRUC,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+//        let newSubsidiaryImage = ImageUrl(
+//            id: UUID(),
+//            imageUrl: "",
+//            imageHash: "",
+//            createdAt: Date(),
+//            updatedAt: Date()
+//        )
+        let newSubsidiary = Subsidiary(
+            id: UUID(),
+            name: registrationFields.companyName,
+            image: nil,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+//        let newEmployeeImage = ImageUrl(
+//            id: UUID(),
+//            imageUrl: "",
+//            imageHash: "",
+//            createdAt: Date(),
+//            updatedAt: Date()
+//        )
+        let newEmployee = Employee(
+            id: UUID(),
+            name: registrationFields.managerName,
+            user: registrationFields.user,
+            email: registrationFields.email,
+            lastName: registrationFields.managerLastName,
+            role: "Manager",
+            image: nil,
+            active: true,
+            phoneNumber: "",
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        return try await self.registerUseCase.execute(
+            registerStuff: RegisterStuffs(
+                company: newCompany,
+                subsidiary: newSubsidiary,
+                employee: newEmployee
+            )
+        )
     }
 }
-class RegistrationFields {
-    var email: String = "user001@gmail.com"
+struct RegistrationFields {
+    var email: String = "curilaurente@gmail.com"
     var emailEdited: Bool = false
     var emailError: String {
         if email == "" && emailEdited {
@@ -40,7 +80,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var user: String = "user001"
+    var user: String = "angel.curi"
     var userEdited: Bool = false
     var userError: String {
         if user == "" && userEdited {
@@ -49,7 +89,7 @@ class RegistrationFields {
             return ""
         }
     }
-    var password: String = "1234"
+    var password: String = "password"
     var passwordEdited: Bool = false
     var passwordError: String {
         if self.password == "" && self.passwordEdited {

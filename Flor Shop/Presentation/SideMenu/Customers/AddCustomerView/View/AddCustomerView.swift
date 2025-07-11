@@ -1,28 +1,13 @@
-//
-//  AddCustomerView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 14/10/23.
-//
-
 import SwiftUI
 
 struct AddCustomerView: View {
-    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
                 AddCustomerTopBar()
-                AddCustomerFields(isPresented: $addCustomerViewModel.isPresented)
+                AddCustomerFields()
             }
             .background(Color("color_background"))
-            .blur(radius: addCustomerViewModel.isPresented ? 2 : 0)
-            if addCustomerViewModel.isPresented {
-                SourceSelecctionView(isPresented: $addCustomerViewModel.isPresented, fromInternet: false, selectionImage: $addCustomerViewModel.selectionImage)
-            }
-            if addCustomerViewModel.isLoading {
-                LoadingView()
-            }
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
@@ -31,7 +16,8 @@ struct AddCustomerView: View {
 
 struct AddCustomerView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         AddCustomerView()
             .environmentObject(dependencies.addCustomerViewModel)
     }
@@ -39,30 +25,22 @@ struct AddCustomerView_Previews: PreviewProvider {
 
 struct AddCustomerFields : View {
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @Binding var isPresented: Bool
     var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(.vertical, showsIndicators: false, content: {
             VStack(spacing: 23, content: {
                 HStack {
                     Spacer()
-                    Button(action: {
-                        withAnimation(.easeIn) {
-                            isPresented = true
-                        }
-                    }, label: {
-                        VStack(content: {
-                            if let imageC = addCustomerViewModel.selectedImage {
-                                Image(uiImage: imageC)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: sizeCampo, height: sizeCampo)
-                                    .cornerRadius(15.0)
-                            } else {
-                                CardViewPlaceHolder2(size: sizeCampo)
-                            }
-                        })
-                    })
+                    CustomImageView(
+                        uiImage: $addCustomerViewModel.selectedImage,
+                        size: sizeCampo,
+                        searchFromInternet: nil,
+                        searchFromGallery: searchFromGallery,
+                        takePhoto: takePhoto
+                    )
+                    .photosPicker(isPresented: $addCustomerViewModel.fieldsAddCustomer.isShowingPicker,
+                                  selection: $addCustomerViewModel.selectionImage,
+                                  matching: .any(of: [.images, .screenshots]))
                     Spacer()
                 }
                 HStack {
@@ -83,7 +61,8 @@ struct AddCustomerFields : View {
                 }
                 HStack(content: {
                     CustomTextField(title: "Móvil" ,value: $addCustomerViewModel.fieldsAddCustomer.phoneNumber, edited: $addCustomerViewModel.fieldsAddCustomer.phoneNumberEdited, keyboardType: .numberPad)
-                    CustomTextField(title: "Deuda Total" ,value: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
+//                    CustomTextField(title: "Deuda Total" ,value: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
+                    CustomNumberField(placeHolder: "0", title: "Deuda Total", userInput: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
                 })
                 HStack(content: {
                     CustomTextField(title: "Fecha Límite" ,value: .constant(addCustomerViewModel.fieldsAddCustomer.dateLimitString), edited: .constant(false), disable: true)
@@ -101,7 +80,7 @@ struct AddCustomerFields : View {
                     ErrorMessageText(message: addCustomerViewModel.fieldsAddCustomer.creditDaysError)
                 }
                 HStack(content: {
-                    CustomTextField(title: "Límite de Crédito" ,value: $addCustomerViewModel.fieldsAddCustomer.creditLimit, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.creditLimitFlag, keyboardType: .numberPad)
+                    CustomNumberField(placeHolder: "0", title: "Límite de Crédito", userInput: $addCustomerViewModel.fieldsAddCustomer.creditLimit, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
                     Toggle("", isOn: $addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
                         .labelsHidden()
                         .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
@@ -117,5 +96,11 @@ struct AddCustomerFields : View {
                 await addCustomerViewModel.releaseResources()
             }
         }
+    }
+    func searchFromGallery() {
+        addCustomerViewModel.fieldsAddCustomer.isShowingPicker = true
+    }
+    func takePhoto() {
+        
     }
 }

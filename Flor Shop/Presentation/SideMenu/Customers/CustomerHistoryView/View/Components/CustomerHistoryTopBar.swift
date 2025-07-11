@@ -10,33 +10,23 @@ import AVFoundation
 
 struct CustomerHistoryTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @EnvironmentObject var navManager: NavManager
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
             HStack(content: {
-                Button(action: {
-                    navManager.goToBack()
-                }, label: {
-                    CustomButton3()
-                })
+                BackButton()
                 Spacer()
                 Button(action: {
                     print("Se presiono cobrar")
-                    if customerHistoryViewModel.payTotalAmount() {
-                        customerHistoryViewModel.updateData()
-                        playSound(named: "Success1")
-                    } else {
-                        customerHistoryViewModel.updateData()
-                        playSound(named: "Fail1")
-                    }
+                    payDebt()
                 }, label: {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
-                        Text(String(format: "%.2f", customerHistoryViewModel.customer?.totalDebt ?? 0.0))
+                        Text(String(format: "%.2f", customerHistoryViewModel.customer?.totalDebt.soles ?? 0.0))
                             .font(.custom("Artifika-Regular", size: 20))
                     })
                     .padding(.horizontal, 10)
@@ -47,13 +37,12 @@ struct CustomerHistoryTopBar: View {
                 })
                 if let customer = customerHistoryViewModel.customer {
                     Button(action: {
-                        addCustomerViewModel.editCustomer(customer: customer)
-                        navManager.goToAddCustomerView()
+                        editCustomer(customer: customer)
                     }, label: {
-                        CustomAsyncImageView(id: customer.image?.id, urlProducto: customer.image?.imageUrl, size: 40)
+                        CustomAsyncImageView(imageUrl: customer.image, size: 40)
                     })
                 } else {
-                    CustomButton3(simbol: "person.crop.circle.badge.plus")
+                    EmptyProfileButton()
                 }
             })
         }
@@ -61,6 +50,37 @@ struct CustomerHistoryTopBar: View {
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
+    }
+    private func payDebt() {
+        Task {
+            router.isLoanding = true
+            do {
+                if try await customerHistoryViewModel.payTotalAmount() {
+                    try customerHistoryViewModel.updateData()
+                    playSound(named: "Success1")
+                } else {
+                    try customerHistoryViewModel.updateData()
+                    playSound(named: "Fail1")
+                }
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+                playSound(named: "Fail1")
+            }
+            router.isLoanding = false
+        }
+    }
+    private func editCustomer(customer: Customer) {
+        Task {
+//            loading = true
+            do {
+                try await addCustomerViewModel.editCustomer(customer: customer)
+//                navManager.goToAddCustomerView()
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+                playSound(named: "Fail1")
+            }
+//            loading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?
@@ -79,7 +99,9 @@ struct CustomerHistoryTopBar: View {
 }
 struct CustomerHistoryTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomerHistoryTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)

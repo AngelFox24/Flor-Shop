@@ -6,35 +6,26 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AgregarView: View {
-    @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @Binding var showMenu: Bool
+    @Binding var tab: Tab
     var body: some View {
-        ZStack(content: {
-            VStack(spacing: 0) {
-                AgregarTopBar(showMenu: $showMenu)
-                CamposProductoAgregar(isPresented: $agregarViewModel.agregarFields.isPresented)
-            }
-            .background(Color("color_background"))
-            .blur(radius: agregarViewModel.agregarFields.isPresented ? 2 : 0)
-            if agregarViewModel.agregarFields.isPresented {
-                SourceSelecctionView(isPresented: $agregarViewModel.agregarFields.isPresented, fromInternetAction: agregarViewModel.findProductNameOnInternet, selectionImage: $agregarViewModel.agregarFields.selectionImage)
-            }
-            if agregarViewModel.isLoading {
-                LoadingView()
-            }
-        })
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
+        VStack(spacing: 0) {
+            AgregarTopBar()
+            CamposProductoAgregar(tab: $tab)
+        }
     }
 }
 
 struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
-        AgregarView(showMenu: .constant(false))
+        let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: sesConfig)
+        @State var tab: Tab = .plus
+        AgregarView(tab: $tab)
             .environmentObject(dependencies.agregarViewModel)
+            .environmentObject(dependencies.productsViewModel)
     }
 }
 
@@ -47,138 +38,208 @@ struct ErrorMessageText: View {
 }
 
 struct CamposProductoAgregar: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @Binding var isPresented: Bool
+    @Binding var tab: Tab
     var sizeCampo: CGFloat = 150
     var body: some View {
-        //List(content: {
-        /*Para formularios no es necesario usar List ya que se tiene:
-         - Padding por default
-         - Necesita especificar el color de fondo de los elementos de la lista y ocultar el separador
-            .listRowBackground(Color("color_background"))
-            .listRowSeparator(.hidden)
-         - Necesita especificar PlainListStyle
-            .listStyle(PlainListStyle())
-         */
-        ScrollView(.vertical, showsIndicators: false, content: {
-            VStack(spacing: 23, content: {
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        withAnimation(.easeIn) {
-                            isPresented = true
+        HStack(spacing: 0) {
+            SideSwipeView(swipeDirection: .right, swipeAction: goToSideMenu)
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 23) {
+                    HStack {
+                        VStack(spacing: 0) {
+                            Spacer()
+                            Button(action: exportProducts) {
+                                CustomButton6(simbol: "square.and.arrow.up")
+                            }
                         }
-                    }, label: {
-                        if let imageC = agregarViewModel.agregarFields.selectedLocalImage {
-                            Image(uiImage: imageC)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: sizeCampo, height: sizeCampo)
-                                .cornerRadius(15.0)
-                        } else {
-                            AsyncImage(url: URL(string: agregarViewModel.agregarFields.imageUrl )) { phase in
-                                switch phase {
-                                case .empty:
-                                    CardViewPlaceHolder2(size: sizeCampo)
-                                case .success(let returnetImage):
-                                    returnetImage
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: sizeCampo, height: sizeCampo)
-                                        .cornerRadius(20.0)
-                                case .failure:
-                                    CardViewPlaceHolder2(text: "Fallo en Carga", size: sizeCampo)
-                                default:
-                                    CardViewPlaceHolder2(text: "Error", size: sizeCampo)
+                        Spacer()
+                        CustomImageView(
+                            uiImage: $agregarViewModel.selectedLocalImage,
+                            size: sizeCampo,
+                            searchFromInternet: searchFromInternet,
+                            searchFromGallery: searchFromGallery,
+                            takePhoto: takePhoto
+                        )
+                        .photosPicker(isPresented: $agregarViewModel.agregarFields.isShowingPicker, selection: $agregarViewModel.selectionImage, matching: .any(of: [.images, .screenshots]))
+                        Spacer()
+                        VStack(spacing: 0) {
+                            Button(action: {
+                                router.presentSheet(.popoverAddView)
+                            }, label: {
+                                CustomButton6(simbol: "questionmark")
+                            })
+                            Spacer()
+                            ImportButtonView() { result in
+                                handleFileImport(result: result)
+                            }
+                        }
+                    }
+                    VStack {
+                        HStack {
+                            HStack {
+                                Button(action: pasteFromInternet) {
+                                    Text("Pegar Imagen")
+                                        .foregroundColor(.black)
+                                        .font(.custom("Artifika-Regular", size: 16))
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 5)
+                                        .background(Color("color_secondary"))
+                                        .cornerRadius(10)
                                 }
                             }
                         }
-                    })
-                    Spacer()
-                }
-                VStack {
-                    HStack {
+                        if agregarViewModel.agregarFields.imageURLError != "" {
+                            ErrorMessageText(message: agregarViewModel.agregarFields.imageURLError)
+                                .padding(.top, 6)
+                        }
+                    }
+                    VStack {
                         HStack {
-                            Button(action: {
-                                agregarViewModel.pasteFromInternet()
-                            }, label: {
-                                Text("Pegar Imagen")
+                            CustomTextField(placeHolder: "", title: "Código de barras" ,value: $agregarViewModel.agregarFields.scannedCode, edited: .constant(false))
+                            Button {
+                                agregarViewModel.agregarFields.isShowingScanner.toggle()
+                            } label: {
+                                Image(systemName: "barcode.viewfinder")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(Color("color_accent"))
+                                    .padding(.horizontal, 5)
+                            }
+                            .sheet(isPresented: $agregarViewModel.agregarFields.isShowingScanner) {
+                                BarcodeScannerView { code in
+                                    agregarViewModel.agregarFields.scannedCode = code
+                                    agregarViewModel.agregarFields.isShowingScanner = false
+                                }
+                                .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
+                            }
+                        }
+                    }
+                    VStack {
+                        HStack {
+                            // El texto hace que tenga una separacion mayor del elemento
+                            HStack {
+                                CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
+                            }
+                            Button(action: findImageOnInternet) {
+                                Text("Buscar Imagen")
                                     .foregroundColor(.black)
                                     .font(.custom("Artifika-Regular", size: 16))
                                     .padding(.vertical, 6)
                                     .padding(.horizontal, 5)
                                     .background(Color("color_secondary"))
                                     .cornerRadius(10)
-                            })
+                            }
+                        }
+                        if agregarViewModel.agregarFields.productError != "" {
+                            ErrorMessageText(message: agregarViewModel.agregarFields.productError)
+                                .padding(.top, 6)
                         }
                     }
-                    if agregarViewModel.agregarFields.imageURLError != "" {
-                        ErrorMessageText(message: agregarViewModel.agregarFields.imageURLError)
-                            .padding(.top, 6)
-                    }
-                }
-                VStack {
-                    HStack {
-                        // El texto hace que tenga una separacion mayor del elemento
+                    VStack {
                         HStack {
-                            CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
-                        }
-                        Button(action: {
-                            print("Se presiono Buscar Imagen")
-                                agregarViewModel.findProductNameOnInternet()
-                        }, label: {
-                            Text("Buscar Imagen")
-                                .foregroundColor(.black)
-                                .font(.custom("Artifika-Regular", size: 16))
-                                .padding(.vertical, 6)
+                            HStack {
+                                CustomTextField(title: "Disponible" ,value: .constant(agregarViewModel.agregarFields.active ? "Activo" : "Inactivo"), edited: .constant(false), disable: true)
+                            }
+                            Toggle("", isOn: $agregarViewModel.agregarFields.active)
+                                .labelsHidden()
+                                .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
                                 .padding(.horizontal, 5)
-                                .background(Color("color_secondary"))
-                                .cornerRadius(10)
-                        })
-                    }
-                    if agregarViewModel.agregarFields.productError != "" {
-                        ErrorMessageText(message: agregarViewModel.agregarFields.productError)
-                            .padding(.top, 6)
-                    }
-                }
-                VStack {
-                    HStack {
-                        HStack {
-                            CustomTextField(title: "Disponible" ,value: .constant(agregarViewModel.agregarFields.active ? "Activo" : "Inactivo"), edited: .constant(false), disable: true)
                         }
-                        Toggle("", isOn: $agregarViewModel.agregarFields.active)
-                            .labelsHidden()
-                            .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
-                            .padding(.horizontal, 5)
+                    }
+                    VStack {
+                        TypeUnitView(value: $agregarViewModel.agregarFields.unitType)
+                    }
+                    VStack {
+                        HStack {
+                            CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
+                            CustomNumberField(placeHolder: "0", title: "Costo Unitario", userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
+                        }
+                        if agregarViewModel.agregarFields.quantityError != "" {
+                            ErrorMessageText(message: agregarViewModel.agregarFields.quantityError)
+                                .padding(.top, 18)
+                        }
+                        if agregarViewModel.agregarFields.unitCostError != "" {
+                            ErrorMessageText(message: agregarViewModel.agregarFields.unitCostError)
+                                .padding(.top, 6)
+                        }
+                    }
+                    VStack {
+                        HStack {
+                            CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.agregarFields.profitMargin), edited: .constant(false), disable: true)
+                            CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited)
+                        }
+                        if agregarViewModel.agregarFields.unitPriceError != "" {
+                            ErrorMessageText(message: agregarViewModel.agregarFields.unitPriceError)
+                                .padding(.top, 6)
+                        }
                     }
                 }
-                VStack {
-                    HStack {
-                        CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
-                        CustomTextField(placeHolder: "0", title: "Costo Unitario" ,value: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited, keyboardType: .decimalPad)
-                    }
-                    if agregarViewModel.agregarFields.quantityError != "" {
-                        ErrorMessageText(message: agregarViewModel.agregarFields.quantityError)
-                            .padding(.top, 18)
-                    }
-                    if agregarViewModel.agregarFields.unitCostError != "" {
-                        ErrorMessageText(message: agregarViewModel.agregarFields.unitCostError)
-                            .padding(.top, 6)
-                    }
+                .padding(.top, 10)
+            }
+            SideSwipeView(swipeDirection: .left, swipeAction: goToProductList)
+        }
+        .background(Color("color_background"))
+    }
+    private func findImageOnInternet() {
+        agregarViewModel.findProductNameOnInternet()
+    }
+    private func handleFileImport(result: Result<[URL], Error>) {
+        Task {
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    router.isLoanding = true
+                    await agregarViewModel.importCSV(url: url)
+                    router.isLoanding = false
                 }
-                VStack {
-                    HStack {
-                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.agregarFields.profitMargin), edited: .constant(false), disable: true)
-                        CustomTextField(placeHolder: "0", title: "Precio de Venta" ,value: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited, keyboardType: .decimalPad)
-                    }
-                    if agregarViewModel.agregarFields.unitPriceError != "" {
-                        ErrorMessageText(message: agregarViewModel.agregarFields.unitPriceError)
-                            .padding(.top, 6)
-                    }
-                }
-            })
-            .padding(.top, 10)
-        })
-        .padding(.horizontal, 10)
+            case .failure(let error):
+                router.presentAlert(.error(error.localizedDescription))
+            }
+        }
+    }
+    private func exportProducts() {
+        Task {
+            router.isLoanding = true
+//            do {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+                let currentDate = Date()
+                let formattedDate = dateFormatter.string(from: currentDate)
+                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(formattedDate).csv")
+                await agregarViewModel.exportCSV(url: tempURL)
+            router.isLoanding = false
+                showShareSheet(url: tempURL)
+//            } catch {
+//                await errorState.processError(error: error)
+//            }
+//            loading = false
+        }
+    }
+    func pasteFromInternet() {
+        Task {
+//            loading = true
+            do {
+                try await agregarViewModel.pasteFromInternet()
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+            }
+//            loading = false
+        }
+    }
+    func goToSideMenu() {
+        router.showMenu = true
+    }
+    func goToProductList() {
+        self.tab = .magnifyingglass
+    }
+    func searchFromInternet() {
+        agregarViewModel.findProductNameOnInternet()
+    }
+    func searchFromGallery() {
+        agregarViewModel.agregarFields.isShowingPicker = true
+    }
+    func takePhoto() {
+        
     }
 }

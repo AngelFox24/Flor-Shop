@@ -8,10 +8,9 @@
 import Foundation
 
 protocol GetSalesUseCase {
-    func execute(page: Int) -> [Sale]
-    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double
-    func getCostAmount(date: Date, interval: SalesDateInterval) -> Double
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double
+    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Money
+    func getCostAmount(date: Date, interval: SalesDateInterval) -> Money
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money
 }
 
 final class GetSalesInteractor: GetSalesUseCase {
@@ -22,17 +21,23 @@ final class GetSalesInteractor: GetSalesUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(page: Int) -> [Sale] {
-        return self.saleRepository.getListSales()
+    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Money {
+        do {
+            return try self.saleRepository.getSalesAmount(date: date, interval: interval)
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return Money(0)
+        }
     }
-    
-    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.saleRepository.getSalesAmount(date: date, interval: interval)
+    func getCostAmount(date: Date, interval: SalesDateInterval) -> Money {
+        do {
+            return try self.saleRepository.getCostAmount(date: date, interval: interval)
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return Money(0)
+        }
     }
-    func getCostAmount(date: Date, interval: SalesDateInterval) -> Double {
-        return self.saleRepository.getCostAmount(date: date, interval: interval)
-    }
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Double {
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money {
         return self.saleRepository.getRevenueAmount(date: date, interval: interval)
     }
 }

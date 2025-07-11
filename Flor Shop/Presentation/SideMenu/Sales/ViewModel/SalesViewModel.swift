@@ -16,9 +16,9 @@ class SalesViewModel: ObservableObject {
     @Published var salesCurrentDateFilter: Date = Date.now
     @Published var salesDateInterval: SalesDateInterval = .diary
     
-    @Published var salesAmount: Double = 0.0
-    @Published var costAmount: Double = 0.0
-    @Published var revenueAmount: Double = 0.0
+    @Published var salesAmount: Money = Money(0)
+    @Published var costAmount: Money = Money(0)
+    @Published var revenueAmount: Money = Money(0)
     
     private let calendario = Calendar.current
     private var currentPage: Int = 1
@@ -60,8 +60,8 @@ class SalesViewModel: ObservableObject {
             return saleDetail == lastSaleDetail
         }
     }
-    func registerSale(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
-        return self.registerSaleUseCase.execute(cart: cart, customer: customer, paymentType: paymentType)
+    func registerSale(cart: Car, customerId: UUID?, paymentType: PaymentType) async throws {
+        try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerId: customerId)
     }
     func nextDate() {
         switch salesDateInterval {
@@ -86,7 +86,7 @@ class SalesViewModel: ObservableObject {
     func updateAmountsBar() {
         salesAmount = self.getSalesUseCase.getSalesAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
         costAmount = self.getSalesUseCase.getCostAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
-        revenueAmount = salesAmount - costAmount
+        revenueAmount = Money(salesAmount.cents - costAmount.cents)
     }
     func releaseResources() {
         self.salesDetailsList = []
@@ -97,9 +97,9 @@ class SalesViewModel: ObservableObject {
         self.salesCurrentDateFilter = Date.now
         self.salesDateInterval = .diary
         
-        self.salesAmount = 0.0
-        self.costAmount = 0.0
-        self.revenueAmount = 0.0
+        self.salesAmount = Money(0)
+        self.costAmount = Money(0)
+        self.revenueAmount = Money(0)
     }
     func lazyFetchList() {
         if salesDetailsList.isEmpty {

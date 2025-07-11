@@ -21,6 +21,10 @@ final class GetCartInteractor: GetCartUseCase {
     }
     
     func execute() -> Car? {
-        return self.cartRepository.getCart()
+        do {
+            return try self.cartRepository.getCart()
+        } catch {
+            return nil
+        }
     }
 }

@@ -10,38 +10,38 @@ import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
-    //@EnvironmentObject var productViewModel: ProductViewModel
+    @Environment(Router.self) private var router
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @Binding var showMenu: Bool
+    @EnvironmentObject var productViewModel: ProductViewModel
     @State private var audioPlayer: AVAudioPlayer?
-    @State private var showingErrorAlert = false
     var body: some View {
         HStack {
-            CustomButton5(showMenu: $showMenu)
+            FlorShopButton()
             Spacer()
-            Button(action: {
-                Task {
-                    agregarViewModel.isLoading = true
-                    if await agregarViewModel.addProduct() {
-                        agregarViewModel.releaseResources()
-                        playSound(named: "Success1")
-                    } else {
-                        playSound(named: "Fail1")
-                        showingErrorAlert = agregarViewModel.agregarFields.errorBD == "" ? false : true
-                    }
-                    agregarViewModel.isLoading = false
-                }
-            }, label: {
+            Button(action: saveProduct) {
                 CustomButton1(text: "Guardar")
-            })
-            AgregarViewPopoverHelp()
-                .alert(agregarViewModel.agregarFields.errorBD, isPresented: $showingErrorAlert, actions: {})
+            }
         }
+        .padding(.top, router.showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
         .background(Color("color_primary"))
+    }
+    private func saveProduct() {
+        Task {
+            router.isLoanding = true
+            do {
+//                UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first?.endEditing(true)
+                try await agregarViewModel.addProduct()
+                await productViewModel.releaseResources()
+                playSound(named: "Success1")
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+                playSound(named: "Fail1")
+            }
+            router.isLoanding = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?
@@ -61,8 +61,13 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
-        AgregarTopBar(showMenu: .constant(false))
-            .environmentObject(dependencies.agregarViewModel)
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
+        VStack {
+            AgregarTopBar()
+                .environmentObject(dependencies.agregarViewModel)
+            Spacer()
+        }
     }
 }

@@ -8,19 +8,28 @@
 import Foundation
 
 protocol RegisterSaleUseCase {
-    
-    func execute(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool
+    func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
 }
 
 final class RegisterSaleInteractor: RegisterSaleUseCase {
-    
+//    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let saleRepository: SaleRepository
     
-    init(saleRepository: SaleRepository) {
+    init(
+//        synchronizerDBUseCase: SynchronizerDBUseCase,
+        saleRepository: SaleRepository
+    ) {
+//        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.saleRepository = saleRepository
     }
     
-    func execute(cart: Car?, customer: Customer?, paymentType: PaymentType) -> Bool {
-        return saleRepository.registerSale(cart: cart, customer: customer, paymentType: paymentType)
+    func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
+        do {
+            try await self.saleRepository.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
+//            try await self.synchronizerDBUseCase.sync()
+        } catch {
+//            try await self.synchronizerDBUseCase.sync()
+            throw error
+        }
     }
 }

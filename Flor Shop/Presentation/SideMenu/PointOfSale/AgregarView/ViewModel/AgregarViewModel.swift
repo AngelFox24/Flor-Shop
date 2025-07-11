@@ -10,148 +10,182 @@ import SwiftUI
 import _PhotosUI_SwiftUI
 
 class AgregarViewModel: ObservableObject {
-    
     @Published var agregarFields = AgregarFields()
-    @Published var isLoading: Bool = false
+    @Published var selectedLocalImage: UIImage?
+    @Published var selectionImage: PhotosPickerItem? = nil {
+        didSet{
+            setImage(from: selectionImage)
+        }
+    }
     
     private let saveProductUseCase: SaveProductUseCase
-    let loadSavedImageUseCase: LoadSavedImageUseCase
     let saveImageUseCase: SaveImageUseCase
-    
-    init(saveProductUseCase: SaveProductUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase) {
+    let exportProductsUseCase: ExportProductsUseCase
+    let importProductsUseCase: ImportProductsUseCase
+    //MARK: Init
+    init(
+        saveProductUseCase: SaveProductUseCase,
+        saveImageUseCase: SaveImageUseCase,
+        exportProductsUseCase: ExportProductsUseCase,
+        importProductsUseCase: ImportProductsUseCase
+    ) {
         self.saveProductUseCase = saveProductUseCase
-        self.loadSavedImageUseCase = loadSavedImageUseCase
         self.saveImageUseCase = saveImageUseCase
+        self.exportProductsUseCase = exportProductsUseCase
+        self.importProductsUseCase = importProductsUseCase
     }
     //MARK: Funtions
     func releaseResources() {
+        self.selectedLocalImage = nil
         self.agregarFields = AgregarFields()
     }
     func findProductNameOnInternet() {
         if self.agregarFields.productName != "" {
             openGoogleImageSearch(nombre: self.agregarFields.productName)
-            self.agregarFields.isPresented = false
         } else {
             self.agregarFields.productEdited = true
-            self.agregarFields.isPresented = false
         }
     }
-    func pasteFromInternet() {
+    func pasteFromInternet() async throws {
         print("Se ejecuta pegar")
         if self.agregarFields.productName != "" {
-            self.agregarFields.selectedLocalImage = nil
-            self.agregarFields.imageUrl = pasteFromClipboard()
+            let urlPasted = pasteFromClipboard()
+//            LocalImageManagerImpl.loadImage(image: imageUrl)
+            if let url = URL(string: urlPasted) {
+                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(url: url)
+                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
+                let imageHash = LocalImageManagerImpl.generarHash(data: imageDataTreated)
+                await MainActor.run {
+                    print("Se le asigno la imagen")
+                    self.agregarFields.imageUrl = urlPasted
+                    self.agregarFields.imageHash = imageHash
+                    self.selectedLocalImage = uiImageTreated
+                }
+            } else {
+                print("NO es URL")
+            }
             print("Se pego imagen: \(self.agregarFields.imageUrl.description)")
         } else {
-            self.agregarFields.productEdited = true
+            await MainActor.run {
+                self.agregarFields.productEdited = true
+            }
         }
     }
-    func addProduct() async -> Bool {
+    func addProduct() async throws {
         await MainActor.run {
-            agregarFields.fieldsTrue()
+            fieldsTrue()
         }
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        guard let product = createProduct() else {
+        guard let product = try await createProduct() else {
             print("No se pudo crear producto")
-            return false
+            throw LocalStorageError.saveFailed("No se pudo crear el producto")
         }
-        let result = self.saveProductUseCase.execute(product: product)
-        if result == "Success" {
-            print("Se añadio correctamente")
-            await MainActor.run {
-                releaseResources()
-            }
-            return true
-        } else {
-            print(result)
-            await MainActor.run {
-                self.agregarFields.errorBD = result
-            }
-            return false
+        try await self.saveProductUseCase.execute(product: product)
+        await MainActor.run {
+            releaseResources()
         }
     }
-    func editProduct(product: Product) {
-        if let imageId = product.image?.id {
-            self.agregarFields.selectedLocalImage = self.loadSavedImageUseCase.execute(id: imageId)
-            self.agregarFields.idImage = imageId
-            print("Se agrego el id correctamente")
-        }
-        self.agregarFields.productId = product.id
-        self.agregarFields.active = product.active
-        self.agregarFields.productName = product.name
-        self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
-        self.agregarFields.quantityStock = String(product.qty)
-        self.agregarFields.unitCost = String(product.unitCost)
-        self.agregarFields.unitPrice = String(product.unitPrice)
-        self.agregarFields.errorBD = ""
+    func fieldsTrue() {
+        self.agregarFields.productEdited = true
+        self.agregarFields.expirationDateEdited = true
+        self.agregarFields.quantityEdited = true
+        self.agregarFields.imageURLEdited = true
+        self.agregarFields.unitCostEdited = true
+        self.agregarFields.profitMarginEdited = true
+        self.agregarFields.unitPriceEdited = true
     }
-    func createProduct() -> Product? {
-        guard let quantityStock = Int(self.agregarFields.quantityStock), let unitCost = Double(self.agregarFields.unitCost), let unitPrice = Double(self.agregarFields.unitPrice) else {
+    func editProduct(product: Product) async throws {
+        await MainActor.run {
+            self.agregarFields.idImage = product.image?.id
+            self.agregarFields.productId = product.id
+            self.agregarFields.active = product.active
+            self.agregarFields.productName = product.name
+            self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
+            self.agregarFields.quantityStock = String(product.qty)
+            self.agregarFields.unitType = product.unitType
+            print("UnitCost: \(product.unitCost.cents)")
+            self.agregarFields.unitCost = product.unitCost.cents
+            print("UnitPrice: \(product.unitPrice.cents)")
+            self.agregarFields.unitPrice = product.unitPrice.cents
+            self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
+            self.agregarFields.errorBD = ""
+        }
+        if let imageUrl = product.image {
+            let uiImage = try? await LocalImageManagerImpl.loadImage(image: imageUrl)
+            await MainActor.run {
+                self.selectedLocalImage = uiImage
+            }
+        }
+        print("Se verifica producto: \(self.agregarFields.productName)")
+    }
+    func createProduct() async throws -> Product? {
+        guard let quantityStock = Int(self.agregarFields.quantityStock) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
         if agregarFields.isErrorsEmpty() {
-            return Product(id: self.agregarFields.productId ?? UUID(), active: self.agregarFields.active, name: self.agregarFields.productName, qty: quantityStock, unitCost: unitCost, unitPrice: unitPrice, expirationDate: self.agregarFields.expirationDate, image: getImageIfExist())
+            return Product(
+                id: self.agregarFields.productId ?? UUID(),
+                active: self.agregarFields.active,
+                barCode: self.agregarFields.scannedCode == "" ? nil : self.agregarFields.scannedCode,
+                name: self.agregarFields.productName,
+                qty: quantityStock,
+                unitType: self.agregarFields.unitType,
+                unitCost: Money(self.agregarFields.unitCost),
+                unitPrice: Money(self.agregarFields.unitPrice),
+                expirationDate: self.agregarFields.expirationDate,
+                image: try await getImageIfExist(),
+                createdAt: Date(),
+                updatedAt: Date()
+            )
         } else {
             return nil
         }
     }
-    func getImageIfExist() -> ImageUrl? {
-        if let imageLocal = self.agregarFields.selectedLocalImage {
-            return self.saveImageUseCase.execute(idImage: UUID(), image: imageLocal)
-        } else if self.agregarFields.imageUrl != "" {
-            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: "")
+    private func setImage(from selection: PhotosPickerItem?) {
+        guard let selection else {return}
+        Task {
+            do {
+                let data = try await selection.loadTransferable(type: Data.self)
+                guard let data, let uiImage = UIImage(data: data) else {
+                    print("Imagen vacia")
+                    return
+                }
+                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
+                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
+                await MainActor.run {
+                    print("Se le asigno la imagen")
+                    self.agregarFields.imageUrl = ""
+                    self.selectedLocalImage = uiImageTreated
+                }
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
+    func exportCSV(url: URL) async {
+        await self.exportProductsUseCase.execute(url: url)
+    }
+    func importCSV(url: URL) async {
+        await self.importProductsUseCase.execute(url: url)
+    }
+    func getImageIfExist() async throws -> ImageUrl? {
+        //Verificar si hay URL, se da prioridad
+        if self.agregarFields.imageUrl != "" {
+            //Devolver ImageUrl nuevo
+            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: self.agregarFields.imageHash, createdAt: Date(), updatedAt: Date())
+        } else if let uiImage = self.selectedLocalImage {
+            return try await self.saveImageUseCase.execute(uiImage: uiImage)
         } else {
             return nil
         }
     }
-//    func loadTestData() {
-//        if let path = Bundle.main.path(forResource: "BD_Flor_Shop", ofType: "csv", inDirectory: nil) {
-//            do {
-//                let content = try String(contentsOfFile: path, encoding: .utf8)
-//                let lines = content.components(separatedBy: "\n")
-//                var countSucc: Int = 0
-//                var countFail: Int = 0
-//                for line in lines {
-//                    let elements = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-//                    if elements.count != 3 {
-//                        print("Count: \(elements.count)")
-//                        countFail = countFail + 1
-//                        continue
-//                    }
-//                    guard let price = Double(elements[2].replacingOccurrences(of: ",", with: "")) else {
-//                        print("Esta mal?: \(elements[2])")
-//                        countFail = countFail + 1
-//                        continue
-//                    }
-//                    let product = Product(id: UUID(), active: true, name: elements[1], qty: 10, unitCost: 2.0, unitPrice: price, expirationDate: nil, image: ImageUrl(id: UUID(), imageUrl: elements[0], imageHash: ""))
-//                    let result = self.saveProductUseCase.execute(product: product)
-//                    if result == "Success" {
-//                        countSucc = countSucc + 1
-//                    } else {
-//                        print("Error: \(result)")
-//                        countFail = countFail + 1
-//                    }
-//                }
-//                print("Total: \(lines.count), Success: \(countSucc), Fails: \(countFail)")
-//            } catch {
-//                print("Error al leer el archivo: \(error)")
-//            }
-//        } else {
-//            print("No se encuentra el archivo")
-//        }
-//    }
 }
 //MARK: Fields
-class AgregarFields {
-    var isPresented: Bool = false
-    var selectedLocalImage: UIImage?
-    var selectionImage: PhotosPickerItem? = nil {
-        didSet{
-            setImage(from: selectionImage)
-        }
-    }
+struct AgregarFields {
+    var isShowingPicker = false
+    var isShowingScanner = false
     var productId: UUID?
+    var scannedCode: String = ""
     var active: Bool = true
     var productName: String = ""
     var productEdited: Bool = false
@@ -182,16 +216,15 @@ class AgregarFields {
     }
     var idImage: UUID?
     var imageUrl: String = ""
+    var imageHash: String = ""
     var imageURLEdited: Bool = false
     var imageURLError: String = ""
-    var unitCost: String = ""
+    var unitType: UnitTypeEnum = .unit
+    var unitCost: Int = 0
     var unitCostEdited: Bool = false
     var unitCostError: String {
         if unitCostEdited {
-            guard let unitCostDouble = Double(unitCost) else {
-                return "Costo debe ser número decimal o entero"
-            }
-            if unitCostDouble <= 0.0 && unitCostEdited {
+            if unitCost <= 0 && unitCostEdited {
                 return "Costo debe ser mayor a 0"
             } else {
                 return ""
@@ -201,14 +234,11 @@ class AgregarFields {
         }
     }
     var profitMarginEdited: Bool = false
-    var unitPrice: String = ""
+    var unitPrice: Int = 0
     var unitPriceEdited: Bool = false
     var unitPriceError: String {
         if unitPriceEdited {
-            guard let unitPriceDouble = Double(unitPrice) else {
-                return "Precio debe ser número decimal o entero"
-            }
-            if unitPriceDouble <= 0.0 {
+            if unitPrice <= 0 {
                 return "Precio debe ser mayor a 0"
             } else {
                 return ""
@@ -218,47 +248,13 @@ class AgregarFields {
         }
     }
     var profitMargin: String {
-            guard let unitCost = Double(unitCost), let unitPrice = Double(unitPrice) else {
-                return "0 %"
-            }
-            if ((unitPrice - unitCost) > 0.0) && (unitPrice > 0) && (unitCost > 0) {
+            if ((unitPrice - unitCost) > 0) && (unitPrice > 0) && (unitCost > 0) {
                 return String(Int(((unitPrice - unitCost) / unitCost) * 100)) + " %"
             } else {
                 return "0 %"
             }
     }
     var errorBD: String = ""
-    
-    private func setImage(from selection: PhotosPickerItem?) {
-        guard let selection else {return}
-        Task {
-            do {
-                let data = try await selection.loadTransferable(type: Data.self)
-                guard let data, let uiImage = UIImage(data: data) else {
-                    print("Imagen vacia")
-                    return
-                }
-                //selectedImage = uiImage
-                //TODO: Save image with id
-                await MainActor.run {
-                    isPresented = false
-                    selectedLocalImage = uiImage
-                }
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-    }
-    
-    func fieldsTrue() {
-        self.productEdited = true
-        self.expirationDateEdited = true
-        self.quantityEdited = true
-        self.imageURLEdited = true
-        self.unitCostEdited = true
-        self.profitMarginEdited = true
-        self.unitPriceEdited = true
-    }
     
     func isErrorsEmpty() -> Bool {
         let isEmpty = self.productError.isEmpty &&

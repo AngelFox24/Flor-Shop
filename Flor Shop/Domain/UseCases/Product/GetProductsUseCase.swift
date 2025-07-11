@@ -20,6 +20,6 @@ final class GetProductInteractor: GetProductsUseCase {
     
     func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product] {
         guard page >= 1 else { return [] }
-        return self.productRepository.getListProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 15)
+        return self.productRepository.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 15)
     }
 }

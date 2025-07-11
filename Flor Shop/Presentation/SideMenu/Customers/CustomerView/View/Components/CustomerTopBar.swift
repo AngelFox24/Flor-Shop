@@ -8,25 +8,18 @@
 import SwiftUI
 
 struct CustomerTopBar: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    @EnvironmentObject var navManager: NavManager
-    let menuOrders: [CustomerOrder] = CustomerOrder.allValues
-    let menuFilters: [CustomerFilterAttributes] = CustomerFilterAttributes.allValues
-    @Binding var showMenu: Bool
     var backButton: Bool = false
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
                 if backButton {
-                    Button(action: {
-                        navManager.goToBack()
-                    }, label: {
-                        CustomButton3(simbol: "chevron.backward")
-                    })
+                    BackButton()
                 } else {
                     Button(action: {
                         withAnimation(.spring()){
-                            showMenu.toggle()
+                            router.showMenu.toggle()
                         }
                     }, label: {
                         HStack {
@@ -34,50 +27,15 @@ struct CustomerTopBar: View {
                                 .resizable()
                                 .scaledToFit()
                         }
-                        .background(Color("colorlaunchbackground"))
+                        .background(Color.launchBackground)
                         .cornerRadius(10)
                         .frame(width: 40, height: 40)
                     })
                 }
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("color_accent"))
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .padding(.vertical, 10)
-                        .padding(.leading, 10)
-                    // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Cliente", text: $customerViewModel.searchWord)
-                        .padding(.vertical, 10)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color("color_primary"))
-                        .submitLabel(.search)
-                        .disableAutocorrection(true)
-                    Button(action: {
-                        customerViewModel.searchWord = ""
-                    }, label: {
-                        Image(systemName: "x.circle")
-                            .foregroundColor(Color("color_accent"))
-                            .font(.custom("Artifika-Regular", size: 16))
-                            .padding(.vertical, 10)
-                            .padding(.trailing, 10)
-                    })
-                }
-                .background(.white)
-                .cornerRadius(20.0)
+                CustomSearchField(text: $customerViewModel.searchWord)
                 Menu {
-//                    Picker("", selection: $customerViewModel.order) {
-//                        ForEach(menuOrders, id: \.self) {
-//                            Text($0.longDescription)
-//                        }
-//                    }
-//                    Divider()
-//                    Picker("", selection: $customerViewModel.filter) {
-//                        ForEach(menuFilters, id: \.self) {
-//                            Text($0.description)
-//                        }
-//                    }
                     Section("Ordenamiento") {
-                        ForEach(menuOrders, id: \.self) { orden in
+                        ForEach(CustomerOrder.allValues, id: \.self) { orden in
                             Button {
                                 customerViewModel.order = orden
                             } label: {
@@ -86,7 +44,7 @@ struct CustomerTopBar: View {
                         }
                     }
                     Section("Filtros") {
-                        ForEach(menuFilters, id: \.self) { filter in
+                        ForEach(CustomerFilterAttributes.allValues, id: \.self) { filter in
                             Button {
                                 customerViewModel.filter = filter
                             } label: {
@@ -95,9 +53,7 @@ struct CustomerTopBar: View {
                         }
                     }
                 } label: {
-                    Button(action: {}, label: {
-                        CustomButton3(simbol: "slider.horizontal.3")
-                    })
+                    FilterButton()
                 }
                 .onChange(of: customerViewModel.order, perform: { item in
                     customerViewModel.fetchListCustomer()
@@ -108,6 +64,7 @@ struct CustomerTopBar: View {
             })
             .padding(.horizontal, 10)
         }
+        .padding(.top, router.showMenu ? 15 : 0)
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }

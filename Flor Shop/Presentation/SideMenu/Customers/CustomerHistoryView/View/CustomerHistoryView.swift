@@ -8,8 +8,6 @@
 import SwiftUI
 struct CustomerHistoryView: View {
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
-    //@Binding var showMenu: Bool
-    //var backButton: Bool = false
     var body: some View {
         VStack(spacing: 0) {
             CustomerHistoryTopBar()
@@ -28,18 +26,19 @@ struct CustomerHistoryView: View {
 
 struct CustomerHistoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomerHistoryView()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.navManager)
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.customerHistoryViewModel)
     }
 }
 struct CustomerHistoryViewListController: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
-    @EnvironmentObject var navManager: NavManager
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -62,13 +61,12 @@ struct CustomerHistoryViewListController: View {
                             let month: String = saleDetail.saleDate.getShortNameComponent(dateStringNameComponent: .month)
                             let year: String = saleDetail.saleDate.getDateComponent(dateComponent: .year).description
                             CardViewTipe2(
-                                id: saleDetail.image?.id,
-                                url: saleDetail.image?.imageUrl,
+                                imageUrl: saleDetail.image,
                                 topStatusColor: saleDetail.paymentType == PaymentType.cash ? .green : .red,
                                 topStatus: saleDetail.paymentType == PaymentType.cash ? "Pagado \(day) \(month) \(year)" : "Sin Pagar \(day) \(month) \(year)",
                                 mainText: saleDetail.productName,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(format: "%.2f", saleDetail.subtotal),
+                                mainIndicator: String(format: "%.2f", saleDetail.subtotal.soles),
                                 mainIndicatorAlert: false,
                                 secondaryIndicatorSuffix: "u",
                                 secondaryIndicator: String(saleDetail.quantitySold),

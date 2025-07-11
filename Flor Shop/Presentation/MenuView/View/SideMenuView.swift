@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import AppRouter
 
-enum MenuTab: String, CaseIterable {
+enum MenuTab: String, Hashable, FlowType {
+    var id: String { rawValue }
+    
     case pointOfSaleTab
     case salesTab
     case customersTab
     case employeesTab
     case settingsTab
-    case logOut
     var description: String {
         switch self {
         case .pointOfSaleTab:
@@ -26,8 +28,6 @@ enum MenuTab: String, CaseIterable {
             return "Empleados"
         case .settingsTab:
             return "Ajustes"
-        case .logOut:
-            return "Cerrar Sesión"
         }
     }
     var icon: String {
@@ -42,8 +42,6 @@ enum MenuTab: String, CaseIterable {
             return "person.text.rectangle"
         case .settingsTab:
             return "gearshape"
-        case .logOut:
-            return "rectangle.righthalf.inset.fill.arrow.right"
         }
     }
     var iconFill: String {
@@ -58,8 +56,6 @@ enum MenuTab: String, CaseIterable {
             return "person.text.rectangle.fill"
         case .settingsTab:
             return "gearshape.fill"
-        case .logOut:
-            return "rectangle.righthalf.inset.fill.arrow.right"
         }
     }
     static func navTabs() -> [MenuTab] {
@@ -68,11 +64,30 @@ enum MenuTab: String, CaseIterable {
     }
 }
 
+@MainActor
+extension MenuTab {
+    @ViewBuilder
+    var rootView: some View {
+        switch self {
+        case .pointOfSaleTab:
+            PointOfSaleView()
+        case .salesTab:
+            SalesView()
+        case .customersTab:
+            CustomersView()
+        case .employeesTab:
+            EmployeeView()
+        case .settingsTab:
+            PointOfSaleView()
+        }
+    }
+}
+
 struct SideMenuView: View {
-    let navTabsIter: [MenuTab] = MenuTab.navTabs()
-    @Binding var selectedTab: MenuTab
-    @Namespace var animation
+    @Binding var menuTab: MenuTab
     @Binding var showMenu: Bool
+    @Namespace var animation
+    let navTabsIter: [MenuTab] = MenuTab.navTabs()
     var body: some View {
             ZStack {
                 Color("color_accent")
@@ -83,7 +98,7 @@ struct SideMenuView: View {
                             Image("logo")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .background(Color("colorlaunchbackground"))
+                                .background(Color.launchBackground)
                                 .frame(width: 80, height: 80)
                                 .cornerRadius(15)
                                 .padding(.top, 50)
@@ -102,7 +117,7 @@ struct SideMenuView: View {
                         .padding(.leading, 15)
                         VStack(alignment: .leading, spacing: 15, content: {
                             ForEach(navTabsIter, id: \.self) {tab in
-                                    TabButton(tab: tab, selectedTab: $selectedTab, showMenu: $showMenu)
+                                    TabButton(tab: tab, selectedTab: $menuTab, showMenu: $showMenu)
                             }
                         })
                         Spacer()
@@ -125,8 +140,8 @@ struct SideMenuView: View {
 
 struct SideMenuView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var selectedTab: MenuTab = .customersTab
+        @State var menuTab: MenuTab = .customersTab
         @State var showMenu: Bool = false
-        SideMenuView(selectedTab: $selectedTab, showMenu: $showMenu)
+        SideMenuView(menuTab: $menuTab, showMenu: $showMenu)
     }
 }

@@ -21,15 +21,17 @@ struct PaymentView: View {
 
 struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
+        @State var loading = false
         PaymentView()
             .environmentObject(dependencies.cartViewModel)
     }
 }
 
 struct PaymentsFields: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var navManager: NavManager
     var body: some View {
         ScrollView(content: {
             VStack(spacing: 20, content: {
@@ -37,7 +39,9 @@ struct PaymentsFields: View {
                     Text("S/.")
                         .font(.custom("Artifika-Regular", size: 26))
                         .foregroundColor(.black)
-                    Text(String(cartViewModel.cartCoreData?.total ?? 0.0))
+                    let total = cartViewModel.cartCoreData?.total.cents ?? 0
+                    let totalD = Double(total/100)
+                    Text(String(format: "%.2f", totalD))
                         .font(.custom("Artifika-Regular", size: 55))
                         .foregroundColor(.black)
                 })
@@ -51,13 +55,12 @@ struct PaymentsFields: View {
                 VStack(content: {
                     if let customer = cartViewModel.customerInCar {
                         CardViewTipe2(
-                            id: customer.image?.id,
-                            url: customer.image?.imageUrl,
+                            imageUrl: customer.image,
                             topStatusColor: customer.customerTipe.color,
                             topStatus: customer.customerTipe.description,
                             mainText: customer.name + " " + customer.lastName,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(customer.totalDebt),
+                            mainIndicator: String(customer.totalDebt.cents),
                             mainIndicatorAlert: customer.isCreditLimit,
                             secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
                             secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
@@ -75,7 +78,7 @@ struct PaymentsFields: View {
                     }
                 })
                 .onTapGesture {
-                    navManager.goToCustomerView()
+//                    navManager.goToCustomerView()
                 }
                 HStack(content: {
                     Spacer()

@@ -8,28 +8,25 @@
 import Foundation
 import SwiftUI
 import CoreData
-
+/*
 class ImageViewModel: ObservableObject {
     
     @Published var image: Image?
     
     //Managers
     private let mainContext: NSManagedObjectContext
-    private let imageManager: ImageManager
+    private let imageManager: LocalImageManager
     //Repositories
     private let imageRepository: ImageRepositoryImpl
     //UseCases
-    private let deleteUnusedImagesUseCase: DeleteUnusedImagesUseCase
     private let loadSavedImageUseCase: LoadSavedImageUseCase
     private let downloadImageUseCase: DownloadImageUseCase
     private let saveImageUseCase: SaveImageUseCase
     
     init() {
         self.mainContext = CoreDataProvider.shared.viewContext
-        
-        self.imageManager = LocalImageManager(mainContext: self.mainContext)
+        self.imageManager = LocalImageManagerImpl(mainContext: self.mainContext)
         self.imageRepository = ImageRepositoryImpl(manager: self.imageManager)
-        self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: self.imageRepository)
         self.loadSavedImageUseCase = LoadSavedImageInteractor(imageRepository: self.imageRepository)
         self.downloadImageUseCase = DownloadImageInteractor(imageRepository: self.imageRepository)
         self.saveImageUseCase = SaveImageInteractor(imageRepository: self.imageRepository)
@@ -62,3 +59,4 @@ class ImageViewModel: ObservableObject {
         }
     }
 }
+*/

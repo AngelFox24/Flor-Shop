@@ -6,17 +6,17 @@
 //
 
 import SwiftUI
-
+import AppRouter
+    
 struct WelcomeView: View {
-    @Binding var isKeyboardVisible: Bool
-    @EnvironmentObject var navManager: NavManager
+    @Environment(Router.self) private var router
     var body: some View {
         VStack {
             Spacer()
             Image("logo")
                 .resizable()
                 .scaledToFit()
-                .background(Color("colorlaunchbackground"))
+                .background(Color.launchBackground)
                 .cornerRadius(30)
                 .frame(width: 200, height: 200)
             Spacer()
@@ -31,13 +31,13 @@ struct WelcomeView: View {
             Spacer()
             VStack(spacing: 30) {
                 Button(action: {
-                    navManager.goToLoginView()
+                    router.navigateTo(.logInFlow(.loginView))
                 }, label: {
                     CustomButton2(text: "Tengo una cuenta", backgroudColor: Color("color_accent"), minWidthC: 250)
                         .foregroundColor(Color(.black))
                 })
                 Button(action: {
-                    navManager.goToRegistrationView()
+                    router.navigateTo(.logInFlow(.registrationView))
                 }, label: {
                     CustomButton2(text: "Crear Cuenta", backgroudColor: Color("color_background"), minWidthC: 250)
                         .foregroundColor(Color(.black))
@@ -51,8 +51,6 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let navManager = NavManager()
-        WelcomeView(isKeyboardVisible: .constant(true))
-            .environmentObject(navManager)
+        WelcomeView()
     }
 }

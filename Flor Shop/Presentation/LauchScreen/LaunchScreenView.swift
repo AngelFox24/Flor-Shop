@@ -13,14 +13,13 @@ struct LaunchScreenView: View {
     private let timer = Timer.publish(every: 0.65, on: .main, in: .common).autoconnect()
     var body: some View {
         ZStack {
-            Color("colorlaunchbackground")
+            Color.launchBackground
                 .edgesIgnoringSafeArea(.all)
             Image("logo")
                 .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)
                 .rotationEffect(rotationAngle)
         }
         .onReceive(timer) { _ in
-            // First phase with continuos scaling
             withAnimation(.spring()) {
                 firstPhaseIsAnimating.toggle()
             }
@@ -38,15 +37,15 @@ struct LoadingView: View {
     private let timer = Timer.publish(every: 0.65, on: .main, in: .common).autoconnect()
     var body: some View {
         ZStack {
-            Color("colorlaunchbackground")
+            Color.launchBackground
                 .edgesIgnoringSafeArea(.all)
                 .opacity(0.5)
+                .disabled(true)
             Image("logo")
                 .scaleEffect(firstPhaseIsAnimating ? 0.8 : 1)
                 .rotationEffect(rotationAngle)
         }
         .onReceive(timer) { _ in
-            // First phase with continuos scaling
             withAnimation(.spring()) {
                 firstPhaseIsAnimating.toggle()
             }
@@ -66,7 +65,7 @@ struct LoadingFotoView: View {
     var body: some View {
         VStack(spacing: 0, content: {
             ZStack {
-                Color("colorlaunchbackground")
+                Color.launchBackground
                     .opacity(0.8)
                 Image("logo")
                     .resizable()
@@ -90,7 +89,7 @@ struct LoadingFotoView: View {
 struct LaunchScreenView_Previews: PreviewProvider {
     static var previews: some View {
         VStack{
-            LoadingFotoView()
+            LaunchScreenView()
         }
     }
 }

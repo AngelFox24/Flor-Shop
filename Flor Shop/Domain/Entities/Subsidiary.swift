@@ -6,12 +6,36 @@
 //
 
 import Foundation
+import CoreData
 
 struct Subsidiary: Identifiable {
     var id: UUID
     var name: String
     var image: ImageUrl?
+    let createdAt: Date
+    let updatedAt: Date
     static func getDummySubsidiary() -> Subsidiary {
-        return Subsidiary(id: UUID(uuidString: "SU001") ?? UUID(), name: "Tienda de Flor", image: nil)
+        return Subsidiary(
+            id: UUID(
+                uuidString: "SU001"
+            ) ?? UUID(),
+            name: "Tienda de Flor",
+            image: nil,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+    }
+}
+
+extension Subsidiary {
+    func toSubsidiaryDTO(companyId: UUID) -> SubsidiaryDTO {
+        return SubsidiaryDTO(
+            id: id,
+            name: name,
+            companyID: companyId,
+            imageUrl: image?.toImageUrlDTO(imageData: nil),
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+        )
     }
 }

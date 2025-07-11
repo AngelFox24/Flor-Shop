@@ -7,13 +7,25 @@
 
 import SwiftUI
 
+struct CustomerViewParameters: Hashable {
+    let backButton: Bool
+    let forSelectCustomer: Bool
+    init(backButton: Bool = false, forSelectCustomer: Bool = false) {
+        self.backButton = backButton
+        self.forSelectCustomer = forSelectCustomer
+    }
+}
+
 struct CustomersView: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    @Binding var showMenu: Bool
-    var backButton: Bool = false
+    let parameters: CustomerViewParameters
+    init(parameters: CustomerViewParameters = CustomerViewParameters()) {
+        self.parameters = parameters
+    }
     var body: some View {
-        ZStack(content: {
-            if !showMenu {
+        ZStack {
+            if !router.showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -21,33 +33,19 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(showMenu: $showMenu, backButton: backButton)
-                CustomerListController(forSelectCustomer: backButton)
+                CustomerTopBar(backButton: parameters.backButton)
+                CustomerListController(forSelectCustomer: parameters.forSelectCustomer)
             }
-            .padding(.vertical, showMenu ? 15 : 0)
             .background(Color("color_primary"))
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
-            .disabled(showMenu ? true : false)
+            .cornerRadius(router.showMenu ? 35 : 0)
+            .padding(.top, router.showMenu ? 0 : 1)
             .onAppear {
                 customerViewModel.lazyFetchList()
             }
             .onDisappear {
                 customerViewModel.releaseResources()
             }
-            if showMenu {
-                VStack(spacing: 0, content: {
-                    Color("color_primary")
-                        .opacity(0.001)
-                })
-                .onTapGesture(perform: {
-                    withAnimation(.easeInOut) {
-                        showMenu = false
-                    }
-                })
-                .disabled(showMenu ? false : true)
-            }
-        })
+        }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
@@ -55,35 +53,21 @@ struct CustomersView: View {
 
 struct CustomersView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
-        CustomersView(showMenu: .constant(false))
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
+        CustomersView(parameters: CustomerViewParameters(backButton: false, forSelectCustomer: false))
             .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.navManager)
-    }
-}
-
-struct CardViewTipe2_2: View {
-    var id: UUID?
-    var url: String?
-    //var topStatusColor: Color?
-    //var topStatus: String?
-    //var mainText: String
-    //var mainIndicatorPrefix: String?
-    //var mainIndicator: String
-    //var mainIndicatorAlert: Bool
-    //var secondaryIndicatorSuffix: String?
-    //var secondaryIndicator: String?
-    //var secondaryIndicatorAlert: Bool
-    let size: CGFloat
-    var body: some View {
-            CustomAsyncImageView(id: id, urlProducto: url, size: size)
+            .environmentObject(dependencies.addCustomerViewModel)
+            .environmentObject(dependencies.customerHistoryViewModel)
+            .environmentObject(dependencies.cartViewModel)
     }
 }
 
 struct CustomerListController: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     var forSelectCustomer: Bool = false
@@ -106,15 +90,12 @@ struct CustomerListController: View {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
                             CardViewTipe2(
-                                id: customer.image?.id,
-                                url: customer.image?.imageUrl,
-                                //topStatusColor: customer.customerTipe.color,
-                                //topStatus: customer.customerTipe.description,
+                                imageUrl: customer.image,
                                 topStatusColor: nil,
                                 topStatus: nil,
                                 mainText: customer.name + " " + customer.lastName,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(format: "%.2f", customer.totalDebt),
+                                mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
                                 mainIndicatorAlert: customer.isCreditLimit,
                                 secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
                                 secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
@@ -126,12 +107,10 @@ struct CustomerListController: View {
                             .onTapGesture {
                                 if forSelectCustomer {
                                     cartViewModel.customerInCar = customer
-                                    navManager.goToBack()
+                                    router.goBack()
                                 } else {
-                                    //addCustomerViewModel.editCustomer(customer: customer)
-                                    //navManager.goToAddCustomerView()
                                     customerHistoryViewModel.setCustomerInContext(customer: customer)
-                                    navManager.goToCustomerHistoryView()
+//                                    navManager.goToCustomerHistoryView()
                                 }
                             }
                         }
@@ -149,8 +128,8 @@ struct CustomerListController: View {
                     Button(action: {
                         Task {
                             await addCustomerViewModel.releaseResources()
+//                            navManager.goToAddCustomerView()
                         }
-                        navManager.goToAddCustomerView()
                     }, label: {
                         CustomButton4(simbol: "plus")
                     })

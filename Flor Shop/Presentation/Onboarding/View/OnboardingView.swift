@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @State private var indexito = 0
-    var onAction: () -> Void
+    @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
     var indexFin = onboardItems.count
     var body: some View {
         VStack(spacing: 0) {
@@ -55,7 +55,7 @@ struct OnboardingView: View {
             // Boton para terminar
             Button(action: {
                 if indexito == onboardItems.count - 1 {
-                    onAction()
+                    hasShownOnboarding = true
                 }
             }, label: {
                 CustomButton1(text: "Comenzar")
@@ -71,8 +71,6 @@ struct OnboardingView: View {
 
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardingView(onAction: {
-            print("ss")
-        })
+        OnboardingView()
     }
 }

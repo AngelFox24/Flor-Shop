@@ -10,7 +10,6 @@ import _PhotosUI_SwiftUI
 
 class AddCustomerViewModel: ObservableObject {
     @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
-    @Published var isLoading: Bool = false
     @Published var isPresented: Bool = false
     @Published var selectedImage: UIImage?
     @Published var selectionImage: PhotosPickerItem? = nil {
@@ -19,17 +18,17 @@ class AddCustomerViewModel: ObservableObject {
         }
     }
     let saveCustomerUseCase: SaveCustomerUseCase
-    let loadSavedImageUseCase: LoadSavedImageUseCase
     let saveImageUseCase: SaveImageUseCase
     
-    init(saveCustomerUseCase: SaveCustomerUseCase, loadSavedImageUseCase: LoadSavedImageUseCase, saveImageUseCase: SaveImageUseCase) {
+    init(
+        saveCustomerUseCase: SaveCustomerUseCase,
+        saveImageUseCase: SaveImageUseCase
+    ) {
         self.saveCustomerUseCase = saveCustomerUseCase
-        self.loadSavedImageUseCase = loadSavedImageUseCase
         self.saveImageUseCase = saveImageUseCase
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
-        self.isLoading = true
         Task {
             do {
                 let data = try await selection.loadTransferable(type: Data.self)
@@ -37,17 +36,16 @@ class AddCustomerViewModel: ObservableObject {
                     print("Imagen vacia")
                     return
                 }
-                //selectedImage = uiImage
-                //TODO: Save image with id
+                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
+                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
                 await MainActor.run {
-                    isPresented = false
-                    selectedImage = uiImage
+                    print("Se le asigno la imagen")
+                    self.selectedImage = uiImageTreated
                 }
             } catch {
                 print("Error: \(error)")
             }
         }
-        self.isLoading = false
     }
     func fieldsTrue() {
         print("All value true")
@@ -57,63 +55,65 @@ class AddCustomerViewModel: ObservableObject {
         //fieldsAddCustomer.dateLimitEdited = true
         fieldsAddCustomer.creditLimitEdited = true
     }
-    func editCustomer(customer: Customer) {
-        if let imageId = customer.image?.id {
-            self.selectedImage = self.loadSavedImageUseCase.execute(id: imageId)
-            fieldsAddCustomer.idImage = imageId
+    func editCustomer(customer: Customer) async throws {
+        if let imageUrl = customer.image {
+            let uiImage = try await LocalImageManagerImpl.loadImage(image: imageUrl)
+            await MainActor.run {
+                self.selectedImage = uiImage
+            }
             print("Se agrego el id correctamente")
         }
-        fieldsAddCustomer.id = customer.id
-        fieldsAddCustomer.name = customer.name
-        fieldsAddCustomer.lastname = customer.lastName
-        fieldsAddCustomer.phoneNumber = customer.phoneNumber
-        fieldsAddCustomer.totalDebt = String(customer.totalDebt)
-        fieldsAddCustomer.dateLimit = customer.dateLimit
-        fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
-        fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
-        fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
-        fieldsAddCustomer.creditDays = String(customer.creditDays)
-        fieldsAddCustomer.creditScore = customer.creditScore
-        fieldsAddCustomer.creditLimit = String(customer.creditLimit)
-        
-    }
-    func addCustomer() async -> Bool {
+        await MainActor.run {
+            fieldsAddCustomer.idImage = customer.image?.id
+            fieldsAddCustomer.id = customer.id
+            fieldsAddCustomer.name = customer.name
+            fieldsAddCustomer.lastname = customer.lastName
+            fieldsAddCustomer.phoneNumber = customer.phoneNumber
+            fieldsAddCustomer.totalDebt = customer.totalDebt.cents
+            fieldsAddCustomer.dateLimit = customer.dateLimit
+            fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
+            fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
+            fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
+            fieldsAddCustomer.creditDays = String(customer.creditDays)
+            fieldsAddCustomer.creditScore = customer.creditScore
+            fieldsAddCustomer.creditLimit = customer.creditLimit.cents
+        }     }
+    func addCustomer() async throws {
         await MainActor.run {
             fieldsTrue()
         }
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        guard let customer = createCustomer() else {
+        guard let customer = try await createCustomer() else {
             print("No se pudo crear Cliente")
-            return false
+            throw LocalStorageError.saveFailed("No se pudo crear Cliente")
         }
-        let result = self.saveCustomerUseCase.execute(customer: customer)
-        if result == "" {
-            print("Se añadio correctamente")
-            await releaseResources()
-            return true
-        } else {
-            print(result)
-            await MainActor.run {
-                fieldsAddCustomer.errorBD = result
-            }
-            return false
-        }
+        try await self.saveCustomerUseCase.execute(customer: customer)
+        await releaseResources()
     }
-    func createCustomer() -> Customer? {
-        guard let totalDebt = Double(fieldsAddCustomer.totalDebt) else {
-            print("Los valores no se pueden convertir correctamente")
-            return nil
-        }
-        guard let creditLimitDouble = Double(fieldsAddCustomer.creditLimit) else {
-            print("Los valores no se pueden convertir correctamente")
-            return nil
-        }
+    func createCustomer() async throws -> Customer? {
         guard let creditDaysInt = Int(fieldsAddCustomer.creditDays) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
         if isErrorsEmpty() {
-            return Customer(id: fieldsAddCustomer.id ?? UUID(), name: fieldsAddCustomer.name, lastName: fieldsAddCustomer.lastname, image: getImageIfExist(), creditLimit: creditLimitDouble, isCreditLimit: false, creditDays: creditDaysInt, isDateLimit: false, creditScore: fieldsAddCustomer.creditScore, dateLimit: fieldsAddCustomer.dateLimit, phoneNumber: fieldsAddCustomer.phoneNumber, totalDebt: totalDebt, isCreditLimitActive: fieldsAddCustomer.creditLimitFlag, isDateLimitActive: fieldsAddCustomer.dateLimitFlag)
+            return Customer(
+                id: fieldsAddCustomer.id ?? UUID(),
+                name: fieldsAddCustomer.name,
+                lastName: fieldsAddCustomer.lastname,
+                image: try await getImageIfExist(),
+                creditLimit: Money(fieldsAddCustomer.creditLimit),
+                isCreditLimit: false,
+                creditDays: creditDaysInt,
+                isDateLimit: false,
+                creditScore: fieldsAddCustomer.creditScore,
+                dateLimit: fieldsAddCustomer.dateLimit,
+                phoneNumber: fieldsAddCustomer.phoneNumber,
+                lastDatePurchase: Date(),
+                totalDebt: Money(fieldsAddCustomer.totalDebt),
+                isCreditLimitActive: fieldsAddCustomer.creditLimitFlag,
+                isDateLimitActive: fieldsAddCustomer.dateLimitFlag,
+                createdAt: Date(),
+                updatedAt: Date()
+            )
         } else {
             return nil
         }
@@ -124,30 +124,13 @@ class AddCustomerViewModel: ObservableObject {
         self.fieldsAddCustomer.errorBD.isEmpty &&
         self.fieldsAddCustomer.creditDaysError.isEmpty &&
         self.fieldsAddCustomer.creditLimitError.isEmpty
-        
         return isEmpty
     }
-    /*
-    func saveSelectedImage() -> ImageUrl? {
+    func getImageIfExist() async throws -> ImageUrl? {
         guard let image = self.selectedImage else {
             return nil
         }
-        guard let idImage = fieldsAddCustomer.idImage else {
-            print("Se crea nuevo id")
-            let newIdImage = UUID()
-            let imageHash = self.saveImageUseCase.execute(id: newIdImage, image: image, resize: true)
-            return ImageUrl(id: newIdImage, imageUrl: "", imageHash: imageHash)
-        }
-        print("Se usa el mismo id")
-        let imageHash = self.saveImageUseCase.execute(id: idImage, image: image, resize: true)
-        return ImageUrl(id: idImage, imageUrl: "", imageHash: imageHash)
-    }
-     */
-    func getImageIfExist() -> ImageUrl? {
-        guard let image = self.selectedImage else {
-            return nil
-        }
-        return self.saveImageUseCase.execute(idImage: UUID(), image: image)
+        return try await self.saveImageUseCase.execute(uiImage: image)
     }
     func releaseResources() async {
         await MainActor.run {
@@ -159,9 +142,10 @@ class AddCustomerViewModel: ObservableObject {
     }
 }
 
-class FieldsAddCustomer {
+struct FieldsAddCustomer {
     var id: UUID?
     var idImage: UUID?
+    var isShowingPicker = false
     var name: String = ""
     var nameEdited: Bool = false
     var nameError: String {
@@ -182,7 +166,7 @@ class FieldsAddCustomer {
     }
     var phoneNumber: String = ""
     var phoneNumberEdited: Bool = false
-    var totalDebt: String = "0"
+    var totalDebt: Int = 0
     //TODO: Cambiar de Fecha a dias de Credito, luego calcular fecha
     var dateLimit: Date = Date()
     var firstDatePurchaseWithCredit: Date?
@@ -217,14 +201,11 @@ class FieldsAddCustomer {
         }
     }
     var creditScore: Int = 50
-    var creditLimit: String = "100"
+    var creditLimit: Int = 10000
     var creditLimitEdited: Bool = false
     var creditLimitFlag: Bool = false
     var creditLimitError: String {
-        guard let creditLimitDouble = Double(creditLimit) else {
-            return "Debe ser número decimal o entero"
-        }
-        if creditLimitDouble <= 0 && creditLimitEdited {
+        if creditLimit <= 0 && creditLimitEdited {
             return "Debe ser mayor a 0: \(creditLimitEdited)"
         } else {
             return ""

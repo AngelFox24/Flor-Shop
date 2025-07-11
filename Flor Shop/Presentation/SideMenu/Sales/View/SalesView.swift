@@ -9,10 +9,10 @@ import SwiftUI
 
 struct SalesView: View {
     @EnvironmentObject var salesViewModel: SalesViewModel
-    @Binding var showMenu: Bool
     var backButton: Bool = false
+    @State var showMenu: Bool = false
     var body: some View {
-        ZStack(content: {
+        ZStack {
             if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
@@ -24,46 +24,32 @@ struct SalesView: View {
                 SalesTopBar(showMenu: $showMenu)
                 SalesListController()
             }
-            .padding(.vertical, showMenu ? 15 : 0)
             .background(Color("color_primary"))
             .cornerRadius(showMenu ? 35 : 0)
             .padding(.top, showMenu ? 0 : 1)
-            .disabled(showMenu ? true : false)
             .onAppear {
                 salesViewModel.lazyFetchList()
             }
             .onDisappear(perform: {
                 salesViewModel.releaseResources()
             })
-            if showMenu {
-                VStack(spacing: 0, content: {
-                    Color("color_primary")
-                        .opacity(0.001)
-                })
-                .onTapGesture(perform: {
-                    withAnimation(.easeInOut) {
-                        showMenu = false
-                    }
-                })
-                .disabled(showMenu ? false : true)
-            }
-        })
+        }
     }
 }
 
 struct SalesView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
-        SalesView(showMenu: .constant(false))
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
+        SalesView()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.navManager)
     }
 }
 
 struct SalesListController: View {
     @EnvironmentObject var salesViewModel: SalesViewModel
-    @EnvironmentObject var navManager: NavManager
     var body: some View {
         VStack(spacing: 0) {
             if salesViewModel.salesDetailsList.count == 0 {
@@ -82,11 +68,10 @@ struct SalesListController: View {
                 List {
                     ForEach(salesViewModel.salesDetailsList) { saleDetail in
                         CardViewTipe2(
-                            id: saleDetail.image?.id,
-                            url: saleDetail.image?.imageUrl,
+                            imageUrl: saleDetail.image,
                             mainText: saleDetail.productName,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(saleDetail.subtotal),
+                            mainIndicator: String(format: "%.2f", saleDetail.subtotal.soles),
                             mainIndicatorAlert: false,
                             secondaryIndicatorSuffix: " u",
                             secondaryIndicator: String(saleDetail.quantitySold),

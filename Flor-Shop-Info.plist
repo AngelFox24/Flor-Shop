@@ -13,5 +13,29 @@
 		<key>UIImageRespectsSafeAreaInsets</key>
 		<true/>
 	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Esta app necesita acceder a la red local para conectarse al servidor.</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.csv</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>ProductsBK</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string>MrProFox.FlorShop.csv</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>csv</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>

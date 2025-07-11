@@ -13,20 +13,7 @@ struct SalesTopBar: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 10, content: {
-                Button(action: {
-                    withAnimation(.spring()){
-                        showMenu.toggle()
-                    }
-                }, label: {
-                    HStack {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                    .background(Color("colorlaunchbackground"))
-                    .cornerRadius(10)
-                    .frame(width: 40, height: 40)
-                })
+                FlorShopButton()
                 HStack(spacing: 0, content: {
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.diary.description)
@@ -93,9 +80,7 @@ struct SalesTopBar: View {
                         }
                     }
                 } label: {
-                    Button(action: {}, label: {
-                        CustomButton3(simbol: "slider.horizontal.3")
-                    })
+                    FilterButton()
                 }
                 .onChange(of: salesCoreDataViewModel.order, perform: { item in
                     salesCoreDataViewModel.fetchSalesDetailsList()
@@ -184,7 +169,7 @@ struct SalesTopBar: View {
                     Text("Ventas")
                         .font(.custom("Artifika-Regular", size: 13))
                         .foregroundColor(Color("color_primary"))
-                    Text(String(salesCoreDataViewModel.salesAmount))
+                    Text(salesCoreDataViewModel.salesAmount.solesString)
                         .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color.blue)
                 })
@@ -193,7 +178,7 @@ struct SalesTopBar: View {
                     Text("Costo")
                         .font(.custom("Artifika-Regular", size: 13))
                         .foregroundColor(Color("color_primary"))
-                    Text(String(salesCoreDataViewModel.costAmount))
+                    Text(salesCoreDataViewModel.costAmount.solesString)
                         .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color.red)
                 })
@@ -202,7 +187,7 @@ struct SalesTopBar: View {
                     Text("Ganancia")
                         .font(.custom("Artifika-Regular", size: 13))
                         .foregroundColor(Color("color_primary"))
-                    Text(String(salesCoreDataViewModel.revenueAmount))
+                    Text(salesCoreDataViewModel.revenueAmount.solesString)
                         .font(.custom("Artifika-Regular", size: 16))
                         .foregroundColor(Color.black)
                 })
@@ -212,6 +197,7 @@ struct SalesTopBar: View {
             .padding(.bottom, 5)
             .background(Color("color_secondary"))
         }
+        .padding(.top, showMenu ? 15 : 0)
         .background(Color("color_primary"))
     }
     func nextDate() {
@@ -228,7 +214,8 @@ struct SalesTopBar: View {
 
 struct SalesTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var showMenu: Bool = false
         VStack(spacing: 0, content: {
             SalesTopBar(showMenu: $showMenu)

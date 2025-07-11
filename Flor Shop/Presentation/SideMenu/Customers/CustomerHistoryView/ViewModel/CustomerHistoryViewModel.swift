@@ -39,11 +39,11 @@ class CustomerHistoryViewModel: ObservableObject {
             }
         }
     }
-    func payTotalAmount() -> Bool{
+    func payTotalAmount() async throws -> Bool {
         guard let customerNN = customer else {
             return false
         }
-        return self.payClientDebtUseCase.total(customer: customerNN)
+        return try await self.payClientDebtUseCase.total(customer: customerNN)
     }
     func setCustomerInContext(customer: Customer) {
         self.customer = customer
@@ -65,11 +65,11 @@ class CustomerHistoryViewModel: ObservableObject {
         //self.customer = nil
         self.salesDetail = []
     }
-    func updateData() {
+    func updateData() throws {
         guard let customerNN = customer else {
             return
         }
-        self.customer = self.getCustomersUseCase.getCustomer(customer: customerNN)
+        self.customer = try self.getCustomersUseCase.getCustomer(customer: customerNN)
         self.salesDetail = []
         lazyFetch()
     }

@@ -6,10 +6,36 @@
 //
 
 import Foundation
+import CoreData
 
 struct Sale: Identifiable {
     let id: UUID
+    let paymentType: PaymentType
     let saleDate: Date
     let saleDetail: [SaleDetail]
-    let totalSale: Double
+    let totalSale: Money
+    let createdAt: Date
+    let updatedAt: Date
+}
+
+struct SaleRequest: Codable {
+    let subsidiaryId: UUID
+    let updatedSince: String
+}
+
+extension Sale {
+    func toSaleDTO(subsidiaryId: UUID, customerId: UUID?, employeeId: UUID) -> SaleDTO {
+        return SaleDTO(
+            id: id,
+            paymentType: paymentType.description,
+            saleDate: saleDate,
+            total: totalSale.cents,
+            subsidiaryId: subsidiaryId,
+            customerId: customerId,
+            employeeId: employeeId,
+            saleDetail: saleDetail.mapToListSaleDetailDTO(saleID: id),
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+        )
+    }
 }

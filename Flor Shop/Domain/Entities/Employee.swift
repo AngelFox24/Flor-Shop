@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 struct Employee: Identifiable {
     var id: UUID
@@ -17,4 +18,25 @@ struct Employee: Identifiable {
     var image: ImageUrl?
     var active: Bool
     var phoneNumber: String
+    let createdAt: Date
+    let updatedAt: Date
+}
+
+extension Employee {
+    func toEmployeeDTO(subsidiaryId: UUID) -> EmployeeDTO {
+        return EmployeeDTO(
+            id: id,
+            user: user,
+            name: name,
+            lastName: lastName,
+            email: email,
+            phoneNumber: phoneNumber,
+            role: role,
+            active: active,
+            subsidiaryID: subsidiaryId,
+            imageUrl: image?.toImageUrlDTO(imageData: nil),
+            createdAt: ISO8601DateFormatter().string(from: createdAt),
+            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+        )
+    }
 }

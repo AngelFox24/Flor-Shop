@@ -1,41 +1,27 @@
-//
-//  Flor_ShopApp.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/04/23.
-//
-
 import SwiftUI
-import CoreData
-import Firebase
+import FirebaseAuth
+import AppRouter
+
+typealias Router = CustomRouter<FlowRoutes, SheetRoutes, AlertRoutes>
 
 @main
 struct FlorShopApp: App {
     init() {
         FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
+    @State private var router = Router()
     var body: some Scene {
         WindowGroup {
-            let dependencies = Dependencies()
-            MainView()
-                .environmentObject(dependencies.logInViewModel)
-                .environmentObject(dependencies.registrationViewModel)
-                .environmentObject(dependencies.agregarViewModel)
-                .environmentObject(dependencies.productsViewModel)
-                .environmentObject(dependencies.cartViewModel)
-                .environmentObject(dependencies.salesViewModel)
-                .environmentObject(dependencies.versionCheck)
-                .environmentObject(dependencies.employeeViewModel)
-                .environmentObject(dependencies.customerViewModel)
-                .environmentObject(dependencies.addCustomerViewModel)
-                .environmentObject(dependencies.navManager)
-                .environmentObject(dependencies.customerHistoryViewModel)
-                .onAppear {
-                    Task(priority: .background, operation: {
-                        print("Se optimizara las imagenes")
-                        await dependencies.imageManager.deleteUnusedImages()
-                    })
-                }
+            RootView()
+                .withSheetDestinations(router: $router)
+                .withAlertDestinations(router: $router)
+                .showProgress(router.isLoanding)
+                .environment(router)
+//                .onOpenURL { url in
+//                    let success = router.navigate(to: url)
+//                }
         }
     }
 }
+
+

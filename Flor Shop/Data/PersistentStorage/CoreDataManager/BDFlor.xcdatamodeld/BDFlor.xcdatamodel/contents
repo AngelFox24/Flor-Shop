@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24E248" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Tb_Cart" representedClassName=".Tb_Cart" syncable="YES" codeGenerationType="class">
+        <attribute name="idCart" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toCart" inverseEntity="Tb_CartDetail"/>
+        <relationship name="toEmployee" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toCart" inverseEntity="Tb_Employee"/>
+    </entity>
+    <entity name="Tb_CartDetail" representedClassName=".Tb_CartDetail" syncable="YES" codeGenerationType="class">
+        <attribute name="idCartDetail" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="quantityAdded" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toCartDetail" inverseEntity="Tb_Cart"/>
+        <relationship name="toProduct" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toCartDetail" inverseEntity="Tb_Product"/>
+    </entity>
+    <entity name="Tb_Company" representedClassName=".Tb_Company" syncable="YES" codeGenerationType="class">
+        <attribute name="companyName" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="idCompany" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="ruc" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toCompany" inverseEntity="Tb_Customer"/>
+        <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
+    </entity>
+    <entity name="Tb_Customer" representedClassName=".Tb_Customer" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="creditDays" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="creditLimit" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="creditScore" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="dateLimit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="firstDatePurchaseWithCredit" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="idCustomer" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isCreditLimit" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isCreditLimitActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="isDateLimit" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isDateLimitActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="lastDatePurchase" attributeType="Date" defaultDateTimeInterval="-94676400" usesScalarValueType="NO"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="phoneNumber" optional="YES" attributeType="String"/>
+        <attribute name="totalDebt" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toCustomer" inverseEntity="Tb_Company"/>
+        <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toCustomer" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toCustomer" inverseEntity="Tb_Sale"/>
+    </entity>
+    <entity name="Tb_Employee" representedClassName=".Tb_Employee" syncable="YES" codeGenerationType="class">
+        <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="idEmployee" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="phoneNumber" optional="YES" attributeType="String"/>
+        <attribute name="role" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="user" optional="YES" attributeType="String"/>
+        <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toEmployee" inverseEntity="Tb_Cart"/>
+        <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toEmployee" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toEmployee" inverseEntity="Tb_Sale"/>
+        <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toEmployee" inverseEntity="Tb_Subsidiary"/>
+    </entity>
+    <entity name="Tb_ImageUrl" representedClassName=".Tb_ImageUrl" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="idImageUrl" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageHash" optional="YES" attributeType="String"/>
+        <attribute name="imageUrl" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toImageUrl" inverseEntity="Tb_Customer"/>
+        <relationship name="toEmployee" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toImageUrl" inverseEntity="Tb_Employee"/>
+        <relationship name="toProduct" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toImageUrl" inverseEntity="Tb_Product"/>
+        <relationship name="toSaleDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_SaleDetail" inverseName="toImageUrl" inverseEntity="Tb_SaleDetail"/>
+        <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toImageUrl" inverseEntity="Tb_Subsidiary"/>
+    </entity>
+    <entity name="Tb_Product" representedClassName=".Tb_Product" syncable="YES" codeGenerationType="class">
+        <attribute name="active" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="barCode" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="expirationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="idProduct" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="productName" attributeType="String"/>
+        <attribute name="quantityStock" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toCartDetail" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_CartDetail" inverseName="toProduct" inverseEntity="Tb_CartDetail"/>
+        <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toProduct" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toProduct" inverseEntity="Tb_Subsidiary"/>
+    </entity>
+    <entity name="Tb_Sale" representedClassName=".Tb_Sale" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="idSale" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="paymentType" attributeType="String"/>
+        <attribute name="saleDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="total" attributeType="Integer 64" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toCustomer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toSale" inverseEntity="Tb_Customer"/>
+        <relationship name="toEmployee" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toSale" inverseEntity="Tb_Employee"/>
+        <relationship name="toSaleDetail" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_SaleDetail" inverseName="toSale" inverseEntity="Tb_SaleDetail"/>
+        <relationship name="toSubsidiary" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toSale" inverseEntity="Tb_Subsidiary"/>
+    </entity>
+    <entity name="Tb_SaleDetail" representedClassName=".Tb_SaleDetail" syncable="YES" codeGenerationType="class">
+        <attribute name="barCode" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="idSaleDetail" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="productName" attributeType="String"/>
+        <attribute name="quantitySold" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="subtotal" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toSaleDetail" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toSale" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toSaleDetail" inverseEntity="Tb_Sale"/>
+    </entity>
+    <entity name="Tb_Subsidiary" representedClassName=".Tb_Subsidiary" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <attribute name="idSubsidiary" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
+        <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toSubsidiary" inverseEntity="Tb_Company"/>
+        <relationship name="toEmployee" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toSubsidiary" inverseEntity="Tb_Employee"/>
+        <relationship name="toImageUrl" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_ImageUrl" inverseName="toSubsidiary" inverseEntity="Tb_ImageUrl"/>
+        <relationship name="toProduct" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Product" inverseName="toSubsidiary" inverseEntity="Tb_Product"/>
+        <relationship name="toSale" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Sale" inverseName="toSubsidiary" inverseEntity="Tb_Sale"/>
+    </entity>
+</model>

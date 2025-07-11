@@ -10,46 +10,44 @@ import CoreData
 import AVFoundation
 import StoreKit
 
-struct ProductView: View {
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @Binding var selectedTab: Tab
-    @Binding var showMenu: Bool
+struct CustomProductView: View {
+    @EnvironmentObject var productViewModel: ProductViewModel
+    @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar(showMenu: $showMenu)
-            ListaControler(selectedTab: $selectedTab)
+            ProductSearchTopBar()
+            ListaControler(tab: $tab)
         }
         .onAppear {
-            productsCoreDataViewModel.lazyFetchProducts()
-        }
-        .onDisappear {
-            productsCoreDataViewModel.releaseResources()
+            Task {
+                await productViewModel.lazyFetchProducts()
+            }
         }
     }
 }
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let dependencies = Dependencies()
-        @State var showMenu: Bool = false
-        ProductView(selectedTab: .constant(.magnifyingglass), showMenu: $showMenu)
+        let nor = NormalDependencies()
+        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
+        let dependencies = BusinessDependencies(sessionConfig: ses)
+        CustomProductView(tab: .constant(.magnifyingglass))
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
     }
 }
 
 struct ListaControler: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
     @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
     @Environment(\.requestReview) var requestReview
+    @Binding var tab: Tab
     @State private var audioPlayer: AVAudioPlayer?
-    @State var unitPoint: UnitPoint = .bottom
-    @State var lastIndex: Int = 0
-    @Binding var selectedTab: Tab
     var body: some View {
-        VStack(spacing: 0) {
+        HStack(spacing: 0) {
             if productsCoreDataViewModel.productsCoreData.count == 0 {
                 VStack {
                     Image("groundhog_finding")
@@ -60,94 +58,122 @@ struct ListaControler: View {
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
                         .font(.custom("Artifika-Regular", size: 18))
-                    Button(action: {
-                        selectedTab = .plus
-                    }, label: {
+                    Button(action: goToEditProduct) {
                         CustomButton1(text: "Agregar")
-                    })
-//                    Button(action: {
-//                        agregarViewModel.loadTestData()
-//                    }, label: {
-//                        CustomButton1(text: "Data de Prueba")
-//                    })
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color("color_background"))
-                .onAppear {
-                    productsCoreDataViewModel.lazyFetchProducts()
-                }
             } else {
-                List {
-                    ForEach(0 ..< productsCoreDataViewModel.deleteCount, id: \.self) { _ in
-                        let _ = print("Spacios: \(productsCoreDataViewModel.deleteCount.description)")
-                        Spacer()
-                            .frame(maxWidth: .infinity, minHeight: 80)
-                            .onAppear {
-                                productsCoreDataViewModel.releaseResources()
-                                productsCoreDataViewModel.lazyFetchProducts()
-                            }
-                    }
-                    ForEach(productsCoreDataViewModel.productsCoreData) { producto in
-                        CardViewTipe2(
-                            id: producto.image?.id,
-                            url: producto.image?.imageUrl,
-                            topStatusColor: Color.red,
-                            topStatus: nil,
-                            mainText: producto.name,
-                            mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(format: "%.2f", producto.unitPrice),
-                            mainIndicatorAlert: false,
-                            secondaryIndicatorSuffix: " u",
-                            secondaryIndicator: String(producto.qty),
-                            secondaryIndicatorAlert: false, size: 80
-                        )
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                        .listRowBackground(Color("color_background"))
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button(action: {
-                                if agregarProductoACarrito(producto: producto) {
-                                    playSound(named: "Success1")
-                                } else {
-                                    playSound(named: "Fail1")
+                SideSwipeView(swipeDirection: .right, swipeAction: goToEditProduct)
+                HStack(spacing: 0, content: {
+                    List {
+                        ForEach(0 ..< productsCoreDataViewModel.deleteCount, id: \.self) { _ in
+                            Spacer()
+                                .frame(maxWidth: .infinity, minHeight: 80)
+                                .onAppear {
+                                    print("Products gosht")
+                                    loadProducts()
                                 }
-                            }, label: {
-                                Image(systemName: "cart")
-                            })
-                            .tint(Color("color_accent"))
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(action: {
-                                editProduct(product: producto)
-                                selectedTab = .plus
-                            }, label: {
-                                Image(systemName: "pencil")
-                            })
-                            .tint(Color("color_accent"))
-                        }
-                        .onAppear(perform: {
-                            print("Aparece item con Id: \(producto.id)")
-                            productsCoreDataViewModel.shouldLoadData(product: producto)
-                            if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
-                                requestReview()
-                                isRequested20AppRatingReview = false
+                        ForEach(productsCoreDataViewModel.productsCoreData) { producto in
+                            CardViewTipe2(
+                                imageUrl: producto.image,
+                                topStatusColor: Color.red,
+                                topStatus: nil,
+                                mainText: producto.name,
+                                mainIndicatorPrefix: "S/. ",
+                                mainIndicator: producto.unitPrice.solesString,
+                                mainIndicatorAlert: false,
+                                secondaryIndicatorSuffix: " u",
+                                secondaryIndicator: String(producto.qty),
+                                secondaryIndicatorAlert: false, size: 80
+                            )
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowBackground(Color("color_background"))
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                Button(action: {
+                                    agregarProductoACarrito(producto: producto)
+                                }, label: {
+                                    Image(systemName: "cart")
+                                })
+                                .tint(Color("color_accent"))
                             }
-                        })
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(action: {
+                                    editProduct(product: producto)
+                                }, label: {
+                                    Image(systemName: "pencil")
+                                })
+                                .tint(Color("color_accent"))
+                            }
+                            .onAppear(perform: {
+                                shouldLoadData(product: producto)
+                                if productsCoreDataViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
+                                    requestReview()
+                                    isRequested20AppRatingReview = false
+                                }
+                            })
+                        }
                     }
-                }
-                .scrollIndicators(ScrollIndicatorVisibility.hidden)
-                .padding(.horizontal, 10)
-                .listStyle(PlainListStyle())
-                .background(Color("color_background"))
+                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
+//                    .padding(.horizontal, 10)
+                    .listStyle(PlainListStyle())
+                })
+                SideSwipeView(swipeDirection: .left, swipeAction: goToCart)
             }
+        }
+        .background(Color("color_background"))
+    }
+    func goToEditProduct() {
+        self.tab = .plus
+    }
+    func goToCart() {
+        self.tab = .cart
+    }
+    func shouldLoadData(product: Product) {
+        Task {
+//            loading = true
+            await productsCoreDataViewModel.shouldLoadData(product: product)
+//            loading = false
+        }
+    }
+    func loadProducts() {
+        Task {
+//            loading = true
+            await productsCoreDataViewModel.releaseResources()
+            await productsCoreDataViewModel.lazyFetchProducts()
+//            loading = false
         }
     }
     func editProduct(product: Product) {
-        agregarViewModel.editProduct(product: product)
+        Task {
+//            loading = true
+            do {
+                try await agregarViewModel.editProduct(product: product)
+//                playSound(named: "Success1")
+                self.tab = .plus
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+                playSound(named: "Fail1")
+            }
+//            loading = false
+        }
     }
-    func agregarProductoACarrito(producto: Product) -> Bool {
-        print("Se agrego el producto al carrito \(producto.name)")
-        return carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+    func agregarProductoACarrito(producto: Product) {
+        Task {
+//            loading = true
+            do {
+                try await carritoCoreDataViewModel.addProductoToCarrito(product: producto)
+                await carritoCoreDataViewModel.fetchCart()
+                playSound(named: "Success1")
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+                playSound(named: "Fail1")
+            }
+//            loading = false
+        }
     }
     private func playSound(named fileName: String) {
         var soundURL: URL?

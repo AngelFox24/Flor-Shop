@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CreateCompanyUseCase {
-    func execute(company: Company) -> Bool
+    func execute(company: Company) async throws
 }
 
 final class CreateCompanyInteractor: CreateCompanyUseCase {
@@ -18,7 +18,7 @@ final class CreateCompanyInteractor: CreateCompanyUseCase {
         self.companyRepository = companyRepository
     }
     
-    func execute(company: Company) -> Bool {
-        return self.companyRepository.addCompany(company: company)
+    func execute(company: Company) async throws {
+        try await self.companyRepository.save(company: company)
     }
 }

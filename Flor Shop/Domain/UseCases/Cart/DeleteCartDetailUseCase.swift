@@ -9,7 +9,7 @@ import Foundation
 
 protocol DeleteCartDetailUseCase {
     
-    func execute(cartDetail: CartDetail)
+    func execute(cartDetail: CartDetail) throws
 }
 
 final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
@@ -20,8 +20,7 @@ final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute(cartDetail: CartDetail) {
-        self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
-        self.cartRepository.updateCartTotal()
+    func execute(cartDetail: CartDetail) throws {
+        try self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
     }
 }
