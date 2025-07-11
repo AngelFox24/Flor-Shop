@@ -89,7 +89,7 @@ struct LoadingFotoView: View {
 struct LaunchScreenView_Previews: PreviewProvider {
     static var previews: some View {
         VStack{
-            LoadingFotoView()
+            LaunchScreenView()
         }
     }
 }

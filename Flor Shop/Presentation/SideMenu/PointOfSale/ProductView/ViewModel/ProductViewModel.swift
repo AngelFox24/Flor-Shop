@@ -33,7 +33,7 @@ class ProductViewModel: ObservableObject {
         addSearchTextSuscriber()
     }
     func sync() async throws {
-        try await self.synchronizerDBUseCase.sync()
+//        try await self.synchronizerDBUseCase.sync()
     }
     func addSearchTextSuscriber() {
         $searchText
@@ -52,6 +52,11 @@ class ProductViewModel: ObservableObject {
         let pages = currentPagesInScreen.map { $0[0] }
         if !pages.contains(page) {
             let productsNewCarge = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
+//            print("[ProductViewModel] START FETCH PRODUCTS")
+//            for product in productsNewCarge {
+//                print("[ProductViewModel] Name: \(product.name) | Id: \(product.id.uuidString)")
+//            }
+//            print("[ProductViewModel] END FETCH PRODUCTS")
             lastCarge = productsNewCarge.count
             if lastCarge > 0 {
                 if nextPage {

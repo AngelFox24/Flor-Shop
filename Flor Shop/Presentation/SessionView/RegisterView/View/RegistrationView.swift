@@ -1,27 +1,20 @@
-//
-//  CreateAccountView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/08/23.
-//
-
 import SwiftUI
+import AVFoundation
 
-struct CreateAccountView: View {
+struct RegistrationView: View {
+    @Environment(Router.self) private var router
     @Environment(LogInViewModel.self) var logInViewModel
-    @EnvironmentObject var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject var navManager: NavManager
+    @Environment(RegistrationViewModel.self) var registrationViewModel
+    @Environment(PersistenceSessionConfig.self) private var sessionConfig
+    @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
+        @Bindable var registrationViewModel = registrationViewModel
         ZStack {
             Color("color_primary")
                 .ignoresSafeArea()
             VStack(content: {
                 HStack(content: {
-                    Button(action: {
-                        navManager.goToBack()
-                    }, label: {
-                        CustomButton3()
-                    })
+                    BackButton()
                     Spacer()
                     Text("Crea una Cuenta")
                         .font(.custom("Artifika-Regular", size: 25))
@@ -62,14 +55,6 @@ struct CreateAccountView: View {
                                         //.padding(.top, 18)
                                     }
                                 }
-                                Button(action: {}, label: {
-                                    Image("logo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .background(Color.launchBackground)
-                                        .cornerRadius(10)
-                                        .frame(width: 50, height: 50)
-                                })
                             }
                             VStack {
                                 CustomTextField(title: "Nombre del Dueño" ,value: $registrationViewModel.registrationFields.managerName, edited: $registrationViewModel.registrationFields.managerNameEdited)
@@ -87,14 +72,10 @@ struct CreateAccountView: View {
                             }
                         }
                         .padding(.horizontal, 30)
-                        Button(action: {
-                            if registrationViewModel.registerUser() {
-                                
-                            }
-                        }, label: {
+                        Button(action: registerUser) {
                             CustomButton2(text: "Registrar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                 .foregroundColor(Color(.black))
-                        })
+                        }
                     }
                     .padding(.top, 10)
                 }
@@ -104,12 +85,48 @@ struct CreateAccountView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
+    func registerUser() {
+        Task {
+            
+            router.isLoanding = true
+            do {
+                let ses = try await registrationViewModel.registerUser()
+                playSound(named: "Success1")
+                await MainActor.run {
+                    self.sessionConfig.fromSession(ses)
+//                    self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
+//                    self.logInViewModel.businessDependencies?.webSocket.connect()
+                    router.popToRoot()
+                }
+            } catch {
+                router.presentAlert(.error(error.localizedDescription))
+                playSound(named: "Fail1")
+                router.isLoanding = false
+            }
+            router.isLoanding = false
+        }
+    }
+    private func playSound(named fileName: String) {
+        var soundURL: URL?
+        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
+        guard let url = soundURL else {
+            print("No se pudo encontrar el archivo de sonido.")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
+        }
+    }
 }
 
-struct CreateAccountView_Previews: PreviewProvider {
-    static var previews: some View {
-        let nor = NormalDependencies()
-        CreateAccountView()
-            .environment(nor.logInViewModel)
-    }
+#Preview {
+    @Previewable @State var router = Router()
+    let nor = NormalDependencies()
+    RegistrationView()
+        .environment(nor.logInViewModel)
+        .environment(nor.registrationViewModel)
+        .environment(router)
 }

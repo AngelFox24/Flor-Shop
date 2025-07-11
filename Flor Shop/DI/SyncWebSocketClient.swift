@@ -6,14 +6,19 @@
 //
 
 import Foundation
+import Observation
 
-class SyncWebSocketClient {
+@Observable
+final class SyncWebSocketClient {
+    var isConnected: Bool = false
     private var webSocketTask: URLSessionWebSocketTask?
     private let urlSession = URLSession(configuration: .default)
     //Log Prefix
     private let logPrefix = "[WebSocket]"
     //Manager
     private let syncManager: SyncManager
+    //Handle retries
+    private var retryByCode: [Int: Int] = [:]
     init(
         synchronizerDBUseCase: SynchronizerDBUseCase
     ) {
@@ -34,12 +39,16 @@ class SyncWebSocketClient {
         webSocketTask = urlSession.webSocketTask(with: url)
         webSocketTask?.resume()
         
+        isConnected = true // ✅ Se actualiza estado
+        
         listen()
         print("\(logPrefix) 🔗 WebSocket conectado")
     }
     
     func disconnect() {
         webSocketTask?.cancel(with: .goingAway, reason: nil)
+        webSocketTask = nil
+        isConnected = false // ✅ Se actualiza estado
         print("\(logPrefix) 🔴 WebSocket desconectado")
     }
     
@@ -48,7 +57,7 @@ class SyncWebSocketClient {
             guard let self else { return }
             switch result {
             case .failure(let error):
-                print("\(self.logPrefix) Error recibiendo mensaje: \(error)")
+                self.handleWebSocketError(error)
             case .success(let message):
                 switch message {
                 case .string(let text):
@@ -75,6 +84,19 @@ class SyncWebSocketClient {
         webSocketTask?.send(message) { error in
             if let error = error {
                 print("\(self.logPrefix) Error enviando mensaje: \(error)")
+            }
+        }
+    }
+    
+    private func handleWebSocketError(_ error: Error) {
+        print("\(self.logPrefix) Error recibiendo mensaje: \(error)")
+
+        if let nsError = error as NSError? {
+            self.retryByCode[nsError.code, default: 0] += 1
+            if self.retryByCode[nsError.code, default: 0] < 5 {
+                print("\(self.logPrefix) Desconectado por muchos reintentos del error \(nsError.code)")
+                self.disconnect()
+                self.retryByCode[nsError.code] = 0
             }
         }
     }

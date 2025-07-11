@@ -8,23 +8,18 @@
 import SwiftUI
 
 struct CustomerTopBar: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    @EnvironmentObject var navManager: NavManager
     var backButton: Bool = false
-    @Binding var showMenu: Bool
     var body: some View {
         VStack {
             HStack(spacing: 10, content: {
                 if backButton {
-                    Button(action: {
-                        navManager.goToBack()
-                    }, label: {
-                        CustomButton3(simbol: "chevron.backward")
-                    })
+                    BackButton()
                 } else {
                     Button(action: {
                         withAnimation(.spring()){
-                            showMenu.toggle()
+                            router.showMenu.toggle()
                         }
                     }, label: {
                         HStack {
@@ -58,9 +53,7 @@ struct CustomerTopBar: View {
                         }
                     }
                 } label: {
-                    Button(action: {}, label: {
-                        CustomButton3(simbol: "slider.horizontal.3")
-                    })
+                    FilterButton()
                 }
                 .onChange(of: customerViewModel.order, perform: { item in
                     customerViewModel.fetchListCustomer()
@@ -71,7 +64,7 @@ struct CustomerTopBar: View {
             })
             .padding(.horizontal, 10)
         }
-        .padding(.top, showMenu ? 15 : 0)
+        .padding(.top, router.showMenu ? 15 : 0)
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }

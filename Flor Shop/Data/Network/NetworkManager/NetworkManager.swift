@@ -16,9 +16,11 @@ class NetworkManager {
     
     func perform<T: Decodable>(_ request: NetworkRequest, decodeTo type: T.Type) async throws -> T {
         let urlRequest = try request.urlRequest()
+        print("-----------------------------------✅Se encontro una peticion✅------------------------------------")
         let (data, response) = try await urlSession.data(for: urlRequest)
-        print(data.jsonString()) //TODO: Print Parameters Json -------------------------------------------------------------------------
-        try processResponse(response: response)
+        print(data.jsonString())
+        print("-----------------------------------✅Termino de la peticion✅------------------------------------")
+        try processResponse(response: response, data: data)
         return try decodeData(data: data, type: T.self)
     }
     
@@ -34,7 +36,7 @@ class NetworkManager {
         }
     }
     
-    private func processResponse(response: URLResponse?) throws {
+    private func processResponse(response: URLResponse?, data: Data? = nil) throws {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.invalidResponse
         }
@@ -47,7 +49,12 @@ class NetworkManager {
         case 500:
             throw NetworkError.internalServerError
         default:
-            throw NetworkError.unknownError(statusCode: httpResponse.statusCode)
+            if let data = data {
+                let serverError = try JSONDecoder().decode(ServerErrorResponse.self, from: data)
+                throw NetworkError.serverError(serverError.reason)
+            } else {
+                throw NetworkError.unknownError(statusCode: httpResponse.statusCode)
+            }
         }
     }
     

@@ -11,7 +11,7 @@ struct SubsidiaryDTO: Codable {
     let id: UUID
     let name: String
     let companyID: UUID
-    let imageUrlId: UUID?
+    let imageUrl: ImageURLDTO?
     let createdAt: String
     let updatedAt: String
 }
@@ -24,6 +24,19 @@ extension SubsidiaryDTO {
             image: nil,
             createdAt: createdAt.internetDateTime() ?? minimunDate(),
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+        )
+    }
+    func isEquals(to other: Tb_Subsidiary) -> Bool {
+        var imageIsEquals = false
+        if let image = self.imageUrl, let otherImage = other.toImageUrl {
+            imageIsEquals = image.isEquals(to: otherImage)
+        } else {
+            imageIsEquals = true
+        }
+        return (
+            self.id == other.idSubsidiary &&
+            self.name == other.name &&
+            imageIsEquals
         )
     }
 }

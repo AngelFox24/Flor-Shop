@@ -22,10 +22,10 @@ protocol LocalImageManager {
     func deleteUnusedImages() async
 }
 
-class LocalImageManagerImpl: LocalImageManager {
+final class LocalImageManagerImpl: LocalImageManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
-    let className = "LocalImageManager"
+    let className = "[LocalImageManager]"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -57,6 +57,10 @@ class LocalImageManagerImpl: LocalImageManager {
     func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLDTO]) throws {
         for imageURLDTO in imageURLsDTOs {
             if let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageURLDTO.id) {
+                guard !imageURLDTO.isEquals(to: imageEntity) else {
+                    print("\(className) No se actualiza, es lo mismo")
+                    continue
+                }
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
                 imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
@@ -301,17 +305,8 @@ class LocalImageManagerImpl: LocalImageManager {
         //Guardar imagen en Local
         return imageData
     }
-//    static func getImageData(url: URL) async throws -> Data {
-//        //Descargar de internet
-//        let imageData = try await LocalImageManagerImpl.downloadImage(url: url)
-//        //Tratar la imagen
-//        let uiImage = try LocalImageManagerImpl.getUIImage(data: imageData)
-//        let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
-//        let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
-//        return uiImageTreated
-//    }
     static func getEfficientImageTreated(url: URL) async throws -> Data {
-        //        //Descargar de internet
+        //Descargar de internet
         let imageData = try await LocalImageManagerImpl.downloadImage(url: url)
         let uiImage = try LocalImageManagerImpl.getUIImage(data: imageData)
         let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)

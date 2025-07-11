@@ -44,7 +44,7 @@ struct SyncSubsidiariesResponse: Decodable {
     let syncIds: VerifySyncParameters
 }
 //MARK: SubResponse Parameters
-struct VerifySyncParameters: Codable {
+struct VerifySyncParameters: Codable, Equatable {
     let imageLastUpdate: UUID
     let companyLastUpdate: UUID
     let subsidiaryLastUpdate: UUID

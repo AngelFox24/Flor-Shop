@@ -96,23 +96,17 @@ struct CustomTextField: View {
     }
 }
 
-struct ViewCss2: View {
-    @State var name = ""
-    @State var qt = ""
-    @State var ed = false
-    @State var ed1 = false
-    var body: some View {
-        VStack(spacing: 16) {
-            CustomTextField(value: $name, edited: $ed)
-            CustomTextField(value: $qt, edited: $ed1)
-            //CustomText(title: "Nombre", value: "", disable: true)
-            //CustomTextField(edited: .constant(false))
-        }
-        .frame(maxHeight: .infinity)
-        .background(Color("color_accent"))
-    }
-}
-
 #Preview {
-    ViewCss2()
+    @Previewable @State var name = ""
+    @Previewable @State var qt = ""
+    @Previewable @State var ed = false
+    @Previewable @State var ed1 = false
+    VStack(spacing: 16) {
+        CustomTextField(value: $name, edited: $ed)
+        CustomTextField(value: $qt, edited: $ed1)
+        //CustomText(title: "Nombre", value: "", disable: true)
+        //CustomTextField(edited: .constant(false))
+    }
+    .frame(maxHeight: .infinity)
+    .background(Color.accent)
 }

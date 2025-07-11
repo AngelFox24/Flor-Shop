@@ -3,6 +3,7 @@ enum APIEndpoint {
     enum Session {
         static let base = "/session"
         static let login = base + "/logIn"
+        static let register = base + "/register"
     }
     enum Sync {
         static let base = "/verifySync"

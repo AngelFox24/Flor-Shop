@@ -7,13 +7,25 @@
 
 import SwiftUI
 
+struct CustomerViewParameters: Hashable {
+    let backButton: Bool
+    let forSelectCustomer: Bool
+    init(backButton: Bool = false, forSelectCustomer: Bool = false) {
+        self.backButton = backButton
+        self.forSelectCustomer = forSelectCustomer
+    }
+}
+
 struct CustomersView: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerViewModel: CustomerViewModel
-    var backButton: Bool = false
-    @Binding var showMenu: Bool
+    let parameters: CustomerViewParameters
+    init(parameters: CustomerViewParameters = CustomerViewParameters()) {
+        self.parameters = parameters
+    }
     var body: some View {
         ZStack {
-            if !showMenu {
+            if !router.showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -21,12 +33,12 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(backButton: backButton, showMenu: $showMenu)
-                CustomerListController(forSelectCustomer: backButton)
+                CustomerTopBar(backButton: parameters.backButton)
+                CustomerListController(forSelectCustomer: parameters.forSelectCustomer)
             }
             .background(Color("color_primary"))
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
+            .cornerRadius(router.showMenu ? 35 : 0)
+            .padding(.top, router.showMenu ? 0 : 1)
             .onAppear {
                 customerViewModel.lazyFetchList()
             }
@@ -44,20 +56,18 @@ struct CustomersView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var showMenu = false
-        CustomersView(showMenu: $showMenu)
+        CustomersView(parameters: CustomerViewParameters(backButton: false, forSelectCustomer: false))
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
             .environmentObject(dependencies.customerHistoryViewModel)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.navManager)
     }
 }
 
 struct CustomerListController: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerViewModel: CustomerViewModel
     @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var navManager: NavManager
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     var forSelectCustomer: Bool = false
@@ -97,10 +107,10 @@ struct CustomerListController: View {
                             .onTapGesture {
                                 if forSelectCustomer {
                                     cartViewModel.customerInCar = customer
-                                    navManager.goToBack()
+                                    router.goBack()
                                 } else {
                                     customerHistoryViewModel.setCustomerInContext(customer: customer)
-                                    navManager.goToCustomerHistoryView()
+//                                    navManager.goToCustomerHistoryView()
                                 }
                             }
                         }
@@ -118,7 +128,7 @@ struct CustomerListController: View {
                     Button(action: {
                         Task {
                             await addCustomerViewModel.releaseResources()
-                            navManager.goToAddCustomerView()
+//                            navManager.goToAddCustomerView()
                         }
                     }, label: {
                         CustomButton4(simbol: "plus")

@@ -8,23 +8,15 @@
 import SwiftUI
 
 struct PointOfSaleView: View {
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
-    @Binding var tab: Tab
+    @Environment(Router.self) private var router
+    @State var tab: Tab = .magnifyingglass
     @EnvironmentObject var cartViewModel: CartViewModel
-    init(
-        loading: Binding<Bool>,
-        showMenu: Binding<Bool>,
-        tab: Binding<Tab>
-    ) {
-        _loading = loading
-        _showMenu = showMenu
-        _tab = tab
+    init() {
         UITabBar.appearance().barTintColor = UIColor(named: "color_background")
     }
     var body: some View {
         ZStack {
-            if !showMenu {
+            if !router.showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -42,17 +34,17 @@ struct PointOfSaleView: View {
 //                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
 //                }
                 TabView(selection: $tab) {
-                    AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                    AgregarView(tab: $tab)
                         .tabItem {
                             Label("Agregar", systemImage: "plus")
                         }
                         .tag(Tab.plus)
-                    CustomProductView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                    CustomProductView(tab: $tab)
                         .tabItem {
                             Label("Buscar", systemImage: "magnifyingglass")
                         }
                         .tag(Tab.magnifyingglass)
-                    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
+                    CartView(tab: $tab)
                         .badge(cartViewModel.cartCoreData?.cartDetails.count ?? 0)
                         .tabItem {
                             Label("Carro", systemImage: "cart")
@@ -61,8 +53,8 @@ struct PointOfSaleView: View {
                 }
                 .accentColor(Color("color_accent"))
             }
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
+            .cornerRadius(router.showMenu ? 35 : 0)
+            .padding(.top, router.showMenu ? 0 : 1)
             .onAppear {
                 Task {
                     await cartViewModel.lazyFetchCart()
@@ -87,11 +79,9 @@ struct PointOfSaleView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var tab: Tab = .magnifyingglass
-        PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
+        PointOfSaleView()
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.versionCheck)
-            .environmentObject(nor.errorState)
     }
 }

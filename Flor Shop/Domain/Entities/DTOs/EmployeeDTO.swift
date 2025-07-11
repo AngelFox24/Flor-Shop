@@ -17,7 +17,7 @@ struct EmployeeDTO: Codable {
     let role: String
     let active: Bool
     let subsidiaryID: UUID
-    let imageUrlId: UUID?
+    let imageUrl: ImageURLDTO?
     let createdAt: String
     let updatedAt: String
 }
@@ -36,6 +36,25 @@ extension EmployeeDTO {
             phoneNumber: phoneNumber,
             createdAt: createdAt.internetDateTime() ?? minimunDate(),
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+        )
+    }
+    func isEquals(to other: Tb_Employee) -> Bool {
+        var imageIsEquals = false
+        if let image = self.imageUrl, let otherImage = other.toImageUrl {
+            imageIsEquals = image.isEquals(to: otherImage)
+        } else {
+            imageIsEquals = true
+        }
+        return (
+            self.id == other.idEmployee &&
+            self.user == other.user &&
+            self.name == other.name &&
+            self.lastName == other.lastName &&
+            self.email == other.email &&
+            self.phoneNumber == other.phoneNumber &&
+            self.role == other.role &&
+            self.active == other.active &&
+            imageIsEquals
         )
     }
 }

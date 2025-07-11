@@ -17,7 +17,7 @@ protocol LocalCompanyManager {
 class LocalCompanyManagerImpl: LocalCompanyManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
-    let className = "LocalCompanyManager"
+    let className = "[LocalCompanyManager]"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -54,7 +54,10 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             throw LocalStorageError.syncFailed(cusError)
         }
         if let companyEntity = try self.sessionConfig.getCompanyEntityById(context: backgroundContext, companyId: companyDTO.id) {
-//            print("Se actualiza la compañia")
+            guard !companyDTO.isEquals(to: companyEntity) else {
+                print("\(className) No se actualiza, es lo mismo")
+                return
+            }
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
             companyEntity.createdAt = companyDTO.createdAt.internetDateTime()

@@ -9,13 +9,11 @@ import SwiftUI
 import PhotosUI
 
 struct AgregarView: View {
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            AgregarTopBar(loading: $loading, showMenu: $showMenu)
-            CamposProductoAgregar(loading: $loading, showMenu: $showMenu, tab: $tab)
+            AgregarTopBar()
+            CamposProductoAgregar(tab: $tab)
         }
     }
 }
@@ -24,10 +22,8 @@ struct AgregarView_Previews: PreviewProvider {
     static var previews: some View {
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
-        @State var loading: Bool = false
-        @State var showMenu: Bool = false
         @State var tab: Tab = .plus
-        AgregarView(loading: $loading, showMenu: $showMenu, tab: $tab)
+        AgregarView(tab: $tab)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
     }
@@ -42,10 +38,8 @@ struct ErrorMessageText: View {
 }
 
 struct CamposProductoAgregar: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @EnvironmentObject var errorState: ErrorState
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
     @Binding var tab: Tab
     var sizeCampo: CGFloat = 150
     var body: some View {
@@ -71,7 +65,11 @@ struct CamposProductoAgregar: View {
                         .photosPicker(isPresented: $agregarViewModel.agregarFields.isShowingPicker, selection: $agregarViewModel.selectionImage, matching: .any(of: [.images, .screenshots]))
                         Spacer()
                         VStack(spacing: 0) {
-                            AgregarViewPopoverHelp()
+                            Button(action: {
+                                router.presentSheet(.popoverAddView)
+                            }, label: {
+                                CustomButton6(simbol: "questionmark")
+                            })
                             Spacer()
                             ImportButtonView() { result in
                                 handleFileImport(result: result)
@@ -191,18 +189,18 @@ struct CamposProductoAgregar: View {
             switch result {
             case .success(let urls):
                 if let url = urls.first {
-                    loading = true
+                    router.isLoanding = true
                     await agregarViewModel.importCSV(url: url)
-                    loading = false
+                    router.isLoanding = false
                 }
             case .failure(let error):
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
             }
         }
     }
     private func exportProducts() {
         Task {
-            loading = true
+            router.isLoanding = true
 //            do {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
@@ -210,7 +208,7 @@ struct CamposProductoAgregar: View {
                 let formattedDate = dateFormatter.string(from: currentDate)
                 let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(formattedDate).csv")
                 await agregarViewModel.exportCSV(url: tempURL)
-                loading = false
+            router.isLoanding = false
                 showShareSheet(url: tempURL)
 //            } catch {
 //                await errorState.processError(error: error)
@@ -224,13 +222,13 @@ struct CamposProductoAgregar: View {
             do {
                 try await agregarViewModel.pasteFromInternet()
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }
     }
     func goToSideMenu() {
-        self.showMenu = true
+        router.showMenu = true
     }
     func goToProductList() {
         self.tab = .magnifyingglass

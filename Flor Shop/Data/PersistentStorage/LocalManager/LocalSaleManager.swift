@@ -23,7 +23,7 @@ protocol LocalSaleManager {
 class LocalSaleManagerImpl: LocalSaleManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
-    let className = "LocalSaleManager"
+    let className = "[LocalSaleManager]"
     init(
         mainContext: NSManagedObjectContext,
         sessionConfig: SessionConfig
@@ -71,7 +71,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 if reduceStock(cartDetailEntity: cartDetailEntity) {
                     let newSaleDetailEntity = Tb_SaleDetail(context: self.mainContext)
                     newSaleDetailEntity.idSaleDetail = UUID()
-                    newSaleDetailEntity.toImageUrl?.idImageUrl = cartDetail.product.image?.id
+                    newSaleDetailEntity.toImageUrl?.idImageUrl = cartDetail.product.image?.id // no se crea ni busca la nueva imagen porque ya deberia tenerlo
                     newSaleDetailEntity.productName = cartDetail.product.name
                     newSaleDetailEntity.unitCost = Int64(cartDetail.product.unitCost.cents)
                     newSaleDetailEntity.unitPrice = Int64(cartDetail.product.unitPrice.cents)
@@ -541,6 +541,10 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 throw LocalStorageError.entityNotFound("El empleado no existe")
             }
             if let saleEntity = try self.sessionConfig.getSaleEntityById(context: backgroundContext, saleId: saleDTO.id) {
+                guard !saleDTO.isEquals(to: saleEntity) else {
+                    print("\(className) No se actualizo, porque es el mismo")
+                    continue
+                }
                 //Update
                 print("Se actualiza sale")
                 saleEntity.paymentType = saleDTO.paymentType

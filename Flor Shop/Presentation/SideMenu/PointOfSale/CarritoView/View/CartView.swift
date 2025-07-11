@@ -10,13 +10,11 @@ import CoreData
 
 struct CartView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            CartTopBar(showMenu: $showMenu)
-            ListCartController(loading: $loading, tab: $tab)
+            CartTopBar()
+            ListCartController(tab: $tab)
         }
 //        .onAppear {
 //            Task {
@@ -34,15 +32,13 @@ struct CartView: View {
     @Previewable @State var tab: Tab = .magnifyingglass
     let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
     let dependencies = BusinessDependencies(sessionConfig: ses)
-    CartView(loading: $loading, showMenu: $showMenu, tab: $tab)
+    CartView(tab: $tab)
         .environmentObject(dependencies.cartViewModel)
 }
 
 struct ListCartController: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var errorState: ErrorState
-    @Binding var loading: Bool
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
@@ -100,7 +96,7 @@ struct ListCartController: View {
         addProductToCart()
     }
     func goToPay() {
-        navManager.goToPaymentView()
+        router.presentSheet(.payment)
     }
     func addProductToCart() {
         let car = Car(
@@ -130,7 +126,7 @@ struct ListCartController: View {
                 try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
                 await cartViewModel.fetchCart()
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }
@@ -146,7 +142,7 @@ struct ListCartController: View {
                 }
                 await cartViewModel.fetchCart()
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }
@@ -158,7 +154,7 @@ struct ListCartController: View {
                 try await cartViewModel.changeProductAmount(productId: cartDetail.product.id, amount: cartDetail.quantity + 1)
                 await cartViewModel.fetchCart()
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }

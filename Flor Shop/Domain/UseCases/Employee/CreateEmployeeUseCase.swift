@@ -12,30 +12,26 @@ protocol CreateEmployeeUseCase {
 }
 
 final class CreateEmployeeInteractor: CreateEmployeeUseCase {
-    private let synchronizerDBUseCase: SynchronizerDBUseCase
+//    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let employeeRepository: EmployeeRepository
     private let imageRepository: ImageRepository
     
     init(
-        synchronizerDBUseCase: SynchronizerDBUseCase,
+//        synchronizerDBUseCase: SynchronizerDBUseCase,
         employeeRepository: EmployeeRepository,
         imageRepository: ImageRepository
     ) {
-        self.synchronizerDBUseCase = synchronizerDBUseCase
+//        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.employeeRepository = employeeRepository
         self.imageRepository = imageRepository
     }
     
     func execute(employee: Employee) async throws {
-        var employeeIn = employee
         do {
-            if let image = employeeIn.image {
-                employeeIn.image = try await self.imageRepository.save(image: image)
-            }
-            try await self.employeeRepository.save(employee: employeeIn)
-            try await self.synchronizerDBUseCase.sync()
+            try await self.employeeRepository.save(employee: employee)
+//            try await self.synchronizerDBUseCase.sync()
         } catch {
-            try await self.synchronizerDBUseCase.sync()
+//            try await self.synchronizerDBUseCase.sync()
             throw error
         }
     }

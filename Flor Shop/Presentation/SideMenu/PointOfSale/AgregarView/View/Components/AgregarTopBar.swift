@@ -10,21 +10,19 @@ import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productViewModel: ProductViewModel
-    @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
     var body: some View {
         HStack {
-            CustomButton5(showMenu: $showMenu)
+            FlorShopButton()
             Spacer()
             Button(action: saveProduct) {
                 CustomButton1(text: "Guardar")
             }
         }
-        .padding(.top, showMenu ? 15 : 0)
+        .padding(.top, router.showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
@@ -32,17 +30,17 @@ struct AgregarTopBar: View {
     }
     private func saveProduct() {
         Task {
-            loading = true
+            router.isLoanding = true
             do {
 //                UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first?.endEditing(true)
                 try await agregarViewModel.addProduct()
                 await productViewModel.releaseResources()
                 playSound(named: "Success1")
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            loading = false
+            router.isLoanding = false
         }
     }
     private func playSound(named fileName: String) {
@@ -66,10 +64,8 @@ struct AgregarTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var loading = false
-        @State var showMenu = false
         VStack {
-            AgregarTopBar(loading: $loading, showMenu: $showMenu)
+            AgregarTopBar()
                 .environmentObject(dependencies.agregarViewModel)
             Spacer()
         }

@@ -32,6 +32,14 @@ extension SaleDTO {
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
         )
     }
+    func isEquals(to other: Tb_Sale) -> Bool {
+        return (
+            self.id == other.idSale &&
+            self.paymentType == other.paymentType &&
+            self.saleDate == other.saleDate &&
+            self.total == other.total
+        )
+    }
 }
 
 extension Array where Element == SaleDTO {

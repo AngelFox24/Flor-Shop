@@ -11,20 +11,18 @@ import AVFoundation
 
 struct PaymentTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
+    @Environment(Router.self) private var router
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var salesViewModel: SalesViewModel
-    @EnvironmentObject var errorState: ErrorState
-    @EnvironmentObject var navManager: NavManager
-    @Binding var loading: Bool
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
             HStack(content: {
-                Button(action: {
-                    navManager.goToBack()
-                }, label: {
-                    CustomButton3()
-                })
+//                Button(action: {
+//                    navManager.goToBack()
+//                }, label: {
+//                    CustomButton3()
+//                })
                 Spacer()
                 Button(action: registerSale) {
                     CustomButton1(text: "Finalizar")
@@ -38,7 +36,7 @@ struct PaymentTopBar: View {
     }
     func registerSale() {
         Task {
-            loading = true
+            router.isLoanding = true
             do {
                 guard let cart = cartViewModel.cartCoreData else {
                     throw LocalStorageError.entityNotFound("No se encontro carrito configurado en viewModel")
@@ -48,13 +46,13 @@ struct PaymentTopBar: View {
                 try await cartViewModel.emptyCart()
                 cartViewModel.releaseCustomer()
                 await cartViewModel.lazyFetchCart()
-                navManager.goToBack()
+                router.goBack()
                 playSound(named: "Success1")
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            loading = false
+            router.isLoanding = false
         }
     }
     private func playSound(named fileName: String) {
@@ -76,8 +74,7 @@ struct PaymentTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
-        @State var loading = false
-        PaymentTopBar(loading: $loading)
+        PaymentTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
     }

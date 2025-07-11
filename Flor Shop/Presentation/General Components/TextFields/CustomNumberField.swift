@@ -147,12 +147,11 @@ struct CustomNumberField: View {
     }
 }
 
-struct prevThis: View {
-    var body: some View {
-        CustomNumberField(userInput: .constant(34), edited: .constant(false))
-    }
-}
-
 #Preview {
-    prevThis()
+    VStack {
+        Spacer()
+        CustomNumberField(userInput: .constant(34), edited: .constant(false))
+        Spacer()
+    }
+    .background(Color.gray.opacity(0.9))
 }

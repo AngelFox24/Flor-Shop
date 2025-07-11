@@ -26,4 +26,12 @@ extension ImageURLDTO {
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
         )
     }
+    
+    func isEquals(to other: Tb_ImageUrl) -> Bool {
+        return (
+            self.id == other.idImageUrl &&
+            self.imageUrl == other.imageUrl &&
+            self.imageHash == other.imageHash
+        )
+    }
 }

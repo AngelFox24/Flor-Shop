@@ -27,9 +27,7 @@ final class RemoteProductManagerImpl: RemoteProductManager {
         let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
         let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
-        print("Antes del pedido")
         let data: SyncProductsResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncProductsResponse.self)
-        print("Despues del pedido")
         return data
     }
 }

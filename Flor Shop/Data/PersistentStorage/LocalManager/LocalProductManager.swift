@@ -18,13 +18,16 @@ protocol LocalProductManager {
 class LocalProductManagerImpl: LocalProductManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
-    let className = "LocalProductManager"
+    let imageService: LocalImageService
+    let className = "[LocalProductManager]"
     init(
         mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
+        imageService: LocalImageService
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+        self.imageService = imageService
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -149,7 +152,12 @@ class LocalProductManagerImpl: LocalProductManager {
                 rollback(context: backgroundContext)
                 throw LocalStorageError.entityNotFound("No se pudo obtener la subsidiaria")
             }
+            let image = try self.imageService.save(context:backgroundContext, image: productDTO.imageUrl?.toImageUrl())
             if let productEntity = try self.sessionConfig.getProductEntityById(context: backgroundContext, productId: productDTO.id) {
+                guard !productDTO.isEquals(to: productEntity) else {
+                    print("\(className) No se actualizo el producto porque es el mismo")
+                    continue
+                }
                 productEntity.productName = productDTO.productName
                 productEntity.active = productDTO.active
                 productEntity.quantityStock = Int64(productDTO.quantityStock)
@@ -159,10 +167,9 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
-                if let imageId = productDTO.imageUrlId {
-                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                }
+                productEntity.toImageUrl = image
                 try saveData(context: backgroundContext)
+                print("[LocalProductManagerImpl] Se actualizo el producto")
             } else {
                 let productEntity = Tb_Product(context: backgroundContext)
                 productEntity.idProduct = productDTO.id
@@ -176,10 +183,9 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
                 productEntity.createdAt = productDTO.createdAt.internetDateTime()
                 productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
-                if let imageId = productDTO.imageUrlId {
-                    productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                }
+                productEntity.toImageUrl = image
                 try saveData(context: backgroundContext)
+                print("[LocalProductManagerImpl] Se creo el producto")
             }
         }
     }

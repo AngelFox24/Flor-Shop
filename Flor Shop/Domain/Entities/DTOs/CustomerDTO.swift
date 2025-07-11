@@ -24,7 +24,7 @@ struct CustomerDTO: Codable {
     let phoneNumber: String
     let creditLimit: Int
     let companyID: UUID
-    let imageUrlId: UUID?
+    let imageUrl: ImageURLDTO?
     let createdAt: String
     let updatedAt: String
 }
@@ -50,6 +50,32 @@ extension CustomerDTO {
             isDateLimitActive: isDateLimitActive,
             createdAt: createdAt.internetDateTime() ?? minimunDate(),
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+        )
+    }
+    func isEquals(to other: Tb_Customer) -> Bool {
+        var imageIsEquals = false
+        if let image = self.imageUrl, let otherImage = other.toImageUrl {
+            imageIsEquals = image.isEquals(to: otherImage)
+        } else {
+            imageIsEquals = true
+        }
+        return (
+            self.id == other.idCustomer &&
+            self.name == other.name &&
+            self.lastName == other.lastName &&
+            self.totalDebt == other.totalDebt &&
+            self.creditScore == other.creditScore &&
+            self.creditDays == other.creditDays &&
+            self.isCreditLimitActive == other.isCreditLimitActive &&
+            self.isCreditLimit == other.isCreditLimit &&
+            self.isDateLimitActive == other.isDateLimitActive &&
+            self.isDateLimit == other.isDateLimit &&
+            self.dateLimit.internetDateTime() == other.dateLimit &&
+            self.firstDatePurchaseWithCredit == other.firstDatePurchaseWithCredit &&
+            self.lastDatePurchase.internetDateTime() == other.lastDatePurchase &&
+            self.phoneNumber == other.phoneNumber &&
+            self.creditLimit == other.creditLimit &&
+            imageIsEquals
         )
     }
 }

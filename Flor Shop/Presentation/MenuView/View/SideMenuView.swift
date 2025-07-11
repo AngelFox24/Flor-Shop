@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import AppRouter
 
-enum MenuTab: String, CaseIterable {
+enum MenuTab: String, Hashable, FlowType {
+    var id: String { rawValue }
+    
     case pointOfSaleTab
     case salesTab
     case customersTab
     case employeesTab
     case settingsTab
-    case logOut
     var description: String {
         switch self {
         case .pointOfSaleTab:
@@ -26,8 +28,6 @@ enum MenuTab: String, CaseIterable {
             return "Empleados"
         case .settingsTab:
             return "Ajustes"
-        case .logOut:
-            return "Cerrar Sesión"
         }
     }
     var icon: String {
@@ -42,8 +42,6 @@ enum MenuTab: String, CaseIterable {
             return "person.text.rectangle"
         case .settingsTab:
             return "gearshape"
-        case .logOut:
-            return "rectangle.righthalf.inset.fill.arrow.right"
         }
     }
     var iconFill: String {
@@ -58,13 +56,30 @@ enum MenuTab: String, CaseIterable {
             return "person.text.rectangle.fill"
         case .settingsTab:
             return "gearshape.fill"
-        case .logOut:
-            return "rectangle.righthalf.inset.fill.arrow.right"
         }
     }
     static func navTabs() -> [MenuTab] {
         //return [.pointOfSaleTab, .salesTab, .customersTab, .employeesTab, .settingsTab]
         return [.pointOfSaleTab, .salesTab, .customersTab]
+    }
+}
+
+@MainActor
+extension MenuTab {
+    @ViewBuilder
+    var rootView: some View {
+        switch self {
+        case .pointOfSaleTab:
+            PointOfSaleView()
+        case .salesTab:
+            SalesView()
+        case .customersTab:
+            CustomersView()
+        case .employeesTab:
+            EmployeeView()
+        case .settingsTab:
+            PointOfSaleView()
+        }
     }
 }
 

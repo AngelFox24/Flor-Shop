@@ -53,7 +53,7 @@ extension Product {
             unitCost: unitCost.cents,
             unitPrice: unitPrice.cents,
             subsidiaryId: subsidiaryId,
-            imageUrlId: image?.id,
+            imageUrl: image?.toImageUrlDTO(imageData: nil),
             createdAt: ISO8601DateFormatter().string(from: createdAt),
             updatedAt: ISO8601DateFormatter().string(from: updatedAt)
         )

@@ -5,10 +5,30 @@
 //  Created by Angel Curi Laurente on 05/10/2024.
 //
 import Foundation
+//MARK: ServerErrorResponse
+struct ServerErrorResponse: Decodable {
+    let error: Bool
+    let reason: String
+}
 //MARK: Session Parameters
 struct LogInParameters: Encodable {
     let username: String
     let password: String
+}
+struct RegisterParameters: Encodable {
+    let company: CompanyDTO
+    let subsidiaryImage: ImageURLDTO?
+    let subsidiary: SubsidiaryDTO
+    let employeeImage: ImageURLDTO?
+    let employee: EmployeeDTO
+    
+    init?(registerStuff: RegisterStuffs) {
+        self.company = registerStuff.company.toCompanyDTO()
+        self.subsidiaryImage = registerStuff.subsidiary.image?.toImageUrlDTO(imageData: nil)
+        self.subsidiary = registerStuff.subsidiary.toSubsidiaryDTO(companyId: self.company.id)
+        self.employeeImage = registerStuff.employee.image?.toImageUrlDTO(imageData: nil)
+        self.employee = registerStuff.employee.toEmployeeDTO(subsidiaryId: self.subsidiary.id)
+    }
 }
 //MARK: Sync Parameters
 struct SyncCompanyParameters: Encodable {

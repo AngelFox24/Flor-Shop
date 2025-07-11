@@ -8,110 +8,32 @@
 import SwiftUI
 
 struct RootView: View {
-    @EnvironmentObject var versionCheck: VersionCheck
-    @EnvironmentObject var navManager: NavManager
-    @Environment(LogInViewModel.self) var logInViewModel
-    @EnvironmentObject var errorState: ErrorState
-    
-    @State var loading: Bool = false
-    
+    @State private var versionCheck = VersionViewModel()
+    @Environment(Router.self) private var router
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
-    @AppStorage("userOrEmail") var userOrEmail: String?
-    @AppStorage("password") var password: String?
+    private let normalDependencies = NormalDependencies()
+    @State private var persistenceSessionConfig = PersistenceSessionConfig()
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                VStack(spacing: 0) {
-                    if !hasShownOnboarding {
-                        OnboardingView(onAction: {
-                            hasShownOnboarding = true
-                        })
-                    } else {
-                        switch versionCheck.versionIsOk {
-                        case .loading:
-                            LaunchScreenView()
-                        case .lockVersion:
-                            LockScreenView()
-                        case .versionOk:
-                            NavigationStack(path: $navManager.navPaths) {
-                                VStack {
-                                    if let sesDep = logInViewModel.businessDependencies {
-                                        MainView(dependencies: sesDep, loading: $loading)
-                                    } else {
-                                        WelcomeView()
-                                            .onAppear {
-                                                logIn()
-                                            }
-                                    }
-                                }
-                                .navigationDestination(for: SessionRoutes.self) { route in
-                                    switch route {
-                                    case .loginView:
-                                        LogInView(loading: $loading)
-                                    case .registrationView:
-                                        LogInView(loading: $loading)
-                                    }
-                                }
-                            }
-                        case .unowned:
-                            LockScreenView()
-                        }
-                    }
-                }
-                .onAppear {
-                    //versionCheck.checkAppVersion()
-                }
-            }
-            if loading {
-                LoadingView()
+        VStack(spacing: 0) {
+            if !hasShownOnboarding {
+                OnboardingView()
+            } else {
+                VersionCheckView()
+                    .environment(normalDependencies.logInViewModel)
+                    .environment(normalDependencies.registrationViewModel)
+                    .environment(persistenceSessionConfig)
             }
         }
-        .onChange(of: errorState.isPresented, perform: { item in
-            if !errorState.isPresented {
-                errorState.error = ""
-            }
-        })
-        .alert(errorState.error, isPresented: $errorState.isPresented, actions: {})
-    }
-    private func logIn() {
-        if let user = userOrEmail, let pass = password {
-            logInViewModel.userOrEmail = user
-            logInViewModel.password = pass
-            Task {
-                loading = true
-                print("Se logea desde guardado")
-                let ses = try await logInViewModel.logIn()
-                await MainActor.run {
-                    self.userOrEmail = logInViewModel.userOrEmail
-                    self.password = logInViewModel.password
-                    self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
-                    self.logInViewModel.businessDependencies?.webSocket.connect()
-                    navManager.popToRoot()
-                }
-                loading = false
-            }
+        .onAppear {
+            //versionCheck.checkAppVersion()
         }
-//                                                else {//Registration not work yet
-//                                                    let reg = registrationViewModel.registerUser()
-//                                                    print("\(reg)")
-//                                                    logInViewModel.logInFields.userOrEmail = registrationViewModel.registrationFields.email
-//                                                    logInViewModel.logInFields.password = registrationViewModel.registrationFields.password
-//                                                    print("User: \(registrationViewModel.registrationFields.email)")
-//                                                    print("Pass: \(registrationViewModel.registrationFields.password)")
-//                                                    sesConfig = logInViewModel.logIn()
-//                                                }
     }
 }
 
-struct RootView_Previews: PreviewProvider {
-    static var previews: some View {
-        let normalDependencies = NormalDependencies()
-        RootView()
-            .environmentObject(normalDependencies.navManager)
-            .environmentObject(normalDependencies.versionCheck)
-            .environment(normalDependencies.logInViewModel)
-            .environmentObject(normalDependencies.errorState)
-    }
+#Preview {
+    let normalDependencies = NormalDependencies()
+    RootView()
+        .environment(normalDependencies.logInViewModel)
 }
 
 extension View {

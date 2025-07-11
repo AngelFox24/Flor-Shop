@@ -6,54 +6,26 @@
 //
 
 import Foundation
-import SwiftUI
 
 struct NormalDependencies {
-    let navManager: NavManager
-    //Estados
-    let errorState: ErrorState
-    let versionCheck: VersionCheck
-//    let viewStates: ViewStates
     //Session UseCases
-    let remoteSessionManager: RemoteSessionManager
-    let sessionRepository: SessionRepository
-//    private let registerUserUseCase: RegisterUserUseCase
+    private let remoteSessionManager: RemoteSessionManager
+    private let sessionRepository: SessionRepository
     private let logInUseCase: LogInUseCase
+    private let registerUseCase: RegisterUseCase
     private let logOutUseCase: LogOutUseCase
     //Session ViewModels
     let logInViewModel: LogInViewModel
-//    let registrationViewModel: RegistrationViewModel
+    let registrationViewModel: RegistrationViewModel
     init() {
-        self.navManager = NavManager()
-        //Estados
-        self.versionCheck = VersionCheck()
-        self.errorState = ErrorState()
-//        self.viewStates = ViewStates()
         //Repo
         self.remoteSessionManager = RemoteSessionManagerImpl()
         self.sessionRepository = SessionRepositoryImpl(remoteManager: remoteSessionManager)
         //Session UseCases
         self.logInUseCase = LogInInteractor(sessionRepository: sessionRepository)
+        self.registerUseCase = RegisterInteractor(sessionRepository: sessionRepository)
         self.logOutUseCase = LogOutRemoteInteractor()
         self.logInViewModel = LogInViewModel(logInUseCase: logInUseCase, logOutUseCase: logOutUseCase)
+        self.registrationViewModel = RegistrationViewModel(registerUseCase: registerUseCase)
     }
 }
-
-class ErrorState: ObservableObject {
-    @Published var isPresented: Bool = false
-    var error: String = ""
-    func processError(error: Error) async {
-        await MainActor.run {
-            self.isPresented = true
-            self.error = error.localizedDescription
-        }
-    }
-}
-
-//class ViewStates: ObservableObject {
-//    @Published var selectedTab: MenuTab = .pointOfSaleTab
-//    @Published var tabSelected: Tab = .plus
-//    @Published var isShowMenu: Bool = false
-//    @Published var isLoading: Bool = false
-//}
-

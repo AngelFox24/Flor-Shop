@@ -18,13 +18,16 @@ protocol LocalSubsidiaryManager {
 class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
-    let className = "LocalSubsidiaryManager"
+    let imageService: LocalImageService
+    let className = "[LocalSubsidiaryManager]"
     init(
         mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
+        imageService: LocalImageService
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+        self.imageService = imageService
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -48,40 +51,41 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
         }
     }
     func save(subsidiary: Subsidiary) throws {
+        let image = try self.imageService.save(context: self.mainContext, image: subsidiary.image)
         if let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: subsidiary.id) {
             subsidiaryEntity.idSubsidiary = subsidiary.id
             subsidiaryEntity.name = subsidiary.name
-            subsidiaryEntity.toImageUrl = subsidiary.image?.toImageUrlEntity(context: self.mainContext)
+            subsidiaryEntity.toImageUrl = image
             subsidiaryEntity.toCompany?.idCompany = self.sessionConfig.companyId
         } else {
             let newSubsidiaryEntity = Tb_Subsidiary(context: self.mainContext)
             newSubsidiaryEntity.idSubsidiary = subsidiary.id
             newSubsidiaryEntity.name = subsidiary.name
-            newSubsidiaryEntity.toImageUrl = subsidiary.image?.toImageUrlEntity(context: self.mainContext)
+            newSubsidiaryEntity.toImageUrl = image
             newSubsidiaryEntity.toCompany?.idCompany = self.sessionConfig.companyId
         }
         try saveData()
     }
     func sync(backgroundContext: NSManagedObjectContext, subsidiariesDTOs: [SubsidiaryDTO]) throws {
-//        print("Local Sync: se sincronizara la subsidiaria")
         for subsidiaryDTO in subsidiariesDTOs {
             guard self.sessionConfig.companyId == subsidiaryDTO.companyID else {
-                print("La compañia no es la misma")
                 rollback(context: backgroundContext)
                 let cusError: String = "\(className): La compañia no es la misma"
                 throw LocalStorageError.syncFailed(cusError)
             }
             guard let companyEntity = try self.sessionConfig.getCompanyEntityById(context: backgroundContext, companyId: subsidiaryDTO.companyID) else {
-                print("No se pudo obtener la compañia: \(subsidiaryDTO.companyID)")
                 rollback(context: backgroundContext)
                 let cusError: String = "\(className): No se pudo obtener la compañia de la BD"
                 throw LocalStorageError.syncFailed(cusError)
             }
+            let image = try self.imageService.save(context: backgroundContext, image: subsidiaryDTO.imageUrl?.toImageUrl())
             if let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: backgroundContext, subsidiaryId: subsidiaryDTO.id) {
-                subsidiaryEntity.name = subsidiaryDTO.name
-                if let imageId = subsidiaryDTO.imageUrlId {
-                    subsidiaryEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
+                guard !subsidiaryDTO.isEquals(to: subsidiaryEntity) else {
+                    print("\(className) No se actualiza, es lo mismo")
+                    continue
                 }
+                subsidiaryEntity.name = subsidiaryDTO.name
+                subsidiaryEntity.toImageUrl = image
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()
                 try saveData(context: backgroundContext)
@@ -89,9 +93,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 let newSubsidiaryEntity = Tb_Subsidiary(context: backgroundContext)
                 newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
                 newSubsidiaryEntity.name = subsidiaryDTO.name
-                if let imageId = subsidiaryDTO.imageUrlId {
-                    newSubsidiaryEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                }
+                newSubsidiaryEntity.toImageUrl = image
                 newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt.internetDateTime()
                 newSubsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt.internetDateTime()

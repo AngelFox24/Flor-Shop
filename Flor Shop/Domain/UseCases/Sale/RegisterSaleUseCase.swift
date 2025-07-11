@@ -12,23 +12,23 @@ protocol RegisterSaleUseCase {
 }
 
 final class RegisterSaleInteractor: RegisterSaleUseCase {
-    private let synchronizerDBUseCase: SynchronizerDBUseCase
+//    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let saleRepository: SaleRepository
     
     init(
-        synchronizerDBUseCase: SynchronizerDBUseCase,
+//        synchronizerDBUseCase: SynchronizerDBUseCase,
         saleRepository: SaleRepository
     ) {
-        self.synchronizerDBUseCase = synchronizerDBUseCase
+//        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.saleRepository = saleRepository
     }
     
     func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
         do {
             try await self.saleRepository.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
-            try await self.synchronizerDBUseCase.sync()
+//            try await self.synchronizerDBUseCase.sync()
         } catch {
-            try await self.synchronizerDBUseCase.sync()
+//            try await self.synchronizerDBUseCase.sync()
             throw error
         }
     }

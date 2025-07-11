@@ -21,13 +21,16 @@ protocol LocalCustomerManager {
 class LocalCustomerManagerImpl: LocalCustomerManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
-    let className = "LocalCustomerManager"
+    let imageService: LocalImageService
+    let className = "[LocalCustomerManager]"
     init(
         mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
+        imageService: LocalImageService
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+        self.imageService = imageService
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -59,7 +62,12 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 rollback(context: backgroundContext)
                 throw LocalStorageError.entityNotFound("La compañia no existe en la bd local")
             }
+            let image = try self.imageService.save(context: backgroundContext, image: customerDTO.imageUrl?.toImageUrl())
             if let customerEntity = try self.sessionConfig.getCustomerEntityById(context: backgroundContext, customerId: customerDTO.id) {
+                guard !customerDTO.isEquals(to: customerEntity) else {
+                    print("\(className) No se actualiza, es lo mismo")
+                    continue
+                }
                 customerEntity.creditLimit = Int64(customerDTO.creditLimit)
                 customerEntity.creditScore = Int64(customerDTO.creditScore)
                 customerEntity.creditDays = Int64(customerDTO.creditDays)
@@ -71,9 +79,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.lastName = customerDTO.lastName
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
-                if let imageId = customerDTO.imageUrlId {
-                    customerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                }
+                customerEntity.toImageUrl = image
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase.internetDateTime()
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -94,9 +100,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.lastName = customerDTO.lastName
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
-                if let imageId = customerDTO.imageUrlId {
-                    newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                }
+                newCustomerEntity.toImageUrl = image
                 newCustomerEntity.toCompany = companyEntity
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase.internetDateTime()
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
@@ -182,6 +186,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         }
     }
     func save(customer: Customer) throws {
+        let image = try self.imageService.save(context: self.mainContext, image: customer.image)
         if let customerEntity = try self.sessionConfig.getCustomerEntityById(context: self.mainContext, customerId: customer.id) { //Busqueda por id
             customerEntity.name = customer.name
             customerEntity.lastName = customer.lastName
@@ -190,7 +195,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             customerEntity.isCreditLimitActive = customer.isCreditLimitActive
             customerEntity.isDateLimitActive = customer.isDateLimitActive
             customerEntity.phoneNumber = customer.phoneNumber
-            customerEntity.toImageUrl?.idImageUrl = customer.image?.id
+            customerEntity.toImageUrl = image
             //TODO: Segregate this
             if customer.isDateLimitActive && customerEntity.totalDebt > 0, let firstDatePurchaseWithCredit = customerEntity.firstDatePurchaseWithCredit {
                 var calendar = Calendar.current
@@ -213,9 +218,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
             newCustomerEntity.creditScore = 50
             newCustomerEntity.dateLimit = Date()
             newCustomerEntity.phoneNumber = customer.phoneNumber
-            if let imageId = customer.image?.id  {
-                newCustomerEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
-            }
+            newCustomerEntity.toImageUrl = image
             newCustomerEntity.totalDebt = 0
             newCustomerEntity.isDateLimitActive = customer.isDateLimitActive
             newCustomerEntity.isCreditLimitActive = customer.isCreditLimitActive

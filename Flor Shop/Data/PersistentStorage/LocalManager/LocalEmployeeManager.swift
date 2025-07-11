@@ -18,13 +18,16 @@ protocol LocalEmployeeManager {
 class LocalEmployeeManagerImpl: LocalEmployeeManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
-    let className = "LocalEmployeeManager"
+    let imageService: LocalImageService
+    let className = "[LocalEmployeeManager]"
     init(
         mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
+        imageService: LocalImageService
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+        self.imageService = imageService
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -60,7 +63,11 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 throw LocalStorageError.syncFailed(cusError)
             }
             if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: backgroundContext, employeeId: employeeDTO.id) {
-                //Create Employee
+                guard !employeeDTO.isEquals(to: employeeEntity) else {
+                    print("\(className) No se actualiza, es lo mismo")
+                    continue
+                }
+                //Update Employee
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
@@ -75,6 +82,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 //Create cart
                 let cartEntity = Tb_Cart(context: backgroundContext)
                 cartEntity.idCart = UUID()
+                //Create Employee
                 let newEmployeeEntity = Tb_Employee(context: backgroundContext)
                 newEmployeeEntity.idEmployee = employeeDTO.id
                 newEmployeeEntity.name = employeeDTO.name
@@ -93,6 +101,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         }
     }
     func save(employee: Employee) throws {
+        let image = try self.imageService.save(context: self.mainContext, image: employee.image)
         if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employee.id) { //Busqueda por id
             employeeEntity.name = employee.name
             employeeEntity.lastName = employee.lastName
@@ -101,7 +110,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             employeeEntity.phoneNumber = employee.phoneNumber
             employeeEntity.role = employee.role
             employeeEntity.user = employee.user
-            employeeEntity.toImageUrl?.idImageUrl = employee.image?.id
+            employeeEntity.toImageUrl = image
             employeeEntity.updatedAt = Date()
             try saveData()
         } else if employeeExist(employee: employee) { //Comprobamos si existe el mismo empleado por otros atributos
@@ -116,7 +125,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             newEmployeeEntity.active = employee.active
             newEmployeeEntity.toCart = Tb_Cart(context: self.mainContext)
             newEmployeeEntity.toSubsidiary?.idSubsidiary = self.sessionConfig.subsidiaryId
-            newEmployeeEntity.toImageUrl?.idImageUrl = employee.image?.id
+            newEmployeeEntity.toImageUrl = image
             try saveData()
         }
     }

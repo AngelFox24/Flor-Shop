@@ -12,13 +12,11 @@ import StoreKit
 
 struct CustomProductView: View {
     @EnvironmentObject var productViewModel: ProductViewModel
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
-            ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
-            ListaControler(loading: $loading, tab: $tab)
+            ProductSearchTopBar()
+            ListaControler(tab: $tab)
         }
         .onAppear {
             Task {
@@ -33,21 +31,19 @@ struct HomeView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomProductView(loading: .constant(false), showMenu: .constant(false), tab: .constant(.magnifyingglass))
+        CustomProductView(tab: .constant(.magnifyingglass))
             .environmentObject(dependencies.productsViewModel)
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.errorState)
     }
 }
 
 struct ListaControler: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var agregarViewModel: AgregarViewModel
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var errorState: ErrorState
     @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
     @Environment(\.requestReview) var requestReview
-    @Binding var loading: Bool
     @Binding var tab: Tab
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
@@ -159,7 +155,7 @@ struct ListaControler: View {
 //                playSound(named: "Success1")
                 self.tab = .plus
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
 //            loading = false
@@ -173,7 +169,7 @@ struct ListaControler: View {
                 await carritoCoreDataViewModel.fetchCart()
                 playSound(named: "Success1")
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
 //            loading = false

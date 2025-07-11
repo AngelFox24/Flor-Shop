@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct PaymentView: View {
-    @Binding var loading: Bool
     var body: some View {
         VStack(spacing: 0) {
-            PaymentTopBar(loading: $loading)
+            PaymentTopBar()
             PaymentsFields()
         }
         .background(Color("color_background"))
@@ -25,14 +24,14 @@ struct PaymentView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var loading = false
-        PaymentView(loading: $loading)
+        PaymentView()
             .environmentObject(dependencies.cartViewModel)
     }
 }
 
 struct PaymentsFields: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var navManager: NavManager
     var body: some View {
         ScrollView(content: {
             VStack(spacing: 20, content: {
@@ -79,7 +78,7 @@ struct PaymentsFields: View {
                     }
                 })
                 .onTapGesture {
-                    navManager.goToCustomerView()
+//                    navManager.goToCustomerView()
                 }
                 HStack(content: {
                     Spacer()

@@ -1,11 +1,3 @@
-//
-//  LogInViewModel.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/08/23.
-//
-
-//import SwiftUI
 import Observation
 
 enum LogInStatus {
@@ -24,7 +16,7 @@ class LogInViewModel {
             return ""
         }
     }
-    var password: String = "asd"
+    var password: String = "password"
     var passwordEdited: Bool = false
     var passwordError: String {
         if self.password == "" && self.passwordEdited {

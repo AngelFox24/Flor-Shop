@@ -12,24 +12,24 @@ protocol PayClientDebtUseCase {
 }
 
 final class PayClientDebtInteractor: PayClientDebtUseCase {
-    private let synchronizerDBUseCase: SynchronizerDBUseCase
+//    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let customerRepository: CustomerRepository
     
     init(
-        synchronizerDBUseCase: SynchronizerDBUseCase,
+//        synchronizerDBUseCase: SynchronizerDBUseCase,
         customerRepository: CustomerRepository
     ) {
-        self.synchronizerDBUseCase = synchronizerDBUseCase
+//        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.customerRepository = customerRepository
     }
     
     func total(customer: Customer) async throws -> Bool {
         do {
             let result = try await customerRepository.payClientTotalDebt(customer: customer)
-            try await self.synchronizerDBUseCase.sync()
+//            try await self.synchronizerDBUseCase.sync()
             return result
         } catch {
-            try await self.synchronizerDBUseCase.sync()
+//            try await self.synchronizerDBUseCase.sync()
             throw error
         }
     }

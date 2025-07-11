@@ -13,21 +13,7 @@ struct SalesTopBar: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 10, content: {
-//                Button(action: {
-//                    withAnimation(.spring()){
-//                        isShowMenu.toggle()
-//                    }
-//                }, label: {
-//                    HStack {
-//                        Image("logo")
-//                            .resizable()
-//                            .scaledToFit()
-//                    }
-//                    .background(Color("colorlaunchbackground"))
-//                    .cornerRadius(10)
-//                    .frame(width: 40, height: 40)
-//                })
-                CustomButton5(showMenu: $showMenu)
+                FlorShopButton()
                 HStack(spacing: 0, content: {
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.diary.description)
@@ -94,9 +80,7 @@ struct SalesTopBar: View {
                         }
                     }
                 } label: {
-                    Button(action: {}, label: {
-                        CustomButton3(simbol: "slider.horizontal.3")
-                    })
+                    FilterButton()
                 }
                 .onChange(of: salesCoreDataViewModel.order, perform: { item in
                     salesCoreDataViewModel.fetchSalesDetailsList()

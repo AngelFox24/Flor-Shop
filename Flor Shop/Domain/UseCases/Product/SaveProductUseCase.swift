@@ -11,28 +11,24 @@ protocol SaveProductUseCase {
     func execute(product: Product) async throws
 }
 final class SaveProductInteractor: SaveProductUseCase {
-    private let synchronizerDBUseCase: SynchronizerDBUseCase
+//    private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let productRepository: ProductRepository
     private let imageRepository: ImageRepository
     init(
-        synchronizerDBUseCase: SynchronizerDBUseCase,
+//        synchronizerDBUseCase: SynchronizerDBUseCase,
         productRepository: ProductRepository,
         imageRepository: ImageRepository
     ) {
-        self.synchronizerDBUseCase = synchronizerDBUseCase
+//        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.productRepository = productRepository
         self.imageRepository = imageRepository
     }
     func execute(product: Product) async throws {
-        var productIn = product
         do {
-            if let image = productIn.image {
-                productIn.image = try await self.imageRepository.save(image: image)
-            }
-            try await self.productRepository.save(product: productIn)
-            try await self.synchronizerDBUseCase.sync()
+            try await self.productRepository.save(product: product)
+//            try await self.synchronizerDBUseCase.sync()
         } catch {
-            try await self.synchronizerDBUseCase.sync()
+//            try await self.synchronizerDBUseCase.sync()
             throw error
         }
     }

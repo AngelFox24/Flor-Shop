@@ -10,7 +10,7 @@ import SwiftUI
 struct SalesView: View {
     @EnvironmentObject var salesViewModel: SalesViewModel
     var backButton: Bool = false
-    @Binding var showMenu: Bool
+    @State var showMenu: Bool = false
     var body: some View {
         ZStack {
             if !showMenu {
@@ -42,17 +42,14 @@ struct SalesView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var showMenu: Bool = false
-        SalesView(showMenu: $showMenu)
+        SalesView()
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.salesViewModel)
-            .environmentObject(nor.navManager)
     }
 }
 
 struct SalesListController: View {
     @EnvironmentObject var salesViewModel: SalesViewModel
-    @EnvironmentObject var navManager: NavManager
     var body: some View {
         VStack(spacing: 0) {
             if salesViewModel.salesDetailsList.count == 0 {

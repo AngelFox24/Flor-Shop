@@ -25,4 +25,11 @@ extension CompanyDTO {
             updatedAt: updatedAt.internetDateTime() ?? minimunDate()
         )
     }
+    func isEquals(to other: Tb_Company) -> Bool {
+        return (
+            self.id == other.idCompany &&
+            self.companyName == other.companyName &&
+            self.ruc == other.ruc
+        )
+    }
 }

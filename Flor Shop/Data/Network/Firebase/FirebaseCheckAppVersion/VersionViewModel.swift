@@ -1,20 +1,15 @@
-//
-//  FirebaseApp.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 7/07/23.
-//
-
 import Foundation
-import Firebase
-import FirebaseDatabase
-class VersionCheck: ObservableObject {
-    @Published var versionIsOk: VersionResult = .versionOk
+//import Firebase
+//import FirebaseDatabase
+import Observation
+
+@Observable
+class VersionViewModel {
+    var isSupported: Bool = true
+    var versionState: VersionResult = .loading
     enum VersionResult {
         case loading
         case lockVersion
-        case versionOk
-        case unowned
     }
     func checkAppVersion() {
         var minimumVersionApp: String = ""
@@ -24,7 +19,8 @@ class VersionCheck: ObservableObject {
               let plist = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
               let currentVersion = plist["CFBundleShortVersionString"] as? String else {
             print("VersionLocal1: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
-            self.versionIsOk = .lockVersion
+            self.versionState = .lockVersion
+            self.isSupported = false
             return
         }
         currentVersionApp = currentVersion
@@ -39,12 +35,14 @@ class VersionCheck: ObservableObject {
                 print("VersionLocal2: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")
                 if currentVersionApp >= minimumVersionApp {
                     // 1.0.10.345
-                    self.versionIsOk = .versionOk
+                    self.isSupported = true
                 } else {
-                    self.versionIsOk = .lockVersion
+                    self.versionState = .lockVersion
+                    self.isSupported = false
                 }
             } else {
-                self.versionIsOk = .lockVersion
+                self.versionState = .lockVersion
+                self.isSupported = false
             }
         }
         print("VersionLocal3: \(currentVersionApp) and MinimunVersion: \(minimumVersionApp)")

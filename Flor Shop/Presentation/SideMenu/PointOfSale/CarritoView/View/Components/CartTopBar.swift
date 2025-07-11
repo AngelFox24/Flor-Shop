@@ -11,16 +11,17 @@ import AVFoundation
 
 struct CartTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
+    @Environment(Router.self) private var router
     @EnvironmentObject var carritoCoreDataViewModel: CartViewModel
-    @EnvironmentObject var navManager: NavManager
-    @Binding var showMenu: Bool
+//    @EnvironmentObject var navManager: NavManager
     var body: some View {
+        @Bindable var router = router
         HStack {
             HStack{
-                CustomButton5(showMenu: $showMenu)
+                FlorShopButton()
                 Spacer()
                 Button(action: {
-                    navManager.goToPaymentView()
+                    router.presentSheet(.payment)
                     print("Se presiono cobrar")
                 }, label: {
                     HStack(spacing: 5, content: {
@@ -37,7 +38,7 @@ struct CartTopBar: View {
                     .cornerRadius(15.0)
                 })
                 Button(action: {
-                    navManager.goToCustomerView()
+//                    navManager.goToCustomerView()
                 }, label: {
                     if let customer = carritoCoreDataViewModel.customerInCar, let image = customer.image {
                         CustomAsyncImageView(imageUrl: image, size: 40)
@@ -49,12 +50,12 @@ struct CartTopBar: View {
                                 })
                             })
                     } else {
-                        CustomButton3(simbol: "person.crop.circle.badge.plus")
+                        EmptyProfileButton()
                     }
                 })
             }
         }
-        .padding(.top, showMenu ? 15 : 0)
+        .padding(.top, router.showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
@@ -66,9 +67,7 @@ struct CartTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var showMenu = false
-        CartTopBar(showMenu: $showMenu)
+        CartTopBar()
             .environmentObject(dependencies.cartViewModel)
-            .environmentObject(nor.navManager)
     }
 }

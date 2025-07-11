@@ -1,18 +1,10 @@
-//
-//  AddCustomerView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 14/10/23.
-//
-
 import SwiftUI
 
 struct AddCustomerView: View {
-    @Binding var loading: Bool
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
-                AddCustomerTopBar(loading: $loading)
+                AddCustomerTopBar()
                 AddCustomerFields()
             }
             .background(Color("color_background"))
@@ -26,8 +18,7 @@ struct AddCustomerView_Previews: PreviewProvider {
     static var previews: some View {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var loading: Bool = false
-        AddCustomerView(loading: $loading)
+        AddCustomerView()
             .environmentObject(dependencies.addCustomerViewModel)
     }
 }

@@ -41,16 +41,16 @@ struct CustomSearchField: View {
 }
 
 struct ProductSearchTopBar: View {
+    @Environment(Router.self) private var router
     @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
-    @EnvironmentObject var errorState: ErrorState
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
+    @Environment(SyncWebSocketClient.self) private var ws
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     var body: some View {
+        @Bindable var router = router
         VStack {
             HStack(spacing: 10, content: {
-                CustomButton5(showMenu: $showMenu)
+                FlorShopButton()
                 CustomSearchField(text: $productsCoreDataViewModel.searchText)
                 Menu {
                     Section("Ordenamiento") {
@@ -71,15 +71,15 @@ struct ProductSearchTopBar: View {
                             }
                         }
                     }
-//                    Section("Sync") {
-//                        Button {
-//                            sync()
-//                        } label: {
-//                            Label("Sync", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
-//                        }
-//                    }
+                    Section("Conect WS") {
+                        Button {
+                            conectWS()
+                        } label: {
+                            Label("ConectWS", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                        }
+                    }
                 } label: {
-                    CustomButton3(simbol: "slider.horizontal.3")
+                    FilterButton()
                 }
                 .onChange(of: productsCoreDataViewModel.primaryOrder, perform: { item in
                     loadProducts()
@@ -90,30 +90,33 @@ struct ProductSearchTopBar: View {
             })
             .padding(.horizontal, 10)
         }
-        .padding(.top, showMenu ? 15 : 0)
+        .padding(.top, router.showMenu ? 15 : 0)
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
     func loadProducts() {
         Task {
-            loading = true
+            router.isLoanding = true
             await productsCoreDataViewModel.releaseResources()
             await productsCoreDataViewModel.fetchProducts()
-            loading = false
+            router.isLoanding = false
         }
     }
     private func sync() {
         Task {
-            loading = true
+            router.isLoanding = true
             do {
                 await productsCoreDataViewModel.releaseResources()
                 try await productsCoreDataViewModel.sync()
                 await productsCoreDataViewModel.fetchProducts()
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
             }
-            loading = false
+            router.isLoanding = false
         }
+    }
+    private func conectWS() {
+        ws.connect()
     }
 }
 
@@ -124,7 +127,7 @@ struct SearchTopBar_Previews: PreviewProvider {
         @State var loading: Bool = false
         @State var showMenu: Bool = false
         VStack (content: {
-            ProductSearchTopBar(loading: $loading, showMenu: $showMenu)
+            ProductSearchTopBar()
                 .environmentObject(dependencies.productsViewModel)
             Spacer()
         })

@@ -9,48 +9,26 @@ import SwiftUI
 
 struct MenuView: View {
     @Environment(LogInViewModel.self) var logInViewModel
-    @EnvironmentObject var navManager: NavManager
+    @Environment(Router.self) private var router
     @AppStorage("userOrEmail") var userOrEmail: String?
     @AppStorage("password") var password: String?
-    @Binding var loading: Bool
-    @Binding var showMenu: Bool
     @State var menuTab: MenuTab = .pointOfSaleTab
     @State var tab: Tab = .magnifyingglass
     var body: some View {
+        @Bindable var router = router
         ZStack {
-            SideMenuView(menuTab: $menuTab, showMenu: $showMenu)
+            SideMenuView(menuTab: $menuTab, showMenu: $router.showMenu)
             ZStack {
-                WindowsEffect(showMenu: $showMenu)
-                VStack(spacing: 0, content: {
-                    switch menuTab {
-                    case .pointOfSaleTab:
-                        PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
-                    case .salesTab:
-                        SalesView(showMenu: $showMenu)
-                    case .customersTab:
-                        CustomersView(showMenu: $showMenu)
-                    case .employeesTab:
-                        EmployeeView(loading: $loading, showMenu: $showMenu)
-                    case .settingsTab:
-                        PointOfSaleView(loading: $loading, showMenu: $showMenu, tab: $tab)
-                    case .logOut:
-                        LockScreenView()
-                            .onAppear(perform: {
-                                userOrEmail = nil
-                                password = nil
-                                logInViewModel.logOut()
-                                navManager.popToRoot()
-                            })
+                WindowsEffect(showMenu: $router.showMenu)
+                menuTab.rootView
+                    .onAppear {
+                        router.popToRoot()
                     }
-                })
-                TempViewOverlay(showMenu: $showMenu)
+                TempViewOverlay(showMenu: $router.showMenu)
             }
-            .scaleEffect(showMenu ? 0.84 : 1)
-            .offset(x: showMenu ? getRect().width - 180 : 0)
+            .scaleEffect(router.showMenu ? 0.84 : 1)
+            .offset(x: router.showMenu ? getRect().width - 180 : 0)
         }
-        .onChange(of: showMenu, perform: { show in
-            print("Menu is: \(show)")
-        })
     }
 }
 
@@ -101,10 +79,8 @@ struct MenuView_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var loading = false
-        @State var showMenu = false
         @State var menuTab: MenuTab = .pointOfSaleTab
-        MenuView(loading: $loading, showMenu: $showMenu)
+        MenuView()
             .environment(nor.logInViewModel)
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)
@@ -113,8 +89,5 @@ struct MenuView_Previews: PreviewProvider {
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerViewModel)
             .environmentObject(dependencies.addCustomerViewModel)
-            .environmentObject(nor.versionCheck)
-            .environmentObject(nor.errorState)
-            .environmentObject(nor.navManager)
     }
 }

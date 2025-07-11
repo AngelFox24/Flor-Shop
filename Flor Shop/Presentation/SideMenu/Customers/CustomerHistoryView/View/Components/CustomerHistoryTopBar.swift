@@ -10,20 +10,14 @@ import AVFoundation
 
 struct CustomerHistoryTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
+    @Environment(Router.self) private var router
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @EnvironmentObject var navManager: NavManager
-    @EnvironmentObject var errorState: ErrorState
     @State private var audioPlayer: AVAudioPlayer?
-    @Binding var loading: Bool
     var body: some View {
         HStack {
             HStack(content: {
-                Button(action: {
-                    navManager.goToBack()
-                }, label: {
-                    CustomButton3()
-                })
+                BackButton()
                 Spacer()
                 Button(action: {
                     print("Se presiono cobrar")
@@ -48,7 +42,7 @@ struct CustomerHistoryTopBar: View {
                         CustomAsyncImageView(imageUrl: customer.image, size: 40)
                     })
                 } else {
-                    CustomButton3(simbol: "person.crop.circle.badge.plus")
+                    EmptyProfileButton()
                 }
             })
         }
@@ -59,7 +53,7 @@ struct CustomerHistoryTopBar: View {
     }
     private func payDebt() {
         Task {
-            loading = true
+            router.isLoanding = true
             do {
                 if try await customerHistoryViewModel.payTotalAmount() {
                     try customerHistoryViewModel.updateData()
@@ -69,10 +63,10 @@ struct CustomerHistoryTopBar: View {
                     playSound(named: "Fail1")
                 }
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            loading = false
+            router.isLoanding = false
         }
     }
     private func editCustomer(customer: Customer) {
@@ -80,10 +74,9 @@ struct CustomerHistoryTopBar: View {
 //            loading = true
             do {
                 try await addCustomerViewModel.editCustomer(customer: customer)
-                navManager.goToAddCustomerView()
-//                playSound(named: "Success1")
+//                navManager.goToAddCustomerView()
             } catch {
-                await errorState.processError(error: error)
+                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
 //            loading = false
@@ -109,8 +102,7 @@ struct CustomerHistoryTopBar_Previews: PreviewProvider {
         let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var loading = false
-        CustomerHistoryTopBar(loading: $loading)
+        CustomerHistoryTopBar()
             .environmentObject(dependencies.cartViewModel)
             .environmentObject(dependencies.salesViewModel)
             .environmentObject(dependencies.customerHistoryViewModel)

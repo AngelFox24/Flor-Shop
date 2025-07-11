@@ -8,7 +8,6 @@
 import Foundation
 
 struct CartDTO: Codable {
-//    let id: UUID
     let cartDetails: [CartDetailDTO]
     let total: Int
 }

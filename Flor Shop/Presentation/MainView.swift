@@ -8,15 +8,30 @@
 import SwiftUI
 
 struct MainView: View {
+    @Environment(LogInViewModel.self) var logInViewModel
+    @Environment(PersistenceSessionConfig.self) private var sessionConfig
+    var body: some View {
+        VStack {
+            if let sessionConfig = sessionConfig.session {
+                MainContendView(sessionConfig: sessionConfig)
+            } else {
+                WelcomeView()
+            }
+        }
+    }
+}
+
+struct MainContendView: View {
+    let sessionConfig: SessionConfig
     let dependencies: BusinessDependencies
-    @EnvironmentObject var errorState: ErrorState
     @Environment(\.scenePhase) var scenePhase
-    @Binding var loading: Bool
-    @State var showMenu: Bool = false
-    @State private var syncTask: Task<Void, Never>?
+    init(sessionConfig: SessionConfig) {
+        self.sessionConfig = sessionConfig
+        self.dependencies = BusinessDependencies(sessionConfig: sessionConfig)
+    }
     var body: some View {
         VStack(spacing: 0) {
-            MenuView(loading: $loading, showMenu: $showMenu)
+            MenuView()
                 .environmentObject(dependencies.productsViewModel)
                 .environmentObject(dependencies.cartViewModel)
                 .environmentObject(dependencies.salesViewModel)
@@ -26,42 +41,16 @@ struct MainView: View {
                 .environmentObject(dependencies.agregarViewModel)
                 .environmentObject(dependencies.customerHistoryViewModel)
                 .environmentObject(dependencies.addCustomerViewModel)
-        }
-        .navigationDestination(for: MenuRoutes.self) { routes in
-            switch routes {
-            case .customerView:
-                CustomersView(backButton: true, showMenu: $showMenu)
-                    .environmentObject(dependencies.customerViewModel)
-                    .environmentObject(dependencies.cartViewModel)
-                    .environmentObject(dependencies.addCustomerViewModel)
-                    .environmentObject(dependencies.customerHistoryViewModel)
-            case .customersForPaymentView:
-                CustomersView(backButton: true, showMenu: $showMenu)
-                    .environmentObject(dependencies.customerViewModel)
-                    .environmentObject(dependencies.cartViewModel)
-                    .environmentObject(dependencies.addCustomerViewModel)
-                    .environmentObject(dependencies.customerHistoryViewModel)
-            case .addCustomerView:
-                AddCustomerView(loading: $loading)
-                    .environmentObject(dependencies.addCustomerViewModel)
-                    .environmentObject(dependencies.customerHistoryViewModel)
-            case .paymentView:
-                PaymentView(loading: $loading)
-                    .environmentObject(dependencies.cartViewModel)
-                    .environmentObject(dependencies.salesViewModel)
-                
-            case .customerHistoryView:
-                CustomerHistoryView(loading: $loading)
-                    .environmentObject(dependencies.customerHistoryViewModel)
-                    .environmentObject(dependencies.addCustomerViewModel)
-            }
+                .environment(dependencies.webSocket)
         }
         .onChange(of: scenePhase) { oldValue, newValue in
             switch newValue {
             case .active:
                 dependencies.webSocket.connect()
             case .inactive, .background:
+                print("[WebScoket] Se desconetará por: \(newValue)")
                 dependencies.webSocket.disconnect()
+                print("[WebScoket] Desconectado")
             default:
                 dependencies.webSocket.disconnect()
             }
@@ -74,11 +63,7 @@ struct MainView_Previews: PreviewProvider {
         let normalDependencies = NormalDependencies()
         let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dep = BusinessDependencies(sessionConfig: sesC)
-        @State var loading = false
-        MainView(dependencies: dep, loading: $loading)
-            .environmentObject(normalDependencies.navManager)
-            .environmentObject(normalDependencies.versionCheck)
+        MainView()
             .environment(normalDependencies.logInViewModel)
-            .environmentObject(normalDependencies.errorState)
     }
 }
