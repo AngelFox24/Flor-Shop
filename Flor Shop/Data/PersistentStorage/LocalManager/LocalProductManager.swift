@@ -1,18 +1,13 @@
-//
-//  LocalProductManager.swift
-//  Flor Shop
-//
-//  Created by Rodil Pampañaupa Velasque on 21/05/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 protocol LocalProductManager {
     func save(product: Product) throws
-    func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductClientDTO]) throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     func getLastUpdated() -> Date
+    func getLastToken(context: NSManagedObjectContext) -> Int64
 }
 
 class LocalProductManagerImpl: LocalProductManager {
@@ -28,6 +23,21 @@ class LocalProductManagerImpl: LocalProductManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
         self.imageService = imageService
+    }
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first
+            return syncToken ?? 0
+        } catch let error {
+            print("Error fetching. \(error)")
+            return 0
+        }
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -83,6 +93,7 @@ class LocalProductManagerImpl: LocalProductManager {
             rollback()
             throw LocalStorageError.entityNotFound("No se pudo obtener la subsidiaria")
         }
+        let image = try self.imageService.saveIfExist(context: self.mainContext, image: product.image)
         if let productEntity = try self.sessionConfig.getProductEntityById(context: self.mainContext, productId: product.id) {
             if productEntity.productName != product.name {
                 guard !productNameExist(name: product.name, subsidiary: subsidiaryEntity) else {
@@ -105,11 +116,8 @@ class LocalProductManagerImpl: LocalProductManager {
             productEntity.unitCost = Int64(product.unitCost.cents)
             productEntity.expirationDate = product.expirationDate
             productEntity.unitPrice = Int64(product.unitPrice.cents)
-            if let imageId = product.image?.id  {
-                productEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
-            }
-            productEntity.createdAt = product.createdAt
-            productEntity.updatedAt = product.updatedAt
+            productEntity.toImageUrl = image
+            productEntity.updatedAt = Date()
             try saveData()
         } else {
             guard !productNameExist(name: product.name, subsidiary: subsidiaryEntity) else {
@@ -132,15 +140,13 @@ class LocalProductManagerImpl: LocalProductManager {
             newProductEntity.unitPrice = Int64(product.unitPrice.cents)
             newProductEntity.expirationDate = product.expirationDate
             newProductEntity.toSubsidiary = subsidiaryEntity
-            if let imageId = product.image?.id {
-                newProductEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: self.mainContext, imageId: imageId)
-            }
-            newProductEntity.createdAt = product.createdAt
-            newProductEntity.updatedAt = product.updatedAt
+            newProductEntity.toImageUrl = image
+            newProductEntity.createdAt = Date()
+            newProductEntity.updatedAt = Date()
             try saveData()
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductClientDTO]) throws {
         for productDTO in productsDTOs {
             guard self.sessionConfig.subsidiaryId == productDTO.subsidiaryId else {
                 print("Error en la sincronizacion, la subsidiaria no es la misma")
@@ -152,7 +158,6 @@ class LocalProductManagerImpl: LocalProductManager {
                 rollback(context: backgroundContext)
                 throw LocalStorageError.entityNotFound("No se pudo obtener la subsidiaria")
             }
-            let image = try self.imageService.save(context:backgroundContext, image: productDTO.imageUrl?.toImageUrl())
             if let productEntity = try self.sessionConfig.getProductEntityById(context: backgroundContext, productId: productDTO.id) {
                 guard !productDTO.isEquals(to: productEntity) else {
                     print("\(className) No se actualizo el producto porque es el mismo")
@@ -165,9 +170,9 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitCost = Int64(productDTO.unitCost)
                 productEntity.expirationDate = productDTO.expirationDate
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
-                productEntity.createdAt = productDTO.createdAt.internetDateTime()
-                productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
-                productEntity.toImageUrl = image
+                productEntity.createdAt = productDTO.createdAt
+                productEntity.updatedAt = productDTO.updatedAt
+                productEntity.toImageUrl?.idImageUrl = productDTO.imageUrlId
                 try saveData(context: backgroundContext)
                 print("[LocalProductManagerImpl] Se actualizo el producto")
             } else {
@@ -181,9 +186,9 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitCost = Int64(productDTO.unitCost)
                 productEntity.expirationDate = productDTO.expirationDate
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
-                productEntity.createdAt = productDTO.createdAt.internetDateTime()
-                productEntity.updatedAt = productDTO.updatedAt.internetDateTime()
-                productEntity.toImageUrl = image
+                productEntity.createdAt = productDTO.createdAt
+                productEntity.updatedAt = productDTO.updatedAt
+                productEntity.toImageUrl?.idImageUrl = productDTO.imageUrlId
                 try saveData(context: backgroundContext)
                 print("[LocalProductManagerImpl] Se creo el producto")
             }

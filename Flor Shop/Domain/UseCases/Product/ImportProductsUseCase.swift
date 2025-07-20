@@ -55,13 +55,13 @@ final class ImportProductsInteractor: ImportProductsUseCase {
                 let quantity = getTreatedQuantity(quantity: elements[2], unitType: unitType)
                 let imageUrl = ImageUrl(
                     id: UUID(),
+                    imageUrlId: nil,
                     imageUrl: elements[0],
-                    imageHash: "",
-                    createdAt: date,
-                    updatedAt: date
+                    imageHash: ""
                 )
                 var product = Product(
                     id: UUID(),
+                    productId: nil,
                     active: true,
                     name: elements[1],
                     qty: quantity,
@@ -69,13 +69,9 @@ final class ImportProductsInteractor: ImportProductsUseCase {
                     unitCost: getTreatedAmount(elements[2]),
                     unitPrice: getTreatedAmount(elements[2]),
                     expirationDate: nil,
-                    image: imageUrl,
-                    createdAt: date,
-                    updatedAt: date
+                    image: imageUrl
                 )
                 do {
-                    let newImage = try await imageRepository.save(image: imageUrl)
-                    product.image = newImage
                     try await productRepository.save(product: product)
                     countSucc += 1
                 } catch {

@@ -1,15 +1,10 @@
-//
-//  LocalEmployeeManager.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 16/08/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 protocol LocalEmployeeManager {
-    func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeClientDTO]) throws
+    func getLastToken(context: NSManagedObjectContext) -> Int64
     func getLastUpdated() -> Date
     func save(employee: Employee) throws
     func getEmployees() -> [Employee]
@@ -28,6 +23,21 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
         self.imageService = imageService
+    }
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first
+            return syncToken ?? 0
+        } catch let error {
+            print("Error fetching. \(error)")
+            return 0
+        }
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -50,7 +60,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             return dateFrom!
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeClientDTO]) throws {
         for employeeDTO in employeesDTOs {
             guard self.sessionConfig.subsidiaryId == employeeDTO.subsidiaryID else {
                 rollback(context: backgroundContext)
@@ -71,12 +81,13 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
+                employeeEntity.toImageUrl?.idImageUrl = employeeDTO.imageUrlId
                 employeeEntity.email = employeeDTO.email
                 employeeEntity.phoneNumber = employeeDTO.phoneNumber
                 employeeEntity.role = employeeDTO.role
                 employeeEntity.user = employeeDTO.user
-                employeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
-                employeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
+                employeeEntity.createdAt = employeeDTO.createdAt
+                employeeEntity.updatedAt = employeeDTO.updatedAt
                 try saveData(context: backgroundContext)
             } else {
                 //Create cart
@@ -88,20 +99,21 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.name = employeeDTO.name
                 newEmployeeEntity.lastName = employeeDTO.lastName
                 newEmployeeEntity.active = employeeDTO.active
+                newEmployeeEntity.toImageUrl?.idImageUrl = employeeDTO.imageUrlId
                 newEmployeeEntity.email = employeeDTO.email
                 newEmployeeEntity.phoneNumber = employeeDTO.phoneNumber
                 newEmployeeEntity.role = employeeDTO.role
                 newEmployeeEntity.user = employeeDTO.user
                 newEmployeeEntity.toSubsidiary = subsidiaryEntity
                 newEmployeeEntity.toCart = cartEntity
-                newEmployeeEntity.createdAt = employeeDTO.createdAt.internetDateTime()
-                newEmployeeEntity.updatedAt = employeeDTO.updatedAt.internetDateTime()
+                newEmployeeEntity.createdAt = employeeDTO.createdAt
+                newEmployeeEntity.updatedAt = employeeDTO.updatedAt
                 try saveData(context: backgroundContext)
             }
         }
     }
     func save(employee: Employee) throws {
-        let image = try self.imageService.save(context: self.mainContext, image: employee.image)
+        let image = try self.imageService.saveIfExist(context: self.mainContext, image: employee.image)
         if let employeeEntity = try self.sessionConfig.getEmployeeEntityById(context: self.mainContext, employeeId: employee.id) { //Busqueda por id
             employeeEntity.name = employee.name
             employeeEntity.lastName = employee.lastName

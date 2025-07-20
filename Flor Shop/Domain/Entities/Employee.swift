@@ -1,15 +1,10 @@
-//
-//  Employee.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 16/08/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 struct Employee: Identifiable {
     var id: UUID
+    let employeeId: UUID?
     var name: String
     var user: String
     var email: String
@@ -18,14 +13,12 @@ struct Employee: Identifiable {
     var image: ImageUrl?
     var active: Bool
     var phoneNumber: String
-    let createdAt: Date
-    let updatedAt: Date
 }
 
 extension Employee {
-    func toEmployeeDTO(subsidiaryId: UUID) -> EmployeeDTO {
-        return EmployeeDTO(
-            id: id,
+    func toEmployeeDTO(subsidiaryId: UUID) -> EmployeeServerDTO {
+        return EmployeeServerDTO(
+            id: employeeId,
             user: user,
             name: name,
             lastName: lastName,
@@ -34,9 +27,7 @@ extension Employee {
             role: role,
             active: active,
             subsidiaryID: subsidiaryId,
-            imageUrl: image?.toImageUrlDTO(imageData: nil),
-            createdAt: ISO8601DateFormatter().string(from: createdAt),
-            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+            imageUrl: image?.toImageUrlDTO()
         )
     }
 }

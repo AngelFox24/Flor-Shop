@@ -22,10 +22,9 @@ class RegistrationViewModel {
     func registerUser() async throws -> SessionConfig {
         let newCompany = Company(
             id: UUID(),
+            companyId: nil,
             companyName: registrationFields.companyName,
-            ruc: registrationFields.companyRUC,
-            createdAt: Date(),
-            updatedAt: Date()
+            ruc: registrationFields.companyRUC
         )
 //        let newSubsidiaryImage = ImageUrl(
 //            id: UUID(),
@@ -36,10 +35,9 @@ class RegistrationViewModel {
 //        )
         let newSubsidiary = Subsidiary(
             id: UUID(),
+            subsidiaryId: nil,
             name: registrationFields.companyName,
-            image: nil,
-            createdAt: Date(),
-            updatedAt: Date()
+            image: nil
         )
 //        let newEmployeeImage = ImageUrl(
 //            id: UUID(),
@@ -50,6 +48,7 @@ class RegistrationViewModel {
 //        )
         let newEmployee = Employee(
             id: UUID(),
+            employeeId: nil,
             name: registrationFields.managerName,
             user: registrationFields.user,
             email: registrationFields.email,
@@ -57,9 +56,7 @@ class RegistrationViewModel {
             role: "Manager",
             image: nil,
             active: true,
-            phoneNumber: "",
-            createdAt: Date(),
-            updatedAt: Date()
+            phoneNumber: ""
         )
         return try await self.registerUseCase.execute(
             registerStuff: RegisterStuffs(

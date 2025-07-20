@@ -19,18 +19,18 @@ class AgregarViewModel: ObservableObject {
     }
     
     private let saveProductUseCase: SaveProductUseCase
-    let saveImageUseCase: SaveImageUseCase
+    let getImageUseCase: GetImageUseCase
     let exportProductsUseCase: ExportProductsUseCase
     let importProductsUseCase: ImportProductsUseCase
     //MARK: Init
     init(
         saveProductUseCase: SaveProductUseCase,
-        saveImageUseCase: SaveImageUseCase,
+        getImageUseCase: GetImageUseCase,
         exportProductsUseCase: ExportProductsUseCase,
         importProductsUseCase: ImportProductsUseCase
     ) {
         self.saveProductUseCase = saveProductUseCase
-        self.saveImageUseCase = saveImageUseCase
+        self.getImageUseCase = getImageUseCase
         self.exportProductsUseCase = exportProductsUseCase
         self.importProductsUseCase = importProductsUseCase
     }
@@ -125,6 +125,7 @@ class AgregarViewModel: ObservableObject {
         if agregarFields.isErrorsEmpty() {
             return Product(
                 id: self.agregarFields.productId ?? UUID(),
+                productId: nil,
                 active: self.agregarFields.active,
                 barCode: self.agregarFields.scannedCode == "" ? nil : self.agregarFields.scannedCode,
                 name: self.agregarFields.productName,
@@ -133,9 +134,7 @@ class AgregarViewModel: ObservableObject {
                 unitCost: Money(self.agregarFields.unitCost),
                 unitPrice: Money(self.agregarFields.unitPrice),
                 expirationDate: self.agregarFields.expirationDate,
-                image: try await getImageIfExist(),
-                createdAt: Date(),
-                updatedAt: Date()
+                image: try await getImageIfExist()
             )
         } else {
             return nil
@@ -172,9 +171,14 @@ class AgregarViewModel: ObservableObject {
         //Verificar si hay URL, se da prioridad
         if self.agregarFields.imageUrl != "" {
             //Devolver ImageUrl nuevo
-            return ImageUrl(id: UUID(), imageUrl: self.agregarFields.imageUrl, imageHash: self.agregarFields.imageHash, createdAt: Date(), updatedAt: Date())
+            return ImageUrl(
+                id: self.agregarFields.idImage ?? UUID(),
+                imageUrlId: self.agregarFields.idImage ?? UUID(),
+                imageUrl: self.agregarFields.imageUrl,
+                imageHash: self.agregarFields.imageHash
+            )
         } else if let uiImage = self.selectedLocalImage {
-            return try await self.saveImageUseCase.execute(uiImage: uiImage)
+            return try await self.getImageUseCase.execute(uiImage: uiImage)
         } else {
             return nil
         }

@@ -1,11 +1,5 @@
-//
-//  Car.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 21/05/23.
-//
-
 import Foundation
+import FlorShop_DTOs
 import CoreData
 
 struct Car: Identifiable {
@@ -21,8 +15,8 @@ struct Car: Identifiable {
 }
 
 extension Car {
-    func toCartDTO(subsidiaryId: UUID) -> CartDTO {
-        return CartDTO(
+    func toCartDTO(subsidiaryId: UUID) -> CartServerDTO {
+        return CartServerDTO(
             cartDetails: cartDetails.mapToListCartDetailsDTOs(subsidiaryId: subsidiaryId),
             total: total.cents
         )
@@ -30,7 +24,7 @@ extension Car {
 }
 
 extension Array where Element == CartDetail {
-    func mapToListCartDetailsDTOs(subsidiaryId: UUID) -> [CartDetailDTO] {
+    func mapToListCartDetailsDTOs(subsidiaryId: UUID) -> [CartDetailServerDTO] {
         return self.compactMap {$0.toCartDetailDTO(subsidiaryId: subsidiaryId)}
     }
 }

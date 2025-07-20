@@ -1,15 +1,17 @@
-//
-//  LocalImageService.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 29/06/2025.
-//
-
 import Foundation
+import FlorShop_DTOs
 import CoreData
 
 protocol LocalImageService {
-    func save(context: NSManagedObjectContext, image: ImageUrl?) throws -> Tb_ImageUrl?
+    func save(context: NSManagedObjectContext, image: ImageUrl) throws -> Tb_ImageUrl
+    func saveIfExist(context: NSManagedObjectContext, image: ImageUrl?) throws -> Tb_ImageUrl?
+}
+
+extension LocalImageService {
+    func saveIfExist(context: NSManagedObjectContext, image: ImageUrl?) throws -> Tb_ImageUrl? {
+        guard let image = image else { return nil }
+        return try save(context: context, image: image)
+    }
 }
 
 struct LocalImageServiceImpl: LocalImageService {
@@ -18,27 +20,25 @@ struct LocalImageServiceImpl: LocalImageService {
     ///- 2: El Hash (si es remoto y lo encuentra por este metodo puede que sea un error de sincronizacion)
     ///- 3: La URL (si es remoto y lo encuentra por este metodo puede que sea un error de sincronizacion)
     ///en caso no encuentre por ningunos de estos metodos debe crear una nueva entidad
-    func save(context: NSManagedObjectContext, image: ImageUrl?) throws -> Tb_ImageUrl? {
-        guard let image = image else {
-            return nil
-        }
+    //TODO: Refactor for only local storage
+    func save(context: NSManagedObjectContext, image: ImageUrl) throws -> Tb_ImageUrl {
         try validateImage(image: image)
         if let imageEntity = self.findById(context: context, id: image.id) {
-            imageEntity.updatedAt = image.updatedAt
+            imageEntity.updatedAt = Date()
             return imageEntity
         } else if let imageEntity = try self.findByHash(context: context, hash: image.imageHash) {
-            imageEntity.updatedAt = image.updatedAt
+            imageEntity.updatedAt = Date()
             return imageEntity
         } else if let imageEntity = try self.findByUrl(context: context, url: image.imageUrl) {
-            imageEntity.updatedAt = image.updatedAt
+            imageEntity.updatedAt = Date()
             return imageEntity
         } else {
             let newImageEntity = Tb_ImageUrl(context: context)
             newImageEntity.idImageUrl = image.id
             newImageEntity.imageUrl = image.imageUrl
             newImageEntity.imageHash = image.imageHash
-            newImageEntity.createdAt = image.createdAt
-            newImageEntity.updatedAt = image.updatedAt
+            newImageEntity.createdAt = Date()
+            newImageEntity.updatedAt = Date()
             return newImageEntity
         }
     }

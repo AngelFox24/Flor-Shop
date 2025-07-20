@@ -1,15 +1,10 @@
-//
-//  Customer.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 16/08/23.
-//
-
 import Foundation
+import FlorShop_DTOs
 import CoreData
 
 struct Customer: Identifiable {
     var id: UUID
+    let customerId: UUID?
     var name: String
     var lastName: String
     var image: ImageUrl?
@@ -34,12 +29,11 @@ struct Customer: Identifiable {
     var totalDebt: Money
     var isCreditLimitActive: Bool
     var isDateLimitActive: Bool
-    let createdAt: Date
-    let updatedAt: Date
     
     static func getDummyCustomer() -> Customer {
         return Customer(
             id: UUID(),
+            customerId: nil,
             name: "Desconocido",
             lastName: "Desconocido",
             image: nil,
@@ -53,17 +47,15 @@ struct Customer: Identifiable {
             lastDatePurchase: Date(),
             totalDebt: Money(2300),
             isCreditLimitActive: false,
-            isDateLimitActive: false,
-            createdAt: Date(),
-            updatedAt: Date()
+            isDateLimitActive: false
         )
     }
 }
 
 extension Customer {
-    func toCustomerDTO(companyId: UUID) -> CustomerDTO {
-        return CustomerDTO(
-            id: id,
+    func toCustomerDTO(companyId: UUID) -> CustomerServerDTO {
+        return CustomerServerDTO(
+            id: customerId,
             name: name,
             lastName: lastName,
             totalDebt: totalDebt.cents,
@@ -73,15 +65,13 @@ extension Customer {
             isCreditLimit: isCreditLimit,
             isDateLimitActive: isDateLimitActive,
             isDateLimit: isDateLimit,
-            dateLimit: ISO8601DateFormatter().string(from: dateLimit),
+            dateLimit: dateLimit,
             firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
-            lastDatePurchase: ISO8601DateFormatter().string(from: lastDatePurchase),
+            lastDatePurchase: lastDatePurchase,
             phoneNumber: phoneNumber,
             creditLimit: creditLimit.cents,
             companyID: companyId,
-            imageUrl: image?.toImageUrlDTO(imageData: nil),
-            createdAt: ISO8601DateFormatter().string(from: createdAt),
-            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+            imageUrl: image?.toImageUrlDTO()
         )
     }
 }

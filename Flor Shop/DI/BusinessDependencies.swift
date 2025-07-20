@@ -62,7 +62,7 @@ struct BusinessDependencies {
     private let getCustomerSalesUseCase: GetCustomerSalesUseCase
     private let payClientDebtUseCase: PayClientDebtUseCase
     private let deleteUnusedImagesUseCase: DeleteUnusedImagesUseCase
-    private let saveImageUseCase: SaveImageUseCase
+    private let getImageUseCase: GetImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
     private let importProductsUseCase: ImportProductsUseCase
 //    private let logInUseCase: LogInUseCase
@@ -92,7 +92,7 @@ struct BusinessDependencies {
         self.localProductManager = LocalProductManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig, imageService: imageService)
         self.localCartManager = LocalCartManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
         self.localSaleManager = LocalSaleManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.localImageManager = LocalImageManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localImageManager = LocalImageManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig, imageService: imageService)
         //MARK: Remote Managers
         self.remoteProductManager = RemoteProductManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteSaleManager = RemoteSaleManagerImpl(sessionConfig: self.sessionConfig)
@@ -131,19 +131,20 @@ struct BusinessDependencies {
         self.getCustomerSalesUseCase = GetCustomerSalesInteractor(customerRepository: customerRepository)
         self.payClientDebtUseCase = PayClientDebtInteractor(customerRepository: customerRepository)
         self.deleteUnusedImagesUseCase = DeleteUnusedImagesInteractor(imageRepository: imageRepository)
-        self.saveImageUseCase = SaveImageInteractor(imageRepository: imageRepository)
+        self.getImageUseCase = GetImageInteractor(imageRepository: imageRepository)
         self.exportProductsUseCase = ExportProductsInteractor(productRepository: productRepository)
         self.importProductsUseCase = ImportProductsInteractor(imageRepository: imageRepository, productRepository: productRepository)
         //MARK: ViewModels
-        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, saveImageUseCase: saveImageUseCase, exportProductsUseCase: exportProductsUseCase, importProductsUseCase: importProductsUseCase)
+        self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, getImageUseCase: getImageUseCase, exportProductsUseCase: exportProductsUseCase, importProductsUseCase: importProductsUseCase)
         self.productsViewModel = ProductViewModel(synchronizerDBUseCase: synchronizerDBUseCase, getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)
         self.customerViewModel = CustomerViewModel(getCustomersUseCase: getCustomersUseCase)
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
-        self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, saveImageUseCase: saveImageUseCase)
+        self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, getImageUseCase: getImageUseCase)
         //WebSocket Init
-        self.webSocket = SyncWebSocketClient(synchronizerDBUseCase: synchronizerDBUseCase)
+        let lastToken = self.synchronizerDBUseCase.getLastToken(context: self.mainContext)
+        self.webSocket = SyncWebSocketClient(synchronizerDBUseCase: synchronizerDBUseCase, latestToken: lastToken)
     }
 }

@@ -1,28 +1,7 @@
-//
-//  SaleDetailDTO.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/07/2024.
-//
-
 import Foundation
+import FlorShop_DTOs
 
-struct SaleDetailDTO: Codable {
-    let id: UUID
-    let productName: String
-    let barCode: String
-    let quantitySold: Int
-    let subtotal: Int
-    let unitType: String
-    let unitCost: Int
-    let unitPrice: Int
-    let saleID: UUID
-    let imageUrlId: UUID?
-    let createdAt: String
-    let updatedAt: String
-}
-
-extension SaleDetailDTO {
+extension SaleDetailClientDTO {
     func toSaleDetail(paymentType: String, saleDate: Date) -> SaleDetail {
         return SaleDetail(
             id: id,
@@ -35,9 +14,7 @@ extension SaleDetailDTO {
             quantitySold: quantitySold,
             paymentType: PaymentType.from(description: paymentType),
             saleDate: Date(),
-            subtotal: Money(subtotal),
-            createdAt: createdAt.internetDateTime() ?? minimunDate(),
-            updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+            subtotal: Money(subtotal)
         )
     }
     func isEquals(to other: Tb_SaleDetail) -> Bool {
@@ -55,7 +32,7 @@ extension SaleDetailDTO {
     }
 }
 
-extension Array where Element == SaleDetailDTO {
+extension Array where Element == SaleDetailClientDTO {
     func mapToListSaleDetail(paymentType: String, saleDate: Date) -> [SaleDetail] {
         return self.compactMap({$0.toSaleDetail(paymentType: paymentType, saleDate: saleDate)})
     }

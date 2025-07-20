@@ -1,28 +1,13 @@
-//
-//  ss.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/07/2024.
-//
-
 import Foundation
+import FlorShop_DTOs
 
-struct CompanyDTO: Codable {
-    let id: UUID
-    let companyName: String
-    let ruc: String
-    let createdAt: String
-    let updatedAt: String
-}
-
-extension CompanyDTO {
+extension CompanyClientDTO {
     func toCompany() -> Company {
         return Company(
             id: id,
+            companyId: id,
             companyName: companyName,
-            ruc: ruc,
-            createdAt: createdAt.internetDateTime() ?? minimunDate(),
-            updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+            ruc: ruc
         )
     }
     func isEquals(to other: Tb_Company) -> Bool {

@@ -1,15 +1,10 @@
-//
-//  Product.swift
-//  Flor Shop
-//
-//  Created by Rodil Pampañaupa Velasque on 20/05/23.
-//
-
 import Foundation
+import FlorShop_DTOs
 import CoreData
 
 struct Product: Identifiable, Codable {
     var id: UUID
+    let productId: UUID?
     var active: Bool
     var barCode: String?
     var name: String
@@ -19,20 +14,17 @@ struct Product: Identifiable, Codable {
     var unitPrice: Money
     var expirationDate: Date?
     var image: ImageUrl?
-    var createdAt: Date
-    var updatedAt: Date
     
     static func getDummyProduct() -> Product {
         return Product(
             id: UUID(),
+            productId: nil,
             active: true,
             name: "No existe",
             qty: 0,
             unitType: .unit,
             unitCost: Money(0),
-            unitPrice: Money(0),
-            createdAt: Date(),
-            updatedAt: Date()
+            unitPrice: Money(0)
         )
     }
     static func == (lhs: Product, rhs: Product) -> Bool {
@@ -41,9 +33,9 @@ struct Product: Identifiable, Codable {
 }
 
 extension Product {
-    func toProductDTO(subsidiaryId: UUID) -> ProductDTO {
-        return ProductDTO(
-            id: id,
+    func toProductDTO(subsidiaryId: UUID) -> ProductServerDTO {
+        return ProductServerDTO(
+            id: productId,
             productName: name,
             barCode: barCode ?? "",
             active: active,
@@ -53,9 +45,7 @@ extension Product {
             unitCost: unitCost.cents,
             unitPrice: unitPrice.cents,
             subsidiaryId: subsidiaryId,
-            imageUrl: image?.toImageUrlDTO(imageData: nil),
-            createdAt: ISO8601DateFormatter().string(from: createdAt),
-            updatedAt: ISO8601DateFormatter().string(from: updatedAt)
+            imageUrl: image?.toImageUrlDTO()
         )
     }
 }

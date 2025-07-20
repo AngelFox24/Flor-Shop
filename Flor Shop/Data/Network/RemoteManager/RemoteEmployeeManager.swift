@@ -9,7 +9,7 @@ import Foundation
 
 protocol RemoteEmployeeManager {
     func save(employee: Employee) async throws
-    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncEmployeesResponse
+//    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncEmployeesResponse
 }
 
 final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
@@ -25,12 +25,12 @@ final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
         let request = CustomAPIRequest(urlRoute: urlRoute, parameter: employeeDTO)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncEmployeesResponse {
-        let urlRoute = APIEndpoint.Employee.sync
-        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
-        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
-        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
-        let data: SyncEmployeesResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncEmployeesResponse.self)
-        return data
-    }
+//    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncEmployeesResponse {
+//        let urlRoute = APIEndpoint.Employee.sync
+//        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
+//        let syncParameters = SyncFromSubsidiaryParameters(subsidiaryId: self.sessionConfig.subsidiaryId, updatedSince: updatedSinceFormated, syncIds: syncTokens)
+//        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
+//        let data: SyncEmployeesResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncEmployeesResponse.self)
+//        return data
+//    }
 }

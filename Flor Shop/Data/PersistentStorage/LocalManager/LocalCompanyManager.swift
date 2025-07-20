@@ -1,16 +1,11 @@
-//
-//  LocalCompanyManager.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 16/08/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 protocol LocalCompanyManager {
     func getLastUpdated() -> Date
-    func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyDTO) throws
+    func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyClientDTO) throws
+    func getLastToken(context: NSManagedObjectContext) -> Int64
     func save(company: Company) throws
 }
 
@@ -24,6 +19,21 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+    }
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
+        let predicate = NSPredicate(format: "idCompany == %@ == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first
+            return syncToken ?? 0
+        } catch let error {
+            print("Error fetching. \(error)")
+            return 0
+        }
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -46,7 +56,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             return dateFrom!
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyDTO) throws {
+    func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyClientDTO) throws {
         guard self.sessionConfig.companyId == companyDTO.id else {
             print("La compañia no es la misma")
             rollback(context: backgroundContext)
@@ -60,16 +70,16 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             }
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
-            companyEntity.createdAt = companyDTO.createdAt.internetDateTime()
-            companyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
+            companyEntity.createdAt = companyDTO.createdAt
+            companyEntity.updatedAt = companyDTO.updatedAt
         } else {
 //            print("Se crea la compañia")
             let newCompanyEntity = Tb_Company(context: backgroundContext)
             newCompanyEntity.idCompany = companyDTO.id
             newCompanyEntity.companyName = companyDTO.companyName
             newCompanyEntity.ruc = companyDTO.ruc
-            newCompanyEntity.createdAt = companyDTO.createdAt.internetDateTime()
-            newCompanyEntity.updatedAt = companyDTO.updatedAt.internetDateTime()
+            newCompanyEntity.createdAt = companyDTO.createdAt
+            newCompanyEntity.updatedAt = companyDTO.updatedAt
         }
 //        print("Se guardara los datos en LocalCompanyManager")
         try saveData(context: backgroundContext)

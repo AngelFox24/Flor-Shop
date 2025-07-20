@@ -6,7 +6,7 @@ enum APIEndpoint {
         static let register = base + "/register"
     }
     enum Sync {
-        static let base = "/verifySync"
+        static let base = "/sync"
         static let webSocekt = base + "/ws"
     }
     enum Company {

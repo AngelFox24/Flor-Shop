@@ -24,20 +24,11 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
-        var counter = 0
-        var items = 0
-        var responseSyncTokens = syncTokens
-        repeat {
-            counter += 1
-            let updatedSince = self.localManager.getLastUpdated()
-            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
-            items = response.subsidiariesDTOs.count
-            responseSyncTokens = response.syncIds
-            print("Items Sync: \(items)")
-            try self.localManager.sync(backgroundContext: backgroundContext, subsidiariesDTOs: response.subsidiariesDTOs)
-        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
-        return responseSyncTokens
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        return self.localManager.getLastToken(context: context)
+    }
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+        try self.localManager.sync(backgroundContext: backgroundContext, subsidiariesDTOs: syncDTOs.subsidiaries)
     }
     func save(subsidiary: Subsidiary) async throws {
         if cloudBD {

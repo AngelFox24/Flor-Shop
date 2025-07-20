@@ -1,29 +1,13 @@
-//
-//  ImageURLDTO.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/07/2024.
-//
-
 import Foundation
+import FlorShop_DTOs
 
-struct ImageURLDTO: Codable {
-    let id: UUID
-    let imageUrl: String
-    let imageHash: String
-    let imageData: Data?
-    let createdAt: String
-    let updatedAt: String
-}
-
-extension ImageURLDTO {
+extension ImageURLClientDTO {
     func toImageUrl() -> ImageUrl {
         return ImageUrl(
             id: id,
+            imageUrlId: id,
             imageUrl: imageUrl,
-            imageHash: imageHash,
-            createdAt: createdAt.internetDateTime() ?? minimunDate(),
-            updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+            imageHash: imageHash
         )
     }
     

@@ -7,17 +7,22 @@
 import Foundation
 actor SyncManager {
     private var isSyncing = false
-    private var previousSyncParams: VerifySyncParameters?
-    private var latestParams: VerifySyncParameters?
+    private var previousToken: Int64
+    private var latestToken: Int64
     private let synchronizer: SynchronizerDBUseCase
     private let logPrefix: String = "[WebSocket]"
 
-    init(synchronizer: SynchronizerDBUseCase) {
+    init(
+        synchronizer: SynchronizerDBUseCase,
+        latestToken: Int64
+    ) {
         self.synchronizer = synchronizer
+        self.latestToken = latestToken
+        self.previousToken = latestToken
     }
     
-    func handleNewParams(_ params: VerifySyncParameters) async {
-        latestParams = params
+    func handleNewToken(_ token: Int64) async {
+        latestToken = token
         if !isSyncing {
             print("\(logPrefix) Se inició la sincronización ...")
             await syncNext()
@@ -25,17 +30,17 @@ actor SyncManager {
     }
     
     private func syncNext() async {
-        guard let params = latestParams else { return }
-        guard previousSyncParams != params else {
+        //Reservamos el ultimo token
+        let latestToken = self.latestToken
+        guard previousToken != latestToken else {
             print("\(logPrefix) Mismo parametros, no se sincroniza.")
             return
         }
         isSyncing = true
-        latestParams = nil
         
         do {
-            try await synchronizer.sync(verifySyncParameters: params)
-            previousSyncParams = params
+            try await synchronizer.sync(newToken: latestToken)
+            previousToken = latestToken
             print("\(logPrefix) ✅ Sincronización completa")
         } catch {
             print("\(logPrefix) ❌ Error sync: \(error)")
@@ -46,9 +51,11 @@ actor SyncManager {
     
     private func syncCompleted() async {
         isSyncing = false
-        if let _ = latestParams {
-            print("\(logPrefix) Se inició la sincronización de una respuesta anterior ...")
-            await syncNext()
+        guard previousToken != latestToken else {
+            print("\(logPrefix) No hay nuevos cambios para syncronizar mientras sincronizaba ...")
+            return
         }
+        print("\(logPrefix) Se inició la sincronización de una respuesta anterior ...")
+        await syncNext()
     }
 }

@@ -8,24 +8,24 @@
 import Foundation
 
 protocol RemoteImageManager {
-    func save(imageUrl: ImageUrl, imageData: Data?) async throws -> ImageURLDTO
-    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncImageUrlResponse
+//    func save(imageUrl: ImageUrl, imageData: Data?) async throws -> ImageURLDTO
+//    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncImageUrlResponse
 }
 
 final class RemoteImageManagerImpl: RemoteImageManager {
-    func save(imageUrl: ImageUrl, imageData: Data?) async throws -> ImageURLDTO {
-        let urlRoute = APIEndpoint.ImageUrls.base
-        let imageDTO = imageUrl.toImageUrlDTO(imageData: imageData)
-        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: imageDTO)
-        let response: ImageURLDTO = try await NetworkManager.shared.perform(request, decodeTo: ImageURLDTO.self)
-        return response
-    }
-    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncImageUrlResponse {
-        let urlRoute = APIEndpoint.ImageUrls.sync
-        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
-        let syncParameters = SyncImageParameters(updatedSince: updatedSinceFormated, syncIds: syncTokens)
-        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
-        let data: SyncImageUrlResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncImageUrlResponse.self)
-        return data
-    }
+//    func save(imageUrl: ImageUrl, imageData: Data?) async throws -> ImageURLDTO {
+//        let urlRoute = APIEndpoint.ImageUrls.base
+//        let imageDTO = imageUrl.toImageUrlDTO(imageData: imageData)
+//        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: imageDTO)
+//        let response: ImageURLDTO = try await NetworkManager.shared.perform(request, decodeTo: ImageURLDTO.self)
+//        return response
+//    }
+//    func sync(updatedSince: Date, syncTokens: VerifySyncParameters) async throws -> SyncImageUrlResponse {
+//        let urlRoute = APIEndpoint.ImageUrls.sync
+//        let updatedSinceFormated = ISO8601DateFormatter().string(from: updatedSince)
+//        let syncParameters = SyncImageParameters(updatedSince: updatedSinceFormated, syncIds: syncTokens)
+//        let request = CustomAPIRequest(urlRoute: urlRoute, parameter: syncParameters)
+//        let data: SyncImageUrlResponse = try await NetworkManager.shared.perform(request, decodeTo: SyncImageUrlResponse.self)
+//        return data
+//    }
 }

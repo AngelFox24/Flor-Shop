@@ -1,16 +1,11 @@
-//
-//  LocalSaleManager.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 21/05/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 protocol LocalSaleManager {
     func registerSale(cart: Car, paymentType:PaymentType, customerId: UUID?) throws
-    func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleClientDTO]) throws
+    func getLastToken(context: NSManagedObjectContext) -> Int64
     func getLastUpdated() -> Date
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -30,6 +25,37 @@ class LocalSaleManagerImpl: LocalSaleManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+    }
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
+        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        let lastTokenSaleDetail = self.getLastTokenForSaleDetails(context: context)
+        do {
+            let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first ?? 0
+            return max(lastTokenSaleDetail, syncToken)
+        } catch let error {
+            print("Error fetching. \(error)")
+            return 0
+        }
+    }
+    func getLastTokenForSaleDetails(context: NSManagedObjectContext) -> Int64 {
+        let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
+        let predicate = NSPredicate(format: "toSale.toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first ?? 0
+            return syncToken
+        } catch let error {
+            print("Error fetching. \(error)")
+            return 0
+        }
     }
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) throws {
         let date: Date = Date()
@@ -252,9 +278,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     quantitySold: totalQuantity,
                     paymentType: paymentType,
                     saleDate: saleDate,
-                    subtotal: Money(totalByProduct),
-                    createdAt: Date(),
-                    updatedAt: Date()
+                    subtotal: Money(totalByProduct)
                 )
             }
         } catch {
@@ -328,9 +352,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     quantitySold: totalQuantity,
                     paymentType: PaymentType.cash,
                     saleDate: Date(),
-                    subtotal: Money(totalByProduct),
-                    createdAt: Date(),
-                    updatedAt: Date()
+                    subtotal: Money(totalByProduct)
                 )
             }
         } catch {
@@ -411,9 +433,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     quantitySold: totalQuantity,
                     paymentType: PaymentType.cash,
                     saleDate: Date(),
-                    subtotal: Money(totalByProduct),
-                    createdAt: Date(),
-                    updatedAt: Date()
+                    subtotal: Money(totalByProduct)
                 )
             }
         } catch {
@@ -479,9 +499,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                         quantitySold: Int(totalQuantity),
                         paymentType: PaymentType.cash,
                         saleDate: Date(),
-                        subtotal: Money(Int(totalByProduct)),
-                        createdAt: Date(),
-                        updatedAt: Date()
+                        subtotal: Money(Int(totalByProduct))
                     )
                 }
                 guard let customerLastName = result ["toSale.toCustomer.lastName"] as? String else {
@@ -495,9 +513,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                         quantitySold: Int(totalQuantity),
                         paymentType: PaymentType.cash,
                         saleDate: Date(),
-                        subtotal: Money(Int(totalByProduct)),
-                        createdAt: Date(),
-                        updatedAt: Date()
+                        subtotal: Money(Int(totalByProduct))
                     )
                 }
                 return SaleDetail(
@@ -510,9 +526,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     quantitySold: Int(totalQuantity),
                     paymentType: PaymentType.cash,
                     saleDate: Date(),
-                    subtotal: Money(Int(totalByProduct)),
-                    createdAt: Date(),
-                    updatedAt: Date()
+                    subtotal: Money(Int(totalByProduct))
                 )
             }
         } catch {
@@ -520,7 +534,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
             return []
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleClientDTO]) throws {
         print("Entro a sale unos: \(salesDTOs.count)")
         for saleDTO in salesDTOs {
             print("Se procesara saleDTO: \(saleDTO.subsidiaryId.uuidString)")
@@ -548,8 +562,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 //Update
                 print("Se actualiza sale")
                 saleEntity.paymentType = saleDTO.paymentType
-                saleEntity.createdAt = saleDTO.createdAt.internetDateTime()
-                saleEntity.updatedAt = saleDTO.updatedAt.internetDateTime()
+                saleEntity.updatedAt = saleDTO.updatedAt
                 try saveData(context: backgroundContext)
             } else {
                 //Create
@@ -558,28 +571,26 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 newSaleEntity.idSale = saleDTO.id
                 newSaleEntity.toSubsidiary = subsidiaryEntity
                 newSaleEntity.toEmployee = employeeEntity
-                if let customerId = saleDTO.customerId, let customerEntity = try self.sessionConfig.getCustomerEntityById(context: backgroundContext, customerId: customerId) {
-                    newSaleEntity.toCustomer = customerEntity
+                if let customerId = saleDTO.customerId {
+                    newSaleEntity.toCustomer = try self.sessionConfig.getCustomerEntityById(context: backgroundContext, customerId: customerId)
                 }
                 newSaleEntity.paymentType = saleDTO.paymentType
                 newSaleEntity.saleDate = saleDTO.saleDate
-                newSaleEntity.createdAt = saleDTO.createdAt.internetDateTime()
-                newSaleEntity.updatedAt = saleDTO.updatedAt.internetDateTime()
+                newSaleEntity.createdAt = saleDTO.createdAt
+                newSaleEntity.updatedAt = saleDTO.updatedAt
                 newSaleEntity.total = Int64(saleDTO.total)
                 for saleDetailDTO in saleDTO.saleDetail {
                     let newSaleDetailEntity = Tb_SaleDetail(context: backgroundContext)
                     newSaleDetailEntity.idSaleDetail = saleDetailDTO.id
-                    if let imageId = saleDetailDTO.imageUrlId {
-                        newSaleDetailEntity.toImageUrl = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageId)
-                    }
+                    newSaleDetailEntity.toImageUrl?.idImageUrl = saleDetailDTO.imageUrlId
                     newSaleDetailEntity.productName = saleDetailDTO.productName
                     newSaleDetailEntity.unitCost = Int64(saleDetailDTO.unitCost)
                     newSaleDetailEntity.unitPrice = Int64(saleDetailDTO.unitPrice)
                     newSaleDetailEntity.quantitySold = Int64(saleDetailDTO.quantitySold)
                     newSaleDetailEntity.subtotal = Int64(saleDetailDTO.subtotal)
                     newSaleDetailEntity.toSale = newSaleEntity
-                    newSaleDetailEntity.createdAt = saleDetailDTO.createdAt.internetDateTime()
-                    newSaleDetailEntity.updatedAt = saleDetailDTO.updatedAt.internetDateTime()
+                    newSaleDetailEntity.createdAt = saleDetailDTO.createdAt
+                    newSaleDetailEntity.updatedAt = saleDetailDTO.updatedAt
                     try saveData(context: backgroundContext)
                 }
                 try saveData(context: backgroundContext)

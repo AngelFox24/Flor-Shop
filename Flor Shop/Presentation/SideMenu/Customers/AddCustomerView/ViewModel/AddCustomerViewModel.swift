@@ -18,14 +18,14 @@ class AddCustomerViewModel: ObservableObject {
         }
     }
     let saveCustomerUseCase: SaveCustomerUseCase
-    let saveImageUseCase: SaveImageUseCase
+    let getImageUseCase: GetImageUseCase
     
     init(
         saveCustomerUseCase: SaveCustomerUseCase,
-        saveImageUseCase: SaveImageUseCase
+        getImageUseCase: GetImageUseCase
     ) {
         self.saveCustomerUseCase = saveCustomerUseCase
-        self.saveImageUseCase = saveImageUseCase
+        self.getImageUseCase = getImageUseCase
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
@@ -97,6 +97,7 @@ class AddCustomerViewModel: ObservableObject {
         if isErrorsEmpty() {
             return Customer(
                 id: fieldsAddCustomer.id ?? UUID(),
+                customerId: fieldsAddCustomer.id ?? nil,
                 name: fieldsAddCustomer.name,
                 lastName: fieldsAddCustomer.lastname,
                 image: try await getImageIfExist(),
@@ -110,9 +111,7 @@ class AddCustomerViewModel: ObservableObject {
                 lastDatePurchase: Date(),
                 totalDebt: Money(fieldsAddCustomer.totalDebt),
                 isCreditLimitActive: fieldsAddCustomer.creditLimitFlag,
-                isDateLimitActive: fieldsAddCustomer.dateLimitFlag,
-                createdAt: Date(),
-                updatedAt: Date()
+                isDateLimitActive: fieldsAddCustomer.dateLimitFlag
             )
         } else {
             return nil
@@ -130,7 +129,7 @@ class AddCustomerViewModel: ObservableObject {
         guard let image = self.selectedImage else {
             return nil
         }
-        return try await self.saveImageUseCase.execute(uiImage: image)
+        return try await self.getImageUseCase.execute(uiImage: image)
     }
     func releaseResources() async {
         await MainActor.run {

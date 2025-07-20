@@ -1,47 +1,25 @@
-//
-//  SubsidiaryDTO.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/07/2024.
-//
-
 import Foundation
+import FlorShop_DTOs
 
-struct SubsidiaryDTO: Codable {
-    let id: UUID
-    let name: String
-    let companyID: UUID
-    let imageUrl: ImageURLDTO?
-    let createdAt: String
-    let updatedAt: String
-}
-
-extension SubsidiaryDTO {
+extension SubsidiaryClientDTO {
     func toSubsidiary() -> Subsidiary {
         return Subsidiary(
             id: id,
+            subsidiaryId: id,
             name: name,
-            image: nil,
-            createdAt: createdAt.internetDateTime() ?? minimunDate(),
-            updatedAt: updatedAt.internetDateTime() ?? minimunDate()
+            image: nil
         )
     }
     func isEquals(to other: Tb_Subsidiary) -> Bool {
-        var imageIsEquals = false
-        if let image = self.imageUrl, let otherImage = other.toImageUrl {
-            imageIsEquals = image.isEquals(to: otherImage)
-        } else {
-            imageIsEquals = true
-        }
         return (
             self.id == other.idSubsidiary &&
             self.name == other.name &&
-            imageIsEquals
+            self.imageUrlId == other.toImageUrl?.idImageUrl
         )
     }
 }
 
-extension Array where Element == SubsidiaryDTO {
+extension Array where Element == SubsidiaryClientDTO {
     func mapToListSubsidiary() -> [Subsidiary] {
         return self.compactMap({$0.toSubsidiary()})
     }

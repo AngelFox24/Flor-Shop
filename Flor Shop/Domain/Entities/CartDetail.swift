@@ -1,26 +1,20 @@
-//
-//  CartDetail.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 23/05/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 struct CartDetail: Identifiable {
     let id: UUID
     let quantity: Int
     let product: Product
     var subtotal: Money {
-        var subTotal = quantity * product.unitPrice.cents
+        let subTotal = quantity * product.unitPrice.cents
         return Money(subTotal)
     }
 }
 
 extension CartDetail {
-    func toCartDetailDTO(subsidiaryId: UUID) -> CartDetailDTO {
-        return CartDetailDTO(
+    func toCartDetailDTO(subsidiaryId: UUID) -> CartDetailServerDTO {
+        return CartDetailServerDTO(
             quantity: quantity,
             subtotal: subtotal.cents,
             productId: product.id

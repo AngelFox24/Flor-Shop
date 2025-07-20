@@ -106,14 +106,13 @@ struct ListCartController: View {
                 quantity: 3,
                 product: .init(
                     id: UUID(),
+                    productId: UUID(),
                     active: true,
                     name: "Test PRoduct",
                     qty: 23,
                     unitType: .unit,
                     unitCost: .init(3450),
-                    unitPrice: .init(5650),
-                    createdAt: .init(),
-                    updatedAt: .init()
+                    unitPrice: .init(5650)
                 )
             )]
         )

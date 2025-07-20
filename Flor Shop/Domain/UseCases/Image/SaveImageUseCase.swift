@@ -8,11 +8,11 @@
 import Foundation
 import SwiftUI
 
-protocol SaveImageUseCase {
+protocol GetImageUseCase {
     func execute(uiImage: UIImage) async throws -> ImageUrl
 }
 
-final class SaveImageInteractor: SaveImageUseCase {
+final class GetImageInteractor: GetImageUseCase {
     
     private let imageRepository: ImageRepository
     
@@ -20,6 +20,6 @@ final class SaveImageInteractor: SaveImageUseCase {
         self.imageRepository = imageRepository
     }
     func execute(uiImage: UIImage) async throws -> ImageUrl {
-        return try await self.imageRepository.saveImage(image: uiImage)
+        return try await self.imageRepository.getImage(image: uiImage)
     }
 }

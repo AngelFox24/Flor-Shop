@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "florshop-dtos",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AngelFox24/florshop-dtos",
+      "state" : {
+        "revision" : "87834391b01c97c4ee8880d9176f628f8c3c8351",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "google-ads-on-device-conversion-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/googleads/google-ads-on-device-conversion-ios-sdk",

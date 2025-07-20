@@ -9,46 +9,15 @@ import Foundation
 import CoreData
 
 protocol SynchronizerDBUseCase {
-//    func sync() async throws
-    func sync(verifySyncParameters: VerifySyncParameters) async throws
-    var lastSyncDate: Date? { get async }  // Solo lectura
-    var syncTokens: VerifySyncParameters { get set }
-}
-
-actor SyncController {
-    private(set) var lastSyncDate: Date?
-    func performSync(_ task: () async throws -> Void) async rethrows {
-        try await task()
-        lastSyncDate = Date()
-    }
-    func getLastSyncDate() -> Date? {
-        return lastSyncDate
-    }
+    func sync(newToken: Int64) async throws
+    func getLastToken(context: NSManagedObjectContext) -> Int64
 }
 
 final class SynchronizerDBInteractorMock: SynchronizerDBUseCase {
-    var lastSyncDate: Date?
-    var syncTokens: VerifySyncParameters
-    
-    init() {
-        self.lastSyncDate = Date()
-        self.syncTokens = VerifySyncParameters(
-            imageLastUpdate: UUID(),
-            companyLastUpdate: UUID(),
-            subsidiaryLastUpdate: UUID(),
-            customerLastUpdate: UUID(),
-            productLastUpdate: UUID(),
-            employeeLastUpdate: UUID(),
-            saleLastUpdate: UUID()
-        )
+    func sync(newToken: Int64) async throws {
     }
-    
-    func sync() async throws {
-        
-    }
-    
-    func sync(verifySyncParameters: VerifySyncParameters) async throws {
-        
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        return 0
     }
 }
 
@@ -61,23 +30,6 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
     private let employeeRepository: Syncronizable
     private let productRepository: Syncronizable
     private let saleRepository: Syncronizable
-    
-    var syncTokens: VerifySyncParameters = VerifySyncParameters(
-        imageLastUpdate: UUID(),
-        companyLastUpdate: UUID(),
-        subsidiaryLastUpdate: UUID(),
-        customerLastUpdate: UUID(),
-        productLastUpdate: UUID(),
-        employeeLastUpdate: UUID(),
-        saleLastUpdate: UUID()
-    )
-    
-    private let syncController = SyncController()
-    var lastSyncDate: Date? {
-        get async {
-            await syncController.getLastSyncDate()  // Acceso seguro a la propiedad
-        }
-    }
     
     init(
         persistentContainer: NSPersistentContainer,
@@ -99,57 +51,116 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
         self.saleRepository = saleRepository
     }
     
-    func sync(verifySyncParameters: VerifySyncParameters) async throws {// 0.231891 segundos aprox
-        try await syncController.performSync {
-            print("[SynchronizerDBInteractor] Iniciando sincronizacion ...")
-//            let clock = ContinuousClock()
-//            let start = clock.now
-            let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
-            backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-            backgroundTaskContext.undoManager = nil
-            do {
-                let newSyncTokens = verifySyncParameters
-                if newSyncTokens.companyLastUpdate != self.syncTokens.companyLastUpdate {
-                    print("Compania sincronizando ...")
-                    self.syncTokens = try await self.companyRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-                if newSyncTokens.imageLastUpdate != self.syncTokens.imageLastUpdate {
-                    print("Imagenes sincronizando ...")
-                    self.syncTokens = try await self.imageRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-                if newSyncTokens.subsidiaryLastUpdate != self.syncTokens.subsidiaryLastUpdate {
-                    print("Subsidiaria sincronizando ...")
-                    self.syncTokens = try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-                if newSyncTokens.customerLastUpdate != self.syncTokens.customerLastUpdate {
-                    print("Customers sincronizando ...")
-                    self.syncTokens = try await self.customerRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-                if newSyncTokens.employeeLastUpdate != self.syncTokens.employeeLastUpdate {
-                    print("Employees sincronizando ...")
-                    self.syncTokens = try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-                if newSyncTokens.productLastUpdate != self.syncTokens.productLastUpdate {
-                    print("Productos sincronizando ...")
-                    self.syncTokens = try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-                if newSyncTokens.saleLastUpdate != self.syncTokens.saleLastUpdate {
-                    print("Sales sincronizando ...")
-                    self.syncTokens = try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
-                }
-            } catch {
-                if !error.localizedDescription.contains("Parents are not up to date") {
-                    throw error
-                }
+    func sync(newToken: Int64) async throws {// 0.231891 segundos aprox ??????
+        //            let clock = ContinuousClock()
+        //            let start = clock.now
+        let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
+        backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        backgroundTaskContext.undoManager = nil
+        do {
+            //TODO: Get from repository
+            let syncClientParameters: SyncClientParameters = SyncClientParameters(
+                images: [],
+                company: nil,
+                subsidiaries: [],
+                employees: [],
+                customers: [],
+                products: [],
+                sales: [],
+                salesDetail: [],
+                isUpToDate: false
+            )
+            try await self.imageRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.companyRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.customerRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+        } catch {
+            if !error.localizedDescription.contains("Parents are not up to date") {
+                throw error
             }
-//            let duration = start.duration(to: clock.now)
-//            let seconds = duration.components.seconds
-//            let attoseconds = duration.components.attoseconds
-
-            // Convertir la fracción a segundos como Double
-//            let fractionalSeconds = Double(seconds) + Double(attoseconds) / 1_000_000_000_000_000_000
-
-//            print(String(format: "[SynchronizerDBInteractor] Tiempo de ejecución: %.6f segundos", fractionalSeconds))
         }
+        //            let duration = start.duration(to: clock.now)
+        //            let seconds = duration.components.seconds
+        //            let attoseconds = duration.components.attoseconds
+
+                    // Convertir la fracción a segundos como Double
+        //            let fractionalSeconds = Double(seconds) + Double(attoseconds) / 1_000_000_000_000_000_000
+
+        //            print(String(format: "[SynchronizerDBInteractor] Tiempo de ejecución: %.6f segundos", fractionalSeconds))
     }
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        let imageUrlLastToken = self.imageRepository.getLastToken(context: context)
+        let companyLastToken = self.companyRepository.getLastToken(context: context)
+        let subsidiaryLastToken = self.subsidiaryRepository.getLastToken(context: context)
+        let customerLastToken = self.customerRepository.getLastToken(context: context)
+        let employeeLastToken = self.employeeRepository.getLastToken(context: context)
+        let productLastToken = self.productRepository.getLastToken(context: context)
+        let saleLastToken = self.saleRepository.getLastToken(context: context)
+        return max(
+            companyLastToken,
+            subsidiaryLastToken,
+            imageUrlLastToken,
+            customerLastToken,
+            employeeLastToken,
+            productLastToken,
+            saleLastToken
+        )
+    }
+    
+//    func sync(verifySyncParameters: VerifySyncParameters) async throws {// 0.231891 segundos aprox
+//        try await syncController.performSync {
+//            print("[SynchronizerDBInteractor] Iniciando sincronizacion ...")
+////            let clock = ContinuousClock()
+////            let start = clock.now
+//            let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
+//            backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+//            backgroundTaskContext.undoManager = nil
+//            do {
+//                let newSyncTokens = verifySyncParameters
+//                if newSyncTokens.companyLastUpdate != self.syncTokens.companyLastUpdate {
+//                    print("Compania sincronizando ...")
+//                    self.syncTokens = try await self.companyRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//                if newSyncTokens.imageLastUpdate != self.syncTokens.imageLastUpdate {
+//                    print("Imagenes sincronizando ...")
+//                    self.syncTokens = try await self.imageRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//                if newSyncTokens.subsidiaryLastUpdate != self.syncTokens.subsidiaryLastUpdate {
+//                    print("Subsidiaria sincronizando ...")
+//                    self.syncTokens = try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//                if newSyncTokens.customerLastUpdate != self.syncTokens.customerLastUpdate {
+//                    print("Customers sincronizando ...")
+//                    self.syncTokens = try await self.customerRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//                if newSyncTokens.employeeLastUpdate != self.syncTokens.employeeLastUpdate {
+//                    print("Employees sincronizando ...")
+//                    self.syncTokens = try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//                if newSyncTokens.productLastUpdate != self.syncTokens.productLastUpdate {
+//                    print("Productos sincronizando ...")
+//                    self.syncTokens = try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//                if newSyncTokens.saleLastUpdate != self.syncTokens.saleLastUpdate {
+//                    print("Sales sincronizando ...")
+//                    self.syncTokens = try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncTokens: syncTokens)
+//                }
+//            } catch {
+//                if !error.localizedDescription.contains("Parents are not up to date") {
+//                    throw error
+//                }
+//            }
+////            let duration = start.duration(to: clock.now)
+////            let seconds = duration.components.seconds
+////            let attoseconds = duration.components.attoseconds
+//
+//            // Convertir la fracción a segundos como Double
+////            let fractionalSeconds = Double(seconds) + Double(attoseconds) / 1_000_000_000_000_000_000
+//
+////            print(String(format: "[SynchronizerDBInteractor] Tiempo de ejecución: %.6f segundos", fractionalSeconds))
+//        }
+//    }
 }

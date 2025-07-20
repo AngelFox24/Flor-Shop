@@ -1,5 +1,5 @@
 import SwiftUI
-import FirebaseAuth
+//import FirebaseAuth
 import AppRouter
 
 typealias Router = CustomRouter<FlowRoutes, SheetRoutes, AlertRoutes>
@@ -7,7 +7,7 @@ typealias Router = CustomRouter<FlowRoutes, SheetRoutes, AlertRoutes>
 @main
 struct FlorShopApp: App {
     init() {
-        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
+//        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
     @State private var router = Router()
     var body: some Scene {

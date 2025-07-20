@@ -13,25 +13,45 @@ import CoreGraphics
 import MobileCoreServices
 import UniformTypeIdentifiers
 import CommonCrypto
+import FlorShop_DTOs
 
 protocol LocalImageManager {
-    func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLDTO]) throws
+    func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLClientDTO]) throws
+    func getLastToken(context: NSManagedObjectContext) -> Int64
     func getLastUpdated() -> Date
-    func save(image: ImageUrl) throws -> ImageUrl
-    func saveImage(image: UIImage) async throws -> ImageUrl
+//    func save(image: ImageUrl) throws -> ImageUrl
+    func getImage(image: UIImage) async throws -> ImageUrl
     func deleteUnusedImages() async
 }
 
 final class LocalImageManagerImpl: LocalImageManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
+    let imageService: LocalImageService
     let className = "[LocalImageManager]"
     init(
         mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
+        imageService: LocalImageService
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+        self.imageService = imageService
+    }
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
+        let predicate = NSPredicate(format: "syncToken != nil")
+        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first
+            return syncToken ?? 0
+        } catch let error {
+            print("Error fetching. \(error)")
+            return 0
+        }
     }
     func getLastUpdated() -> Date {
         let calendar = Calendar(identifier: .gregorian)
@@ -54,7 +74,7 @@ final class LocalImageManagerImpl: LocalImageManager {
             return dateFrom!
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLDTO]) throws {
+    func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLClientDTO]) throws {
         for imageURLDTO in imageURLsDTOs {
             if let imageEntity = try self.sessionConfig.getImageEntityById(context: backgroundContext, imageId: imageURLDTO.id) {
                 guard !imageURLDTO.isEquals(to: imageEntity) else {
@@ -63,67 +83,32 @@ final class LocalImageManagerImpl: LocalImageManager {
                 }
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
-                imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
-                imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
+                imageEntity.createdAt = imageURLDTO.createdAt
+                imageEntity.updatedAt = imageURLDTO.updatedAt
                 try saveData(context: backgroundContext)
             } else {
                 let imageEntity = Tb_ImageUrl(context: backgroundContext)
                 imageEntity.idImageUrl = imageURLDTO.id
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
-                imageEntity.createdAt = imageURLDTO.createdAt.internetDateTime()
-                imageEntity.updatedAt = imageURLDTO.updatedAt.internetDateTime()
+                imageEntity.createdAt = imageURLDTO.createdAt
+                imageEntity.updatedAt = imageURLDTO.updatedAt
                 try saveData(context: backgroundContext)
             }
         }
     }
-    func save(image: ImageUrl) throws -> ImageUrl {
-        let url = image.imageUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-        let hash = image.imageHash.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard url != "" else {
-            throw LocalStorageError.invalidInput("La URL no es valida")
-        }
-        if let imageEntity = getImageEntityByURL(imageURL: url) {
-            imageEntity.idImageUrl = image.id
-            imageEntity.imageHash = hash == "" ? imageEntity.imageHash : hash
-            imageEntity.imageUrl = image.imageUrl
-            imageEntity.createdAt = image.createdAt
-            imageEntity.updatedAt = image.updatedAt
-            try saveData()
-            return imageEntity.toImage()
-        } else {
-            let newImageEntity = Tb_ImageUrl(context: self.mainContext)
-            newImageEntity.idImageUrl = image.id
-            newImageEntity.imageUrl = image.imageUrl
-            newImageEntity.imageHash = image.imageHash
-            newImageEntity.createdAt = image.createdAt
-            newImageEntity.updatedAt = image.updatedAt
-            try saveData()
-            return newImageEntity.toImage()
-        }
-    }
-    func saveImage(image: UIImage) async throws -> ImageUrl {
+    func getImage(image: UIImage) async throws -> ImageUrl {
         let imageData = try await LocalImageManagerImpl.getEfficientImageTreated(image: image)
         //Obtener hash
         let imageHash = LocalImageManagerImpl.generarHash(data: imageData)
-        //Buscar imagen por hash
-        if let imageEntity = getImageEntityByHash(imageHash: imageHash) {
-            return imageEntity.toImage()
-        } else {
-            //Crear nueva imagen
-            let imageUrl = ImageUrl(
-                id: UUID(),
-                imageUrl: "",
-                imageHash: imageHash,
-                createdAt: Date(),
-                updatedAt: Date()
-            )
-            //Guardar imagen en Local
-            let uiImage = try LocalImageManagerImpl.getUIImage(data: imageData)
-            try LocalImageManagerImpl.saveImageInLocal(id: imageUrl.id, image: uiImage)
-            //Guardar Imagen en BD
-            return try save(image: imageUrl)
-        }
+        //Crear nueva imagen
+        let imageUrl = ImageUrl(
+            id: UUID(),
+            imageUrlId: nil,
+            imageUrl: "",
+            imageHash: imageHash
+        )
+        return imageUrl
     }
     func deleteUnusedImages() async {
         async let imagesLocal = getImagesIdsLocal()

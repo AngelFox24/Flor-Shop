@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B1EC71C2E07698800AFF006 /* PersistenceSessionConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EC71B2E07698800AFF006 /* PersistenceSessionConfig.swift */; };
+		0B30D4C92E2C3FFF005AD330 /* RemoteSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B30D4C82E2C3FFF005AD330 /* RemoteSyncManager.swift */; };
 		0B360B5E2CAA1A19008BECFB /* BusinessLogicError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */; };
 		0B555A0E2DD86420001F5BE0 /* SyncWebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B555A0D2DD86420001F5BE0 /* SyncWebSocketClient.swift */; };
 		0B555A102DD8733E001F5BE0 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B555A0F2DD87338001F5BE0 /* SyncManager.swift */; };
@@ -16,6 +17,7 @@
 		0B8CA3852E03DC52003F2A1B /* RegisterStuffs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8CA3842E03DC52003F2A1B /* RegisterStuffs.swift */; };
 		0BC1C2E32DF508C600BAFCC8 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC1C2E22DF508C600BAFCC8 /* APIEndpoint.swift */; };
 		0BE1D84C2DF4C0CE0074B309 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE1D84B2DF4C0CE0074B309 /* AppRouter */; };
+		0BE5EC162E2C82F00045B774 /* FlorShop_DTOs in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5EC152E2C82F00045B774 /* FlorShop_DTOs */; };
 		0BEAA5BB2DF6184E00D510FF /* VersionCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BEAA5BA2DF6184E00D510FF /* VersionCheckView.swift */; };
 		2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */; };
 		2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */; };
@@ -174,6 +176,7 @@
 
 /* Begin PBXFileReference section */
 		0B1EC71B2E07698800AFF006 /* PersistenceSessionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceSessionConfig.swift; sourceTree = "<group>"; };
+		0B30D4C82E2C3FFF005AD330 /* RemoteSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSyncManager.swift; sourceTree = "<group>"; };
 		0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessLogicError.swift; sourceTree = "<group>"; };
 		0B555A0D2DD86420001F5BE0 /* SyncWebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncWebSocketClient.swift; sourceTree = "<group>"; };
 		0B555A0F2DD87338001F5BE0 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
@@ -357,6 +360,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BE1D84C2DF4C0CE0074B309 /* AppRouter in Frameworks */,
+				0BE5EC162E2C82F00045B774 /* FlorShop_DTOs in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,6 +699,7 @@
 				278CA6542C432CA000C200C5 /* RemoteEmployeeManager.swift */,
 				270930A12B46F4C300BDF3CD /* RemoteProductManager.swift */,
 				27B125D92C41CAE400E6EAA2 /* RemoteSaleManager.swift */,
+				0B30D4C82E2C3FFF005AD330 /* RemoteSyncManager.swift */,
 			);
 			path = RemoteManager;
 			sourceTree = "<group>";
@@ -1490,6 +1495,7 @@
 			name = "Flor Shop";
 			packageProductDependencies = (
 				0BE1D84B2DF4C0CE0074B309 /* AppRouter */,
+				0BE5EC152E2C82F00045B774 /* FlorShop_DTOs */,
 			);
 			productName = "Flor Shop";
 			productReference = 274CE29629E6D792007C703D /* Flor Shop.app */;
@@ -1521,6 +1527,7 @@
 			mainGroup = 274CE28D29E6D792007C703D;
 			packageReferences = (
 				0B5E8D9A2E1B26DE00024F87 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				0BE5EC142E2C82F00045B774 /* XCRemoteSwiftPackageReference "florshop-dtos" */,
 			);
 			productRefGroup = 274CE29729E6D792007C703D /* Products */;
 			projectDirPath = "";
@@ -1685,6 +1692,7 @@
 				27B125CC2C41BFB300E6EAA2 /* CompanyDTO.swift in Sources */,
 				27F321CE2BADF6CE00296E50 /* CustomerHistoryView.swift in Sources */,
 				272559382A8ACBFF008896C8 /* FirebaseSesionManagement.swift in Sources */,
+				0B30D4C92E2C3FFF005AD330 /* RemoteSyncManager.swift in Sources */,
 				278CA6572C43308C00C200C5 /* RemoteSubsidiaryManager.swift in Sources */,
 				27A6EF202ACC84C100F4D178 /* Extensions.swift in Sources */,
 				27F54F3229FDE5210083B616 /* CartView.swift in Sources */,
@@ -1941,12 +1949,25 @@
 				minimumVersion = 11.15.0;
 			};
 		};
+		0BE5EC142E2C82F00045B774 /* XCRemoteSwiftPackageReference "florshop-dtos" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AngelFox24/florshop-dtos";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		0BE1D84B2DF4C0CE0074B309 /* AppRouter */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppRouter;
+		};
+		0BE5EC152E2C82F00045B774 /* FlorShop_DTOs */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BE5EC142E2C82F00045B774 /* XCRemoteSwiftPackageReference "florshop-dtos" */;
+			productName = FlorShop_DTOs;
 		};
 /* End XCSwiftPackageProductDependency section */
 

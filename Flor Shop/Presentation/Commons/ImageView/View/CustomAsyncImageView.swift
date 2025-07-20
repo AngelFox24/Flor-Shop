@@ -55,7 +55,14 @@ struct CustomAsyncImageView: View {
 struct CustomAsyncImageView_Previews: PreviewProvider {
     //let id: UUID? = UUID()
     static var previews: some View {
-        let image = ImageUrl(id: UUID(uuidString: "D2A8F862-AEB8-4A17-B08B-2FEDDCB0B123") ?? UUID(), imageUrl: "https://falabella.scene7.com/is/image/FalabellaPE/18846925_1?wid=1500&hei=1500&qlt=70", imageHash: "", createdAt: Date(), updatedAt: Date())
+        let image = ImageUrl(
+            id: UUID(
+                uuidString: "D2A8F862-AEB8-4A17-B08B-2FEDDCB0B123"
+            ) ?? UUID(),
+            imageUrlId: UUID(),
+            imageUrl: "https://falabella.scene7.com/is/image/FalabellaPE/18846925_1?wid=1500&hei=1500&qlt=70",
+            imageHash: ""
+        )
         CustomAsyncImageView(imageUrl: image, size: 100)
         //CustomAsyncImageView(id: .constant(id), urlProducto: .constant(nil), size: 100)
     }

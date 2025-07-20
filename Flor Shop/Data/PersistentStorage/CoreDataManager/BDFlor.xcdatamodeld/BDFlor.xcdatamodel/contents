@@ -16,6 +16,7 @@
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <attribute name="idCompany" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="ruc" optional="YES" attributeType="String"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toCompany" inverseEntity="Tb_Customer"/>
         <relationship name="toSubsidiary" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Subsidiary" inverseName="toCompany" inverseEntity="Tb_Subsidiary"/>
@@ -36,6 +37,7 @@
         <attribute name="lastName" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="phoneNumber" optional="YES" attributeType="String"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="totalDebt" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toCustomer" inverseEntity="Tb_Company"/>
@@ -51,6 +53,7 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="phoneNumber" optional="YES" attributeType="String"/>
         <attribute name="role" attributeType="String"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <attribute name="user" optional="YES" attributeType="String"/>
         <relationship name="toCart" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Cart" inverseName="toEmployee" inverseEntity="Tb_Cart"/>
@@ -63,6 +66,7 @@
         <attribute name="idImageUrl" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageHash" optional="YES" attributeType="String"/>
         <attribute name="imageUrl" attributeType="String"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <relationship name="toCustomer" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toImageUrl" inverseEntity="Tb_Customer"/>
         <relationship name="toEmployee" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toImageUrl" inverseEntity="Tb_Employee"/>
@@ -78,6 +82,7 @@
         <attribute name="idProduct" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="productName" attributeType="String"/>
         <attribute name="quantityStock" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
@@ -91,6 +96,7 @@
         <attribute name="idSale" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="paymentType" attributeType="String"/>
         <attribute name="saleDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="total" attributeType="Integer 64" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <relationship name="toCustomer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Customer" inverseName="toSale" inverseEntity="Tb_Customer"/>
@@ -105,6 +111,7 @@
         <attribute name="productName" attributeType="String"/>
         <attribute name="quantitySold" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="subtotal" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="unitCost" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="unitPrice" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="unitType" attributeType="String" defaultValueString="Unit"/>
@@ -116,6 +123,7 @@
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <attribute name="idSubsidiary" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="syncToken" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="-63140400" usesScalarValueType="NO"/>
         <relationship name="toCompany" maxCount="1" deletionRule="Nullify" destinationEntity="Tb_Company" inverseName="toSubsidiary" inverseEntity="Tb_Company"/>
         <relationship name="toEmployee" toMany="YES" deletionRule="Nullify" destinationEntity="Tb_Employee" inverseName="toSubsidiary" inverseEntity="Tb_Employee"/>

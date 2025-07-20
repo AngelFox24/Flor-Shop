@@ -1,12 +1,6 @@
-//
-//  CustomerRepositoryImpl.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 16/08/23.
-//
-
 import Foundation
 import CoreData
+import FlorShop_DTOs
 
 protocol CustomerRepository {
     func save(customer: Customer) async throws
@@ -27,20 +21,11 @@ class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
-        var counter = 0
-        var items = 0
-        var responseSyncTokens = syncTokens
-        repeat {
-            print("Counter: \(counter)")
-            counter += 1
-            let updatedSince = self.localManager.getLastUpdated()
-            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
-            items = response.customersDTOs.count
-            responseSyncTokens = response.syncIds
-            try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: response.customersDTOs)
-        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
-        return responseSyncTokens
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        return self.localManager.getLastToken(context: context)
+    }
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+        try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: syncDTOs.customers)
     }
     func payClientTotalDebt(customer: Customer) async throws -> Bool {
         if cloudBD {

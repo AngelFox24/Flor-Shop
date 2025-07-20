@@ -5,6 +5,7 @@
 //  Created by Angel Curi Laurente on 05/10/2024.
 //
 import Foundation
+import FlorShop_DTOs
 //MARK: ServerErrorResponse
 struct ServerErrorResponse: Decodable {
     let error: Bool
@@ -16,18 +17,14 @@ struct LogInParameters: Encodable {
     let password: String
 }
 struct RegisterParameters: Encodable {
-    let company: CompanyDTO
-    let subsidiaryImage: ImageURLDTO?
-    let subsidiary: SubsidiaryDTO
-    let employeeImage: ImageURLDTO?
-    let employee: EmployeeDTO
+    let company: CompanyServerDTO
+    let subsidiary: SubsidiaryServerDTO
+    let employee: EmployeeServerDTO
     
     init?(registerStuff: RegisterStuffs) {
         self.company = registerStuff.company.toCompanyDTO()
-        self.subsidiaryImage = registerStuff.subsidiary.image?.toImageUrlDTO(imageData: nil)
-        self.subsidiary = registerStuff.subsidiary.toSubsidiaryDTO(companyId: self.company.id)
-        self.employeeImage = registerStuff.employee.image?.toImageUrlDTO(imageData: nil)
-        self.employee = registerStuff.employee.toEmployeeDTO(subsidiaryId: self.subsidiary.id)
+        self.subsidiary = registerStuff.subsidiary.toSubsidiaryDTO(companyId: registerStuff.company.id)
+        self.employee = registerStuff.employee.toEmployeeDTO(subsidiaryId: registerStuff.subsidiary.id)
     }
 }
 //MARK: Sync Parameters
@@ -49,6 +46,10 @@ struct SyncFromSubsidiaryParameters: Encodable {
     let updatedSince: String
     let syncIds: VerifySyncParameters
 }
+struct SyncServerRequestParameters: Encodable {
+    let lastToken: Int64
+    let sessionConfig: SessionConfig
+}
 //MARK: Request Parameters
 struct PayCustomerDebtParameters: Codable {
     let customerId: UUID
@@ -59,5 +60,5 @@ struct RegisterSaleParameters: Codable {
     let employeeId: UUID
     let customerId: UUID?
     let paymentType: String
-    let cart: CartDTO
+    let cart: CartServerDTO
 }

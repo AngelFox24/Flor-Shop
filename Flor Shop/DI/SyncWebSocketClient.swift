@@ -20,9 +20,13 @@ final class SyncWebSocketClient {
     //Handle retries
     private var retryByCode: [Int: Int] = [:]
     init(
-        synchronizerDBUseCase: SynchronizerDBUseCase
+        synchronizerDBUseCase: SynchronizerDBUseCase,
+        latestToken: Int64
     ) {
-        self.syncManager = SyncManager(synchronizer: synchronizerDBUseCase)
+        self.syncManager = SyncManager(
+            synchronizer: synchronizerDBUseCase,
+            latestToken: latestToken
+        )
     }
     func connect() {
         if let task = webSocketTask,
@@ -62,9 +66,9 @@ final class SyncWebSocketClient {
                 switch message {
                 case .string(let text):
                     print("\(self.logPrefix) Mensaje recibido: \(text)")
-                    if let params = self.parseSyncParameters(from: text) {
+                    if let lastToken = self.parseSyncToken(from: text) {
                         Task {
-                            await self.syncManager.handleNewParams(params)
+                            await self.syncManager.handleNewToken(lastToken)
                         }
                     }
                 case .data(let data):
@@ -101,12 +105,12 @@ final class SyncWebSocketClient {
         }
     }
     
-    private func parseSyncParameters(from json: String) -> VerifySyncParameters? {
+    private func parseSyncToken(from json: String) -> Int64? {
         guard let data = json.data(using: .utf8) else {
             return nil
         }
 
         let decoder = JSONDecoder()
-        return try? decoder.decode(VerifySyncParameters.self, from: data)
+        return try? decoder.decode(Int64.self, from: data)
     }
 }

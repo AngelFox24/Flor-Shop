@@ -18,7 +18,8 @@ protocol ProductRepository {
 }
 
 protocol Syncronizable {
-    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws
+    func getLastToken(context: NSManagedObjectContext) -> Int64
 }
 
 public class ProductRepositoryImpl: ProductRepository, Syncronizable {
@@ -39,20 +40,11 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             try self.localManager.save(product: product)
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
-        var counter = 0
-        var items = 0
-        var responseSyncTokens = syncTokens
-        repeat {
-            print("Counter: \(counter)")
-            counter += 1
-            let updatedSince = self.localManager.getLastUpdated()
-            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
-            items = response.productsDTOs.count
-            responseSyncTokens = response.syncIds
-            try self.localManager.sync(backgroundContext: backgroundContext, productsDTOs: response.productsDTOs)
-        } while (counter < 200 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
-        return responseSyncTokens
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        self.localManager.getLastToken(context: context)
+    }
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+        try self.localManager.sync(backgroundContext: backgroundContext, productsDTOs: syncDTOs.products)
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         return localManager.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)

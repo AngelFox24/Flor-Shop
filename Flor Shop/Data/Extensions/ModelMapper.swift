@@ -12,10 +12,9 @@ extension Tb_Company {
     func toCompany() -> Company {
         return Company(
             id: idCompany ?? UUID(),
+            companyId: idCompany,
             companyName: companyName ?? "",
-            ruc: ruc ?? "",
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            ruc: ruc ?? ""
         )
     }
 }
@@ -24,10 +23,9 @@ extension Tb_Subsidiary {
     func toSubsidiary() -> Subsidiary {
         return Subsidiary(
             id: idSubsidiary ?? UUID(),
+            subsidiaryId: idSubsidiary,
             name: name ?? "",
-            image: toImageUrl?.toImage(),
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            image: toImageUrl?.toImage()
         )
     }
 }
@@ -35,11 +33,10 @@ extension Tb_Subsidiary {
 extension Tb_ImageUrl {
     func toImage() -> ImageUrl {
         return ImageUrl(
-            id: idImageUrl!,
+            id: idImageUrl ?? UUID(),
+            imageUrlId: idImageUrl,
             imageUrl: imageUrl ?? "",
-            imageHash: imageHash ?? "",
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            imageHash: imageHash ?? ""
         )
     }
 }
@@ -48,6 +45,7 @@ extension Tb_Product {
     func toProduct() -> Product {
         return Product(
             id: idProduct ?? UUID(),
+            productId: idProduct,
             active: active,
             barCode: barCode,
             name: productName ?? "",
@@ -56,9 +54,7 @@ extension Tb_Product {
             unitCost: Money(Int(unitCost)),
             unitPrice: Money(Int(unitPrice)),
             expirationDate: expirationDate ?? Date(),
-            image: toImageUrl?.toImage(),
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            image: toImageUrl?.toImage()
         )
     }
 }
@@ -67,6 +63,7 @@ extension Tb_Employee {
     func toEmployee() -> Employee {
         return Employee(
             id: idEmployee ?? UUID(),
+            employeeId: idEmployee,
             name: name ?? "",
             user: user ?? "",
             email: email ?? "",
@@ -74,9 +71,7 @@ extension Tb_Employee {
             role: role ?? "",
             image: toImageUrl?.toImage(),
             active: active,
-            phoneNumber: phoneNumber ?? "",
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            phoneNumber: phoneNumber ?? ""
         )
     }
 }
@@ -85,6 +80,7 @@ extension Tb_Customer {
     func toCustomer() -> Customer {
         return Customer(
             id: idCustomer ?? UUID(),
+            customerId: idCustomer,
             name: name ?? "",
             lastName: lastName ?? "",
             image: toImageUrl?.toImage(),
@@ -99,9 +95,7 @@ extension Tb_Customer {
             lastDatePurchase: lastDatePurchase ?? Date(),
             totalDebt: Money(Int(totalDebt)),
             isCreditLimitActive: isCreditLimitActive,
-            isDateLimitActive: isDateLimitActive,
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            isDateLimitActive: isDateLimitActive
         )
     }
 }
@@ -116,9 +110,7 @@ extension Tb_Sale {
             saleDetail: toSaleDetail?.compactMap {
                 $0 as? Tb_SaleDetail
             }.mapToSaleDetailList() ?? [],
-            totalSale: Money(Int(total)),
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            totalSale: Money(Int(total))
         )
     }
 }
@@ -135,9 +127,7 @@ extension Tb_SaleDetail {
             quantitySold: Int(quantitySold),
             paymentType: self.toSale?.paymentType == PaymentType.cash.description ? PaymentType.cash : PaymentType.loan,
             saleDate: self.toSale?.saleDate ?? Date(),
-            subtotal: Money(Int(subtotal)),
-            createdAt: createdAt ?? minimunDate(),
-            updatedAt: updatedAt ?? minimunDate()
+            subtotal: Money(Int(subtotal))
         )
     }
 }

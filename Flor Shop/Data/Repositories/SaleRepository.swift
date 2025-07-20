@@ -36,20 +36,11 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
             try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
         }
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
-        var counter = 0
-        var items = 0
-        var responseSyncTokens = syncTokens
-        repeat {
-            counter += 1
-            let updatedSince = self.localManager.getLastUpdated()
-            let response = try await self.remoteManager.sync(updatedSince: updatedSince, syncTokens: responseSyncTokens)
-            items = response.salesDTOs.count
-            responseSyncTokens = response.syncIds
-            print("Items Sync Sale: \(items)")
-            try self.localManager.sync(backgroundContext: backgroundContext, salesDTOs: response.salesDTOs)
-        } while (counter < 10 && items == 50) //El limite de la api es 50 asi que menor a eso ya no hay mas productos a actualiar
-        return responseSyncTokens
+    func getLastToken(context: NSManagedObjectContext) -> Int64 {
+        return self.localManager.getLastToken(context: context)
+    }
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+        try self.localManager.sync(backgroundContext: backgroundContext, salesDTOs: syncDTOs.sales)
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
         return try self.localManager.getSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
