@@ -59,6 +59,7 @@ class AgregarViewModel: ObservableObject {
                     print("Se le asigno la imagen")
                     self.agregarFields.imageUrl = urlPasted
                     self.agregarFields.imageHash = imageHash
+                    self.agregarFields.idImage = nil
                     self.selectedLocalImage = uiImageTreated
                 }
             } else {

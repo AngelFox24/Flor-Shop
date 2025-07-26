@@ -93,7 +93,7 @@ struct BusinessDependencies {
         self.localCustomerManager = LocalCustomerManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig, imageService: imageService)
         self.localProductManager = LocalProductManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig, imageService: imageService)
         self.localCartManager = LocalCartManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
-        self.localSaleManager = LocalSaleManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig)
+        self.localSaleManager = LocalSaleManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig, imageService: imageService)
         self.localImageManager = LocalImageManagerImpl(mainContext: mainContext, sessionConfig: self.sessionConfig, imageService: imageService)
         //MARK: Remote Managers
         self.remoteProductManager = RemoteProductManagerImpl(sessionConfig: self.sessionConfig)
@@ -148,7 +148,7 @@ struct BusinessDependencies {
         self.customerHistoryViewModel = CustomerHistoryViewModel(getCustomerSalesUseCase: getCustomerSalesUseCase, getCustomersUseCase: getCustomersUseCase, payClientDebtUseCase: payClientDebtUseCase)
         self.addCustomerViewModel = AddCustomerViewModel(saveCustomerUseCase: saveCustomerUseCase, getImageUseCase: getImageUseCase)
         //WebSocket Init
-        let lastToken = self.synchronizerDBUseCase.getLastToken(context: self.mainContext)
-        self.webSocket = SyncWebSocketClient(synchronizerDBUseCase: synchronizerDBUseCase, latestToken: lastToken)
+        let lastTokenByEntities = self.synchronizerDBUseCase.getLastToken()
+        self.webSocket = SyncWebSocketClient(synchronizerDBUseCase: synchronizerDBUseCase, lastTokenByEntities: lastTokenByEntities)
     }
 }

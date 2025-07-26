@@ -79,7 +79,15 @@ struct FlorShopButton: View {
     @Previewable @State var router = Router()
     @Previewable @State var ws = SyncWebSocketClient(
         synchronizerDBUseCase: SynchronizerDBInteractorMock(),
-        latestToken: 0
+        lastTokenByEntities: LastTokenByEntities(
+            image: 0,
+            company: 0,
+            subsidiary: 0,
+            customer: 0,
+            employee: 0,
+            product: 0,
+            sale: 0
+        )
     )
     FlorShopButton()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

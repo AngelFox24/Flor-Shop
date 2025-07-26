@@ -13,6 +13,8 @@ enum RepositoryError: Error {
 }
 
 protocol ProductRepository {
+    func getLastToken() -> Int64
+    func updateProducts(products: [Product]) -> [Product]
     func save(product: Product) async throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
 }
@@ -20,6 +22,7 @@ protocol ProductRepository {
 protocol Syncronizable {
     func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws
     func getLastToken(context: NSManagedObjectContext) -> Int64
+    func getLastToken() -> Int64
 }
 
 public class ProductRepositoryImpl: ProductRepository, Syncronizable {
@@ -40,11 +43,17 @@ public class ProductRepositoryImpl: ProductRepository, Syncronizable {
             try self.localManager.save(product: product)
         }
     }
+    func getLastToken() -> Int64 {
+        self.localManager.getLastToken()
+    }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         self.localManager.getLastToken(context: context)
     }
     func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
         try self.localManager.sync(backgroundContext: backgroundContext, productsDTOs: syncDTOs.products)
+    }
+    func updateProducts(products: [Product]) -> [Product] {
+        return localManager.updateProducts(products: products)
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         return localManager.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)

@@ -95,7 +95,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.lastName = customerDTO.lastName
                 customerEntity.name = customerDTO.name
                 customerEntity.phoneNumber = customerDTO.phoneNumber
-                customerEntity.toImageUrl?.idImageUrl = customerDTO.imageUrlId
+                customerEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: customerDTO.imageUrlId)
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
@@ -117,7 +117,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.lastName = customerDTO.lastName
                 newCustomerEntity.name = customerDTO.name
                 newCustomerEntity.phoneNumber = customerDTO.phoneNumber
-                newCustomerEntity.toImageUrl?.idImageUrl = customerDTO.imageUrlId
+                newCustomerEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: customerDTO.imageUrlId)
                 newCustomerEntity.toCompany = companyEntity
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit

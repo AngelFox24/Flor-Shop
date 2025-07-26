@@ -10,15 +10,23 @@ import CoreData
 
 protocol SynchronizerDBUseCase {
     func sync(lastToken: Int64) async throws -> Int64
-    func getLastToken(context: NSManagedObjectContext) -> Int64
+    func getLastToken() -> LastTokenByEntities
 }
 
 final class SynchronizerDBInteractorMock: SynchronizerDBUseCase {
     func sync(lastToken: Int64) async throws -> Int64 {
         return 0
     }
-    func getLastToken(context: NSManagedObjectContext) -> Int64 {
-        return 0
+    func getLastToken() -> LastTokenByEntities {
+        return LastTokenByEntities(
+            image: 0,
+            company: 0,
+            subsidiary: 0,
+            customer: 0,
+            employee: 0,
+            product: 0,
+            sale: 0
+        )
     }
 }
 
@@ -87,22 +95,22 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
 
         //            print(String(format: "[SynchronizerDBInteractor] Tiempo de ejecución: %.6f segundos", fractionalSeconds))
     }
-    func getLastToken(context: NSManagedObjectContext) -> Int64 {
-        let imageUrlLastToken = self.imageRepository.getLastToken(context: context)
-        let companyLastToken = self.companyRepository.getLastToken(context: context)
-        let subsidiaryLastToken = self.subsidiaryRepository.getLastToken(context: context)
-        let customerLastToken = self.customerRepository.getLastToken(context: context)
-        let employeeLastToken = self.employeeRepository.getLastToken(context: context)
-        let productLastToken = self.productRepository.getLastToken(context: context)
-        let saleLastToken = self.saleRepository.getLastToken(context: context)
-        return max(
-            companyLastToken,
-            subsidiaryLastToken,
-            imageUrlLastToken,
-            customerLastToken,
-            employeeLastToken,
-            productLastToken,
-            saleLastToken
+    func getLastToken() -> LastTokenByEntities {
+        let imageUrlLastToken = self.imageRepository.getLastToken()
+        let companyLastToken = self.companyRepository.getLastToken()
+        let subsidiaryLastToken = self.subsidiaryRepository.getLastToken()
+        let customerLastToken = self.customerRepository.getLastToken()
+        let employeeLastToken = self.employeeRepository.getLastToken()
+        let productLastToken = self.productRepository.getLastToken()
+        let saleLastToken = self.saleRepository.getLastToken()
+        return LastTokenByEntities(
+            image: imageUrlLastToken,
+            company: companyLastToken,
+            subsidiary: subsidiaryLastToken,
+            customer: customerLastToken,
+            employee: employeeLastToken,
+            product: productLastToken,
+            sale: saleLastToken
         )
     }
 }

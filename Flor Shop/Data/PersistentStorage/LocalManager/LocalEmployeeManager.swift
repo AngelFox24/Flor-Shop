@@ -81,7 +81,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.name = employeeDTO.name
                 employeeEntity.lastName = employeeDTO.lastName
                 employeeEntity.active = employeeDTO.active
-                employeeEntity.toImageUrl?.idImageUrl = employeeDTO.imageUrlId
+                employeeEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: employeeDTO.imageUrlId)
                 employeeEntity.email = employeeDTO.email
                 employeeEntity.phoneNumber = employeeDTO.phoneNumber
                 employeeEntity.role = employeeDTO.role
@@ -100,7 +100,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.name = employeeDTO.name
                 newEmployeeEntity.lastName = employeeDTO.lastName
                 newEmployeeEntity.active = employeeDTO.active
-                newEmployeeEntity.toImageUrl?.idImageUrl = employeeDTO.imageUrlId
+                newEmployeeEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: employeeDTO.imageUrlId)
                 newEmployeeEntity.email = employeeDTO.email
                 newEmployeeEntity.phoneNumber = employeeDTO.phoneNumber
                 newEmployeeEntity.role = employeeDTO.role

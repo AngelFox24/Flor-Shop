@@ -1,10 +1,3 @@
-//
-//  HomeView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/04/23.
-//
-
 import SwiftUI
 import CoreData
 import AVFoundation
@@ -12,6 +5,7 @@ import StoreKit
 
 struct CustomProductView: View {
     @EnvironmentObject var productViewModel: ProductViewModel
+    @Environment(SyncWebSocketClient.self) private var syncManager
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
@@ -21,6 +15,12 @@ struct CustomProductView: View {
         .onAppear {
             Task {
                 await productViewModel.lazyFetchProducts()
+            }
+        }
+        .onChange(of: syncManager.lastTokenByEntities.product) { oldValue, newValue in
+            print("Se encontro nuevo token en Producto, Old: \(oldValue), New: \(newValue)")
+            Task {
+                await productViewModel.updateCurrentList(newToken: newValue)
             }
         }
     }

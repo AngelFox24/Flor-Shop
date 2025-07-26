@@ -8,6 +8,8 @@ protocol LocalProductManager {
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
     func getLastUpdated() -> Date
     func getLastToken(context: NSManagedObjectContext) -> Int64
+    func getLastToken() -> Int64
+    func updateProducts(products: [Product]) -> [Product]
 }
 
 class LocalProductManagerImpl: LocalProductManager {
@@ -23,6 +25,9 @@ class LocalProductManagerImpl: LocalProductManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
         self.imageService = imageService
+    }
+    func getLastToken() -> Int64 {
+        return self.getLastToken(context: self.mainContext)
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
@@ -58,6 +63,32 @@ class LocalProductManagerImpl: LocalProductManager {
         } catch let error {
             print("Error fetching. \(error)")
             return dateFrom!
+        }
+    }
+    func updateProducts(products: [Product]) -> [Product] {
+        let ids = products.compactMap(\.id)
+        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        request.predicate = NSPredicate(format: "idProduct IN %@", ids)
+        do {
+            var productsEntities = try self.mainContext.fetch(request).compactMap{$0.toProduct()}
+            print("\(className) products raw to update: \(productsEntities)")
+            productsEntities = productsEntities.filter { productRaw in
+                !products.contains(where: { productIn in
+                    print("\(className) productIn: \(productIn) \n productRaw: \(productRaw)")
+                    if productIn.isEquals(to: productRaw) {
+                        print("\(className) son iguales")
+                        return true
+                    } else {
+                        print("\(className) no son iguales")
+                        return false
+                    }
+                })
+            }
+            print("\(className) products filtered to update: \(productsEntities)")
+            return productsEntities
+        } catch {
+            print("Error fetching. \(error)")
+            return []
         }
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
@@ -173,7 +204,7 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.syncToken = productDTO.syncToken
                 productEntity.createdAt = productDTO.createdAt
                 productEntity.updatedAt = productDTO.updatedAt
-                productEntity.toImageUrl?.idImageUrl = productDTO.imageUrlId
+                productEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: productDTO.imageUrlId)
                 try saveData(context: backgroundContext)
                 print("[LocalProductManagerImpl] Se actualizo el producto")
             } else {
@@ -190,7 +221,7 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.syncToken = productDTO.syncToken
                 productEntity.createdAt = productDTO.createdAt
                 productEntity.updatedAt = productDTO.updatedAt
-                productEntity.toImageUrl?.idImageUrl = productDTO.imageUrlId
+                productEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: productDTO.imageUrlId)
                 try saveData(context: backgroundContext)
                 print("[LocalProductManagerImpl] Se creo el producto")
             }

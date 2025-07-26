@@ -18,13 +18,16 @@ protocol LocalSaleManager {
 class LocalSaleManagerImpl: LocalSaleManager {
     let mainContext: NSManagedObjectContext
     let sessionConfig: SessionConfig
+    let imageService: LocalImageService
     let className = "[LocalSaleManager]"
     init(
         mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
+        imageService: LocalImageService
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+        self.imageService = imageService
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
@@ -584,7 +587,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 for saleDetailDTO in saleDTO.saleDetail {
                     let newSaleDetailEntity = Tb_SaleDetail(context: backgroundContext)
                     newSaleDetailEntity.idSaleDetail = saleDetailDTO.id
-                    newSaleDetailEntity.toImageUrl?.idImageUrl = saleDetailDTO.imageUrlId
+                    newSaleDetailEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: saleDetailDTO.imageUrlId)
                     newSaleDetailEntity.productName = saleDetailDTO.productName
                     newSaleDetailEntity.unitCost = Int64(saleDetailDTO.unitCost)
                     newSaleDetailEntity.unitPrice = Int64(saleDetailDTO.unitPrice)

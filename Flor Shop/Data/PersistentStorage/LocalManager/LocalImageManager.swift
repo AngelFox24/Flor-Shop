@@ -88,6 +88,7 @@ final class LocalImageManagerImpl: LocalImageManager {
                 imageEntity.updatedAt = imageURLDTO.updatedAt
                 try saveData(context: backgroundContext)
             } else {
+                print("[LocalImageManagerImpl] No existe, se crea [ \(imageURLDTO.id)]")
                 let imageEntity = Tb_ImageUrl(context: backgroundContext)
                 imageEntity.idImageUrl = imageURLDTO.id
                 imageEntity.imageUrl = imageURLDTO.imageUrl

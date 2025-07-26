@@ -33,22 +33,28 @@ struct CustomAsyncImageView: View {
             }
         }
         .onAppear(perform: {
-            Task {
-                self.isLoading = true
-//                try? await Task.sleep(nanoseconds: 2_000_000_000)
-                if let imageNN = imageUrl {
-                    let imageR = try? await LocalImageManagerImpl.loadImage(image: imageNN)
-                    if let uiImage = imageR {
-                        await MainActor.run {
-                            self.image = Image(uiImage: uiImage)
-                        }
-                    }
-                } else {
-                    print("Imagen Nula")
-                }
-                self.isLoading = false
-            }
+            updateImage()
         })
+        .onChange(of: imageUrl) { oldValue, newValue in
+            updateImage(newImageUrl: newValue)
+        }
+    }
+    func updateImage(newImageUrl: ImageUrl? = nil) {
+        Task {
+            self.isLoading = true
+            let imageToLoad: ImageUrl? = newImageUrl ?? self.imageUrl
+            if let imageNN = imageToLoad {
+                let imageR = try? await LocalImageManagerImpl.loadImage(image: imageNN)
+                if let uiImage = imageR {
+                    await MainActor.run {
+                        self.image = Image(uiImage: uiImage)
+                    }
+                }
+            } else {
+                print("Imagen Nula")
+            }
+            self.isLoading = false
+        }
     }
 }
 

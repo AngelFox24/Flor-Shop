@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Money: Codable {
+struct Money: Codable, Equatable {
     var cents: Int
     
     // Inicializador para deserialización directa desde un valor entero

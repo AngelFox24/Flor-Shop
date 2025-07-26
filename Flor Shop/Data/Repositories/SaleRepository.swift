@@ -36,6 +36,9 @@ class SaleRepositoryImpl: SaleRepository, Syncronizable {
             try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
         }
     }
+    func getLastToken() -> Int64 {
+        return 0
+    }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)
     }

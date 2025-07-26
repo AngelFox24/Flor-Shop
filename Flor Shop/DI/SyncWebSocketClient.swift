@@ -1,16 +1,32 @@
-//
-//  SyncWebSocketClient.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 17/05/2025.
-//
-
 import Foundation
 import Observation
+
+struct LastTokenByEntities {
+    var image: Int64
+    var company: Int64
+    var subsidiary: Int64
+    var customer: Int64
+    var employee: Int64
+    var product: Int64
+    var sale: Int64
+    
+    var maxToken: Int64 {
+        return max(
+            image,
+            company,
+            subsidiary,
+            customer,
+            employee,
+            product,
+            sale
+        )
+    }
+}
 
 @Observable
 final class SyncWebSocketClient {
     var isConnected: Bool = false
+    var lastTokenByEntities: LastTokenByEntities
     private var webSocketTask: URLSessionWebSocketTask?
     private let urlSession = URLSession(configuration: .default)
     //Log Prefix
@@ -21,11 +37,12 @@ final class SyncWebSocketClient {
     private var retryByCode: [Int: Int] = [:]
     init(
         synchronizerDBUseCase: SynchronizerDBUseCase,
-        latestToken: Int64
+        lastTokenByEntities: LastTokenByEntities
     ) {
+        self.lastTokenByEntities = lastTokenByEntities
         self.syncManager = SyncManager(
             synchronizer: synchronizerDBUseCase,
-            latestToken: latestToken
+            latestToken: lastTokenByEntities.maxToken
         )
     }
     func connect() {
@@ -69,6 +86,10 @@ final class SyncWebSocketClient {
                     if let lastToken = self.parseSyncToken(from: text) {
                         Task {
                             await self.syncManager.handleNewToken(lastToken)
+                            let newTokens = await self.syncManager.getLastTokenByEntities()
+                            await MainActor.run {
+                                self.lastTokenByEntities = newTokens
+                            }
                         }
                     }
                 case .data(let data):

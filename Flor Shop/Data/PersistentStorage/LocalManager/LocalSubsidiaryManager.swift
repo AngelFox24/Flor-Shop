@@ -94,7 +94,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                     continue
                 }
                 subsidiaryEntity.name = subsidiaryDTO.name
-                subsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrlId
+                subsidiaryEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: subsidiaryDTO.imageUrlId)
                 subsidiaryEntity.syncToken = subsidiaryDTO.syncToken
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt
                 subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt
@@ -104,7 +104,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
                 newSubsidiaryEntity.name = subsidiaryDTO.name
                 newSubsidiaryEntity.syncToken = subsidiaryDTO.syncToken
-                newSubsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrlId
+                newSubsidiaryEntity.toImageUrl = try self.imageService.getImageEntityById(context: backgroundContext, imageId: subsidiaryDTO.imageUrlId)
                 newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt
                 newSubsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt

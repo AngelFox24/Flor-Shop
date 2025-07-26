@@ -5,6 +5,7 @@ import CoreData
 protocol LocalImageService {
     func save(context: NSManagedObjectContext, image: ImageUrl) throws -> Tb_ImageUrl
     func saveIfExist(context: NSManagedObjectContext, image: ImageUrl?) throws -> Tb_ImageUrl?
+    func getImageEntityById(context: NSManagedObjectContext, imageId: UUID?) throws -> Tb_ImageUrl?
 }
 
 extension LocalImageService {
@@ -41,6 +42,12 @@ struct LocalImageServiceImpl: LocalImageService {
             newImageEntity.updatedAt = Date()
             return newImageEntity
         }
+    }
+    func getImageEntityById(context: NSManagedObjectContext, imageId: UUID?) throws -> Tb_ImageUrl? {
+        guard let imageId else {
+            return nil
+        }
+        return self.findById(context: context, id: imageId)
     }
     private func validateImage(image: ImageUrl) throws {
         ///Todas las imagenes deben tener URL, incluso las que son cargadas del movil, en este caso la URL representaria la direccion donde se almacena la imagen en local.

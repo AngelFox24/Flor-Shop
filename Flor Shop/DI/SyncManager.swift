@@ -1,9 +1,3 @@
-//
-//  SyncManager.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 17/05/2025.
-//
 import Foundation
 actor SyncManager {
     private var isSyncing = false
@@ -27,6 +21,10 @@ actor SyncManager {
             print("\(logPrefix) Se inició la sincronización ...")
             await syncNext()
         }
+    }
+    
+    func getLastTokenByEntities() async -> LastTokenByEntities {
+        return self.synchronizer.getLastToken()
     }
     
     private func syncNext() async {

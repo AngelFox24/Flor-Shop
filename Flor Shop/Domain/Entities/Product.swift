@@ -2,7 +2,7 @@ import Foundation
 import FlorShop_DTOs
 import CoreData
 
-struct Product: Identifiable, Codable {
+struct Product: Identifiable, Codable, Equatable {
     var id: UUID
     let productId: UUID?
     var active: Bool
@@ -46,6 +46,26 @@ extension Product {
             unitPrice: unitPrice.cents,
             subsidiaryId: subsidiaryId,
             imageUrl: image?.toImageUrlDTO()
+        )
+    }
+    func isEquals(to other: Product) -> Bool {
+        let imageIsEquals: Bool
+        if let image = self.image {
+            imageIsEquals = image.isEquals(to: other.image)
+        } else {
+            imageIsEquals = other.image == nil
+        }
+        return (
+            self.productId == other.productId &&
+            self.name == other.name &&
+            self.barCode == other.barCode &&
+            self.qty == other.qty &&
+            self.unitPrice == other.unitPrice &&
+            self.unitCost == other.unitCost &&
+            self.expirationDate == other.expirationDate &&
+            self.active == other.active &&
+            self.image?.id == other.image?.id &&
+            imageIsEquals
         )
     }
 }

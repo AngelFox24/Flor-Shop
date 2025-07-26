@@ -1,10 +1,3 @@
-//
-//  ProductCoreDataViewModel.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 1/05/23.
-//
-
 import Foundation
 import Combine
 
@@ -14,10 +7,13 @@ class ProductViewModel: ObservableObject {
     @Published var primaryOrder: PrimaryOrder = .nameAsc
     @Published var filterAttribute: ProductsFilterAttributes = .allProducts
     @Published var deleteCount: Int = 0
-    
+    //Sync Engine
+    private var lastToken: Int64
+    //Pagination vars
     private var currentPagesInScreen: [[Int]] = []
     private let maxPagesToLoad: Int = 3
     private var lastCarge: Int = 0
+    //Search vars
     private var cancellableSet = Set<AnyCancellable>()
     private var searchTask: Task<Void, Never>? = nil
     
@@ -30,10 +26,28 @@ class ProductViewModel: ObservableObject {
     ) {
         self.synchronizerDBUseCase = synchronizerDBUseCase
         self.getProductsUseCase = getProductsUseCase
+        self.lastToken = self.getProductsUseCase.getLastToken()
         addSearchTextSuscriber()
     }
     func sync() async throws {
 //        try await self.synchronizerDBUseCase.sync()
+    }
+    func updateCurrentList(newToken: Int64) async {
+        if lastToken < newToken {
+            print("[ProductViewModel] nuevo token recibido, lastToken: \(lastToken), newToken: \(newToken)")
+            let productsUpdated = self.getProductsUseCase.updateProducts(products: self.productsCoreData)
+            for productsUpdate in productsUpdated {
+                print("[ProductViewModel] Producto actualizado: \(productsUpdate)")
+            }
+            await MainActor.run {
+                for productUpdated in productsUpdated {
+                    if let index = self.productsCoreData.firstIndex(where: { $0.id == productUpdated.id }) {
+                        self.productsCoreData[index] = productUpdated
+                    }
+                }
+                self.lastToken = self.getProductsUseCase.getLastToken()
+            }
+        }
     }
     func addSearchTextSuscriber() {
         $searchText
@@ -54,7 +68,7 @@ class ProductViewModel: ObservableObject {
             let productsNewCarge = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
 //            print("[ProductViewModel] START FETCH PRODUCTS")
 //            for product in productsNewCarge {
-//                print("[ProductViewModel] Name: \(product.name) | Id: \(product.id.uuidString)")
+//                print("[ProductViewModel] Name: \(product) | Id: \(product.id.uuidString)")
 //            }
 //            print("[ProductViewModel] END FETCH PRODUCTS")
             lastCarge = productsNewCarge.count
