@@ -30,7 +30,8 @@ actor SyncManager {
     }
     
     private func syncNext() async {
-        //Reservamos el ultimo token
+        //Reservamos el ultimo token local
+        let previousToken = self.previousToken
         let latestToken = self.latestToken
         guard previousToken != latestToken else {
             print("\(logPrefix) Mismo parametros, no se sincroniza.")
@@ -39,14 +40,25 @@ actor SyncManager {
         isSyncing = true
         
         do {
-            try await synchronizer.sync(newToken: latestToken)
-            previousToken = latestToken
+            let lastTokenUpdate = try await synchronizer.sync(lastToken: previousToken)
+            await self.verifySyncCompletion(lastTokenUpdate: lastTokenUpdate, targetToken: latestToken)
+            self.previousToken = latestToken
             print("\(logPrefix) ✅ Sincronización completa")
         } catch {
             print("\(logPrefix) ❌ Error sync: \(error)")
         }
-        
         await self.syncCompleted()
+    }
+    
+    private func verifySyncCompletion(lastTokenUpdate: Int64, targetToken: Int64) async {
+        if lastTokenUpdate < targetToken {
+            self.previousToken = lastTokenUpdate
+            print("\(logPrefix) Se inició la sincronización porque el token de la respuesta anterior no es el último, obejtivo es: \(targetToken), actual: \(lastTokenUpdate) ...")
+            await syncNext()
+        } else {
+            print("\(logPrefix) Sincronizacion completa, se verificara si hay nuevos cambios mientras se estaba sincronizando ...")
+            return
+        }
     }
     
     private func syncCompleted() async {

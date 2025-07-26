@@ -14,7 +14,8 @@ extension SubsidiaryClientDTO {
         return (
             self.id == other.idSubsidiary &&
             self.name == other.name &&
-            self.imageUrlId == other.toImageUrl?.idImageUrl
+            self.imageUrlId == other.toImageUrl?.idImageUrl &&
+            self.syncToken == other.syncToken
         )
     }
 }

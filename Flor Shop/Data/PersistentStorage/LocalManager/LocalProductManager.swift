@@ -27,7 +27,7 @@ class LocalProductManagerImpl: LocalProductManager {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
         let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -170,6 +170,7 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitCost = Int64(productDTO.unitCost)
                 productEntity.expirationDate = productDTO.expirationDate
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
+                productEntity.syncToken = productDTO.syncToken
                 productEntity.createdAt = productDTO.createdAt
                 productEntity.updatedAt = productDTO.updatedAt
                 productEntity.toImageUrl?.idImageUrl = productDTO.imageUrlId
@@ -186,6 +187,7 @@ class LocalProductManagerImpl: LocalProductManager {
                 productEntity.unitCost = Int64(productDTO.unitCost)
                 productEntity.expirationDate = productDTO.expirationDate
                 productEntity.unitPrice = Int64(productDTO.unitPrice)
+                productEntity.syncToken = productDTO.syncToken
                 productEntity.createdAt = productDTO.createdAt
                 productEntity.updatedAt = productDTO.updatedAt
                 productEntity.toImageUrl?.idImageUrl = productDTO.imageUrlId

@@ -28,7 +28,8 @@ extension ProductClientDTO {
             self.unitType == other.unitType &&
             self.unitCost == other.unitCost &&
             self.unitPrice == other.unitPrice &&
-            self.imageUrlId == other.toImageUrl?.idImageUrl
+            self.imageUrlId == other.toImageUrl?.idImageUrl &&
+            self.syncToken == other.syncToken
         )
     }
 }

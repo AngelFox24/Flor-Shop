@@ -15,7 +15,8 @@ extension ImageURLClientDTO {
         return (
             self.id == other.idImageUrl &&
             self.imageUrl == other.imageUrl &&
-            self.imageHash == other.imageHash
+            self.imageHash == other.imageHash &&
+            self.syncToken == other.syncToken
         )
     }
 }

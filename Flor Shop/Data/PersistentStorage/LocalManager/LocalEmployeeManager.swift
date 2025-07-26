@@ -27,7 +27,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
         let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -86,6 +86,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.phoneNumber = employeeDTO.phoneNumber
                 employeeEntity.role = employeeDTO.role
                 employeeEntity.user = employeeDTO.user
+                employeeEntity.syncToken = employeeDTO.syncToken
                 employeeEntity.createdAt = employeeDTO.createdAt
                 employeeEntity.updatedAt = employeeDTO.updatedAt
                 try saveData(context: backgroundContext)
@@ -106,6 +107,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.user = employeeDTO.user
                 newEmployeeEntity.toSubsidiary = subsidiaryEntity
                 newEmployeeEntity.toCart = cartEntity
+                newEmployeeEntity.syncToken = employeeDTO.syncToken
                 newEmployeeEntity.createdAt = employeeDTO.createdAt
                 newEmployeeEntity.updatedAt = employeeDTO.updatedAt
                 try saveData(context: backgroundContext)

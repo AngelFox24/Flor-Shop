@@ -26,7 +26,8 @@ extension EmployeeClientDTO {
             self.phoneNumber == other.phoneNumber &&
             self.role == other.role &&
             self.active == other.active &&
-            self.imageUrlId == other.toImageUrl?.idImageUrl
+            self.imageUrlId == other.toImageUrl?.idImageUrl &&
+            self.syncToken == other.syncToken
         )
     }
 }

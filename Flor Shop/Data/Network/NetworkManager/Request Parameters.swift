@@ -46,8 +46,8 @@ struct SyncFromSubsidiaryParameters: Encodable {
     let updatedSince: String
     let syncIds: VerifySyncParameters
 }
-struct SyncServerRequestParameters: Encodable {
-    let lastToken: Int64
+struct SyncServerParameters: Encodable {
+    let syncToken: Int64
     let sessionConfig: SessionConfig
 }
 //MARK: Request Parameters

@@ -14,7 +14,8 @@ extension SaleClientDTO {
     func isEquals(to other: Tb_Sale) -> Bool {
         return (
             self.id == other.idSale &&
-            self.paymentType == other.paymentType
+            self.paymentType == other.paymentType &&
+            self.syncToken == other.syncToken
         )
     }
 }

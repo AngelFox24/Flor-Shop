@@ -41,7 +41,7 @@ final class LocalImageManagerImpl: LocalImageManager {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
         let predicate = NSPredicate(format: "syncToken != nil")
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -83,6 +83,7 @@ final class LocalImageManagerImpl: LocalImageManager {
                 }
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
+                imageEntity.syncToken = imageURLDTO.syncToken
                 imageEntity.createdAt = imageURLDTO.createdAt
                 imageEntity.updatedAt = imageURLDTO.updatedAt
                 try saveData(context: backgroundContext)
@@ -91,6 +92,7 @@ final class LocalImageManagerImpl: LocalImageManager {
                 imageEntity.idImageUrl = imageURLDTO.id
                 imageEntity.imageUrl = imageURLDTO.imageUrl
                 imageEntity.imageHash = imageURLDTO.imageHash
+                imageEntity.syncToken = imageURLDTO.syncToken
                 imageEntity.createdAt = imageURLDTO.createdAt
                 imageEntity.updatedAt = imageURLDTO.updatedAt
                 try saveData(context: backgroundContext)

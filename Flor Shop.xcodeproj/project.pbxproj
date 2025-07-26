@@ -10,6 +10,7 @@
 		0B1EC71C2E07698800AFF006 /* PersistenceSessionConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EC71B2E07698800AFF006 /* PersistenceSessionConfig.swift */; };
 		0B30D4C92E2C3FFF005AD330 /* RemoteSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B30D4C82E2C3FFF005AD330 /* RemoteSyncManager.swift */; };
 		0B360B5E2CAA1A19008BECFB /* BusinessLogicError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */; };
+		0B49BFF62E2D9D6E00BF7277 /* SyncRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B49BFF52E2D9D6E00BF7277 /* SyncRepository.swift */; };
 		0B555A0E2DD86420001F5BE0 /* SyncWebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B555A0D2DD86420001F5BE0 /* SyncWebSocketClient.swift */; };
 		0B555A102DD8733E001F5BE0 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B555A0F2DD87338001F5BE0 /* SyncManager.swift */; };
 		0B7C515B2CB181E8005C655A /* Request Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7C515A2CB181D9005C655A /* Request Parameters.swift */; };
@@ -178,6 +179,7 @@
 		0B1EC71B2E07698800AFF006 /* PersistenceSessionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceSessionConfig.swift; sourceTree = "<group>"; };
 		0B30D4C82E2C3FFF005AD330 /* RemoteSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSyncManager.swift; sourceTree = "<group>"; };
 		0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessLogicError.swift; sourceTree = "<group>"; };
+		0B49BFF52E2D9D6E00BF7277 /* SyncRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncRepository.swift; sourceTree = "<group>"; };
 		0B555A0D2DD86420001F5BE0 /* SyncWebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncWebSocketClient.swift; sourceTree = "<group>"; };
 		0B555A0F2DD87338001F5BE0 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 		0B7C515A2CB181D9005C655A /* Request Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request Parameters.swift"; sourceTree = "<group>"; };
@@ -1457,6 +1459,7 @@
 				274AF27A2C5A066B00165155 /* SessionRepository.swift */,
 				275212982BC968DE005E2016 /* ImageRepository.swift */,
 				279C64892A8D78B8003B29BC /* CompanyRepository.swift */,
+				0B49BFF52E2D9D6E00BF7277 /* SyncRepository.swift */,
 				279C64872A8D7880003B29BC /* SubsidiaryRepository.swift */,
 				279C64952A8D798A003B29BC /* CustomerRepository.swift */,
 				279C64932A8D796D003B29BC /* EmployeeRepository.swift */,
@@ -1599,6 +1602,7 @@
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */,
 				274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */,
+				0B49BFF62E2D9D6E00BF7277 /* SyncRepository.swift in Sources */,
 				2735768F2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift in Sources */,
 				2748918E2AD707B3004D6C6C /* CustomersEnums.swift in Sources */,
 				27B796B92BBEF47100AC45D0 /* SourceSelecctionView.swift in Sources */,

@@ -125,7 +125,7 @@ class AgregarViewModel: ObservableObject {
         if agregarFields.isErrorsEmpty() {
             return Product(
                 id: self.agregarFields.productId ?? UUID(),
-                productId: nil,
+                productId: self.agregarFields.productId ?? nil,
                 active: self.agregarFields.active,
                 barCode: self.agregarFields.scannedCode == "" ? nil : self.agregarFields.scannedCode,
                 name: self.agregarFields.productName,
@@ -171,13 +171,15 @@ class AgregarViewModel: ObservableObject {
         //Verificar si hay URL, se da prioridad
         if self.agregarFields.imageUrl != "" {
             //Devolver ImageUrl nuevo
+            print("[AgregarViewModel] Imagen URL no es vacia")
             return ImageUrl(
                 id: self.agregarFields.idImage ?? UUID(),
-                imageUrlId: self.agregarFields.idImage ?? UUID(),
+                imageUrlId: self.agregarFields.idImage ?? nil,
                 imageUrl: self.agregarFields.imageUrl,
                 imageHash: self.agregarFields.imageHash
             )
         } else if let uiImage = self.selectedLocalImage {
+            print("[AgregarViewModel] Hay UIImage")
             return try await self.getImageUseCase.execute(uiImage: uiImage)
         } else {
             return nil

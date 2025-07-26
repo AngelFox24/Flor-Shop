@@ -36,8 +36,8 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary.idCompany == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let predicate = NSPredicate(format: "toCompany.idCompany == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -99,6 +99,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 customerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 customerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 customerEntity.totalDebt = Int64(customerDTO.totalDebt)
+                customerEntity.syncToken = customerDTO.syncToken
                 customerEntity.createdAt = customerDTO.createdAt
                 customerEntity.updatedAt = customerDTO.updatedAt
                 try saveData(context: backgroundContext)
@@ -121,6 +122,7 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
                 newCustomerEntity.lastDatePurchase = customerDTO.lastDatePurchase
                 newCustomerEntity.firstDatePurchaseWithCredit = customerDTO.firstDatePurchaseWithCredit
                 newCustomerEntity.totalDebt = Int64(customerDTO.totalDebt)
+                newCustomerEntity.syncToken = customerDTO.syncToken
                 newCustomerEntity.createdAt = customerDTO.createdAt
                 newCustomerEntity.updatedAt = customerDTO.updatedAt
                 try saveData(context: backgroundContext)

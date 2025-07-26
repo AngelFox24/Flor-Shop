@@ -32,6 +32,7 @@ struct BusinessDependencies {
     private let remoteEmployeeManager: RemoteEmployeeManagerImpl
     private let remoteCustomerManager: RemoteCustomerManagerImpl
     private let remoteImageManager: RemoteImageManagerImpl
+    private let remoteSyncManager: RemoteSyncManager
     //Repositorios
     private let companyRepository: CompanyRepositoryImpl
     private let subsidiaryRepository: SubsidiaryRepositoryImpl
@@ -41,6 +42,7 @@ struct BusinessDependencies {
     private let cartRepository: CarRepositoryImpl
     private let salesRepository: SaleRepositoryImpl
     private let imageRepository: ImageRepositoryImpl
+    private let syncRepository: SyncRepository
     //UseCases
     private let synchronizerDBUseCase: SynchronizerDBUseCase
     private let getProductsUseCase: GetProductsUseCase
@@ -101,6 +103,7 @@ struct BusinessDependencies {
         self.remoteEmployeeManager = RemoteEmployeeManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteCustomerManager = RemoteCustomerManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteImageManager = RemoteImageManagerImpl()
+        self.remoteSyncManager = RemoteSyncManagerImpl(sessionConfig: self.sessionConfig)
         //MARK: Repositorios
         self.companyRepository = CompanyRepositoryImpl(localManager: localCompanyManager, remoteManager: remoteCompanyManager)
         self.subsidiaryRepository = SubsidiaryRepositoryImpl(localManager: localSubsidiaryManager, remoteManager: remoteSubsidiaryManager)
@@ -110,8 +113,9 @@ struct BusinessDependencies {
         self.cartRepository = CarRepositoryImpl(localManager: localCartManager)
         self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
         self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
+        self.syncRepository = SyncRepositoryImpl(remoteSyncManager: remoteSyncManager)
         //MARK: UseCases
-        self.synchronizerDBUseCase = SynchronizerDBInteractor(persistentContainer: CoreDataProvider.shared.persistContainer, imageRepository: imageRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository, employeeRepository: employeeRepository, productRepository: productRepository, saleRepository: salesRepository)
+        self.synchronizerDBUseCase = SynchronizerDBInteractor(persistentContainer: CoreDataProvider.shared.persistContainer, imageRepository: imageRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository, employeeRepository: employeeRepository, productRepository: productRepository, saleRepository: salesRepository, syncRepository: syncRepository)
         self.getProductsUseCase = GetProductInteractor(productRepository: productRepository)
         self.createCompanyUseCase = CreateCompanyInteractor(companyRepository: companyRepository)
         self.createSubsidiaryUseCase = CreateSubsidiaryInteractor(subsidiaryRepository: subsidiaryRepository)

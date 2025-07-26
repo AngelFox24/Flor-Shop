@@ -22,8 +22,8 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let predicate = NSPredicate(format: "idCompany == %@ == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let predicate = NSPredicate(format: "idCompany == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -70,6 +70,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             }
             companyEntity.companyName = companyDTO.companyName
             companyEntity.ruc = companyDTO.ruc
+            companyEntity.syncToken = companyDTO.syncToken
             companyEntity.createdAt = companyDTO.createdAt
             companyEntity.updatedAt = companyDTO.updatedAt
         } else {
@@ -78,6 +79,7 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
             newCompanyEntity.idCompany = companyDTO.id
             newCompanyEntity.companyName = companyDTO.companyName
             newCompanyEntity.ruc = companyDTO.ruc
+            newCompanyEntity.syncToken = companyDTO.syncToken
             newCompanyEntity.createdAt = companyDTO.createdAt
             newCompanyEntity.updatedAt = companyDTO.updatedAt
         }

@@ -29,7 +29,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
         let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -45,7 +45,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
     func getLastTokenForSaleDetails(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_SaleDetail> = Tb_SaleDetail.fetchRequest()
         let predicate = NSPredicate(format: "toSale.toSubsidiary.idSubsidiary == %@ AND syncToken != nil", self.sessionConfig.subsidiaryId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -563,6 +563,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 print("Se actualiza sale")
                 saleEntity.paymentType = saleDTO.paymentType
                 saleEntity.updatedAt = saleDTO.updatedAt
+                saleEntity.syncToken = saleDTO.syncToken
                 try saveData(context: backgroundContext)
             } else {
                 //Create
@@ -576,6 +577,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                 }
                 newSaleEntity.paymentType = saleDTO.paymentType
                 newSaleEntity.saleDate = saleDTO.saleDate
+                newSaleEntity.syncToken = saleDTO.syncToken
                 newSaleEntity.createdAt = saleDTO.createdAt
                 newSaleEntity.updatedAt = saleDTO.updatedAt
                 newSaleEntity.total = Int64(saleDTO.total)
@@ -589,6 +591,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
                     newSaleDetailEntity.quantitySold = Int64(saleDetailDTO.quantitySold)
                     newSaleDetailEntity.subtotal = Int64(saleDetailDTO.subtotal)
                     newSaleDetailEntity.toSale = newSaleEntity
+                    newSaleDetailEntity.syncToken = saleDetailDTO.syncToken
                     newSaleDetailEntity.createdAt = saleDetailDTO.createdAt
                     newSaleDetailEntity.updatedAt = saleDetailDTO.updatedAt
                     try saveData(context: backgroundContext)

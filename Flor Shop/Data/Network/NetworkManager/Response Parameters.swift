@@ -58,5 +58,6 @@ struct SyncClientParameters: Decodable {
     let products: [ProductClientDTO]
     let sales: [SaleClientDTO]
     let salesDetail: [SaleDetailClientDTO]
+    let lastToken: Int64
     let isUpToDate: Bool
 }

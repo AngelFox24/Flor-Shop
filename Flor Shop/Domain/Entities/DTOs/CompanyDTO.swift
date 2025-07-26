@@ -14,7 +14,8 @@ extension CompanyClientDTO {
         return (
             self.id == other.idCompany &&
             self.companyName == other.companyName &&
-            self.ruc == other.ruc
+            self.ruc == other.ruc &&
+            self.syncToken == other.syncToken
         )
     }
 }

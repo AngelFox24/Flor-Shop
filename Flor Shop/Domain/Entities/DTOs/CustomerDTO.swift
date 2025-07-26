@@ -40,7 +40,8 @@ extension CustomerClientDTO {
             self.lastDatePurchase == other.lastDatePurchase &&
             self.phoneNumber == other.phoneNumber &&
             self.creditLimit == other.creditLimit &&
-            self.imageUrlId == other.toImageUrl?.idImageUrl
+            self.imageUrlId == other.toImageUrl?.idImageUrl &&
+            self.syncToken == other.syncToken
         )
     }
 }

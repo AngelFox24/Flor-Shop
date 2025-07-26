@@ -26,8 +26,8 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary.idCompany == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "lastToken", ascending: false)
+        let predicate = NSPredicate(format: "toCompany.idCompany == %@ AND syncToken != nil", self.sessionConfig.companyId.uuidString)
+        let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
         request.predicate = predicate
         request.fetchLimit = 1
@@ -95,6 +95,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 }
                 subsidiaryEntity.name = subsidiaryDTO.name
                 subsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrlId
+                subsidiaryEntity.syncToken = subsidiaryDTO.syncToken
                 subsidiaryEntity.createdAt = subsidiaryDTO.createdAt
                 subsidiaryEntity.updatedAt = subsidiaryDTO.updatedAt
                 try saveData(context: backgroundContext)
@@ -102,6 +103,7 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
                 let newSubsidiaryEntity = Tb_Subsidiary(context: backgroundContext)
                 newSubsidiaryEntity.idSubsidiary = subsidiaryDTO.id
                 newSubsidiaryEntity.name = subsidiaryDTO.name
+                newSubsidiaryEntity.syncToken = subsidiaryDTO.syncToken
                 newSubsidiaryEntity.toImageUrl?.idImageUrl = subsidiaryDTO.imageUrlId
                 newSubsidiaryEntity.toCompany = companyEntity
                 newSubsidiaryEntity.createdAt = subsidiaryDTO.createdAt
