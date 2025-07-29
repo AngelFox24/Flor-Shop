@@ -34,19 +34,9 @@ struct CustomTextField: View {
                         .toolbar {
                             if isInputActive {
                                 ToolbarItemGroup(placement: .keyboard) {
-                                    HStack {
-                                        Spacer()
-                                        Button(action: {
-                                            isInputActive = false
-                                        }, label: {
-                                            Image(systemName: "keyboard.chevron.compact.down")
-                                                .font(.system(size: 20))
-                                                .foregroundColor(Color("color_accent"))
-                                                .padding(.trailing, 50)
-                                                .padding(.vertical, 10)
-                                        })
-                                    }
-                                    .background(Color("color_primary"))
+                                    CustomHideKeyboard(action: {
+                                        isInputActive = false
+                                    })
                                     .frame(width: UIScreen.main.bounds.width)
                                 }
                             }
@@ -60,7 +50,7 @@ struct CustomTextField: View {
                             }
                         }, label: {
                             Image(systemName: "x.circle")
-                                .foregroundColor(Color("color_accent"))
+                                .foregroundColor(Color.accent)
                                 .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 12)
@@ -96,7 +86,7 @@ struct CustomTextField: View {
     @Previewable @State var ed1 = false
     VStack(spacing: 16) {
         CustomTextField(value: $name, edited: $ed)
-        CustomTextField(value: $qt, edited: $ed1)
+//        CustomTextField(value: $qt, edited: $ed1)
         //CustomText(title: "Nombre", value: "", disable: true)
         //CustomTextField(edited: .constant(false))
     }

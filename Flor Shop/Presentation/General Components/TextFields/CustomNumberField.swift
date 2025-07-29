@@ -3,6 +3,7 @@ import SwiftUI
 struct CustomNumberField: View {
     var placeHolder: String = "0.00"
     var title: String = "Campo"
+    @State private var firstFocusTriggered = false
     @State private var viewText: String = ""
     @Binding var userInput: Int
     @Binding var edited: Bool
@@ -40,7 +41,7 @@ struct CustomNumberField: View {
                                 }
                             }
                             .onChange(of: isInputActive) { oldFocus, newFocus in
-                                if newFocus == false {
+                                if !newFocus {
                                     print("Se ejecuta UnFocused")
                                     onUnFocused?()
                                     if userInput == 0 {//Cuando el teclado desaparece que aparesca el placeholder
@@ -62,19 +63,9 @@ struct CustomNumberField: View {
                             .toolbar {
                                 if isInputActive {
                                     ToolbarItemGroup(placement: .keyboard) {
-                                        HStack {
-                                            Spacer()
-                                            Button(action: {
-                                                isInputActive = false
-                                            }, label: {
-                                                Image(systemName: "keyboard.chevron.compact.down")
-                                                    .font(.system(size: 20))
-                                                    .foregroundColor(Color("color_accent"))
-                                                    .padding(.trailing, 50)
-                                                    .padding(.vertical, 10)
-                                            })
-                                        }
-                                        .background(Color("color_primary"))
+                                        CustomHideKeyboard(action: {
+                                            isInputActive = false
+                                        })
                                         .frame(width: UIScreen.main.bounds.width)
                                     }
                                 }

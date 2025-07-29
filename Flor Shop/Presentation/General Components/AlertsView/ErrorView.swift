@@ -32,5 +32,5 @@ struct ErrorView: View {
     VStack{
         ErrorView(error: "ss")
     }
-        .environment(router)
+    .environment(router)
 }
