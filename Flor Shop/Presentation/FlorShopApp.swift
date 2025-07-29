@@ -2,7 +2,7 @@ import SwiftUI
 //import FirebaseAuth
 import AppRouter
 
-typealias Router = CustomRouter<FlowRoutes, SheetRoutes, AlertRoutes>
+typealias Router = FlorShopRouter<FlowRoutes, SheetRoutes, AlertRoutes>
 
 @main
 struct FlorShopApp: App {

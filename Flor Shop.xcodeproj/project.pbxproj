@@ -17,7 +17,6 @@
 		0B7C515D2CB181F9005C655A /* Response Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7C515C2CB181F4005C655A /* Response Parameters.swift */; };
 		0B8CA3852E03DC52003F2A1B /* RegisterStuffs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8CA3842E03DC52003F2A1B /* RegisterStuffs.swift */; };
 		0BC1C2E32DF508C600BAFCC8 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC1C2E22DF508C600BAFCC8 /* APIEndpoint.swift */; };
-		0BE1D84C2DF4C0CE0074B309 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE1D84B2DF4C0CE0074B309 /* AppRouter */; };
 		0BE5EC162E2C82F00045B774 /* FlorShop_DTOs in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5EC152E2C82F00045B774 /* FlorShop_DTOs */; };
 		0BEAA5BB2DF6184E00D510FF /* VersionCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BEAA5BA2DF6184E00D510FF /* VersionCheckView.swift */; };
 		2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */; };
@@ -183,7 +182,6 @@
 		0B7C515C2CB181F4005C655A /* Response Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Response Parameters.swift"; sourceTree = "<group>"; };
 		0B8CA3842E03DC52003F2A1B /* RegisterStuffs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterStuffs.swift; sourceTree = "<group>"; };
 		0BC1C2E22DF508C600BAFCC8 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
-		0BE1D84D2DF4C0F10074B309 /* AppRouter */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AppRouter; path = Packages/AppRouter; sourceTree = "<group>"; };
 		0BEAA5BA2DF6184E00D510FF /* VersionCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionCheckView.swift; sourceTree = "<group>"; };
 		2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerView.swift; sourceTree = "<group>"; };
 		2702C9D72ADACF8E008DBF66 /* AddCustomerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerViewModel.swift; sourceTree = "<group>"; };
@@ -355,7 +353,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BE1D84C2DF4C0CE0074B309 /* AppRouter in Frameworks */,
 				0BE5EC162E2C82F00045B774 /* FlorShop_DTOs in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -518,7 +515,6 @@
 				274CE29829E6D792007C703D /* Flor Shop */,
 				274CE29729E6D792007C703D /* Products */,
 				27E9FD312A5838430070216B /* Frameworks */,
-				0BE1D84D2DF4C0F10074B309 /* AppRouter */,
 			);
 			sourceTree = "<group>";
 		};
