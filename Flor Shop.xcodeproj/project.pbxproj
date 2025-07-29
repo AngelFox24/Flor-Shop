@@ -1449,7 +1449,6 @@
 			);
 			name = "Flor Shop";
 			packageProductDependencies = (
-				0BE1D84B2DF4C0CE0074B309 /* AppRouter */,
 				0BE5EC152E2C82F00045B774 /* FlorShop_DTOs */,
 			);
 			productName = "Flor Shop";
@@ -1912,10 +1911,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0BE1D84B2DF4C0CE0074B309 /* AppRouter */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AppRouter;
-		};
 		0BE5EC152E2C82F00045B774 /* FlorShop_DTOs */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0BE5EC142E2C82F00045B774 /* XCRemoteSwiftPackageReference "florshop-dtos" */;
