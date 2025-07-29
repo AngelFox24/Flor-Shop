@@ -1,12 +1,11 @@
 import SwiftUI
-import CoreData
 import AVFoundation
 
 struct PaymentTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @Environment(Router.self) private var router
-    @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var salesViewModel: SalesViewModel
+    @Environment(CartViewModel.self) var cartViewModel
+    @Environment(SalesViewModel.self) var salesViewModel
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
@@ -68,7 +67,7 @@ struct PaymentTopBar_Previews: PreviewProvider {
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         PaymentTopBar()
-            .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.salesViewModel)
+            .environment(dependencies.cartViewModel)
+            .environment(dependencies.salesViewModel)
     }
 }

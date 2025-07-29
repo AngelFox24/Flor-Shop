@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SalesView: View {
-    @EnvironmentObject var salesViewModel: SalesViewModel
+    @Environment(SalesViewModel.self) var salesViewModel
     var backButton: Bool = false
     @State var showMenu: Bool = false
     var body: some View {
@@ -35,13 +35,13 @@ struct SalesView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         SalesView()
-            .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.salesViewModel)
+            .environment(dependencies.customerViewModel)
+            .environment(dependencies.salesViewModel)
     }
 }
 
 struct SalesListController: View {
-    @EnvironmentObject var salesViewModel: SalesViewModel
+    @Environment(SalesViewModel.self) var salesViewModel
     var body: some View {
         VStack(spacing: 0) {
             if salesViewModel.salesDetailsList.count == 0 {

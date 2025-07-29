@@ -1,5 +1,5 @@
 import SwiftUI
-import AppRouter
+
 public struct AlertDestinations: ViewModifier {
     @Binding var router: Router
     public func body(content: Content) -> some View {

@@ -17,8 +17,8 @@ struct AgregarView_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
         @State var tab: Tab = .plus
         AgregarView(tab: $tab)
-            .environmentObject(dependencies.agregarViewModel)
-            .environmentObject(dependencies.productsViewModel)
+            .environment(dependencies.agregarViewModel)
+            .environment(dependencies.productViewModel)
     }
 }
 
@@ -32,10 +32,11 @@ struct ErrorMessageText: View {
 
 struct CamposProductoAgregar: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var agregarViewModel: AgregarViewModel
+    @Environment(AgregarViewModel.self) var agregarViewModel
     @Binding var tab: Tab
     var sizeCampo: CGFloat = 150
     var body: some View {
+        @Bindable var agregarViewModel = agregarViewModel
         HStack(spacing: 0) {
             SideSwipeView(swipeDirection: .right, swipeAction: goToSideMenu)
             ScrollView(.vertical, showsIndicators: false) {

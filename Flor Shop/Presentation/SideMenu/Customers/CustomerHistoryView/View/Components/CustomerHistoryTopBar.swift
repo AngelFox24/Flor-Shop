@@ -4,8 +4,8 @@ import AVFoundation
 struct CustomerHistoryTopBar: View {
     // TODO: Corregir el calculo del total al actualizar precio en AgregarView
     @Environment(Router.self) private var router
-    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
-    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
+    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
+    @Environment(AddCustomerViewModel.self) var addCustomerViewModel
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
@@ -95,8 +95,8 @@ struct CustomerHistoryTopBar_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomerHistoryTopBar()
-            .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.customerHistoryViewModel)
+            .environment(dependencies.cartViewModel)
+            .environment(dependencies.salesViewModel)
+            .environment(dependencies.customerHistoryViewModel)
     }
 }

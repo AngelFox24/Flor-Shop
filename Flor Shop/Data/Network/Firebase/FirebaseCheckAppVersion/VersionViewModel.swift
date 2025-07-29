@@ -1,7 +1,6 @@
 import Foundation
 //import Firebase
 //import FirebaseDatabase
-import Observation
 
 @Observable
 class VersionViewModel {

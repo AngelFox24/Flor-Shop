@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SalesTopBar: View {
-    @EnvironmentObject var salesCoreDataViewModel: SalesViewModel
+    @Environment(SalesViewModel.self) var salesCoreDataViewModel
     @Binding var showMenu: Bool
     var body: some View {
         VStack(spacing: 0) {
@@ -212,7 +212,7 @@ struct SalesTopBar_Previews: PreviewProvider {
         @State var showMenu: Bool = false
         VStack(spacing: 0, content: {
             SalesTopBar(showMenu: $showMenu)
-                .environmentObject(dependencies.salesViewModel)
+                .environment(dependencies.salesViewModel)
             Spacer()
         })
     }

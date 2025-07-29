@@ -1,7 +1,9 @@
 import Foundation
 
-class EmployeeViewModel: ObservableObject {
-    @Published var employeeList: [Employee] = []
+@Observable
+class EmployeeViewModel {
+    var employeeList: [Employee] = []
+    
     private let getEmployeesUseCase: GetEmployeesUseCase
     init(getEmployeesUseCase: GetEmployeesUseCase) {
         self.getEmployeesUseCase = getEmployeesUseCase

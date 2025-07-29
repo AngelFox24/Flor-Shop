@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 
 struct LastTokenByEntities {
     var image: Int64

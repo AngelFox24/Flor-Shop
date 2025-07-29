@@ -1,5 +1,3 @@
-import AppRouter
-
 enum MenuRoutes: SubFlowType {
     case customerView(parameters: CustomerViewParameters)
     case addCustomerView

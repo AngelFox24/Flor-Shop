@@ -25,15 +25,15 @@ struct MainContendView: View {
     var body: some View {
         VStack(spacing: 0) {
             MenuView()
-                .environmentObject(dependencies.productsViewModel)
-                .environmentObject(dependencies.cartViewModel)
-                .environmentObject(dependencies.salesViewModel)
-                .environmentObject(dependencies.customerViewModel)
-                .environmentObject(dependencies.addCustomerViewModel)
-                .environmentObject(dependencies.employeeViewModel)
-                .environmentObject(dependencies.agregarViewModel)
-                .environmentObject(dependencies.customerHistoryViewModel)
-                .environmentObject(dependencies.addCustomerViewModel)
+                .environment(dependencies.productViewModel)
+                .environment(dependencies.cartViewModel)
+                .environment(dependencies.salesViewModel)
+                .environment(dependencies.customerViewModel)
+                .environment(dependencies.addCustomerViewModel)
+                .environment(dependencies.employeeViewModel)
+                .environment(dependencies.agregarViewModel)
+                .environment(dependencies.customerHistoryViewModel)
+                .environment(dependencies.addCustomerViewModel)
                 .environment(dependencies.webSocket)
         }
         .onChange(of: scenePhase) { oldValue, newValue in

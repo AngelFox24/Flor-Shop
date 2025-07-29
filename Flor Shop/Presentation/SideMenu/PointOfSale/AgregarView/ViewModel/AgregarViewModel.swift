@@ -2,19 +2,20 @@ import Foundation
 import SwiftUI
 import _PhotosUI_SwiftUI
 
-class AgregarViewModel: ObservableObject {
-    @Published var agregarFields = AgregarFields()
-    @Published var selectedLocalImage: UIImage?
-    @Published var selectionImage: PhotosPickerItem? = nil {
+@Observable
+class AgregarViewModel {
+    var agregarFields = AgregarFields()
+    var selectedLocalImage: UIImage?
+    var selectionImage: PhotosPickerItem? = nil {
         didSet{
             setImage(from: selectionImage)
         }
     }
     
     private let saveProductUseCase: SaveProductUseCase
-    let getImageUseCase: GetImageUseCase
-    let exportProductsUseCase: ExportProductsUseCase
-    let importProductsUseCase: ImportProductsUseCase
+    private let getImageUseCase: GetImageUseCase
+    private let exportProductsUseCase: ExportProductsUseCase
+    private let importProductsUseCase: ImportProductsUseCase
     //MARK: Init
     init(
         saveProductUseCase: SaveProductUseCase,

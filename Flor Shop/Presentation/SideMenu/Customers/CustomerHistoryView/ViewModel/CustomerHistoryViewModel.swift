@@ -1,8 +1,9 @@
 import Foundation
 
-class CustomerHistoryViewModel: ObservableObject {
-    @Published var customer: Customer?
-    @Published var salesDetail: [SaleDetail] = []
+@Observable
+class CustomerHistoryViewModel {
+    var customer: Customer?
+    var salesDetail: [SaleDetail] = []
     
     private var currentPage: Int = 1
     private var lastCarge: Int = 0

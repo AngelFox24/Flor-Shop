@@ -1,21 +1,27 @@
 import Foundation
 import Combine
 
-class CustomerViewModel: ObservableObject {
-    @Published var customerList: [Customer] = []
-    @Published var searchWord: String = ""
-    @Published var order: CustomerOrder = .nameAsc
-    @Published var filter: CustomerFilterAttributes = .allCustomers
-    
+@Observable
+class CustomerViewModel {
+    var customerList: [Customer] = []
+    var searchWord: String = "" {
+        didSet {
+            onSearchTextChanged()
+        }
+    }
+    var order: CustomerOrder = .nameAsc
+    var filter: CustomerFilterAttributes = .allCustomers
+    //Pagination
     private var currentPage: Int = 1
     private var lastCarge: Int = 0
     private var cancellableSet = Set<AnyCancellable>()
-    
+    //Search vars
+    private var searchTask: Task<Void, Never>? = nil
+    //Dependencies
     private let getCustomersUseCase: GetCustomersUseCase
     
     init(getCustomersUseCase: GetCustomersUseCase) {
         self.getCustomersUseCase = getCustomersUseCase
-        addSearchTextSuscriber()
     }
     // MARK: CRUD Core Data
     func fetchListCustomer(page: Int = 1) {
@@ -35,16 +41,6 @@ class CustomerViewModel: ObservableObject {
         currentPage = currentPage + 1
         fetchListCustomer(page: currentPage)
     }
-    func addSearchTextSuscriber() {
-        $searchWord
-            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                self.currentPage = 1
-                fetchListCustomer()
-            })
-            .store(in: &cancellableSet)
-    }
     func setOrder(order: CustomerOrder) {
         self.order = order
     }
@@ -59,6 +55,14 @@ class CustomerViewModel: ObservableObject {
     }
     func lazyFetchList() {
         if customerList.isEmpty {
+            fetchListCustomer()
+        }
+    }
+    private func onSearchTextChanged() {
+        searchTask?.cancel()
+        searchTask = Task {
+            try? await Task.sleep(for: .milliseconds(300)) // debounce manual
+            self.currentPage = 1
             fetchListCustomer()
         }
     }

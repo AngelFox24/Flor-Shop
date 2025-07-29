@@ -1,4 +1,4 @@
-import Observation
+import Foundation
 
 enum LogInStatus {
     case success

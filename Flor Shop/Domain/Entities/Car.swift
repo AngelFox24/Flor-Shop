@@ -1,6 +1,5 @@
 import Foundation
 import FlorShop_DTOs
-import CoreData
 
 struct Car: Identifiable {
     let id: UUID

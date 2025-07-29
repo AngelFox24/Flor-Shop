@@ -1,5 +1,4 @@
 import SwiftUI
-import AppRouter
 
 extension View {
     func withSheetDestinations(router: Binding<Router>) -> some View {

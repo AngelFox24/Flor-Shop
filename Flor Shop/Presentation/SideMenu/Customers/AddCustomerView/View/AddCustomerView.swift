@@ -19,14 +19,15 @@ struct AddCustomerView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         AddCustomerView()
-            .environmentObject(dependencies.addCustomerViewModel)
+            .environment(dependencies.addCustomerViewModel)
     }
 }
 
 struct AddCustomerFields : View {
-    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
+    @Environment(AddCustomerViewModel.self) var addCustomerViewModel
     var sizeCampo: CGFloat = 150
     var body: some View {
+        @Bindable var addCustomerViewModel = addCustomerViewModel
         ScrollView(.vertical, showsIndicators: false, content: {
             VStack(spacing: 23, content: {
                 HStack {

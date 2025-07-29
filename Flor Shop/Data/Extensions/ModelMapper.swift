@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 extension Tb_Company {
     func toCompany() -> Company {

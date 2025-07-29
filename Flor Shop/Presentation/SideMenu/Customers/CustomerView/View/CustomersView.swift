@@ -11,7 +11,7 @@ struct CustomerViewParameters: Hashable {
 
 struct CustomersView: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var customerViewModel: CustomerViewModel
+    @Environment(CustomerViewModel.self) var customerViewModel
     let parameters: CustomerViewParameters
     init(parameters: CustomerViewParameters = CustomerViewParameters()) {
         self.parameters = parameters
@@ -49,19 +49,19 @@ struct CustomersView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomersView(parameters: CustomerViewParameters(backButton: false, forSelectCustomer: false))
-            .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.addCustomerViewModel)
-            .environmentObject(dependencies.customerHistoryViewModel)
-            .environmentObject(dependencies.cartViewModel)
+            .environment(dependencies.customerViewModel)
+            .environment(dependencies.addCustomerViewModel)
+            .environment(dependencies.customerHistoryViewModel)
+            .environment(dependencies.cartViewModel)
     }
 }
 
 struct CustomerListController: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var customerViewModel: CustomerViewModel
-    @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
+    @Environment(CustomerViewModel.self) var customerViewModel
+    @Environment(CartViewModel.self) var cartViewModel
+    @Environment(AddCustomerViewModel.self) var addCustomerViewModel
+    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
     var forSelectCustomer: Bool = false
     var body: some View {
         ZStack {

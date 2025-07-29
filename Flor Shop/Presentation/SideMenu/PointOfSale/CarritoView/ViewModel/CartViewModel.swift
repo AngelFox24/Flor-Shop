@@ -1,10 +1,11 @@
-import CoreData
 import Foundation
 
-class CartViewModel: ObservableObject {
-    @Published var cartCoreData: Car?
-    @Published var customerInCar: Customer?
-    @Published var paymentType: PaymentType = .cash
+@Observable
+class CartViewModel {
+    var cartCoreData: Car?
+    var customerInCar: Customer?
+    var paymentType: PaymentType = .cash
+    
     var paymentTypes: [PaymentType] {
         guard let customer = customerInCar else {
             return [.cash]

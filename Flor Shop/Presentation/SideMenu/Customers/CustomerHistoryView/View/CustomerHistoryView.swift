@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CustomerHistoryView: View {
-    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
+    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
     var body: some View {
         VStack(spacing: 0) {
             CustomerHistoryTopBar()
@@ -23,15 +23,15 @@ struct CustomerHistoryView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomerHistoryView()
-            .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.customerHistoryViewModel)
+            .environment(dependencies.customerViewModel)
+            .environment(dependencies.salesViewModel)
+            .environment(dependencies.cartViewModel)
+            .environment(dependencies.customerHistoryViewModel)
     }
 }
 struct CustomerHistoryViewListController: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
+    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
     var body: some View {
         ZStack {
             VStack(spacing: 0) {

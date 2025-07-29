@@ -1,5 +1,3 @@
-import AppRouter
-
 enum FlowRoutes: FlowType {
     case logInFlow(SessionRoutes)
     case pointOfSale

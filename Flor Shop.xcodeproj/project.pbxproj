@@ -66,7 +66,6 @@
 		2748918E2AD707B3004D6C6C /* CustomersEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2748918D2AD707B3004D6C6C /* CustomersEnums.swift */; };
 		274960A22AD4933000BC257B /* PaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274960A12AD4933000BC257B /* PaymentView.swift */; };
 		274960A62AD4966300BC257B /* PaymentTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274960A52AD4966300BC257B /* PaymentTopBar.swift */; };
-		274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */; };
 		274AF2792C5A053200165155 /* RemoteSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274AF2782C5A053200165155 /* RemoteSessionManager.swift */; };
 		274AF27B2C5A066B00165155 /* SessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274AF27A2C5A066B00165155 /* SessionRepository.swift */; };
 		274C65A12AC48A3200B778A2 /* EmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274C65A02AC48A3200B778A2 /* EmployeeView.swift */; };
@@ -231,7 +230,6 @@
 		2748918D2AD707B3004D6C6C /* CustomersEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomersEnums.swift; sourceTree = "<group>"; };
 		274960A12AD4933000BC257B /* PaymentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentView.swift; sourceTree = "<group>"; };
 		274960A52AD4966300BC257B /* PaymentTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentTopBar.swift; sourceTree = "<group>"; };
-		274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyViewModel.swift; sourceTree = "<group>"; };
 		274AF2782C5A053200165155 /* RemoteSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSessionManager.swift; sourceTree = "<group>"; };
 		274AF27A2C5A066B00165155 /* SessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRepository.swift; sourceTree = "<group>"; };
 		274C65A02AC48A3200B778A2 /* EmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeView.swift; sourceTree = "<group>"; };
@@ -850,7 +848,6 @@
 			isa = PBXGroup;
 			children = (
 				27CC2E022A881BC1000EDB64 /* PointOfSale */,
-				27F2F4852B1DF756003E4197 /* SubsidiaryView */,
 				27CC2E042A883BA1000EDB64 /* Sales */,
 				27CC2E052A883BA8000EDB64 /* Customers */,
 				27CC2E062A883BB0000EDB64 /* Employees */,
@@ -1346,30 +1343,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		27F2F4852B1DF756003E4197 /* SubsidiaryView */ = {
-			isa = PBXGroup;
-			children = (
-				27F2F4872B1DF785003E4197 /* ViewModel */,
-				27F2F4862B1DF781003E4197 /* View */,
-			);
-			path = SubsidiaryView;
-			sourceTree = "<group>";
-		};
-		27F2F4862B1DF781003E4197 /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		27F2F4872B1DF785003E4197 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				274AE3622A8E917B005FFAEC /* CompanyViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		27F321C72BADE9FA00296E50 /* CustomerHistoryView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1579,7 +1552,6 @@
 				2702C9D62ADACCFA008DBF66 /* AddCustomerView.swift in Sources */,
 				2715F2FF2A31482F00D3C918 /* AgregarTopBar.swift in Sources */,
 				279EF9D72A9125C300F97CB1 /* FuncOpenGoogle.swift in Sources */,
-				274AE3632A8E917B005FFAEC /* CompanyViewModel.swift in Sources */,
 				0B49BFF62E2D9D6E00BF7277 /* SyncRepository.swift in Sources */,
 				2735768F2B1F8CE700E9CF12 /* SaveCustomerUseCase.swift in Sources */,
 				2748918E2AD707B3004D6C6C /* CustomersEnums.swift in Sources */,

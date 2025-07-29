@@ -75,12 +75,12 @@ struct MenuView_Previews: PreviewProvider {
         @State var menuTab: MenuTab = .pointOfSaleTab
         MenuView()
             .environment(nor.logInViewModel)
-            .environmentObject(dependencies.agregarViewModel)
-            .environmentObject(dependencies.productsViewModel)
-            .environmentObject(dependencies.cartViewModel)
-            .environmentObject(dependencies.employeeViewModel)
-            .environmentObject(dependencies.salesViewModel)
-            .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.addCustomerViewModel)
+            .environment(dependencies.agregarViewModel)
+            .environment(dependencies.productViewModel)
+            .environment(dependencies.cartViewModel)
+            .environment(dependencies.employeeViewModel)
+            .environment(dependencies.salesViewModel)
+            .environment(dependencies.customerViewModel)
+            .environment(dependencies.addCustomerViewModel)
     }
 }

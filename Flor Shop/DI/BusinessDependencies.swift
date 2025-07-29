@@ -64,7 +64,7 @@ struct BusinessDependencies {
 //    let logInViewModel: LogInViewModel
 //    let registrationViewModel: RegistrationViewModel
     let agregarViewModel: AgregarViewModel
-    let productsViewModel: ProductViewModel
+    let productViewModel: ProductViewModel
     let cartViewModel: CartViewModel
     let salesViewModel: SalesViewModel
     let employeeViewModel: EmployeeViewModel
@@ -131,7 +131,7 @@ struct BusinessDependencies {
         self.importProductsUseCase = ImportProductsInteractor(imageRepository: imageRepository, productRepository: productRepository)
         //MARK: ViewModels
         self.agregarViewModel = AgregarViewModel(saveProductUseCase: saveProductUseCase, getImageUseCase: getImageUseCase, exportProductsUseCase: exportProductsUseCase, importProductsUseCase: importProductsUseCase)
-        self.productsViewModel = ProductViewModel(synchronizerDBUseCase: synchronizerDBUseCase, getProductsUseCase: getProductsUseCase)
+        self.productViewModel = ProductViewModel(getProductsUseCase: getProductsUseCase)
         self.cartViewModel = CartViewModel(getCartUseCase: getCartUseCase, deleteCartDetailUseCase: deleteCartDetailUseCase, addProductoToCartUseCase: addProductoToCartUseCase, emptyCartUseCase: emptyCartUseCase, changeProductAmountInCartUseCase: changeProductAmountInCartUseCase)
         self.salesViewModel = SalesViewModel(registerSaleUseCase: registerSaleUseCase, getSalesUseCase: getSalesUseCase, getSalesDetailsUseCase: getSalesDetailsUseCase)
         self.employeeViewModel = EmployeeViewModel(getEmployeesUseCase: getEmployeesUseCase)

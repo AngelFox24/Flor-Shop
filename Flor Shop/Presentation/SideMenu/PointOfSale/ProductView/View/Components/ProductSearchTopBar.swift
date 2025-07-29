@@ -35,32 +35,33 @@ struct CustomSearchField: View {
 
 struct ProductSearchTopBar: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var productsCoreDataViewModel: ProductViewModel
+    @Environment(ProductViewModel.self) private var productViewModel
     @Environment(SyncWebSocketClient.self) private var ws
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     var body: some View {
+        @Bindable var productViewModel = productViewModel
         @Bindable var router = router
         VStack {
             HStack(spacing: 10, content: {
                 FlorShopButton()
-                CustomSearchField(text: $productsCoreDataViewModel.searchText)
+                CustomSearchField(text: $productViewModel.searchText)
                 Menu {
                     Section("Ordenamiento") {
                         ForEach(menuOrders, id: \.self) { orden in
                             Button {
-                                productsCoreDataViewModel.primaryOrder = orden
+                                productViewModel.primaryOrder = orden
                             } label: {
-                                Label(orden.longDescription, systemImage: productsCoreDataViewModel.primaryOrder == orden ? "checkmark" : "")
+                                Label(orden.longDescription, systemImage: productViewModel.primaryOrder == orden ? "checkmark" : "")
                             }
                         }
                     }
                     Section("Filtros") {
                         ForEach(menuFilters, id: \.self) { filtro in
                             Button {
-                                productsCoreDataViewModel.filterAttribute = filtro
+                                productViewModel.filterAttribute = filtro
                             } label: {
-                                Label(filtro.description, systemImage: productsCoreDataViewModel.filterAttribute == filtro ? "checkmark" : "")
+                                Label(filtro.description, systemImage: productViewModel.filterAttribute == filtro ? "checkmark" : "")
                             }
                         }
                     }
@@ -74,10 +75,10 @@ struct ProductSearchTopBar: View {
                 } label: {
                     FilterButton()
                 }
-                .onChange(of: productsCoreDataViewModel.primaryOrder) { _, _ in
+                .onChange(of: productViewModel.primaryOrder) { _, _ in
                     loadProducts()
                 }
-                .onChange(of: productsCoreDataViewModel.filterAttribute) { _, _ in
+                .onChange(of: productViewModel.filterAttribute) { _, _ in
                     loadProducts()
                 }
             })
@@ -90,21 +91,8 @@ struct ProductSearchTopBar: View {
     func loadProducts() {
         Task {
             router.isLoanding = true
-            await productsCoreDataViewModel.releaseResources()
-            await productsCoreDataViewModel.fetchProducts()
-            router.isLoanding = false
-        }
-    }
-    private func sync() {
-        Task {
-            router.isLoanding = true
-            do {
-                await productsCoreDataViewModel.releaseResources()
-                try await productsCoreDataViewModel.sync()
-                await productsCoreDataViewModel.fetchProducts()
-            } catch {
-                router.presentAlert(.error(error.localizedDescription))
-            }
+            await productViewModel.releaseResources()
+            await productViewModel.fetchProducts()
             router.isLoanding = false
         }
     }
@@ -117,11 +105,9 @@ struct SearchTopBar_Previews: PreviewProvider {
     static var previews: some View {
         let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: sesConfig)
-        @State var loading: Bool = false
-        @State var showMenu: Bool = false
         VStack (content: {
             ProductSearchTopBar()
-                .environmentObject(dependencies.productsViewModel)
+                .environment(dependencies.productViewModel)
             Spacer()
         })
     }

@@ -3,9 +3,9 @@ import AVFoundation
 
 struct AddCustomerTopBar: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var customerViewModel: CustomerViewModel
-    @EnvironmentObject var addCustomerViewModel: AddCustomerViewModel
-    @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
+    @Environment(CustomerViewModel.self) var customerViewModel
+    @Environment(AddCustomerViewModel.self) var addCustomerViewModel
+    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
@@ -17,7 +17,6 @@ struct AddCustomerTopBar: View {
                 }, label: {
                     CustomButton1(text: "Guardar")
                 })
-//                .alert(addCustomerViewModel.fieldsAddCustomer.errorBD, isPresented: $showingErrorAlert, actions: {})
             })
         }
         .frame(maxWidth: .infinity)
@@ -61,7 +60,7 @@ struct AddCustomerTopBar_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         AddCustomerTopBar()
-            .environmentObject(dependencies.customerViewModel)
-            .environmentObject(dependencies.addCustomerViewModel)
+            .environment(dependencies.customerViewModel)
+            .environment(dependencies.addCustomerViewModel)
     }
 }

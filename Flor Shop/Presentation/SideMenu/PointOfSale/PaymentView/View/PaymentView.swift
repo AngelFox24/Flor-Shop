@@ -18,13 +18,13 @@ struct PaymentView_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: ses)
         @State var loading = false
         PaymentView()
-            .environmentObject(dependencies.cartViewModel)
+            .environment(dependencies.cartViewModel)
     }
 }
 
 struct PaymentsFields: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var cartViewModel: CartViewModel
+    @Environment(CartViewModel.self) var cartViewModel
     var body: some View {
         ScrollView(content: {
             VStack(spacing: 20, content: {

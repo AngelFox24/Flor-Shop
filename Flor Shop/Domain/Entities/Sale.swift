@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 struct Sale: Identifiable {
     let id: UUID

@@ -1,26 +1,26 @@
-import CoreData
 import Foundation
 
-class SalesViewModel: ObservableObject {
-    @Published var salesDetailsList: [SaleDetail] = []
+@Observable
+class SalesViewModel {
+    var salesDetailsList: [SaleDetail] = []
     
-    @Published var order: SalesOrder = .dateAsc
-    @Published var grouper: SalesGrouperAttributes = .byProduct
+    var order: SalesOrder = .dateAsc
+    var grouper: SalesGrouperAttributes = .byProduct
     
-    @Published var salesCurrentDateFilter: Date = Date.now
-    @Published var salesDateInterval: SalesDateInterval = .diary
+    var salesCurrentDateFilter: Date = Date.now
+    var salesDateInterval: SalesDateInterval = .diary
     
-    @Published var salesAmount: Money = Money(0)
-    @Published var costAmount: Money = Money(0)
-    @Published var revenueAmount: Money = Money(0)
+    var salesAmount: Money = Money(0)
+    var costAmount: Money = Money(0)
+    var revenueAmount: Money = Money(0)
     
     private let calendario = Calendar.current
     private var currentPage: Int = 1
     private var lastCarge: Int = 0
     
-    let registerSaleUseCase: RegisterSaleUseCase
-    let getSalesUseCase: GetSalesUseCase
-    let getSalesDetailsUseCase: GetSalesDetailsUseCase
+    private let registerSaleUseCase: RegisterSaleUseCase
+    private let getSalesUseCase: GetSalesUseCase
+    private let getSalesDetailsUseCase: GetSalesDetailsUseCase
     
     init(registerSaleUseCase: RegisterSaleUseCase, getSalesUseCase: GetSalesUseCase, getSalesDetailsUseCase: GetSalesDetailsUseCase) {
         self.registerSaleUseCase = registerSaleUseCase

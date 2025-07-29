@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct EmployeeView: View {
-    @EnvironmentObject var employeeViewModel: EmployeeViewModel
+    @Environment(EmployeeViewModel.self) var employeeViewModel
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -23,7 +23,7 @@ struct EmployeeView_Previews: PreviewProvider {
 }
 
 struct EmployeeListController: View {
-    @EnvironmentObject var employeeViewModel: EmployeeViewModel
+    @Environment(EmployeeViewModel.self) var employeeViewModel
     var body: some View {
         VStack(spacing: 0) {
             if employeeViewModel.employeeList.count == 0 {

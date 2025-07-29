@@ -1,5 +1,4 @@
 import SwiftUI
-import AppRouter
     
 struct WelcomeView: View {
     @Environment(Router.self) private var router

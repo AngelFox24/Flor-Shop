@@ -1,12 +1,16 @@
 import Foundation
-import Combine
 
-class ProductViewModel: ObservableObject {
-    @Published var productsCoreData: [Product] = []
-    @Published var searchText: String = ""
-    @Published var primaryOrder: PrimaryOrder = .nameAsc
-    @Published var filterAttribute: ProductsFilterAttributes = .allProducts
-    @Published var deleteCount: Int = 0
+@Observable
+class ProductViewModel {
+    var productsCoreData: [Product] = []
+    var searchText: String = "" {
+        didSet {
+            onSearchTextChanged()
+        }
+    }
+    var primaryOrder: PrimaryOrder = .nameAsc
+    var filterAttribute: ProductsFilterAttributes = .allProducts
+    var deleteCount: Int = 0
     //Sync Engine
     private var lastToken: Int64
     //Pagination vars
@@ -14,23 +18,15 @@ class ProductViewModel: ObservableObject {
     private let maxPagesToLoad: Int = 3
     private var lastCarge: Int = 0
     //Search vars
-    private var cancellableSet = Set<AnyCancellable>()
     private var searchTask: Task<Void, Never>? = nil
     
-    let synchronizerDBUseCase: SynchronizerDBUseCase
-    let getProductsUseCase: GetProductsUseCase
+    private let getProductsUseCase: GetProductsUseCase
     
     init(
-        synchronizerDBUseCase: SynchronizerDBUseCase,
         getProductsUseCase: GetProductsUseCase
     ) {
-        self.synchronizerDBUseCase = synchronizerDBUseCase
         self.getProductsUseCase = getProductsUseCase
         self.lastToken = self.getProductsUseCase.getLastToken()
-        addSearchTextSuscriber()
-    }
-    func sync() async throws {
-//        try await self.synchronizerDBUseCase.sync()
     }
     func updateCurrentList(newToken: Int64) async {
         if lastToken < newToken {
@@ -48,19 +44,6 @@ class ProductViewModel: ObservableObject {
                 self.lastToken = self.getProductsUseCase.getLastToken()
             }
         }
-    }
-    func addSearchTextSuscriber() {
-        $searchText
-            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                self.searchTask?.cancel()
-                self.searchTask = Task {
-                    await self.releaseResources()
-                    await self.fetchProducts()
-                }
-            })
-            .store(in: &cancellableSet)
     }
     func fetchProducts(page: Int = 1, nextPage: Bool = true) async {
         let pages = currentPagesInScreen.map { $0[0] }
@@ -157,5 +140,13 @@ class ProductViewModel: ObservableObject {
             await fetchProducts()
         }
         print("Termino a fetch lazy")
+    }
+    private func onSearchTextChanged() {
+        searchTask?.cancel()
+        searchTask = Task {
+            try? await Task.sleep(for: .milliseconds(300)) // debounce manual
+            await releaseResources()
+            await fetchProducts()
+        }
     }
 }

@@ -1,8 +1,7 @@
 import SwiftUI
-import CoreData
 
 struct CartView: View {
-    @EnvironmentObject var cartViewModel: CartViewModel
+    @Environment(CartViewModel.self) var cartViewModel
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {
@@ -20,18 +19,16 @@ struct CartView: View {
 }
 
 #Preview {
-    @Previewable @State var loading: Bool = false
-    @Previewable @State var showMenu: Bool = false
     @Previewable @State var tab: Tab = .magnifyingglass
     let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
     let dependencies = BusinessDependencies(sessionConfig: ses)
     CartView(tab: $tab)
-        .environmentObject(dependencies.cartViewModel)
+        .environment(dependencies.cartViewModel)
 }
 
 struct ListCartController: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var cartViewModel: CartViewModel
+    @Environment(CartViewModel.self) var cartViewModel
     @Binding var tab: Tab
     var body: some View {
         VStack(spacing: 0) {

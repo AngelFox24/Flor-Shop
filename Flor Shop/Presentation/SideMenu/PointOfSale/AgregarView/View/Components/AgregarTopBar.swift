@@ -1,11 +1,10 @@
 import SwiftUI
-import CoreData
 import AVFoundation
 
 struct AgregarTopBar: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var agregarViewModel: AgregarViewModel
-    @EnvironmentObject var productViewModel: ProductViewModel
+    @Environment(AgregarViewModel.self) var agregarViewModel
+    @Environment(ProductViewModel.self) var productViewModel
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack {
@@ -57,7 +56,7 @@ struct AgregarTopBar_Previews: PreviewProvider {
         let dependencies = BusinessDependencies(sessionConfig: ses)
         VStack {
             AgregarTopBar()
-                .environmentObject(dependencies.agregarViewModel)
+                .environment(dependencies.agregarViewModel)
             Spacer()
         }
     }

@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 import FlorShop_DTOs
 
 struct Company: Identifiable {

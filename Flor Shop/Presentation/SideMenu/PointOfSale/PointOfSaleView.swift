@@ -2,8 +2,8 @@ import SwiftUI
 
 struct PointOfSaleView: View {
     @Environment(Router.self) private var router
+    @Environment(CartViewModel.self) var cartViewModel
     @State var tab: Tab = .magnifyingglass
-    @EnvironmentObject var cartViewModel: CartViewModel
     init() {
         UITabBar.appearance().barTintColor = UIColor(named: "color_background")
     }
@@ -68,8 +68,8 @@ struct PointOfSaleView_Previews: PreviewProvider {
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         PointOfSaleView()
-            .environmentObject(dependencies.agregarViewModel)
-            .environmentObject(dependencies.productsViewModel)
-            .environmentObject(dependencies.cartViewModel)
+            .environment(dependencies.agregarViewModel)
+            .environment(dependencies.productViewModel)
+            .environment(dependencies.cartViewModel)
     }
 }

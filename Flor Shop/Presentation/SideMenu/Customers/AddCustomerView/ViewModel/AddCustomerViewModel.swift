@@ -1,17 +1,19 @@
 import Foundation
 import _PhotosUI_SwiftUI
 
-class AddCustomerViewModel: ObservableObject {
-    @Published var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
-    @Published var isPresented: Bool = false
-    @Published var selectedImage: UIImage?
-    @Published var selectionImage: PhotosPickerItem? = nil {
+@Observable
+class AddCustomerViewModel {
+    var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
+    var isPresented: Bool = false
+    var selectedImage: UIImage?
+    var selectionImage: PhotosPickerItem? = nil {
         didSet{
             setImage(from: selectionImage)
         }
     }
-    let saveCustomerUseCase: SaveCustomerUseCase
-    let getImageUseCase: GetImageUseCase
+    
+    private let saveCustomerUseCase: SaveCustomerUseCase
+    private let getImageUseCase: GetImageUseCase
     
     init(
         saveCustomerUseCase: SaveCustomerUseCase,

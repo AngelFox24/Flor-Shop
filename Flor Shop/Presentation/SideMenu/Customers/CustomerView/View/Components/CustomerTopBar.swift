@@ -2,9 +2,10 @@ import SwiftUI
 
 struct CustomerTopBar: View {
     @Environment(Router.self) private var router
-    @EnvironmentObject var customerViewModel: CustomerViewModel
+    @Environment(CustomerViewModel.self) var customerViewModel
     var backButton: Bool = false
     var body: some View {
+        @Bindable var customerViewModel = customerViewModel
         VStack {
             HStack(spacing: 10, content: {
                 if backButton {
@@ -71,7 +72,7 @@ struct CustomerTopBar: View {
 }
 //CustomerSearchTopBar
 struct CustomerTopBarPopUp: View {
-    @EnvironmentObject var customerViewModel: CustomerViewModel
+    @Environment(CustomerViewModel.self) var customerViewModel
     @State private var selectedOrder: CustomerOrder = .nameAsc
     @State private var selectedFilter: CustomerFilterAttributes = .allCustomers
     let menuOrders: [CustomerOrder] = CustomerOrder.allValues
@@ -148,16 +149,3 @@ struct CustomerTopBarPopUp: View {
         print("Se presiono setFilter")
     }
 }
-/*
-struct CustomerTopBar_Previews: PreviewProvider {
-    let customerManager = LocalCustomerManager(mainContext: CoreDataProvider.shared.viewContext)
-    let customerRepository = CustomerRepositoryImpl(manager: customerManager)
-    let customerViewModel = CustomerViewModel(customerRepository: customerRepository)
-    let navManager = NavManager()
-    static var previews: some View {
-        CustomerTopBar(showMenu: .constant(false))
-            .environmentObject(customerViewModel)
-            .environmentObject(navManager)
-    }
-}
-*/

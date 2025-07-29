@@ -1,6 +1,5 @@
 import Foundation
 import FlorShop_DTOs
-import CoreData
 
 struct Product: Identifiable, Codable, Equatable {
     var id: UUID

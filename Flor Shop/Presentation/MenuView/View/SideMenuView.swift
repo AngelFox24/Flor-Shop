@@ -1,5 +1,4 @@
 import SwiftUI
-import AppRouter
 
 enum MenuTab: String, Hashable, FlowType {
     var id: String { rawValue }
