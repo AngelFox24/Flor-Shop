@@ -14,7 +14,7 @@ struct FlorShopApp: App {
             RootView()
                 .withSheetDestinations(router: $router)
                 .withAlertDestinations(router: $router)
-                .showProgress(router.isLoanding)
+                .showProgress(router.isLoading)
                 .environment(router)
 //                .onOpenURL { url in
 //                    let success = router.navigate(to: url)

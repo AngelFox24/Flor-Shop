@@ -9,9 +9,9 @@ public final class FlorShopRouter<Flow: FlowType, Sheet: SheetType, Alert: Alert
     // MARK: - Public Properties
     
     /// The currently loading state
-    public var isLoanding: Bool = false
+    public var isLoading: Bool = false
     
-    /// The currently selected tab
+    /// The current state of menu
     public var showMenu: Bool = false
     
     /// The navigation path for the router
@@ -20,7 +20,7 @@ public final class FlorShopRouter<Flow: FlowType, Sheet: SheetType, Alert: Alert
     /// The currently presented sheet, if any
     public var presentedSheet: Sheet?
     
-    /// The currently presented sheet, if any
+    /// The currently presented alert, if any
     public var presentedAlert: Alert?
     
     // MARK: - Initialization

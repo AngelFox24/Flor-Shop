@@ -26,7 +26,7 @@ struct AddCustomerTopBar: View {
     }
     func addCustomer() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
             do {
                 try await addCustomerViewModel.addCustomer()
                 playSound(named: "Success1")
@@ -36,7 +36,7 @@ struct AddCustomerTopBar: View {
                 router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

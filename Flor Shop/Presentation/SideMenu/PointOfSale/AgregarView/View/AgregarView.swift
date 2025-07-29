@@ -183,9 +183,9 @@ struct CamposProductoAgregar: View {
             switch result {
             case .success(let urls):
                 if let url = urls.first {
-                    router.isLoanding = true
+                    router.isLoading = true
                     await agregarViewModel.importCSV(url: url)
-                    router.isLoanding = false
+                    router.isLoading = false
                 }
             case .failure(let error):
                 router.presentAlert(.error(error.localizedDescription))
@@ -194,7 +194,7 @@ struct CamposProductoAgregar: View {
     }
     private func exportProducts() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
 //            do {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
@@ -202,7 +202,7 @@ struct CamposProductoAgregar: View {
                 let formattedDate = dateFormatter.string(from: currentDate)
                 let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Products BackUp \(formattedDate).csv")
                 await agregarViewModel.exportCSV(url: tempURL)
-            router.isLoanding = false
+            router.isLoading = false
                 showShareSheet(url: tempURL)
 //            } catch {
 //                await errorState.processError(error: error)

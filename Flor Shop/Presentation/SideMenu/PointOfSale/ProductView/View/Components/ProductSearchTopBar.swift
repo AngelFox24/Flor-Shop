@@ -90,10 +90,10 @@ struct ProductSearchTopBar: View {
     }
     func loadProducts() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
             await productViewModel.releaseResources()
             await productViewModel.fetchProducts()
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func conectWS() {

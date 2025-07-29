@@ -88,7 +88,7 @@ struct RegistrationView: View {
     func registerUser() {
         Task {
             
-            router.isLoanding = true
+            router.isLoading = true
             do {
                 let ses = try await registrationViewModel.registerUser()
                 playSound(named: "Success1")
@@ -101,9 +101,9 @@ struct RegistrationView: View {
             } catch {
                 router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
-                router.isLoanding = false
+                router.isLoading = false
             }
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

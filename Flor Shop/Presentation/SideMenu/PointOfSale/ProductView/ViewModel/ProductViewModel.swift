@@ -5,6 +5,7 @@ class ProductViewModel {
     var productsCoreData: [Product] = []
     var searchText: String = "" {
         didSet {
+            guard oldValue != searchText else { return }
             onSearchTextChanged()
         }
     }
@@ -30,11 +31,7 @@ class ProductViewModel {
     }
     func updateCurrentList(newToken: Int64) async {
         if lastToken < newToken {
-            print("[ProductViewModel] nuevo token recibido, lastToken: \(lastToken), newToken: \(newToken)")
             let productsUpdated = self.getProductsUseCase.updateProducts(products: self.productsCoreData)
-            for productsUpdate in productsUpdated {
-                print("[ProductViewModel] Producto actualizado: \(productsUpdate)")
-            }
             await MainActor.run {
                 for productUpdated in productsUpdated {
                     if let index = self.productsCoreData.firstIndex(where: { $0.id == productUpdated.id }) {
@@ -135,17 +132,20 @@ class ProductViewModel {
         }
     }
     func lazyFetchProducts() async {
-        print("Empezo a fetch lazy")
         if productsCoreData.isEmpty {
             await fetchProducts()
         }
-        print("Termino a fetch lazy")
     }
     private func onSearchTextChanged() {
         searchTask?.cancel()
         searchTask = Task {
-            try? await Task.sleep(for: .milliseconds(300)) // debounce manual
             await releaseResources()
+            do {
+                try await Task.sleep(for: .seconds(0.3))
+                try Task.checkCancellation()
+            } catch {
+                return
+            }
             await fetchProducts()
         }
     }

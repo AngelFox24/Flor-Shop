@@ -28,7 +28,7 @@ struct PaymentTopBar: View {
     }
     func registerSale() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
             do {
                 guard let cart = cartViewModel.cartCoreData else {
                     throw LocalStorageError.entityNotFound("No se encontro carrito configurado en viewModel")
@@ -44,7 +44,7 @@ struct PaymentTopBar: View {
                 router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

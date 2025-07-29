@@ -22,8 +22,6 @@ struct CustomHideKeyboard: View {
     }
 }
 
-struct CustomHideKeyboard_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomHideKeyboard()
-    }
+#Preview {
+    CustomHideKeyboard()
 }

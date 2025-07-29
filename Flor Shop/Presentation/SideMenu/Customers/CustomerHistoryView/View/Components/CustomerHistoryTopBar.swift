@@ -46,7 +46,7 @@ struct CustomerHistoryTopBar: View {
     }
     private func payDebt() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
             do {
                 if try await customerHistoryViewModel.payTotalAmount() {
                     try customerHistoryViewModel.updateData()
@@ -59,7 +59,7 @@ struct CustomerHistoryTopBar: View {
                 router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func editCustomer(customer: Customer) {

@@ -86,7 +86,7 @@ struct LogInView: View {
     }
     private func logIn() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
             do {
                 print("Se logeara desde Remote")
                 let ses = try await logInViewModel.logIn()
@@ -101,9 +101,9 @@ struct LogInView: View {
             } catch {
                 router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
-                router.isLoanding = false
+                router.isLoading = false
             }
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {

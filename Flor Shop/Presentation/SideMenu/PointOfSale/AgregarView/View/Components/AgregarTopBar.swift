@@ -22,7 +22,7 @@ struct AgregarTopBar: View {
     }
     private func saveProduct() {
         Task {
-            router.isLoanding = true
+            router.isLoading = true
             do {
                 try await agregarViewModel.addProduct()
                 await productViewModel.releaseResources()
@@ -31,7 +31,7 @@ struct AgregarTopBar: View {
                 router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
-            router.isLoanding = false
+            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {
