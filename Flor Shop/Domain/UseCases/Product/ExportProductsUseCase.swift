@@ -1,10 +1,3 @@
-//
-//  ExportProductsUseCase.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 28/06/2024.
-//
-
 import Foundation
 import UniformTypeIdentifiers
 

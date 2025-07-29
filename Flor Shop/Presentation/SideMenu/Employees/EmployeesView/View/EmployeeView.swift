@@ -1,12 +1,4 @@
-//
-//  EmployeeView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 27/09/23.
-//
-
 import SwiftUI
-import CoreData
 import AVFoundation
 
 struct EmployeeView: View {

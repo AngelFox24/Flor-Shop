@@ -1,17 +1,9 @@
-//
-//  TabButton.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/08/23.
-//
-
 import SwiftUI
 
 struct TabButton: View {
     var tab: MenuTab
     @Binding var selectedTab: MenuTab
     @Binding var showMenu: Bool
-    //var animation: Namespace.ID
     var body: some View {
         Button(action: {
             selectedTab = tab
@@ -35,7 +27,6 @@ struct TabButton: View {
                         Color.white
                             .opacity(selectedTab == tab ? 1 : 0)
                             .clipShape(CustomCorners(corners: [.topRight, .bottomRight], radius: 15))
-                            //.matchedGeometryEffect(id: tab, in: animation)
                     }
                 }
             )

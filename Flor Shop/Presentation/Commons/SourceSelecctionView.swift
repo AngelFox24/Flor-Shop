@@ -1,9 +1,3 @@
-//
-//  SourceSelecctionView.swift
-//
-//  Created by Angel Curi Laurente on 4/11/23.
-//
-
 import SwiftUI
 import PhotosUI
 

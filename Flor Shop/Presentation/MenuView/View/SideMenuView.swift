@@ -1,10 +1,3 @@
-//
-//  SideMenuView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 12/08/23.
-//
-
 import SwiftUI
 import AppRouter
 

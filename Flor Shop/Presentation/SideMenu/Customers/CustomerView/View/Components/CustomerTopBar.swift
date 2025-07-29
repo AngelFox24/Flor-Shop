@@ -1,10 +1,3 @@
-//
-//  CustomerTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 11/10/23.
-//
-
 import SwiftUI
 
 struct CustomerTopBar: View {
@@ -55,12 +48,12 @@ struct CustomerTopBar: View {
                 } label: {
                     FilterButton()
                 }
-                .onChange(of: customerViewModel.order, perform: { item in
+                .onChange(of: customerViewModel.order) { _, _ in
                     customerViewModel.fetchListCustomer()
-                })
-                .onChange(of: customerViewModel.filter, perform: { item in
+                }
+                .onChange(of: customerViewModel.filter) { _, _ in
                     customerViewModel.fetchListCustomer()
-                })
+                }
             })
             .padding(.horizontal, 10)
         }
@@ -135,12 +128,12 @@ struct CustomerTopBarPopUp: View {
                     .background(Color.white)
                     .cornerRadius(15.0)
                 }
-                .onChange(of: customerViewModel.order, perform: { item in
+                .onChange(of: customerViewModel.order) { _, _ in
                     customerViewModel.fetchListCustomer()
-                })
-                .onChange(of: customerViewModel.filter, perform: { item in
+                }
+                .onChange(of: customerViewModel.filter) { _, _ in
                     customerViewModel.fetchListCustomer()
-                })
+                }
             })
             .padding(.horizontal, 10)
         }

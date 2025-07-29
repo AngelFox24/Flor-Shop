@@ -1,10 +1,3 @@
-//
-//  PaymentView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 9/10/23.
-//
-
 import SwiftUI
 
 struct PaymentView: View {

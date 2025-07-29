@@ -1,10 +1,3 @@
-//
-//  PopoverHelp.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 1/08/23.
-//
-
 import SwiftUI
 
 struct PopoverHelpAddView: View {

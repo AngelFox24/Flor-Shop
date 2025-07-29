@@ -1,5 +1,4 @@
 import SwiftUI
-import AppRouter
 
 struct MenuFlow {
     @ViewBuilder

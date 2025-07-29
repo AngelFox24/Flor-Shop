@@ -1,10 +1,3 @@
-//
-//  LocalCustomerManager.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 16/08/23.
-//
-
 import Foundation
 import CoreData
 import FlorShop_DTOs
@@ -14,7 +7,6 @@ protocol LocalCustomerManager {
     func payClientTotalDebt(customer: Customer) throws -> Bool
     func sync(backgroundContext: NSManagedObjectContext, customersDTOs: [CustomerClientDTO]) throws
     func getLastToken(context: NSManagedObjectContext) -> Int64
-    func getLastUpdated() -> Date
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
     func getCustomer(customer: Customer) throws -> Customer?
@@ -47,27 +39,6 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
         } catch let error {
             print("Error fetching. \(error)")
             return 0
-        }
-    }
-    func getLastUpdated() -> Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 1999, month: 1, day: 1)
-        let dateFrom = calendar.date(from: components)
-        let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate = NSPredicate(format: "toCompany.idCompany == %@ AND updatedAt != nil", self.sessionConfig.companyId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
-        request.sortDescriptors = [sortDescriptor]
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
-            guard let dateNN = date else {
-                return dateFrom!
-            }
-            return dateNN
-        } catch let error {
-            print("Error fetching. \(error)")
-            return dateFrom!
         }
     }
     func sync(backgroundContext: NSManagedObjectContext, customersDTOs: [CustomerClientDTO]) throws {

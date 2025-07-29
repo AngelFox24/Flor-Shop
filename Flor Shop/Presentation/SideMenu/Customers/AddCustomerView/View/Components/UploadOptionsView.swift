@@ -1,10 +1,3 @@
-//
-//  UploadOptionsView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 4/11/23.
-//
-
 import SwiftUI
 
 struct UploadOptionsView: View {

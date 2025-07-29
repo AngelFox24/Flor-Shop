@@ -1,10 +1,3 @@
-//
-//  CoreDataProvider.swift
-//  Flor Shop
-//
-//  Created by Rodil Pampañaupa Velasque on 20/05/23.
-//
-
 import Foundation
 import CoreData
 

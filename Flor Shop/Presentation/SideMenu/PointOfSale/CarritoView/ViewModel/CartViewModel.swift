@@ -1,9 +1,3 @@
-//
-//  CarritoCoreDataViewModel.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 1/05/23.
-//
 import CoreData
 import Foundation
 

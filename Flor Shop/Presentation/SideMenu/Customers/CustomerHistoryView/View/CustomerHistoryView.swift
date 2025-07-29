@@ -1,11 +1,5 @@
-//
-//  CustomerHistoryView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/03/24.
-//
-
 import SwiftUI
+
 struct CustomerHistoryView: View {
     @EnvironmentObject var customerHistoryViewModel: CustomerHistoryViewModel
     var body: some View {
@@ -26,7 +20,6 @@ struct CustomerHistoryView: View {
 
 struct CustomerHistoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomerHistoryView()

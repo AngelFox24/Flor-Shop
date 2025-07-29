@@ -1,10 +1,3 @@
-//
-//  CarritoView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 29/04/23.
-//
-
 import SwiftUI
 import CoreData
 

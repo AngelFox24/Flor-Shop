@@ -1,10 +1,3 @@
-//
-//  TypeUnitView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 27/06/2024.
-//
-
 import SwiftUI
 
 struct customViewPre: View {

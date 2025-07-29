@@ -1,10 +1,3 @@
-//
-//  PaymentTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 9/10/23.
-//
-
 import SwiftUI
 import CoreData
 import AVFoundation

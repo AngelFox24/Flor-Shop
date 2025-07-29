@@ -1,10 +1,3 @@
-//
-//  FlorShopButton.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 11/06/2025.
-//
-
 import SwiftUI
 
 struct FlorShopButton: View {

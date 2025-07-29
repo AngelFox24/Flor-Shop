@@ -3,7 +3,6 @@ import CoreData
 import FlorShop_DTOs
 
 protocol LocalCompanyManager {
-    func getLastUpdated() -> Date
     func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyClientDTO) throws
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func save(company: Company) throws
@@ -33,27 +32,6 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
         } catch let error {
             print("Error fetching. \(error)")
             return 0
-        }
-    }
-    func getLastUpdated() -> Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 1999, month: 1, day: 1)
-        let dateFrom = calendar.date(from: components)
-        let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let predicate = NSPredicate(format: "idCompany == %@ AND updatedAt != nil", self.sessionConfig.companyId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
-        request.sortDescriptors = [sortDescriptor]
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
-            guard let dateNN = date else {
-                return dateFrom!
-            }
-            return dateNN
-        } catch let error {
-            print("Error fetching. \(error)")
-            return dateFrom!
         }
     }
     func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyClientDTO) throws {

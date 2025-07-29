@@ -1,10 +1,3 @@
-//
-//  DefaultTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 21/04/23.
-//
-
 import SwiftUI
 
 struct DefaultTopBar: View {

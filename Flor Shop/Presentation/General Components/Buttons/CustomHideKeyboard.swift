@@ -1,17 +1,9 @@
-//
-//  CustomHideKeyboard.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 6/06/23.
-//
-
 import SwiftUI
 
 struct CustomHideKeyboard: View {
     var body: some View {
         ZStack {
             VStack {
-                //Spacer()
                 HStack {
                     Spacer()
                     Button(action: {

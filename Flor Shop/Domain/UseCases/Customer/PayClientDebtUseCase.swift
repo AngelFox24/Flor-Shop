@@ -1,10 +1,3 @@
-//
-//  PayClientDebtUseCase.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 28/03/24.
-//
-
 import Foundation
 
 protocol PayClientDebtUseCase {

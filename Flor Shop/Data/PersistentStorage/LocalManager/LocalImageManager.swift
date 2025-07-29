@@ -1,10 +1,3 @@
-//
-//  LocalImageManager.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 25/08/23.
-//
-
 import Foundation
 import CoreData
 import SwiftUI
@@ -18,7 +11,6 @@ import FlorShop_DTOs
 protocol LocalImageManager {
     func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLClientDTO]) throws
     func getLastToken(context: NSManagedObjectContext) -> Int64
-    func getLastUpdated() -> Date
 //    func save(image: ImageUrl) throws -> ImageUrl
     func getImage(image: UIImage) async throws -> ImageUrl
     func deleteUnusedImages() async
@@ -51,27 +43,6 @@ final class LocalImageManagerImpl: LocalImageManager {
         } catch let error {
             print("Error fetching. \(error)")
             return 0
-        }
-    }
-    func getLastUpdated() -> Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 1999, month: 1, day: 1)
-        let dateFrom = calendar.date(from: components)
-        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        let predicate = NSPredicate(format: "updatedAt != nil")
-        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
-        request.sortDescriptors = [sortDescriptor]
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
-            guard let dateNN = date else {
-                return dateFrom!
-            }
-            return dateNN
-        } catch let error {
-            print("Error fetching. \(error)")
-            return dateFrom!
         }
     }
     func sync(backgroundContext: NSManagedObjectContext, imageURLsDTOs: [ImageURLClientDTO]) throws {

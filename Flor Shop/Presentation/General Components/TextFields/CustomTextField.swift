@@ -1,10 +1,3 @@
-//
-//  CustomTextField.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 9/08/23.
-//
-
 import SwiftUI
 
 struct CustomTextField: View {
@@ -30,13 +23,13 @@ struct CustomTextField: View {
                         .foregroundColor(.black)
                         .padding(.vertical, 4)
                         .disableAutocorrection(disableAutocorrection)
-                        .onChange(of: value, perform: { text in
+                        .onChange(of: value) { oldText, newText in
                             if isInputActive {
-                                if text != "" {
+                                if newText != "" {
                                     edited = true
                                 }
                             }
-                        })
+                        }
                         .disabled(disable)
                         .toolbar {
                             if isInputActive {

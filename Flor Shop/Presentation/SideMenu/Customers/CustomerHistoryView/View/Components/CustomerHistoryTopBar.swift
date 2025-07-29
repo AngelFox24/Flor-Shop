@@ -1,11 +1,4 @@
-//
-//  CustomerHistoryTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/03/24.
-//
 import SwiftUI
-import CoreData
 import AVFoundation
 
 struct CustomerHistoryTopBar: View {
@@ -99,7 +92,6 @@ struct CustomerHistoryTopBar: View {
 }
 struct CustomerHistoryTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomerHistoryTopBar()

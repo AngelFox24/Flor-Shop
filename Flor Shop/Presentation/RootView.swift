@@ -1,10 +1,3 @@
-//
-//  RootView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 24/04/23.
-//
-
 import SwiftUI
 
 struct RootView: View {

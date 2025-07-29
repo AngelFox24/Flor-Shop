@@ -10,14 +10,11 @@ protocol ImageRepository {
 
 class ImageRepositoryImpl: ImageRepository, Syncronizable {
     let localManager: LocalImageManager
-    let remoteManager: RemoteImageManager
     let cloudBD = true
     init(
-        localManager: LocalImageManager,
-        remoteManager: RemoteImageManager
+        localManager: LocalImageManager
     ) {
         self.localManager = localManager
-        self.remoteManager = remoteManager
     }
     func getLastToken() -> Int64 {
         return 0

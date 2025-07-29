@@ -1,9 +1,3 @@
-//
-//  GetCustomerSalesUseCase.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/03/24.
-//
 import Foundation
 
 protocol GetCustomerSalesUseCase {

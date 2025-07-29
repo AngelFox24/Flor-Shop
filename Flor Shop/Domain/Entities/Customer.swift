@@ -29,27 +29,6 @@ struct Customer: Identifiable {
     var totalDebt: Money
     var isCreditLimitActive: Bool
     var isDateLimitActive: Bool
-    
-    static func getDummyCustomer() -> Customer {
-        return Customer(
-            id: UUID(),
-            customerId: nil,
-            name: "Desconocido",
-            lastName: "Desconocido",
-            image: nil,
-            creditLimit: Money(1200),
-            isCreditLimit: false,
-            creditDays: 30,
-            isDateLimit: false,
-            creditScore: 50,
-            dateLimit: Date(),
-            phoneNumber: "994947825",
-            lastDatePurchase: Date(),
-            totalDebt: Money(2300),
-            isCreditLimitActive: false,
-            isDateLimitActive: false
-        )
-    }
 }
 
 extension Customer {

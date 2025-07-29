@@ -1,10 +1,3 @@
-//
-//  CustomAsyncImageView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 10/06/23.
-//
-
 import SwiftUI
 
 struct CustomAsyncImageView: View {

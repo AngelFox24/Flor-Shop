@@ -1,10 +1,3 @@
-//
-//  CustomButtons.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 9/06/23.
-//
-
 import SwiftUI
 
 struct CustomButton1: View {

@@ -1,9 +1,3 @@
-//
-//  Request Parameters.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 05/10/2024.
-//
 import Foundation
 import FlorShop_DTOs
 //MARK: ServerErrorResponse
@@ -28,24 +22,6 @@ struct RegisterParameters: Encodable {
     }
 }
 //MARK: Sync Parameters
-struct SyncCompanyParameters: Encodable {
-    let updatedSince: String
-    let syncIds: VerifySyncParameters
-}
-struct SyncImageParameters: Encodable {
-    let updatedSince: String
-    let syncIds: VerifySyncParameters
-}
-struct SyncFromCompanyParameters: Encodable {
-    let companyId: UUID
-    let updatedSince: String
-    let syncIds: VerifySyncParameters
-}
-struct SyncFromSubsidiaryParameters: Encodable {
-    let subsidiaryId: UUID
-    let updatedSince: String
-    let syncIds: VerifySyncParameters
-}
 struct SyncServerParameters: Encodable {
     let syncToken: Int64
     let sessionConfig: SessionConfig

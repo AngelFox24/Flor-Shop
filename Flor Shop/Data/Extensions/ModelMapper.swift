@@ -1,10 +1,3 @@
-//
-//  ModelMapper.swift
-//  Flor Shop
-//
-//  Created by Rodil Pampañaupa Velasque on 21/05/23.
-//
-
 import Foundation
 import CoreData
 

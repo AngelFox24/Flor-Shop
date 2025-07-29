@@ -1,10 +1,3 @@
-//
-//  MainView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/07/2024.
-//
-
 import SwiftUI
 
 struct MainView: View {
@@ -61,8 +54,6 @@ struct MainContendView: View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
         let normalDependencies = NormalDependencies()
-        let sesC = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dep = BusinessDependencies(sessionConfig: sesC)
         MainView()
             .environment(normalDependencies.logInViewModel)
     }

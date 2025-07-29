@@ -104,15 +104,6 @@ final class SyncWebSocketClient {
         }
     }
     
-    func send(text: String) {
-        let message = URLSessionWebSocketTask.Message.string(text)
-        webSocketTask?.send(message) { error in
-            if let error = error {
-                print("\(self.logPrefix) Error enviando mensaje: \(error)")
-            }
-        }
-    }
-    
     private func handleWebSocketError(_ error: Error) {
         print("\(self.logPrefix) Error recibiendo mensaje: \(error)")
 

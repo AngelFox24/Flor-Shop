@@ -1,13 +1,4 @@
-//
-//  AddCustomerTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 14/10/23.
-//
-
 import SwiftUI
-
-import CoreData
 import AVFoundation
 
 struct AddCustomerTopBar: View {
@@ -67,7 +58,6 @@ struct AddCustomerTopBar: View {
 
 struct AddCustomerTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         AddCustomerTopBar()

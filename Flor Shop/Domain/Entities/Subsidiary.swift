@@ -7,15 +7,6 @@ struct Subsidiary: Identifiable {
     let subsidiaryId: UUID?
     var name: String
     var image: ImageUrl?
-    
-    static func getDummySubsidiary() -> Subsidiary {
-        return Subsidiary(
-            id: UUID(),
-            subsidiaryId: nil,
-            name: "Tienda de Flor",
-            image: nil
-        )
-    }
 }
 
 extension Subsidiary {

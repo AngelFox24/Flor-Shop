@@ -1,4 +1,3 @@
-import AppRouter
 import SwiftUI
 
 extension View {

@@ -1,10 +1,3 @@
-//
-//  ImportProductsUseCase.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 25/08/2024.
-//
-
 import Foundation
 import UniformTypeIdentifiers
 
@@ -50,7 +43,6 @@ final class ImportProductsInteractor: ImportProductsUseCase {
                     countFail = countFail + 1
                     continue
                 }
-                let date = Date()
                 let unitType = getTreatedUnitType(elements[2])
                 let quantity = getTreatedQuantity(quantity: elements[2], unitType: unitType)
                 let imageUrl = ImageUrl(
@@ -59,7 +51,7 @@ final class ImportProductsInteractor: ImportProductsUseCase {
                     imageUrl: elements[0],
                     imageHash: ""
                 )
-                var product = Product(
+                let product = Product(
                     id: UUID(),
                     productId: nil,
                     active: true,

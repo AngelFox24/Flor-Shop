@@ -1,10 +1,3 @@
-//
-//  FirebaseSesionManagement.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 14/08/23.
-//
-
 import Foundation
 
 class FirebaseSesionManagement: ObservableObject {

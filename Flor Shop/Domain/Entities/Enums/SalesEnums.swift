@@ -1,10 +1,3 @@
-//
-//  SalesEnums.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 10/02/24.
-//
-
 import Foundation
 
 enum SalesGrouperAttributes: CustomStringConvertible, Equatable {

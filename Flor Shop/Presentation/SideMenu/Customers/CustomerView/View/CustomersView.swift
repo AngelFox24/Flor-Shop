@@ -1,10 +1,3 @@
-//
-//  CustomersView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 2/10/23.
-//
-
 import SwiftUI
 
 struct CustomerViewParameters: Hashable {
@@ -53,7 +46,6 @@ struct CustomersView: View {
 
 struct CustomersView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomersView(parameters: CustomerViewParameters(backButton: false, forSelectCustomer: false))

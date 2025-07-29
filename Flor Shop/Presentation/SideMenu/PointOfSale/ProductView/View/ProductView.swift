@@ -28,7 +28,6 @@ struct CustomProductView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         CustomProductView(tab: .constant(.magnifyingglass))

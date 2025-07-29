@@ -1,10 +1,3 @@
-//
-//  NormalDependencies.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/07/2024.
-//
-
 import Foundation
 
 struct NormalDependencies {

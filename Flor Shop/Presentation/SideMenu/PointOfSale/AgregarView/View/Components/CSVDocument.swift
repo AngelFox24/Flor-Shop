@@ -1,10 +1,3 @@
-//
-//  CSVDocument.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 28/06/2024.
-//
-
 import SwiftUI
 
 func showShareSheet(url: URL) {

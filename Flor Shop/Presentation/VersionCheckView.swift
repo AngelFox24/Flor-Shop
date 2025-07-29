@@ -1,10 +1,3 @@
-//
-//  VersionCheckView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 08/06/2025.
-//
-
 import SwiftUI
 
 struct VersionCheckView: View {

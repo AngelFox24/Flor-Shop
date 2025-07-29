@@ -1,10 +1,3 @@
-//
-//  FuncOpenGoogle.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 19/08/23.
-//
-
 import SwiftUI
 import SafariServices
 

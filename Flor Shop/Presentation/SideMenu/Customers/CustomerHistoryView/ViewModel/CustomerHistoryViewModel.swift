@@ -1,10 +1,3 @@
-//
-//  CustomerHistoryViewModel.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 22/03/24.
-//
-import CoreData
 import Foundation
 
 class CustomerHistoryViewModel: ObservableObject {

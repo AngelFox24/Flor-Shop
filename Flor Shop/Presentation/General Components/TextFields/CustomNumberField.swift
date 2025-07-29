@@ -1,10 +1,3 @@
-//
-//  CustomNumberField.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 03/08/2024.
-//
-
 import SwiftUI
 
 struct CustomNumberField: View {
@@ -30,7 +23,7 @@ struct CustomNumberField: View {
                             .foregroundColor(.black)
                             .padding(.vertical, 4)
                             .disableAutocorrection(true)
-                            .onChange(of: viewText, perform: { newValue in
+                            .onChange(of: viewText) { oldValue, newValue in
                                 if isInputActive {
                                     print("isInputActive")
                                     if newValue != "" {
@@ -45,9 +38,9 @@ struct CustomNumberField: View {
                                         viewText = "0"
                                     }
                                 }
-                            })
-                            .onChange(of: isInputActive, perform: { focus in
-                                if focus == false {
+                            }
+                            .onChange(of: isInputActive) { oldFocus, newFocus in
+                                if newFocus == false {
                                     print("Se ejecuta UnFocused")
                                     onUnFocused?()
                                     if userInput == 0 {//Cuando el teclado desaparece que aparesca el placeholder
@@ -55,8 +48,8 @@ struct CustomNumberField: View {
                                         edited = false
                                     }
                                 }
-                            })
-                            .onChange(of: userInput, perform: { newValue in
+                            }
+                            .onChange(of: userInput) { oldValue, newValue in
                                 if newValue == 0 {
                                     if isInputActive {//Si el teclado esta en pantalla no se puede limpiar el texto porque ocurre errores
                                         viewText = "0"
@@ -64,7 +57,7 @@ struct CustomNumberField: View {
                                         viewText = ""
                                     }
                                 }
-                            })
+                            }
                             .disabled(disable)
                             .toolbar {
                                 if isInputActive {

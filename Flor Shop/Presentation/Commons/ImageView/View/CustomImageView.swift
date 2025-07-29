@@ -1,10 +1,3 @@
-//
-//  CustomImageView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 02/08/2024.
-//
-
 import SwiftUI
 import PhotosUI
 

@@ -1,10 +1,3 @@
-//
-//  PointOfSaleView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 13/08/23.
-//
-
 import SwiftUI
 
 struct PointOfSaleView: View {
@@ -72,13 +65,8 @@ struct PointOfSaleView: View {
 }
 struct PointOfSaleView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var isKeyboardVisible: Bool = false
-        @State var loading: Bool = false
-        @State var showMenu: Bool = false
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var tab: Tab = .magnifyingglass
         PointOfSaleView()
             .environmentObject(dependencies.agregarViewModel)
             .environmentObject(dependencies.productsViewModel)

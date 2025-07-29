@@ -1,10 +1,3 @@
-//
-//  Extensions.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 3/10/23.
-//
-
 import Foundation
 
 extension Data {
@@ -90,10 +83,4 @@ extension String {
         let dateR = isoFormatter.date(from: self)
         return dateR
     }
-}
-func minimunDate() -> Date {
-    let calendar = Calendar(identifier: .gregorian)
-    let components = DateComponents(year: 1990, month: 1, day: 1)
-    let minimunDate = calendar.date(from: components)
-    return minimunDate!
 }

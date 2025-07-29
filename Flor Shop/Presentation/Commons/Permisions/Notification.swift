@@ -1,10 +1,3 @@
-//
-//  Notification.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 27/06/23.
-//
-
 import UserNotifications
 
 func checkForPermission() {

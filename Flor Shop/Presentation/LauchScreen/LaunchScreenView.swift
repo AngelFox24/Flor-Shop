@@ -1,10 +1,3 @@
-//
-//  LaunchScreenView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 8/07/23.
-//
-
 import SwiftUI
 
 struct LaunchScreenView: View {

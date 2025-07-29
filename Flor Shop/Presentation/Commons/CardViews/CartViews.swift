@@ -1,10 +1,3 @@
-//
-//  CartViewTipe1.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 26/09/23.
-//
-
 import SwiftUI
 
 struct CardViewTipe1: View {

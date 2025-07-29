@@ -1,10 +1,3 @@
-//
-//  Untitled.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 29/09/2024.
-//
-
 import Foundation
 
 enum BusinessLogicError: LocalizedError {

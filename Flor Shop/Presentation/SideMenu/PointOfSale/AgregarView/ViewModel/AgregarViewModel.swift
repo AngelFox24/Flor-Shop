@@ -1,10 +1,3 @@
-//
-//  AgregarViewModel.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 7/07/23.
-//
-
 import Foundation
 import SwiftUI
 import _PhotosUI_SwiftUI

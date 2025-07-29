@@ -1,9 +1,3 @@
-//
-//  BarcodeScannerView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 03/07/2024.
-//
 import SwiftUI
 import AVFoundation
 

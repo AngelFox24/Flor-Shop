@@ -1,10 +1,3 @@
-//
-//  OptimizeLocalImages.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 1/04/24.
-//
-
 import Foundation
 import CoreGraphics
 import ImageIO

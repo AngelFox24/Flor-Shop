@@ -1,10 +1,3 @@
-//
-//  AgregarTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 7/06/23.
-//
-
 import SwiftUI
 import CoreData
 import AVFoundation
@@ -32,7 +25,6 @@ struct AgregarTopBar: View {
         Task {
             router.isLoanding = true
             do {
-//                UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first?.endEditing(true)
                 try await agregarViewModel.addProduct()
                 await productViewModel.releaseResources()
                 playSound(named: "Success1")
@@ -61,7 +53,6 @@ struct AgregarTopBar: View {
 
 struct AgregarTopBar_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         VStack {

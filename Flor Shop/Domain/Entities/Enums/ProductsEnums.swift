@@ -1,10 +1,3 @@
-//
-//  ProductsEnums.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 11/08/23.
-//
-
 import Foundation
 
 enum UnitTypeEnum: String, Codable {

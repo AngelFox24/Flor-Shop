@@ -1,10 +1,3 @@
-//
-//  BuscarTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 24/04/23.
-//
-
 import SwiftUI
 
 struct CustomSearchField: View {
@@ -81,12 +74,12 @@ struct ProductSearchTopBar: View {
                 } label: {
                     FilterButton()
                 }
-                .onChange(of: productsCoreDataViewModel.primaryOrder, perform: { item in
+                .onChange(of: productsCoreDataViewModel.primaryOrder) { _, _ in
                     loadProducts()
-                })
-                .onChange(of: productsCoreDataViewModel.filterAttribute, perform: { item in
+                }
+                .onChange(of: productsCoreDataViewModel.filterAttribute) { _, _ in
                     loadProducts()
-                })
+                }
             })
             .padding(.horizontal, 10)
         }

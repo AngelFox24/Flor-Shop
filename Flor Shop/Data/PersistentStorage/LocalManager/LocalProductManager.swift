@@ -6,7 +6,6 @@ protocol LocalProductManager {
     func save(product: Product) throws
     func sync(backgroundContext: NSManagedObjectContext, productsDTOs: [ProductClientDTO]) throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
-    func getLastUpdated() -> Date
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func getLastToken() -> Int64
     func updateProducts(products: [Product]) -> [Product]
@@ -42,27 +41,6 @@ class LocalProductManagerImpl: LocalProductManager {
         } catch let error {
             print("Error fetching. \(error)")
             return 0
-        }
-    }
-    func getLastUpdated() -> Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 1999, month: 1, day: 1)
-        let dateFrom = calendar.date(from: components)
-        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND updatedAt != nil", self.sessionConfig.subsidiaryId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
-        request.sortDescriptors = [sortDescriptor]
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
-            guard let dateNN = date else {
-                return dateFrom!
-            }
-            return dateNN
-        } catch let error {
-            print("Error fetching. \(error)")
-            return dateFrom!
         }
     }
     func updateProducts(products: [Product]) -> [Product] {

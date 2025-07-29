@@ -1,10 +1,3 @@
-//
-//  SalesView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 7/12/23.
-//
-
 import SwiftUI
 
 struct SalesView: View {
@@ -39,7 +32,6 @@ struct SalesView: View {
 
 struct SalesView_Previews: PreviewProvider {
     static var previews: some View {
-        let nor = NormalDependencies()
         let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
         let dependencies = BusinessDependencies(sessionConfig: ses)
         SalesView()

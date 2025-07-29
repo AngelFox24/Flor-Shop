@@ -1,10 +1,3 @@
-//
-//  SalesTopBar.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 10/02/24.
-//
-
 import SwiftUI
 
 struct SalesTopBar: View {
@@ -82,12 +75,12 @@ struct SalesTopBar: View {
                 } label: {
                     FilterButton()
                 }
-                .onChange(of: salesCoreDataViewModel.order, perform: { item in
+                .onChange(of: salesCoreDataViewModel.order) { _, _ in
                     salesCoreDataViewModel.fetchSalesDetailsList()
-                })
-                .onChange(of: salesCoreDataViewModel.grouper, perform: { item in
+                }
+                .onChange(of: salesCoreDataViewModel.grouper) { _, _ in
                     salesCoreDataViewModel.fetchSalesDetailsList()
-                })
+                }
             })
             .padding(.horizontal, 10)
             HStack(content: {

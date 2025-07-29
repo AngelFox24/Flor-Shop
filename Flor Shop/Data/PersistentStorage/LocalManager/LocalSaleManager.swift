@@ -6,7 +6,6 @@ protocol LocalSaleManager {
     func registerSale(cart: Car, paymentType:PaymentType, customerId: UUID?) throws
     func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleClientDTO]) throws
     func getLastToken(context: NSManagedObjectContext) -> Int64
-    func getLastUpdated() -> Date
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -62,7 +61,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
     }
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) throws {
         let date: Date = Date()
-        guard let cartEntity = try self.sessionConfig.getCartEntityById(context: self.mainContext, cartId: cart.id) else {
+        guard let _ = try self.sessionConfig.getCartEntityById(context: self.mainContext, cartId: cart.id) else {
             throw LocalStorageError.entityNotFound("No se encontro carrito de ventas")
         }
         guard cart.cartDetails.isEmpty else {
@@ -120,29 +119,6 @@ class LocalSaleManagerImpl: LocalSaleManager {
         }
         print("Se vendio correctamente")
         try saveData()
-    }
-    func getLastUpdated() -> Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = DateComponents(year: 1999, month: 1, day: 1)
-        let dateFrom = calendar.date(from: components)
-        let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
-        let predicate = NSPredicate(format: "toSubsidiary.idSubsidiary == %@ AND updatedAt != nil", self.sessionConfig.subsidiaryId.uuidString)
-        let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
-        request.sortDescriptors = [sortDescriptor]
-        request.predicate = predicate
-        request.fetchLimit = 1
-        do {
-            let date = try self.mainContext.fetch(request).compactMap{$0.updatedAt}.first
-            guard let dateNN = date else {
-                print("Sale Manager getLastUpdated vacio")
-                return dateFrom!
-            }
-            print("Sale Manager getLastUpdated tiene date \(dateNN.description)")
-            return dateNN
-        } catch let error {
-            print("Error fetching. \(error)")
-            return dateFrom!
-        }
     }
     func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Money {
         guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityById(context: self.mainContext, subsidiaryId: self.sessionConfig.subsidiaryId) else {

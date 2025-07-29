@@ -1,10 +1,3 @@
-//
-//  BusinessDependencies.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 4/12/23.
-//
-
 import Foundation
 import CoreData
 
@@ -31,7 +24,6 @@ struct BusinessDependencies {
     private let remoteSubsidiaryManager: RemoteSubsidiaryManagerImpl
     private let remoteEmployeeManager: RemoteEmployeeManagerImpl
     private let remoteCustomerManager: RemoteCustomerManagerImpl
-    private let remoteImageManager: RemoteImageManagerImpl
     private let remoteSyncManager: RemoteSyncManager
     //Repositorios
     private let companyRepository: CompanyRepositoryImpl
@@ -102,7 +94,6 @@ struct BusinessDependencies {
         self.remoteSubsidiaryManager = RemoteSubsidiaryManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteEmployeeManager = RemoteEmployeeManagerImpl(sessionConfig: self.sessionConfig)
         self.remoteCustomerManager = RemoteCustomerManagerImpl(sessionConfig: self.sessionConfig)
-        self.remoteImageManager = RemoteImageManagerImpl()
         self.remoteSyncManager = RemoteSyncManagerImpl(sessionConfig: self.sessionConfig)
         //MARK: Repositorios
         self.companyRepository = CompanyRepositoryImpl(localManager: localCompanyManager, remoteManager: remoteCompanyManager)
@@ -112,7 +103,7 @@ struct BusinessDependencies {
         self.productRepository = ProductRepositoryImpl(localManager: localProductManager, remoteManager: remoteProductManager)
         self.cartRepository = CarRepositoryImpl(localManager: localCartManager)
         self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
-        self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
+        self.imageRepository = ImageRepositoryImpl(localManager: localImageManager)
         self.syncRepository = SyncRepositoryImpl(remoteSyncManager: remoteSyncManager)
         //MARK: UseCases
         self.synchronizerDBUseCase = SynchronizerDBInteractor(persistentContainer: CoreDataProvider.shared.persistContainer, imageRepository: imageRepository, companyRepository: companyRepository, subsidiaryRepository: subsidiaryRepository, customerRepository: customerRepository, employeeRepository: employeeRepository, productRepository: productRepository, saleRepository: salesRepository, syncRepository: syncRepository)
