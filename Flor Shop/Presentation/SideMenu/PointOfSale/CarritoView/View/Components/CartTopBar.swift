@@ -2,19 +2,14 @@ import SwiftUI
 import AVFoundation
 
 struct CartTopBar: View {
-    // TODO: Corregir el calculo del total al actualizar precio en AgregarView
-    @Environment(Router.self) private var router
-    @Environment(CartViewModel.self) var cartViewModel
+    @Binding var cartViewModel: CartViewModel
+    let backAction: () -> Void
     var body: some View {
-        @Bindable var router = router
         HStack {
             HStack{
-                FlorShopButton()
+                FlorShopButton(backAction: backAction)
                 Spacer()
-                Button(action: {
-                    router.presentSheet(.payment)
-                    print("Se presiono cobrar")
-                }, label: {
+                NavigationButton(push: .payment) {
                     HStack(spacing: 5, content: {
                         Text(String("S/. "))
                             .font(.custom("Artifika-Regular", size: 15))
@@ -24,13 +19,11 @@ struct CartTopBar: View {
                     })
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
-                    .foregroundColor(Color("color_background"))
-                    .background(Color("color_accent"))
+                    .foregroundColor(Color.background)
+                    .background(Color.accent)
                     .cornerRadius(15.0)
-                })
-                Button(action: {
-//                    navManager.goToCustomerView()
-                }, label: {
+                }
+                NavigationButton(push: .selectCustomer) {
                     if let customer = cartViewModel.customerInCar, let image = customer.image {
                         CustomAsyncImageView(imageUrl: image, size: 40)
                             .contextMenu(menuItems: {
@@ -43,21 +36,17 @@ struct CartTopBar: View {
                     } else {
                         EmptyProfileButton()
                     }
-                })
+                }
             }
         }
-        .padding(.top, router.showMenu ? 15 : 0)
         .frame(maxWidth: .infinity)
         .padding(.bottom, 8)
         .padding(.horizontal, 10)
-        .background(Color("color_primary"))
+        .background(Color.primary)
     }
 }
-struct CartTopBar_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        CartTopBar()
-            .environment(dependencies.cartViewModel)
-    }
+
+#Preview {
+    @Previewable @State var cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: SessionContainer.preview)
+    CartTopBar(cartViewModel: $cartViewModel, backAction: {})
 }

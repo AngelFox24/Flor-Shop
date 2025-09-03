@@ -1,12 +1,12 @@
 import Foundation
 import CoreData
 
-protocol SubsidiaryRepository {
+protocol SubsidiaryRepository: Syncronizable {
     func save(subsidiary: Subsidiary) async throws
     func getSubsidiaries() -> [Subsidiary]
 }
 
-class SubsidiaryRepositoryImpl: SubsidiaryRepository, Syncronizable {
+class SubsidiaryRepositoryImpl: SubsidiaryRepository {
     let localManager: LocalSubsidiaryManager
     let remoteManager: RemoteSubsidiaryManager
     let cloudBD = true

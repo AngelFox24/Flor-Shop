@@ -1,24 +1,15 @@
 import SwiftUI
 
-struct CustomerViewParameters: Hashable {
-    let backButton: Bool
-    let forSelectCustomer: Bool
-    init(backButton: Bool = false, forSelectCustomer: Bool = false) {
-        self.backButton = backButton
-        self.forSelectCustomer = forSelectCustomer
-    }
-}
-
 struct CustomersView: View {
-    @Environment(Router.self) private var router
-    @Environment(CustomerViewModel.self) var customerViewModel
-    let parameters: CustomerViewParameters
-    init(parameters: CustomerViewParameters = CustomerViewParameters()) {
-        self.parameters = parameters
+    @State var customerViewModel: CustomerViewModel
+    @Binding var showMenu: Bool
+    init(ses: SessionContainer, showMenu: Binding<Bool>) {
+        self.customerViewModel = CustomerViewModelFactory.getCustomerViewModelFactory(sessionContainer: ses)
+        self._showMenu = showMenu
     }
     var body: some View {
         ZStack {
-            if !router.showMenu {
+            if !showMenu {
                 VStack(spacing: 0, content: {
                     Color("color_primary")
                     Color("color_background")
@@ -26,12 +17,12 @@ struct CustomersView: View {
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                CustomerTopBar(backButton: parameters.backButton)
-                CustomerListController(forSelectCustomer: parameters.forSelectCustomer)
+                CustomerTopBar(customerViewModel: $customerViewModel, showMenu: $showMenu)
+                CustomerListController(customerViewModel: $customerViewModel)
             }
             .background(Color("color_primary"))
-            .cornerRadius(router.showMenu ? 35 : 0)
-            .padding(.top, router.showMenu ? 0 : 1)
+            .cornerRadius(showMenu ? 35 : 0)
+            .padding(.top, showMenu ? 0 : 1)
             .onAppear {
                 customerViewModel.lazyFetchList()
             }
@@ -44,25 +35,12 @@ struct CustomersView: View {
     }
 }
 
-struct CustomersView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomersView(parameters: CustomerViewParameters(backButton: false, forSelectCustomer: false))
-            .environment(dependencies.customerViewModel)
-            .environment(dependencies.addCustomerViewModel)
-            .environment(dependencies.customerHistoryViewModel)
-            .environment(dependencies.cartViewModel)
-    }
+#Preview {
+    CustomersView(ses: SessionContainer.preview, showMenu: .constant(false))
 }
 
 struct CustomerListController: View {
-    @Environment(Router.self) private var router
-    @Environment(CustomerViewModel.self) var customerViewModel
-    @Environment(CartViewModel.self) var cartViewModel
-    @Environment(AddCustomerViewModel.self) var addCustomerViewModel
-    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
-    var forSelectCustomer: Bool = false
+    @Binding var customerViewModel: CustomerViewModel
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -81,30 +59,23 @@ struct CustomerListController: View {
                 } else {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
-                            CardViewTipe2(
-                                imageUrl: customer.image,
-                                topStatusColor: nil,
-                                topStatus: nil,
-                                mainText: customer.name + " " + customer.lastName,
-                                mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
-                                mainIndicatorAlert: customer.isCreditLimit,
-                                secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
-                                secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
-                                secondaryIndicatorAlert: customer.isDateLimit, size: 80
-                            )
+                            NavigationButton(push: .customerHistory(customerId: customer.id)) {
+                                CardViewTipe2(
+                                    imageUrl: customer.image,
+                                    topStatusColor: nil,
+                                    topStatus: nil,
+                                    mainText: customer.name + " " + customer.lastName,
+                                    mainIndicatorPrefix: "S/. ",
+                                    mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
+                                    mainIndicatorAlert: customer.isCreditLimit,
+                                    secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                    secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                    secondaryIndicatorAlert: customer.isDateLimit, size: 80
+                                )
+                            }
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                             .listRowBackground(Color("color_background"))
-                            .onTapGesture {
-                                if forSelectCustomer {
-                                    cartViewModel.customerInCar = customer
-                                    router.goBack()
-                                } else {
-                                    customerHistoryViewModel.setCustomerInContext(customer: customer)
-//                                    navManager.goToCustomerHistoryView()
-                                }
-                            }
                         }
                     }
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
@@ -117,14 +88,9 @@ struct CustomerListController: View {
                 Spacer()
                 HStack(content: {
                     Spacer()
-                    Button(action: {
-                        Task {
-                            await addCustomerViewModel.releaseResources()
-//                            navManager.goToAddCustomerView()
-                        }
-                    }, label: {
+                    NavigationButton(push: .addCustomer) {
                         CustomButton4(simbol: "plus")
-                    })
+                    }
                 })
                 .padding(.trailing, 15)
                 .padding(.bottom, 15)

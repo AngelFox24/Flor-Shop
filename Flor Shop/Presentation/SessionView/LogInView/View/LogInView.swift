@@ -2,19 +2,18 @@ import SwiftUI
 import AVFoundation
 
 struct LogInView: View {
-    @Environment(Router.self) private var router
-    @Environment(LogInViewModel.self) private var logInViewModel
-    @Environment(PersistenceSessionConfig.self) private var sessionConfig
-    @State private var audioPlayer: AVAudioPlayer?
+    @Environment(SessionManager.self) var sessionManager
+    @State var logInViewModel = LogInViewModel()
+    @State private var audioPlayer: AVAudioPlayer? = nil
+    let backAction: () -> Void
     var body: some View {
-        @Bindable var logInViewModel = logInViewModel
         ZStack {
             Color("color_primary")
                 .ignoresSafeArea()
             VStack(
                 content: {
                     HStack(content: {
-                        BackButton()
+                        BackButton(backAction: backAction)
                         Spacer()
                         Text("Iniciar Sesión")
                             .font(.custom("Artifika-Regular", size: 25))
@@ -53,7 +52,9 @@ struct LogInView: View {
                             }
                             .padding(.horizontal, 30)
                             VStack(spacing: 30) {
-                                Button(action: logIn) {
+                                Button {
+                                    logIn(user: self.logInViewModel.userOrEmail, password: self.logInViewModel.password)
+                                } label: {
                                     VStack {
                                         CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
                                             .foregroundColor(Color(.black))
@@ -84,26 +85,17 @@ struct LogInView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
-    private func logIn() {
+    private func logIn(user: String, password: String) {
         Task {
-            router.isLoading = true
             do {
                 print("Se logeara desde Remote")
-                let ses = try await logInViewModel.logIn()
+                try await sessionManager.login(username: user, password: password)
                 print("Log In Correcto")
                 playSound(named: "Success1")
-                await MainActor.run {
-                    self.sessionConfig.fromSession(ses)
-//                    self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
-//                    self.logInViewModel.businessDependencies?.webSocket.connect()
-                    router.popToRoot()
-                }
             } catch {
-                router.presentAlert(.error(error.localizedDescription))
+//                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
-                router.isLoading = false
             }
-            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -121,20 +113,6 @@ struct LogInView: View {
         }
     }
 }
-//
-//struct LogInView_Previews: View {
-//    @State private var router = Router()
-//    let nor = NormalDependencies()
-//    var body: some View {
-//        LogInView()
-//            .environment(nor.logInViewModel)
-//            .environment(router)
-//    }
-//}
 #Preview {
-    @Previewable @State var router = Router()
-    let nor = NormalDependencies()
-    LogInView()
-        .environment(nor.logInViewModel)
-        .environment(router)
+    LogInView(backAction: {})
 }

@@ -41,6 +41,9 @@ class CustomerViewModel {
         currentPage = currentPage + 1
         fetchListCustomer(page: currentPage)
     }
+    func setCustomerInCart(customer: Customer) {
+        
+    }
     func setOrder(order: CustomerOrder) {
         self.order = order
     }

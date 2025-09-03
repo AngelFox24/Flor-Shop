@@ -1,60 +1,53 @@
 import SwiftUI
 
 struct MainView: View {
-    @Environment(LogInViewModel.self) var logInViewModel
-    @Environment(PersistenceSessionConfig.self) private var sessionConfig
+    @State private var session: SessionManager
+    init() {
+        self.session = SessionManagerFactory.getSessionManager()
+    }
     var body: some View {
         VStack {
-            if let sessionConfig = sessionConfig.session {
-                MainContendView(sessionConfig: sessionConfig)
-            } else {
+            switch session.state {
+            case .loggedOut:
                 WelcomeView()
+            case .loggedIn(let sessionConfig):
+                MainContendView(sessionConfig: sessionConfig)
             }
         }
+        .environment(session)
     }
 }
 
 struct MainContendView: View {
-    let sessionConfig: SessionConfig
-    let dependencies: BusinessDependencies
     @Environment(\.scenePhase) var scenePhase
+    @State var webSocket: SyncWebSocketClient
+    //TODO: Verificar si no perjudica a las vistar con el repintado
+    let sessionContainer: SessionContainer
     init(sessionConfig: SessionConfig) {
-        self.sessionConfig = sessionConfig
-        self.dependencies = BusinessDependencies(sessionConfig: sessionConfig)
+        self.sessionContainer = SessionContainer(sessionConfig: sessionConfig)
+        self.webSocket = SyncWebSocketClientFatory.getProductViewModel(sessionContainer: sessionContainer)
     }
     var body: some View {
         VStack(spacing: 0) {
             MenuView()
-                .environment(dependencies.productViewModel)
-                .environment(dependencies.cartViewModel)
-                .environment(dependencies.salesViewModel)
-                .environment(dependencies.customerViewModel)
-                .environment(dependencies.addCustomerViewModel)
-                .environment(dependencies.employeeViewModel)
-                .environment(dependencies.agregarViewModel)
-                .environment(dependencies.customerHistoryViewModel)
-                .environment(dependencies.addCustomerViewModel)
-                .environment(dependencies.webSocket)
+                .environment(sessionContainer)
+                .environment(webSocket)
         }
         .onChange(of: scenePhase) { oldValue, newValue in
             switch newValue {
             case .active:
-                dependencies.webSocket.connect()
+                webSocket.connect()
             case .inactive, .background:
                 print("[WebScoket] Se desconetará por: \(newValue)")
-                dependencies.webSocket.disconnect()
+                webSocket.disconnect()
                 print("[WebScoket] Desconectado")
             default:
-                dependencies.webSocket.disconnect()
+                webSocket.disconnect()
             }
         }
     }
 }
 
-struct MainView_Previews: PreviewProvider {
-    static var previews: some View {
-        let normalDependencies = NormalDependencies()
-        MainView()
-            .environment(normalDependencies.logInViewModel)
-    }
+#Preview {
+    MainView()
 }

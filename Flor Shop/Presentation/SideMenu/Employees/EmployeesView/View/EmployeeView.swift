@@ -2,11 +2,16 @@ import SwiftUI
 import AVFoundation
 
 struct EmployeeView: View {
-    @Environment(EmployeeViewModel.self) var employeeViewModel
+    @State var employeeViewModel: EmployeeViewModel
+    @Binding var showMenu: Bool
+    init(ses: SessionContainer, showMenu: Binding<Bool>) {
+        employeeViewModel = EmployeeViewModelFactory.getEmployeeViewModel(sessionContainer: ses)
+        self._showMenu = showMenu
+    }
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                ProductSearchTopBar()
+//                ProductSearchTopBar(showMenu: $showMenu, productViewModel: $pro)
                 EmployeeListController()
             }
             .onAppear {
@@ -16,10 +21,8 @@ struct EmployeeView: View {
     }
 }
 
-struct EmployeeView_Previews: PreviewProvider {
-    static var previews: some View {
-        EmployeeView()
-    }
+#Preview {
+    EmployeeView(ses: SessionContainer.preview, showMenu: .constant(false))
 }
 
 struct EmployeeListController: View {

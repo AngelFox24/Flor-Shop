@@ -1,114 +1,46 @@
 import SwiftUI
 
-struct CustomSearchField: View {
-    let placeHolder: String = "Buscar"
-    @FocusState var isInputActive: Bool
-    @Binding var text: String
+struct ProductSearchTopBar: View {
+    @Binding var showMenu: Bool
+    @Binding var productViewModel: ProductViewModel
     var body: some View {
         HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(Color("color_accent"))
-                .font(.custom("Artifika-Regular", size: 16))
-                .padding(.vertical, 10)
-                .padding(.leading, 10)
-            TextField(placeHolder, text: $text)
-                .focused($isInputActive)
-                .padding(.vertical, 10)
-                .font(.custom("Artifika-Regular", size: 16))
-                .foregroundColor(Color("color_primary"))
-                .submitLabel(.done)
-                .disableAutocorrection(true)
-            Button(action: {
-                text = ""
-            }, label: {
-                Image(systemName: "x.circle")
-                    .foregroundColor(Color("color_accent"))
-                    .font(.custom("Artifika-Regular", size: 16))
-                    .padding(.vertical, 10)
-                    .padding(.trailing, 10)
-            })
+            FlorShopButton {
+                showMenu.toggle()
+            }
+            Spacer()
+            HStack(spacing: 2) {
+                NavigationButton(push: .cartList) {
+                    Image(systemName: "cart")
+                        .modifier(FlorShopButtonStyleLigth())
+                }
+                FilterButtonView(productViewModel: $productViewModel)
+            }
+            .padding(.horizontal, 8)
+            .background(Color.white)
+            .clipShape(.capsule)
+            .onChange(of: productViewModel.primaryOrder) { _, _ in
+                loadProducts()
+            }
+            .onChange(of: productViewModel.filterAttribute) { _, _ in
+                loadProducts()
+            }
         }
-        .background(.white)
-        .cornerRadius(20.0)
-    }
-}
-
-struct ProductSearchTopBar: View {
-    @Environment(Router.self) private var router
-    @Environment(ProductViewModel.self) private var productViewModel
-    @Environment(SyncWebSocketClient.self) private var ws
-    let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
-    let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
-    var body: some View {
-        @Bindable var productViewModel = productViewModel
-        @Bindable var router = router
-        VStack {
-            HStack(spacing: 10, content: {
-                FlorShopButton()
-                CustomSearchField(text: $productViewModel.searchText)
-                Menu {
-                    Section("Ordenamiento") {
-                        ForEach(menuOrders, id: \.self) { orden in
-                            Button {
-                                productViewModel.primaryOrder = orden
-                            } label: {
-                                Label(orden.longDescription, systemImage: productViewModel.primaryOrder == orden ? "checkmark" : "")
-                            }
-                        }
-                    }
-                    Section("Filtros") {
-                        ForEach(menuFilters, id: \.self) { filtro in
-                            Button {
-                                productViewModel.filterAttribute = filtro
-                            } label: {
-                                Label(filtro.description, systemImage: productViewModel.filterAttribute == filtro ? "checkmark" : "")
-                            }
-                        }
-                    }
-                    Section("Conect WS") {
-                        Button {
-                            conectWS()
-                        } label: {
-                            Label("ConectWS", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
-                        }
-                    }
-                } label: {
-                    FilterButton()
-                }
-                .onChange(of: productViewModel.primaryOrder) { _, _ in
-                    loadProducts()
-                }
-                .onChange(of: productViewModel.filterAttribute) { _, _ in
-                    loadProducts()
-                }
-            })
-            .padding(.horizontal, 10)
-        }
-        .padding(.top, router.showMenu ? 15 : 0)
-        .padding(.bottom, 9)
-        .background(Color("color_primary"))
+        .padding(.horizontal, 10)
+        .padding(.top, showMenu ? 15 : 0)
     }
     func loadProducts() {
         Task {
-            router.isLoading = true
+//            router.isLoading = true
             await productViewModel.releaseResources()
             await productViewModel.fetchProducts()
-            router.isLoading = false
+//            router.isLoading = false
         }
-    }
-    private func conectWS() {
-        ws.connect()
     }
 }
 
-struct SearchTopBar_Previews: PreviewProvider {
-    static var previews: some View {
-        let sesConfig = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: sesConfig)
-        VStack (content: {
-            ProductSearchTopBar()
-                .environment(dependencies.productViewModel)
-            Spacer()
-        })
-    }
+#Preview {
+    @Previewable @State var vm = ProductViewModelFactory.getProductViewModel(sessionContainer: SessionContainer.preview)
+    ProductSearchTopBar(showMenu: .constant(false), productViewModel: $vm)
+        .background(Color.primary)
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ErrorView: View {
-    @Environment(Router.self) private var router
+    @Environment(\.dismiss) private var dismiss
     let error: String
     var body: some View {
         ZStack{
@@ -10,7 +10,9 @@ struct ErrorView: View {
                 .blur(radius: 5)
             VStack{
                 Text(error)
-                Button(action: router.dismissAlert) {
+                Button {
+                    dismiss()
+                } label: {
                     Text("Aceptar")
                         .foregroundStyle(Color.black)
                         .padding(.horizontal, 20)
@@ -28,9 +30,7 @@ struct ErrorView: View {
 }
 
 #Preview {
-    @Previewable @State var router = Router()
     VStack{
         ErrorView(error: "ss")
     }
-    .environment(router)
 }

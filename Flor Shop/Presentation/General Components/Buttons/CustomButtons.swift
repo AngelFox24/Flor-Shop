@@ -69,7 +69,6 @@ struct CustomButton6: View {
 }
 
 #Preview {
-    @Previewable @State var router = Router()
     VStack(spacing: 10, content: {
         CustomButton1(text: "Limpiar")
         CustomButton2(text: "Limpiar")
@@ -80,5 +79,4 @@ struct CustomButton6: View {
     })
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(.gray)
-    .environment(router)
 }

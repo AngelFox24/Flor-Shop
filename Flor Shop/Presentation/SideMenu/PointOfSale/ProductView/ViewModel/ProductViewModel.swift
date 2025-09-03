@@ -3,6 +3,7 @@ import Foundation
 @Observable
 class ProductViewModel {
     var productsCoreData: [Product] = []
+    var counter: Int = 0
     var searchText: String = "" {
         didSet {
             guard oldValue != searchText else { return }
@@ -22,11 +23,14 @@ class ProductViewModel {
     private var searchTask: Task<Void, Never>? = nil
     
     private let getProductsUseCase: GetProductsUseCase
+    private let addProductoToCartUseCase: AddProductoToCartUseCase
     
     init(
-        getProductsUseCase: GetProductsUseCase
+        getProductsUseCase: GetProductsUseCase,
+        addProductoToCartUseCase: AddProductoToCartUseCase
     ) {
         self.getProductsUseCase = getProductsUseCase
+        self.addProductoToCartUseCase = addProductoToCartUseCase
         self.lastToken = self.getProductsUseCase.getLastToken()
     }
     func updateCurrentList(newToken: Int64) async {
@@ -106,6 +110,9 @@ class ProductViewModel {
 //        print("CurrentPagesInScreen: \(currentPagesInScreen.description)")
 //        print("CurrentPagesInScreenCount: \(currentPagesInScreen.count.description)")
 //        print("ProductsCoreData: \(productsCoreData.count.description)")
+    }
+    func addProductoToCarrito(product: Product) async throws {
+        try self.addProductoToCartUseCase.execute(product: product)
     }
     func shouldLoadData(product: Product) async {
         if self.productsCoreData.isEmpty {

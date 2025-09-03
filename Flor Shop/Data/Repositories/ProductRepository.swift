@@ -6,7 +6,7 @@ enum RepositoryError: Error {
     case invalidFields(String)
 }
 
-protocol ProductRepository {
+protocol ProductRepository: Syncronizable {
     func getLastToken() -> Int64
     func updateProducts(products: [Product]) -> [Product]
     func save(product: Product) async throws
@@ -19,7 +19,7 @@ protocol Syncronizable {
     func getLastToken() -> Int64
 }
 
-public class ProductRepositoryImpl: ProductRepository, Syncronizable {
+public class ProductRepositoryImpl: ProductRepository {
     let localManager: LocalProductManager
     let remoteManager: RemoteProductManager
     let cloudBD = true

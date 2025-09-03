@@ -12,7 +12,11 @@ class CustomerHistoryViewModel {
     private let getCustomersUseCase: GetCustomersUseCase
     private let payClientDebtUseCase: PayClientDebtUseCase
     
-    init(getCustomerSalesUseCase: GetCustomerSalesUseCase, getCustomersUseCase: GetCustomersUseCase, payClientDebtUseCase: PayClientDebtUseCase) {
+    init(
+        getCustomerSalesUseCase: GetCustomerSalesUseCase,
+        getCustomersUseCase: GetCustomersUseCase,
+        payClientDebtUseCase: PayClientDebtUseCase
+    ) {
         self.getCustomerSalesUseCase = getCustomerSalesUseCase
         self.getCustomersUseCase = getCustomersUseCase
         self.payClientDebtUseCase = payClientDebtUseCase
@@ -38,6 +42,9 @@ class CustomerHistoryViewModel {
             return false
         }
         return try await self.payClientDebtUseCase.total(customer: customerNN)
+    }
+    func loadCustomer(customerId: UUID) async throws {
+        
     }
     func setCustomerInContext(customer: Customer) {
         self.customer = customer

@@ -1,30 +1,38 @@
 import SwiftUI
 
 struct PaymentView: View {
+    @Environment(FlorShopRouter.self) private var router
+    @State var paymentViewModel: PaymentViewModel
+    init(ses: SessionContainer) {
+        paymentViewModel = PaymentViewModelFactory.getPaymentViewModel(sessionContainer: ses)
+    }
     var body: some View {
         VStack(spacing: 0) {
-            PaymentTopBar()
-            PaymentsFields()
+            PaymentTopBar(backAction: router.back, registerSale: registerSale)
+            PaymentsFields(paymentViewModel: $paymentViewModel)
         }
         .background(Color("color_background"))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
-}
-
-struct PaymentView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var loading = false
-        PaymentView()
-            .environment(dependencies.cartViewModel)
+    func registerSale() {
+        Task {
+            do {
+                try await self.paymentViewModel.registerSale()
+                router.back()
+            } catch {
+                print("Error al registrar la venta: \(error.localizedDescription)")
+            }
+        }
     }
 }
 
+#Preview {
+    PaymentView(ses: SessionContainer.preview)
+}
+
 struct PaymentsFields: View {
-    @Environment(Router.self) private var router
-    @Environment(CartViewModel.self) var cartViewModel
+    @Binding var paymentViewModel: PaymentViewModel
     var body: some View {
         ScrollView(content: {
             VStack(spacing: 20, content: {
@@ -32,7 +40,7 @@ struct PaymentsFields: View {
                     Text("S/.")
                         .font(.custom("Artifika-Regular", size: 26))
                         .foregroundColor(.black)
-                    let total = cartViewModel.cartCoreData?.total.cents ?? 0
+                    let total = paymentViewModel.cartCoreData?.total.cents ?? 0
                     let totalD = Double(total/100)
                     Text(String(format: "%.2f", totalD))
                         .font(.custom("Artifika-Regular", size: 55))
@@ -45,40 +53,39 @@ struct PaymentsFields: View {
                         .foregroundColor(.black)
                     Spacer()
                 })
-                VStack(content: {
-                    if let customer = cartViewModel.customerInCar {
-                        CardViewTipe2(
-                            imageUrl: customer.image,
-                            topStatusColor: customer.customerTipe.color,
-                            topStatus: customer.customerTipe.description,
-                            mainText: customer.name + " " + customer.lastName,
-                            mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(customer.totalDebt.cents),
-                            mainIndicatorAlert: customer.isCreditLimit,
-                            secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
-                            secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
-                            secondaryIndicatorAlert: customer.isDateLimit, size: 80
-                        )
-                        .contextMenu(menuItems: {
-                            Button(role: .destructive,action: {
-                                cartViewModel.customerInCar = nil
-                            }, label: {
-                                Text("Desvincular Cliente")
+                NavigationButton(push: .selectCustomer) {
+                    VStack {
+                        if let customer = paymentViewModel.customerInCar {
+                            CardViewTipe2(
+                                imageUrl: customer.image,
+                                topStatusColor: customer.customerTipe.color,
+                                topStatus: customer.customerTipe.description,
+                                mainText: customer.name + " " + customer.lastName,
+                                mainIndicatorPrefix: "S/. ",
+                                mainIndicator: String(customer.totalDebt.cents),
+                                mainIndicatorAlert: customer.isCreditLimit,
+                                secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                secondaryIndicatorAlert: customer.isDateLimit, size: 80
+                            )
+                            .contextMenu(menuItems: {
+                                Button(role: .destructive,action: {
+                                    paymentViewModel.customerInCar = nil
+                                }, label: {
+                                    Text("Desvincular Cliente")
+                                })
                             })
-                        })
-                    } else {
-                        CardViewPlaceHolder1(size: 80)
+                        } else {
+                            CardViewPlaceHolder1(size: 80)
+                        }
                     }
-                })
-                .onTapGesture {
-//                    navManager.goToCustomerView()
                 }
                 HStack(content: {
                     Spacer()
-                    ForEach(cartViewModel.paymentTypes, id: \.self, content: { paymentType in
-                        CardViewTipe4(icon: paymentType.icon, text: paymentType.description, enable: cartViewModel.paymentType == paymentType)
+                    ForEach(paymentViewModel.paymentTypes, id: \.self, content: { paymentType in
+                        CardViewTipe4(icon: paymentType.icon, text: paymentType.description, enable: paymentViewModel.paymentType == paymentType)
                             .onTapGesture {
-                                cartViewModel.paymentType = paymentType
+                                paymentViewModel.paymentType = paymentType
                             }
                         Spacer()
                     })

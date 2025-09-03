@@ -1,12 +1,12 @@
 import Foundation
 import CoreData
 
-protocol EmployeeRepository {
+protocol EmployeeRepository: Syncronizable {
     func save(employee: Employee) async throws
     func getEmployees() -> [Employee]
 }
 
-class EmployeeRepositoryImpl: EmployeeRepository, Syncronizable {
+class EmployeeRepositoryImpl: EmployeeRepository {
     let localManager: LocalEmployeeManager
     let remoteManager: RemoteEmployeeManager
     let cloudBD = true

@@ -88,6 +88,9 @@ class AgregarViewModel {
         self.agregarFields.profitMarginEdited = true
         self.agregarFields.unitPriceEdited = true
     }
+    func loadProduct(productId: UUID) async throws {
+        
+    }
     func editProduct(product: Product) async throws {
         await MainActor.run {
             self.agregarFields.idImage = product.image?.id

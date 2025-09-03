@@ -1,23 +1,28 @@
 import SwiftUI
 
 struct SalesView: View {
-    @Environment(SalesViewModel.self) var salesViewModel
-    var backButton: Bool = false
-    @State var showMenu: Bool = false
+    @State var salesViewModel: SalesViewModel
+    @Binding var showMenu: Bool
+    init(ses: SessionContainer, showMenu: Binding<Bool>) {
+        self.salesViewModel = SalesViewModelFactory.getSalesViewModel(sessionContainer: ses)
+        self._showMenu = showMenu
+    }
     var body: some View {
         ZStack {
             if !showMenu {
                 VStack(spacing: 0, content: {
-                    Color("color_primary")
-                    Color("color_background")
+                    Color.primary
+                    Color.background
                 })
                 .ignoresSafeArea()
             }
             VStack(spacing: 0) {
-                SalesTopBar(showMenu: $showMenu)
+                SalesTopBar(salesCoreDataViewModel: $salesViewModel) {
+                    showMenu.toggle()
+                }
                 SalesListController()
             }
-            .background(Color("color_primary"))
+            .background(Color.primary)
             .cornerRadius(showMenu ? 35 : 0)
             .padding(.top, showMenu ? 0 : 1)
             .onAppear {
@@ -30,14 +35,8 @@ struct SalesView: View {
     }
 }
 
-struct SalesView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        SalesView()
-            .environment(dependencies.customerViewModel)
-            .environment(dependencies.salesViewModel)
-    }
+#Preview {
+    SalesView(ses: SessionContainer.preview, showMenu: .constant(false))
 }
 
 struct SalesListController: View {
@@ -71,7 +70,7 @@ struct SalesListController: View {
                         )
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                        .listRowBackground(Color("color_background"))
+                        .listRowBackground(Color.background)
                         .onTapGesture {
                             
                         }
@@ -87,7 +86,7 @@ struct SalesListController: View {
             }
         }
         .padding(.horizontal, 10)
-        .background(Color("color_background"))
+        .background(Color.background)
     }
 }
 

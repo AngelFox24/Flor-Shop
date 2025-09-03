@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 
-struct SessionConfig: Codable {
+struct SessionConfig: Codable, Equatable {
     let companyId: UUID
     let subsidiaryId: UUID
     let employeeId: UUID

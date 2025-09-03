@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PopoverHelpAddView: View {
-    @Environment(Router.self) private var router
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack(spacing: 0) {
             Text("Cantidad")
@@ -33,7 +33,7 @@ struct PopoverHelpAddView: View {
                 .font(.custom("Artifika-Regular", size: 16))
                 .foregroundColor(Color.black)
             Button(action: {
-                router.dismissSheet()
+                dismiss()
             }, label: {
                 CustomButton1(text: "Cerrar")
             })
@@ -45,9 +45,7 @@ struct PopoverHelpAddView: View {
 }
 
 #Preview {
-    @Previewable @State var router = Router()
     PopoverHelpAddView()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray)
-        .environment(router)
 }

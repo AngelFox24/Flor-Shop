@@ -9,7 +9,9 @@ protocol GetProductsUseCase {
 final class GetProductInteractor: GetProductsUseCase {
     private let productRepository: ProductRepository
     
-    init(productRepository: ProductRepository) {
+    init(
+        productRepository: ProductRepository
+    ) {
         self.productRepository = productRepository
     }
     

@@ -1,24 +1,17 @@
 import SwiftUI
 //import FirebaseAuth
 
-typealias Router = FlorShopRouter<FlowRoutes, SheetRoutes, AlertRoutes>
+//typealias MainRouter = FlorShopRouter2<FlowRoutes, SheetRoutes, AlertRoutes>
+//typealias SessionRouter = FlorShopRouter2<SessionRoutes, SheetRoutes, AlertRoutes>
 
 @main
 struct FlorShopApp: App {
     init() {
 //        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
     }
-    @State private var router = Router()
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .withSheetDestinations(router: $router)
-                .withAlertDestinations(router: $router)
-                .showProgress(router.isLoading)
-                .environment(router)
-//                .onOpenURL { url in
-//                    let success = router.navigate(to: url)
-//                }
+            VersionCheckView()
         }
     }
 }

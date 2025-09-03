@@ -4,7 +4,7 @@ import SwiftUI
 /// Use this when you don't need tab-based navigation, just a single NavigationStack.
 @Observable
 @MainActor
-public final class FlorShopRouter<Flow: FlowType, Sheet: SheetType, Alert: AlertType> {
+public final class FlorShopRouter2<Flow: FlowType, Sheet: SheetType, Alert: AlertType> {
     
     // MARK: - Public Properties
     

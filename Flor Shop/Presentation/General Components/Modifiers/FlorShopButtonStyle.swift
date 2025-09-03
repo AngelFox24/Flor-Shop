@@ -10,3 +10,11 @@ struct FlorShopButtonStyle: ViewModifier {
             .cornerRadius(15)
     }
 }
+struct FlorShopButtonStyleLigth: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.custom("Artifika-Regular", size: 22))
+            .foregroundColor(Color.accent)
+            .frame(width: 40, height: 40)
+    }
+}

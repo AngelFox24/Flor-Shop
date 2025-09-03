@@ -2,7 +2,7 @@ import Foundation
 import CoreData
 import FlorShop_DTOs
 
-protocol CustomerRepository {
+protocol CustomerRepository: Syncronizable {
     func save(customer: Customer) async throws
     func payClientTotalDebt(customer: Customer) async throws -> Bool
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
@@ -10,7 +10,7 @@ protocol CustomerRepository {
     func getCustomer(customer: Customer) throws -> Customer?
 }
 
-class CustomerRepositoryImpl: CustomerRepository, Syncronizable {
+class CustomerRepositoryImpl: CustomerRepository {
     let localManager: LocalCustomerManager
     let remoteManager: RemoteCustomerManager
     let cloudBD = true

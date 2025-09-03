@@ -1,15 +1,18 @@
 import SwiftUI
 import AVFoundation
-import StoreKit
 
-struct CustomProductView: View {
-    @Environment(ProductViewModel.self) var productViewModel
+struct ProductView: View {
     @Environment(SyncWebSocketClient.self) private var syncManager
-    @Binding var tab: Tab
+    @Binding var productViewModel: ProductViewModel
+    @Binding var showMenu: Bool
     var body: some View {
-        VStack(spacing: 0) {
-            ProductSearchTopBar()
-            ListaControler(tab: $tab)
+        ZStack {
+            ListaControler(viewModel: $productViewModel)
+            VStack {
+                ProductSearchTopBar(showMenu: $showMenu, productViewModel: $productViewModel)
+                Spacer()
+                CustomTabView()
+            }
         }
         .onAppear {
             Task {
@@ -24,28 +27,19 @@ struct CustomProductView: View {
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomProductView(tab: .constant(.magnifyingglass))
-            .environment(dependencies.productViewModel)
-            .environment(dependencies.cartViewModel)
-    }
+#Preview {
+    @Previewable @State var router = FlorShopRouter.previewRouter()
+    @Previewable @State var vm = ProductViewModelFactory.getProductViewModel(sessionContainer: SessionContainer.preview)
+    ProductView(productViewModel: $vm, showMenu: .constant(false))
+        .environment(router)
 }
 
 struct ListaControler: View {
-    @Environment(Router.self) private var router
-    @Environment(AgregarViewModel.self) var agregarViewModel
-    @Environment(ProductViewModel.self) var productViewModel
-    @Environment(CartViewModel.self) var cartViewModel
-    @AppStorage("isRequested20AppRatingReview") var isRequested20AppRatingReview: Bool = true
-    @Environment(\.requestReview) var requestReview
-    @Binding var tab: Tab
+    @Binding var viewModel: ProductViewModel
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
         HStack(spacing: 0) {
-            if productViewModel.productsCoreData.count == 0 {
+            if viewModel.productsCoreData.count == 0 {
                 VStack {
                     Image("groundhog_finding")
                         .resizable()
@@ -55,17 +49,16 @@ struct ListaControler: View {
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
                         .font(.custom("Artifika-Regular", size: 18))
-                    Button(action: goToEditProduct) {
-                        CustomButton1(text: "Agregar")
-                    }
+//                    Button(action: goToEditProduct) {
+//                        CustomButton1(text: "Agregar")
+//                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color("color_background"))
             } else {
-                SideSwipeView(swipeDirection: .right, swipeAction: goToEditProduct)
                 HStack(spacing: 0, content: {
                     List {
-                        ForEach(0 ..< productViewModel.deleteCount, id: \.self) { _ in
+                        ForEach(0 ..< viewModel.deleteCount, id: \.self) { _ in
                             Spacer()
                                 .frame(maxWidth: .infinity, minHeight: 80)
                                 .onAppear {
@@ -73,7 +66,7 @@ struct ListaControler: View {
                                     loadProducts()
                                 }
                         }
-                        ForEach(productViewModel.productsCoreData) { producto in
+                        ForEach(viewModel.productsCoreData) { producto in
                             CardViewTipe2(
                                 imageUrl: producto.image,
                                 topStatusColor: Color.red,
@@ -99,61 +92,33 @@ struct ListaControler: View {
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(action: {
-                                    editProduct(product: producto)
+//                                    editProduct(product: producto)
                                 }, label: {
                                     Image(systemName: "pencil")
                                 })
                                 .tint(Color("color_accent"))
                             }
-                            .onAppear(perform: {
-                                shouldLoadData(product: producto)
-                                if productViewModel.productsCoreData.count >= 20 && isRequested20AppRatingReview {
-                                    requestReview()
-                                    isRequested20AppRatingReview = false
-                                }
-                            })
                         }
                     }
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
                 })
-                SideSwipeView(swipeDirection: .left, swipeAction: goToCart)
             }
         }
         .background(Color("color_background"))
     }
-    func goToEditProduct() {
-        self.tab = .plus
-    }
-    func goToCart() {
-        self.tab = .cart
-    }
     func shouldLoadData(product: Product) {
         Task {
 //            loading = true
-            await productViewModel.shouldLoadData(product: product)
+            await viewModel.shouldLoadData(product: product)
 //            loading = false
         }
     }
     func loadProducts() {
         Task {
 //            loading = true
-            await productViewModel.releaseResources()
-            await productViewModel.lazyFetchProducts()
-//            loading = false
-        }
-    }
-    func editProduct(product: Product) {
-        Task {
-//            loading = true
-            do {
-                try await agregarViewModel.editProduct(product: product)
-//                playSound(named: "Success1")
-                self.tab = .plus
-            } catch {
-                router.presentAlert(.error(error.localizedDescription))
-                playSound(named: "Fail1")
-            }
+            await viewModel.releaseResources()
+            await viewModel.lazyFetchProducts()
 //            loading = false
         }
     }
@@ -161,11 +126,10 @@ struct ListaControler: View {
         Task {
 //            loading = true
             do {
-                try await cartViewModel.addProductoToCarrito(product: producto)
-                await cartViewModel.fetchCart()
+                try await viewModel.addProductoToCarrito(product: producto)
                 playSound(named: "Success1")
             } catch {
-                router.presentAlert(.error(error.localizedDescription))
+//                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
             }
 //            loading = false
@@ -186,3 +150,4 @@ struct ListaControler: View {
         }
     }
 }
+

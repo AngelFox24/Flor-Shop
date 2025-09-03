@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 
-protocol SaleRepository {
+protocol SaleRepository: Syncronizable {
     func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -11,7 +11,7 @@ protocol SaleRepository {
     func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money
 }
 
-class SaleRepositoryImpl: SaleRepository, Syncronizable {
+class SaleRepositoryImpl: SaleRepository {
     let localManager: LocalSaleManager
     let remoteManager: RemoteSaleManager
     let cloudBD = true

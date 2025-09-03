@@ -1,12 +1,12 @@
 import Foundation
 import CoreData
 
-protocol CompanyRepository {
+protocol CompanyRepository: Syncronizable {
     func save(company: Company) async throws
     func getSyncTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters
 }
 
-class CompanyRepositoryImpl: CompanyRepository, Syncronizable {
+class CompanyRepositoryImpl: CompanyRepository {
     let localManager: LocalCompanyManager
     let remoteManager: RemoteCompanyManager
     let cloudBD = true

@@ -1,33 +1,48 @@
 import SwiftUI
 
 struct AddCustomerView: View {
+    @Environment(FlorShopRouter.self) private var router
+    @State var addCustomerViewModel: AddCustomerViewModel
+    init(ses: SessionContainer) {
+        addCustomerViewModel = AddCustomerViewModelFactory.getAddCustomerViewModel(sessionContainer: ses)
+    }
     var body: some View {
         ZStack(content: {
             VStack(spacing: 0) {
-                AddCustomerTopBar()
-                AddCustomerFields()
+                AddCustomerTopBar {
+                    router.back()
+                } saveCustomerAction: {
+                    addCustomer()
+                }
+                AddCustomerFields(addCustomerViewModel: $addCustomerViewModel)
             }
-            .background(Color("color_background"))
+            .background(Color.background)
         })
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
-}
-
-struct AddCustomerView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        AddCustomerView()
-            .environment(dependencies.addCustomerViewModel)
+    func addCustomer() {
+        Task {
+//            router.isLoading = true
+            do {
+                try await addCustomerViewModel.addCustomer()
+                router.back()
+            } catch {
+                print("Error al agregar cliente: \(error)")
+            }
+//            router.isLoading = false
+        }
     }
 }
 
+#Preview {
+    AddCustomerView(ses: SessionContainer.preview)
+}
+
 struct AddCustomerFields : View {
-    @Environment(AddCustomerViewModel.self) var addCustomerViewModel
+    @Binding var addCustomerViewModel: AddCustomerViewModel
     var sizeCampo: CGFloat = 150
     var body: some View {
-        @Bindable var addCustomerViewModel = addCustomerViewModel
         ScrollView(.vertical, showsIndicators: false, content: {
             VStack(spacing: 23, content: {
                 HStack {

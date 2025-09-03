@@ -1,11 +1,26 @@
 import SwiftUI
 
 struct CustomerHistoryView: View {
-    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
+    @Environment(FlorShopRouter.self) private var router
+    @State var customerHistoryViewModel: CustomerHistoryViewModel
+    let customerId: UUID
+    init(ses: SessionContainer, customerId: UUID) {
+        self.customerHistoryViewModel = CustomerHistoryViewModelFactory.getCustomerHistoryViewModel(sessionContainer: ses)
+        self.customerId = customerId
+    }
     var body: some View {
         VStack(spacing: 0) {
-            CustomerHistoryTopBar()
-            CustomerHistoryViewListController()
+            CustomerHistoryTopBar(
+                customer: customerHistoryViewModel.customer,
+                backAction: router.back,
+                payDebt: payDebt
+            )
+            CustomerHistoryViewListController(
+                customerHistoryViewModel: $customerHistoryViewModel
+            )
+        }
+        .task {
+            try? await customerHistoryViewModel.loadCustomer(customerId: self.customerId)
         }
         .onAppear(perform: {
             customerHistoryViewModel.lazyFetch()
@@ -16,22 +31,24 @@ struct CustomerHistoryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
-}
-
-struct CustomerHistoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        CustomerHistoryView()
-            .environment(dependencies.customerViewModel)
-            .environment(dependencies.salesViewModel)
-            .environment(dependencies.cartViewModel)
-            .environment(dependencies.customerHistoryViewModel)
+    func payDebt() {
+        Task {
+            do {
+                let result = try await self.customerHistoryViewModel.payTotalAmount()
+                print("Result of payment: \(result)")
+            } catch {
+                print("Error: \(error)")
+            }
+        }
     }
 }
+
+#Preview {
+    CustomerHistoryView(ses: SessionContainer.preview, customerId: UUID())
+}
+
 struct CustomerHistoryViewListController: View {
-    @Environment(Router.self) private var router
-    @Environment(CustomerHistoryViewModel.self) var customerHistoryViewModel
+    @Binding var customerHistoryViewModel: CustomerHistoryViewModel
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -67,7 +84,7 @@ struct CustomerHistoryViewListController: View {
                             )
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
+                            .listRowBackground(Color.background)
                             .onTapGesture {
                                 
                             }
@@ -82,7 +99,7 @@ struct CustomerHistoryViewListController: View {
                 }
             }
             .padding(.horizontal, 10)
-            .background(Color("color_background"))
+            .background(Color.background)
         }
     }
 }

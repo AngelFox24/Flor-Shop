@@ -2,13 +2,13 @@ import Foundation
 import SwiftUI
 import CoreData
 
-protocol ImageRepository {
+protocol ImageRepository: Syncronizable {
 //    func save(image: ImageUrl) async throws -> ImageUrl
     func getImage(image: UIImage) async throws -> ImageUrl
     func deleteUnusedImages() async
 }
 
-class ImageRepositoryImpl: ImageRepository, Syncronizable {
+class ImageRepositoryImpl: ImageRepository {
     let localManager: LocalImageManager
     let cloudBD = true
     init(

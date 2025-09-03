@@ -1,18 +1,16 @@
 import SwiftUI
 
 struct BackButton: View {
-    @Environment(Router.self) private var router
+    let backAction: () -> Void
     var body: some View {
         Image(systemName: "chevron.backward")
             .modifier(FlorShopButtonStyle())
-            .onTapGesture { router.goBack() }
+            .onTapGesture { backAction() }
     }
 }
 
 #Preview {
-    @Previewable @State var router = Router()
-    BackButton()
+    BackButton(backAction: {})
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.gray)
-        .environment(router)
 }

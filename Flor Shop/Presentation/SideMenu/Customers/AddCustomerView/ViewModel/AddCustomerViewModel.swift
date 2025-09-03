@@ -50,6 +50,9 @@ class AddCustomerViewModel {
         //fieldsAddCustomer.dateLimitEdited = true
         fieldsAddCustomer.creditLimitEdited = true
     }
+    func loadCustomer(id: UUID) {
+        
+    }
     func editCustomer(customer: Customer) async throws {
         if let imageUrl = customer.image {
             let uiImage = try await LocalImageManagerImpl.loadImage(image: imageUrl)

@@ -1,12 +1,15 @@
 import SwiftUI
 
 struct CartView: View {
-    @Environment(CartViewModel.self) var cartViewModel
-    @Binding var tab: Tab
+    @Environment(FlorShopRouter.self) private var router
+    @State var cartViewModel: CartViewModel
+    init(ses: SessionContainer) {
+        cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: ses)
+    }
     var body: some View {
         VStack(spacing: 0) {
-            CartTopBar()
-            ListCartController(tab: $tab)
+            CartTopBar(cartViewModel: $cartViewModel, backAction: router.back)
+            ListCartController(cartViewModel: $cartViewModel)
         }
 //        .onAppear {
 //            Task {
@@ -19,22 +22,15 @@ struct CartView: View {
 }
 
 #Preview {
-    @Previewable @State var tab: Tab = .magnifyingglass
-    let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-    let dependencies = BusinessDependencies(sessionConfig: ses)
-    CartView(tab: $tab)
-        .environment(dependencies.cartViewModel)
+    CartView(ses: SessionContainer.preview)
 }
 
 struct ListCartController: View {
-    @Environment(Router.self) private var router
-    @Environment(CartViewModel.self) var cartViewModel
-    @Binding var tab: Tab
+    @Binding var cartViewModel: CartViewModel
     var body: some View {
         VStack(spacing: 0) {
             if let cart = cartViewModel.cartCoreData {
                 HStack(spacing: 0) {
-                    SideSwipeView(swipeDirection: .right, swipeAction: goToProductsList)
                     List {
                         ForEach(cart.cartDetails) { cartDetail in
                             CardViewTipe3(
@@ -58,7 +54,6 @@ struct ListCartController: View {
                     }
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
-                    SideSwipeView(swipeDirection: .left, swipeAction: goToPay)
                 }
             } else {
                 VStack {
@@ -84,9 +79,6 @@ struct ListCartController: View {
     func goToProductsList() {
 //        self.tab = .magnifyingglass
         addProductToCart()
-    }
-    func goToPay() {
-        router.presentSheet(.payment)
     }
     func addProductToCart() {
         let car = Car(
@@ -115,7 +107,7 @@ struct ListCartController: View {
                 try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
                 await cartViewModel.fetchCart()
             } catch {
-                router.presentAlert(.error(error.localizedDescription))
+//                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }
@@ -131,7 +123,7 @@ struct ListCartController: View {
                 }
                 await cartViewModel.fetchCart()
             } catch {
-                router.presentAlert(.error(error.localizedDescription))
+//                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }
@@ -143,7 +135,7 @@ struct ListCartController: View {
                 try await cartViewModel.changeProductAmount(productId: cartDetail.product.id, amount: cartDetail.quantity + 1)
                 await cartViewModel.fetchCart()
             } catch {
-                router.presentAlert(.error(error.localizedDescription))
+//                router.presentAlert(.error(error.localizedDescription))
             }
 //            loading = false
         }

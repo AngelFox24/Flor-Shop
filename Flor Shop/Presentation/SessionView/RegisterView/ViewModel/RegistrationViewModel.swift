@@ -3,12 +3,6 @@ import Foundation
 @Observable
 class RegistrationViewModel {
     var registrationFields: RegistrationFields = RegistrationFields()
-    private let registerUseCase: RegisterUseCase
-    init(
-        registerUseCase: RegisterUseCase
-    ) {
-        self.registerUseCase = registerUseCase
-    }
     func fieldsTrue() {
         registrationFields.emailEdited = true
         registrationFields.userEdited = true
@@ -18,7 +12,7 @@ class RegistrationViewModel {
         registrationFields.managerLastNameEdited = true
         registrationFields.companyRUCEdited = true
     }
-    func registerUser() async throws -> SessionConfig {
+    func registerUser() async throws -> RegisterStuffs {
         let newCompany = Company(
             id: UUID(),
             companyId: nil,
@@ -57,12 +51,10 @@ class RegistrationViewModel {
             active: true,
             phoneNumber: ""
         )
-        return try await self.registerUseCase.execute(
-            registerStuff: RegisterStuffs(
-                company: newCompany,
-                subsidiary: newSubsidiary,
-                employee: newEmployee
-            )
+        return RegisterStuffs(
+            company: newCompany,
+            subsidiary: newSubsidiary,
+            employee: newEmployee
         )
     }
 }

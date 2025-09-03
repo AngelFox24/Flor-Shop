@@ -2,19 +2,18 @@ import SwiftUI
 import AVFoundation
 
 struct RegistrationView: View {
-    @Environment(Router.self) private var router
-    @Environment(LogInViewModel.self) var logInViewModel
-    @Environment(RegistrationViewModel.self) var registrationViewModel
-    @Environment(PersistenceSessionConfig.self) private var sessionConfig
+    @Environment(SessionManager.self) var sessionManager
+    @State var registrationViewModel = RegistrationViewModel()
     @State private var audioPlayer: AVAudioPlayer?
     var body: some View {
-        @Bindable var registrationViewModel = registrationViewModel
         ZStack {
             Color("color_primary")
                 .ignoresSafeArea()
             VStack(content: {
                 HStack(content: {
-                    BackButton()
+                    BackButton {
+                        
+                    }
                     Spacer()
                     Text("Crea una Cuenta")
                         .font(.custom("Artifika-Regular", size: 25))
@@ -87,23 +86,14 @@ struct RegistrationView: View {
     }
     func registerUser() {
         Task {
-            
-            router.isLoading = true
             do {
                 let ses = try await registrationViewModel.registerUser()
+                try await self.sessionManager.register(registerStuff: ses)
                 playSound(named: "Success1")
-                await MainActor.run {
-                    self.sessionConfig.fromSession(ses)
-//                    self.logInViewModel.businessDependencies = BusinessDependencies(sessionConfig: ses)
-//                    self.logInViewModel.businessDependencies?.webSocket.connect()
-                    router.popToRoot()
-                }
             } catch {
-                router.presentAlert(.error(error.localizedDescription))
+//                router.presentAlert(.error(error.localizedDescription))
                 playSound(named: "Fail1")
-                router.isLoading = false
             }
-            router.isLoading = false
         }
     }
     private func playSound(named fileName: String) {
@@ -123,10 +113,5 @@ struct RegistrationView: View {
 }
 
 #Preview {
-    @Previewable @State var router = Router()
-    let nor = NormalDependencies()
     RegistrationView()
-        .environment(nor.logInViewModel)
-        .environment(nor.registrationViewModel)
-        .environment(router)
 }

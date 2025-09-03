@@ -1,26 +1,33 @@
 import SwiftUI
 
 struct MenuView: View {
-    @Environment(LogInViewModel.self) var logInViewModel
-    @Environment(Router.self) private var router
-    @AppStorage("userOrEmail") var userOrEmail: String?
-    @AppStorage("password") var password: String?
-    @State var menuTab: MenuTab = .pointOfSaleTab
-    @State var tab: Tab = .magnifyingglass
+    @Environment(SessionContainer.self) var sessionContainer
+    @State var mainRouter = FlorShopRouter(level: 0, identifierTab: nil)
+    @State var showMenu: Bool = false
     var body: some View {
-        @Bindable var router = router
         ZStack {
-            SideMenuView(menuTab: $menuTab, showMenu: $router.showMenu)
+            SideMenuView(menuTab: $mainRouter.selectedTab, showMenu: changeShowMenu)
             ZStack {
-                WindowsEffect(showMenu: $router.showMenu)
-                menuTab.rootView
-                    .onAppear {
-                        router.popToRoot()
+                WindowsEffect(showMenu: $showMenu)
+                switch mainRouter.selectedTab {
+                case .pointOfSale:
+                    NavigationContainer(parentRouter: mainRouter, tab: .pointOfSale) {
+                        PointOfSaleView(ses: sessionContainer, showMenu: $showMenu)
                     }
-                TempViewOverlay(showMenu: $router.showMenu)
+                case .none:
+                    Text("Not implemented")
+                case .sales, .customers, .employees, .settings:
+                    Text("Not implemented")
+                }
+                TempViewOverlay(showMenu: $showMenu)
             }
-            .scaleEffect(router.showMenu ? 0.84 : 1)
-            .offset(x: router.showMenu ? getRect().width - 180 : 0)
+            .scaleEffect(showMenu ? 0.84 : 1)
+            .offset(x: showMenu ? getRect().width - 180 : 0)
+        }
+    }
+    func changeShowMenu() {
+        withAnimation(.easeInOut) {
+            showMenu.toggle()
         }
     }
 }
@@ -67,20 +74,8 @@ struct WindowsEffect: View {
     }
 }
 
-struct MenuView_Previews: PreviewProvider {
-    static var previews: some View {
-        let nor = NormalDependencies()
-        let ses = SessionConfig(companyId: UUID(), subsidiaryId: UUID(), employeeId: UUID())
-        let dependencies = BusinessDependencies(sessionConfig: ses)
-        @State var menuTab: MenuTab = .pointOfSaleTab
-        MenuView()
-            .environment(nor.logInViewModel)
-            .environment(dependencies.agregarViewModel)
-            .environment(dependencies.productViewModel)
-            .environment(dependencies.cartViewModel)
-            .environment(dependencies.employeeViewModel)
-            .environment(dependencies.salesViewModel)
-            .environment(dependencies.customerViewModel)
-            .environment(dependencies.addCustomerViewModel)
-    }
+#Preview {
+    let session = SessionContainer.preview
+    MenuView()
+        .environment(session)
 }

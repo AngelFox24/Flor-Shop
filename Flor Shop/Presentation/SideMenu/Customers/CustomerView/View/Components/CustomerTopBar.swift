@@ -1,30 +1,24 @@
 import SwiftUI
 
 struct CustomerTopBar: View {
-    @Environment(Router.self) private var router
-    @Environment(CustomerViewModel.self) var customerViewModel
-    var backButton: Bool = false
+    @Binding var customerViewModel: CustomerViewModel
+    @Binding var showMenu: Bool
     var body: some View {
-        @Bindable var customerViewModel = customerViewModel
         VStack {
             HStack(spacing: 10, content: {
-                if backButton {
-                    BackButton()
-                } else {
-                    Button(action: {
-                        withAnimation(.spring()){
-                            router.showMenu.toggle()
-                        }
-                    }, label: {
-                        HStack {
-                            Image("logo")
-                                .resizable()
-                                .scaledToFit()
-                        }
-                        .background(Color.launchBackground)
-                        .cornerRadius(10)
-                        .frame(width: 40, height: 40)
-                    })
+                Button {
+                    withAnimation(.spring()){
+                        showMenu.toggle()
+                    }
+                } label: {
+                    HStack {
+                        Image("logo")
+                            .resizable()
+                            .scaledToFit()
+                    }
+                    .background(Color.launchBackground)
+                    .cornerRadius(10)
+                    .frame(width: 40, height: 40)
                 }
                 CustomSearchField(text: $customerViewModel.searchWord)
                 Menu {
@@ -58,86 +52,7 @@ struct CustomerTopBar: View {
             })
             .padding(.horizontal, 10)
         }
-        .padding(.top, router.showMenu ? 15 : 0)
-        .padding(.bottom, 9)
-        .background(Color("color_primary"))
-    }
-    func setOrder(order: CustomerOrder) {
-        customerViewModel.setOrder(order: order)
-    }
-    func setFilter(filter: CustomerFilterAttributes) {
-        customerViewModel.setFilter(filter: filter)
-        print("Se presiono setFilter")
-    }
-}
-//CustomerSearchTopBar
-struct CustomerTopBarPopUp: View {
-    @Environment(CustomerViewModel.self) var customerViewModel
-    @State private var selectedOrder: CustomerOrder = .nameAsc
-    @State private var selectedFilter: CustomerFilterAttributes = .allCustomers
-    let menuOrders: [CustomerOrder] = CustomerOrder.allValues
-    let menuFilters: [CustomerFilterAttributes] = CustomerFilterAttributes.allValues
-    @State private var seach: String = ""
-    var body: some View {
-        VStack {
-            HStack(spacing: 10, content: {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("color_accent"))
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .padding(.vertical, 10)
-                        .padding(.leading, 10)
-                    // TODO: Implementar el focus, al pulsar no siempre se abre el teclado
-                    TextField("Buscar Cliente", text: $seach)
-                        .padding(.vertical, 10)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color("color_primary"))
-                        .submitLabel(.search)
-                        .disableAutocorrection(true)
-                    Button(action: {
-                        customerViewModel.searchWord = ""
-                    }, label: {
-                        Image(systemName: "x.circle")
-                            .foregroundColor(Color("color_accent"))
-                            .font(.custom("Artifika-Regular", size: 16))
-                            .padding(.vertical, 10)
-                            .padding(.trailing, 10)
-                    })
-                }
-                .background(.white)
-                .cornerRadius(20.0)
-                Menu {
-                    Picker("", selection: $selectedOrder) {
-                        ForEach(menuOrders, id: \.self) {
-                            Text($0.longDescription)
-                        }
-                    }
-                    Divider()
-                    Picker("", selection: $selectedFilter) {
-                        ForEach(menuFilters, id: \.self) {
-                            Text($0.description)
-                        }
-                    }
-                } label: {
-                    Button(action: {}, label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 22))
-                            .foregroundColor(Color("color_accent"))
-                    })
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .cornerRadius(15.0)
-                }
-                .onChange(of: customerViewModel.order) { _, _ in
-                    customerViewModel.fetchListCustomer()
-                }
-                .onChange(of: customerViewModel.filter) { _, _ in
-                    customerViewModel.fetchListCustomer()
-                }
-            })
-            .padding(.horizontal, 10)
-        }
+        .padding(.top, showMenu ? 15 : 0)
         .padding(.bottom, 9)
         .background(Color("color_primary"))
     }
