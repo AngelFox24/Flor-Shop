@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct SideMenuView: View {
-    @Binding var menuTab: TabDestination?
+    @Binding var menuTab: TabDestination
     let showMenu: () -> Void
     let navTabsIter: [TabDestination] = TabDestination.navTabs()
     var body: some View {
             ZStack {
-                Color("color_accent")
+                Color.accent
                     .ignoresSafeArea()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 15, content: {
@@ -56,9 +56,55 @@ struct SideMenuView: View {
     }
 }
 
-struct SideMenuView_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var menuTab: TabDestination? = .pointOfSale
-        SideMenuView(menuTab: $menuTab, showMenu: {})
+extension TabDestination {
+    var description: String {
+        switch self {
+        case .pointOfSale:
+            return "Punto de Venta"
+        case .sales:
+            return "Ventas"
+        case .customers:
+            return "Clientes"
+        case .employees:
+            return "Empleados"
+        case .settings:
+            return "Ajustes"
+        }
     }
+    var icon: String {
+        switch self {
+        case .pointOfSale:
+            return "house"
+        case .sales:
+            return "dollarsign.circle"
+        case .customers:
+            return "person.2"
+        case .employees:
+            return "person.text.rectangle"
+        case .settings:
+            return "gearshape"
+        }
+    }
+    var iconFill: String {
+        switch self {
+        case .pointOfSale:
+            return "house.fill"
+        case .sales:
+            return "dollarsign.circle.fill"
+        case .customers:
+            return "person.2.fill"
+        case .employees:
+            return "person.text.rectangle.fill"
+        case .settings:
+            return "gearshape.fill"
+        }
+    }
+    static func navTabs() -> [TabDestination] {
+        //return [.pointOfSaleTab, .salesTab, .customersTab, .employeesTab, .settingsTab]
+        return [.pointOfSale, employees, .sales, .customers]
+    }
+}
+
+#Preview {
+    SideMenuView(menuTab: .constant(.pointOfSale), showMenu: {})
 }

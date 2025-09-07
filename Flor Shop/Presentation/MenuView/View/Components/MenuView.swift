@@ -11,12 +11,22 @@ struct MenuView: View {
                 WindowsEffect(showMenu: $showMenu)
                 switch mainRouter.selectedTab {
                 case .pointOfSale:
-                    NavigationContainer(parentRouter: mainRouter, tab: .pointOfSale) {
-                        PointOfSaleView(ses: sessionContainer, showMenu: $showMenu)
+                    NavigationContainer(parentRouter: mainRouter, tab: .pointOfSale, showMenu: $showMenu) {
+                        SaleProductView(ses: sessionContainer, showMenu: changeShowMenu)
                     }
-                case .none:
-                    Text("Not implemented")
-                case .sales, .customers, .employees, .settings:
+                case .customers:
+                    NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
+                        CustomersView(ses: sessionContainer, showMenu: $showMenu)
+                    }
+                case .employees:
+                    NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
+                        EmployeeView(ses: sessionContainer, showMenu: $showMenu)
+                    }
+                case .sales:
+                    NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
+                        SalesView(ses: sessionContainer, showMenu: changeShowMenu)
+                    }
+                case .settings:
                     Text("Not implemented")
                 }
                 TempViewOverlay(showMenu: $showMenu)
@@ -24,6 +34,7 @@ struct MenuView: View {
             .scaleEffect(showMenu ? 0.84 : 1)
             .offset(x: showMenu ? getRect().width - 180 : 0)
         }
+        .ignoresSafeArea()
     }
     func changeShowMenu() {
         withAnimation(.easeInOut) {
@@ -75,7 +86,20 @@ struct WindowsEffect: View {
 }
 
 #Preview {
+    @Previewable @State var webSocket: SyncWebSocketClient = SyncWebSocketClient(
+        synchronizerDBUseCase: SynchronizerDBInteractorMock(),
+        lastTokenByEntities: LastTokenByEntities(
+            image: 1,
+            company: 1,
+            subsidiary: 1,
+            customer: 1,
+            employee: 1,
+            product: 1,
+            sale: 1
+        )
+    )
     let session = SessionContainer.preview
     MenuView()
         .environment(session)
+        .environment(webSocket)
 }

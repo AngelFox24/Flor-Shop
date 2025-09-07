@@ -24,11 +24,6 @@ public enum TabDestination: String, Hashable {
     case customers
     case employees
     case settings
-    
-    static func navTabs() -> [TabDestination] {
-        //return [.pointOfSaleTab, .salesTab, .customersTab, .employeesTab, .settingsTab]
-        return [.pointOfSale, .sales, .customers]
-    }
 }
 
 enum PushDestination: Hashable, CustomStringConvertible {

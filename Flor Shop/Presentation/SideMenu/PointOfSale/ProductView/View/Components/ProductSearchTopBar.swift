@@ -1,13 +1,11 @@
 import SwiftUI
 
 struct ProductSearchTopBar: View {
-    @Binding var showMenu: Bool
     @Binding var productViewModel: ProductViewModel
+    let showMenu: () -> Void
     var body: some View {
         HStack {
-            FlorShopButton {
-                showMenu.toggle()
-            }
+            FlorShopButton(backAction: showMenu)
             Spacer()
             HStack(spacing: 2) {
                 NavigationButton(push: .cartList) {
@@ -27,7 +25,6 @@ struct ProductSearchTopBar: View {
             }
         }
         .padding(.horizontal, 10)
-        .padding(.top, showMenu ? 15 : 0)
     }
     func loadProducts() {
         Task {
@@ -41,6 +38,6 @@ struct ProductSearchTopBar: View {
 
 #Preview {
     @Previewable @State var vm = ProductViewModelFactory.getProductViewModel(sessionContainer: SessionContainer.preview)
-    ProductSearchTopBar(showMenu: .constant(false), productViewModel: $vm)
+    ProductSearchTopBar(productViewModel: $vm, showMenu: {})
         .background(Color.primary)
 }

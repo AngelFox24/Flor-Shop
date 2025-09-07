@@ -2,18 +2,20 @@ import SwiftUI
 import AVFoundation
 
 struct LogInView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(SessionManager.self) var sessionManager
     @State var logInViewModel = LogInViewModel()
     @State private var audioPlayer: AVAudioPlayer? = nil
-    let backAction: () -> Void
     var body: some View {
         ZStack {
-            Color("color_primary")
+            Color.primary
                 .ignoresSafeArea()
             VStack(
                 content: {
                     HStack(content: {
-                        BackButton(backAction: backAction)
+                        BackButton {
+                            dismiss()
+                        }
                         Spacer()
                         Text("Iniciar Sesión")
                             .font(.custom("Artifika-Regular", size: 25))
@@ -114,5 +116,5 @@ struct LogInView: View {
     }
 }
 #Preview {
-    LogInView(backAction: {})
+    LogInView()
 }

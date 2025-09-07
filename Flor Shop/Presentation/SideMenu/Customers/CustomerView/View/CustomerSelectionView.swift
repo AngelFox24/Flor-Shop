@@ -1,5 +1,18 @@
 import SwiftUI
 
+struct WithSession<Content: View>: View {
+    @Environment(SessionContainer.self) private var ses
+    let content: (SessionContainer) -> Content
+
+    init(@ViewBuilder content: @escaping (SessionContainer) -> Content) {
+        self.content = content
+    }
+
+    var body: some View {
+        content(ses)
+    }
+}
+
 struct CustomerSelectionView: View {
     @Environment(FlorShopRouter.self) private var router
     @State var customerViewModel: CustomerViewModel

@@ -2,29 +2,18 @@ import SwiftUI
 
 struct SalesView: View {
     @State var salesViewModel: SalesViewModel
-    @Binding var showMenu: Bool
-    init(ses: SessionContainer, showMenu: Binding<Bool>) {
+    let showMenu: () -> Void
+    init(ses: SessionContainer, showMenu: @escaping () -> Void) {
         self.salesViewModel = SalesViewModelFactory.getSalesViewModel(sessionContainer: ses)
-        self._showMenu = showMenu
+        self.showMenu = showMenu
     }
     var body: some View {
         ZStack {
-            if !showMenu {
-                VStack(spacing: 0, content: {
-                    Color.primary
-                    Color.background
-                })
-                .ignoresSafeArea()
-            }
             VStack(spacing: 0) {
-                SalesTopBar(salesCoreDataViewModel: $salesViewModel) {
-                    showMenu.toggle()
-                }
-                SalesListController()
+                SalesTopBar(salesCoreDataViewModel: $salesViewModel, backAction: showMenu)
+                SalesListController(salesViewModel: $salesViewModel)
             }
             .background(Color.primary)
-            .cornerRadius(showMenu ? 35 : 0)
-            .padding(.top, showMenu ? 0 : 1)
             .onAppear {
                 salesViewModel.lazyFetchList()
             }
@@ -36,11 +25,11 @@ struct SalesView: View {
 }
 
 #Preview {
-    SalesView(ses: SessionContainer.preview, showMenu: .constant(false))
+    SalesView(ses: SessionContainer.preview, showMenu: {})
 }
 
 struct SalesListController: View {
-    @Environment(SalesViewModel.self) var salesViewModel
+    @Binding var salesViewModel: SalesViewModel
     var body: some View {
         VStack(spacing: 0) {
             if salesViewModel.salesDetailsList.count == 0 {

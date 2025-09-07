@@ -12,7 +12,7 @@ struct EmployeeView: View {
         NavigationView {
             VStack(spacing: 0) {
 //                ProductSearchTopBar(showMenu: $showMenu, productViewModel: $pro)
-                EmployeeListController()
+                EmployeeListController(employeeViewModel: $employeeViewModel)
             }
             .onAppear {
                 employeeViewModel.lazyFetchList()
@@ -26,7 +26,7 @@ struct EmployeeView: View {
 }
 
 struct EmployeeListController: View {
-    @Environment(EmployeeViewModel.self) var employeeViewModel
+    @Binding var employeeViewModel: EmployeeViewModel
     var body: some View {
         VStack(spacing: 0) {
             if employeeViewModel.employeeList.count == 0 {

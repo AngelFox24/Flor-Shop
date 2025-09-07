@@ -6,21 +6,27 @@ struct NavigationContainer<Content: View>: View {
     // The navigation container itself it's in charge of the lifecycle
     // of the router.
     @State var router: FlorShopRouter
+    @Binding var showMenu: Bool
     @ViewBuilder var content: () -> Content
 
     init(
         parentRouter: FlorShopRouter,
         tab: TabDestination? = nil,
+        showMenu: Binding<Bool>? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._router = .init(initialValue: parentRouter.childRouter(for: tab))
         self.content = content
+        self._showMenu = showMenu ?? .constant(false)
     }
 
     var body: some View {
         InnerContainer(router: router) {
             content()
         }
+        .clipShape(
+            RoundedRectangle(cornerRadius: showMenu ?? false ? 35 : 0, style: .continuous)
+        )
         .environment(router)
         .onAppear(perform: router.setActive)
         .onDisappear(perform: router.resignActive)

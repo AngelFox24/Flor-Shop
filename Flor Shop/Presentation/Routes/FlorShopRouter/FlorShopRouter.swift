@@ -11,7 +11,7 @@ final class FlorShopRouter {
     let identifierTab: TabDestination?
 
     /// Only relevant for the `level 0` root router. Defines the tab to select
-    var selectedTab: TabDestination?
+    var selectedTab: TabDestination = .pointOfSale
 
     /// Values presented in the navigation stack
     var navigationStackPath: [PushDestination] = []

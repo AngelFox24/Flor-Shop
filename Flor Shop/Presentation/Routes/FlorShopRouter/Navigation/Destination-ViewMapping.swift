@@ -2,24 +2,39 @@ import SwiftUI
 
 @ViewBuilder
 func view(for destination: PushDestination) -> some View {
-    @Environment(SessionContainer.self) var ses
     switch destination {
     case .selectCustomer:
-        CustomerSelectionView(ses: ses)
+        WithSession { ses in
+            CustomerSelectionView(ses: ses)
+        }
     case .editCustomer(let customerId):
-        EditCustomerView(ses: ses, customerId: customerId)
+        WithSession { ses in
+            EditCustomerView(ses: ses, customerId: customerId)
+        }
     case .addCustomer:
-        AddCustomerView(ses: ses)
+        WithSession { ses in
+            AddCustomerView(ses: ses)
+        }
     case .customerHistory(let customerId):
-        CustomerHistoryView(ses: ses, customerId: customerId)
+        WithSession { ses in
+            CustomerHistoryView(ses: ses, customerId: customerId)
+        }
     case .payment:
-        PaymentView(ses: ses)
+        WithSession { ses in
+            PaymentView(ses: ses)
+        }
     case .cartList:
-        CartView(ses: ses)
+        WithSession { ses in
+            CartView(ses: ses)
+        }
     case .editProduct(let productId):
-        EditProductView(ses: ses, productId: productId)
+        WithSession { ses in
+            EditProductView(ses: ses, productId: productId)
+        }
     case .addProduct:
-        AddProductView(ses: ses)
+        WithSession { ses in
+            AddProductView(ses: ses)
+        }
     }
 }
 

@@ -1,15 +1,19 @@
 import SwiftUI
 import AVFoundation
 
-struct ProductView: View {
+struct SaleProductView: View {
     @Environment(SyncWebSocketClient.self) private var syncManager
-    @Binding var productViewModel: ProductViewModel
-    @Binding var showMenu: Bool
+    @State var productViewModel: ProductViewModel
+    let showMenu: () -> Void
+    init(ses: SessionContainer, showMenu: @escaping () -> Void) {
+        self.productViewModel = ProductViewModelFactory.getProductViewModel(sessionContainer: ses)
+        self.showMenu = showMenu
+    }
     var body: some View {
         ZStack {
             ListaControler(viewModel: $productViewModel)
             VStack {
-                ProductSearchTopBar(showMenu: $showMenu, productViewModel: $productViewModel)
+                ProductSearchTopBar(productViewModel: $productViewModel, showMenu: showMenu)
                 Spacer()
                 CustomTabView()
             }
@@ -26,12 +30,8 @@ struct ProductView: View {
         }
     }
 }
-
 #Preview {
-    @Previewable @State var router = FlorShopRouter.previewRouter()
-    @Previewable @State var vm = ProductViewModelFactory.getProductViewModel(sessionContainer: SessionContainer.preview)
-    ProductView(productViewModel: $vm, showMenu: .constant(false))
-        .environment(router)
+    SaleProductView(ses: SessionContainer.preview, showMenu: {})
 }
 
 struct ListaControler: View {
@@ -150,4 +150,3 @@ struct ListaControler: View {
         }
     }
 }
-

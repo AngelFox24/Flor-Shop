@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct RegistrationView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(SessionManager.self) var sessionManager
     @State var registrationViewModel = RegistrationViewModel()
     @State private var audioPlayer: AVAudioPlayer?
@@ -12,7 +13,7 @@ struct RegistrationView: View {
             VStack(content: {
                 HStack(content: {
                     BackButton {
-                        
+                        dismiss()
                     }
                     Spacer()
                     Text("Crea una Cuenta")
