@@ -14,12 +14,9 @@ struct SalesView: View {
                 SalesListController(salesViewModel: $salesViewModel)
             }
             .background(Color.primary)
-            .onAppear {
+            .task {
                 salesViewModel.lazyFetchList()
             }
-            .onDisappear(perform: {
-                salesViewModel.releaseResources()
-            })
         }
     }
 }

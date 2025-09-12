@@ -16,14 +16,14 @@ struct MenuView: View {
                     }
                 case .customers:
                     NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
-                        CustomersView(ses: sessionContainer, showMenu: $showMenu)
+                        CustomersView(ses: sessionContainer, showMenu: changeShowMenu)
                     }
                 case .employees:
-                    NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
-                        EmployeeView(ses: sessionContainer, showMenu: $showMenu)
+                    NavigationContainer(parentRouter: mainRouter, tab: .employees, showMenu: $showMenu) {
+                        EmployeeView(ses: sessionContainer, showMenu: changeShowMenu)
                     }
                 case .sales:
-                    NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
+                    NavigationContainer(parentRouter: mainRouter, tab: .sales, showMenu: $showMenu) {
                         SalesView(ses: sessionContainer, showMenu: changeShowMenu)
                     }
                 case .settings:
@@ -49,7 +49,7 @@ struct TempViewOverlay: View {
         VStack(spacing: 0) {
             if showMenu {
                 VStack(spacing: 0, content: {
-                    Color("color_primary")
+                    Color.primary
                         .opacity(0.001)
                 })
                 .onTapGesture(perform: {

@@ -9,7 +9,7 @@ func view(for destination: PushDestination) -> some View {
         }
     case .editCustomer(let customerId):
         WithSession { ses in
-            EditCustomerView(ses: ses, customerId: customerId)
+            AddCustomerView(ses: ses, customerId: customerId)
         }
     case .addCustomer:
         WithSession { ses in
@@ -29,7 +29,7 @@ func view(for destination: PushDestination) -> some View {
         }
     case .editProduct(let productId):
         WithSession { ses in
-            EditProductView(ses: ses, productId: productId)
+            AddProductView(ses: ses, productId: productId)
         }
     case .addProduct:
         WithSession { ses in

@@ -4,8 +4,17 @@ import PhotosUI
 struct AddProductView: View {
     @Environment(FlorShopRouter.self) private var router
     @State var agregarViewModel: AgregarViewModel
+    let productId: UUID?
     init(ses: SessionContainer) {
         agregarViewModel = AgregarViewModelFactory.getProductViewModel(sessionContainer: ses)
+        self.productId = nil
+    }
+    init(
+        ses: SessionContainer,
+        productId: UUID
+    ) {
+        self.agregarViewModel = AgregarViewModelFactory.getProductViewModel(sessionContainer: ses)
+        self.productId = productId
     }
     var body: some View {
         VStack(spacing: 0) {
@@ -13,6 +22,10 @@ struct AddProductView: View {
                 saveProduct()
             }
             CamposProductoAgregar(agregarViewModel: $agregarViewModel)
+        }
+        .task {
+            guard let productId else { return }
+            try? await agregarViewModel.loadProduct(productId: productId)
         }
     }
     private func saveProduct() {
@@ -30,7 +43,11 @@ struct AddProductView: View {
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
+    let session = SessionContainer.preview
     AddProductView(ses: SessionContainer.preview)
+        .environment(mainRouter)
+        .environment(session)
 }
 
 struct ErrorMessageText: View {

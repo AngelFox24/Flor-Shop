@@ -9,6 +9,7 @@ protocol LocalProductManager {
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func getLastToken() -> Int64
     func updateProducts(products: [Product]) -> [Product]
+    func getProduct(id: UUID) throws -> Product
 }
 
 class LocalProductManagerImpl: LocalProductManager {
@@ -68,6 +69,13 @@ class LocalProductManagerImpl: LocalProductManager {
             print("Error fetching. \(error)")
             return []
         }
+    }
+    func getProduct(id: UUID) throws -> Product {
+        guard let product = try self.sessionConfig.getProductEntityById(context: self.mainContext, productId: id)?.toProduct()
+        else {
+            throw LocalStorageError.entityNotFound("No se encontro producto")
+        }
+        return product
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()

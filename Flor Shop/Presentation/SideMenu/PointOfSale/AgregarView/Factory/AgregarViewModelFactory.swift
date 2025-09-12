@@ -6,7 +6,8 @@ struct AgregarViewModelFactory {
             saveProductUseCase: getSaveProductUseCase(sessionContainer: sessionContainer),
             getImageUseCase: getGetImageUseCase(sessionContainer: sessionContainer),
             exportProductsUseCase: getExportProductsUseCase(sessionContainer: sessionContainer),
-            importProductsUseCase: getImportProductsUseCase(sessionContainer: sessionContainer)
+            importProductsUseCase: getImportProductsUseCase(sessionContainer: sessionContainer),
+            getProductsUseCase: getProductsUseCase(sessionContainer: sessionContainer)
         )
     }
     //Use cases
@@ -31,5 +32,8 @@ struct AgregarViewModelFactory {
             imageRepository: sessionContainer.imageRepository,
             productRepository: sessionContainer.productRepository
         )
+    }
+    static private func getProductsUseCase(sessionContainer: SessionContainer) -> GetProductsUseCase {
+        return GetProductInteractor(productRepository: sessionContainer.productRepository)
     }
 }

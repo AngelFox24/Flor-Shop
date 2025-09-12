@@ -8,10 +8,11 @@ struct FlorShopButton: View {
                 Image("logo")
                     .resizable()
                     .scaledToFit()
+                    .padding(2)
             }
             .background(Color.launchBackground)
-            .cornerRadius(10)
             .frame(width: 40, height: 40)
+            .clipShape(Circle())
         }
     }
 }

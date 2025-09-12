@@ -7,7 +7,7 @@ struct FlorShopButtonStyle: ViewModifier {
             .foregroundColor(Color.accent)
             .frame(width: 40, height: 40)
             .background(.white)
-            .cornerRadius(15)
+            .cornerRadius(25)
     }
 }
 struct FlorShopButtonStyleLigth: ViewModifier {

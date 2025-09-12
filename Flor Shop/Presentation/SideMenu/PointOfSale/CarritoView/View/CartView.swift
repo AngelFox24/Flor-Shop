@@ -7,26 +7,30 @@ struct CartView: View {
         cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: ses)
     }
     var body: some View {
-        VStack(spacing: 0) {
-            CartTopBar(cartViewModel: $cartViewModel, backAction: router.back)
-            ListCartController(cartViewModel: $cartViewModel)
+        ZStack {
+            ListCartController(cartViewModel: $cartViewModel, backAction: router.back)
+            VStack(spacing: 0) {
+                CartTopBar(cartViewModel: $cartViewModel, backAction: router.back)
+                Spacer()
+            }
         }
-//        .onAppear {
-//            Task {
-//                loading = true
-//                await cartViewModel.lazyFetchCart()
-//                loading = false
-//            }
-//        }
+        .padding(.horizontal, 10)
+        .background(Color.background)
+        .task {
+            await cartViewModel.lazyFetchCart()
+        }
     }
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     CartView(ses: SessionContainer.preview)
+        .environment(mainRouter)
 }
 
 struct ListCartController: View {
     @Binding var cartViewModel: CartViewModel
+    let backAction: () -> Void
     var body: some View {
         VStack(spacing: 0) {
             if let cart = cartViewModel.cartCoreData {
@@ -40,17 +44,20 @@ struct ListCartController: View {
                                 increaceProductAmount: increaceProductAmount
                             )
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
+                            .listRowBackground(Color.background)
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(role: .destructive, action: {
                                     deleteCartDetail(cartDetail: cartDetail)
                                 }, label: {
                                     Image(systemName: "trash")
                                 })
-                                .tint(Color("color_accent"))
+                                .tint(Color.accent)
                             }
                         }
                         .listRowSeparator(.hidden)
+                    }
+                    .safeAreaInset(edge: .top) {
+                        Color.clear.frame(height: 32) // margen superior
                     }
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
@@ -65,16 +72,13 @@ struct ListCartController: View {
                         .font(.custom("Artifika-Regular", size: 18))
                         .foregroundColor(.black)
                         .padding(.horizontal, 20)
-                    Button(action: {
-                        goToProductsList()
-                    }, label: {
+                    Button(action: backAction) {
                         CustomButton1(text: "Ir a Productos")
-                    })
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .background(Color("color_background"))
     }
     func goToProductsList() {
 //        self.tab = .magnifyingglass

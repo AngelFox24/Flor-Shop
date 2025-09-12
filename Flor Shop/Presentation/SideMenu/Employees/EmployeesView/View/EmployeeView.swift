@@ -3,10 +3,10 @@ import AVFoundation
 
 struct EmployeeView: View {
     @State var employeeViewModel: EmployeeViewModel
-    @Binding var showMenu: Bool
-    init(ses: SessionContainer, showMenu: Binding<Bool>) {
+    let showMenu: () -> Void
+    init(ses: SessionContainer, showMenu: @escaping () -> Void) {
         employeeViewModel = EmployeeViewModelFactory.getEmployeeViewModel(sessionContainer: ses)
-        self._showMenu = showMenu
+        self.showMenu = showMenu
     }
     var body: some View {
         NavigationView {
@@ -22,7 +22,7 @@ struct EmployeeView: View {
 }
 
 #Preview {
-    EmployeeView(ses: SessionContainer.preview, showMenu: .constant(false))
+    EmployeeView(ses: SessionContainer.preview, showMenu: {})
 }
 
 struct EmployeeListController: View {

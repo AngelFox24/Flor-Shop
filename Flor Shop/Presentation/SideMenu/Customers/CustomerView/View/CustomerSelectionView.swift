@@ -21,30 +21,24 @@ struct CustomerSelectionView: View {
     }
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                CustomerSelectionTopBar(customerViewModel: $customerViewModel) {
-                    router.back()
-                }
-                CustomerSelectionListController(customerViewModel: $customerViewModel) {
-                    router.back()
-                }
+            CustomerSelectionListController(customerViewModel: $customerViewModel, backAction: router.back)
+            VStack {
+                CustomerSelectionTopBar(customerViewModel: $customerViewModel, backAction: router.back)
+                Spacer()
+                BottomBar(findText: $customerViewModel.searchWord, addDestination: .addCustomer)
             }
-            .background(Color("color_primary"))
-            .padding(.top, 1)
-            .onAppear {
-                customerViewModel.lazyFetchList()
-            }
-            .onDisappear {
-                customerViewModel.releaseResources()
-            }
+            .padding(.horizontal, 10)
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
+        .task {
+            customerViewModel.lazyFetchList()
+        }
     }
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     CustomerSelectionView(ses: SessionContainer.preview)
+        .environment(mainRouter)
 }
 
 struct CustomerSelectionListController: View {
@@ -99,18 +93,7 @@ struct CustomerSelectionListController: View {
                 }
             }
             .padding(.horizontal, 10)
-            .background(Color("color_background"))
-            VStack(spacing: 5, content: {
-                Spacer()
-                HStack(content: {
-                    Spacer()
-                    NavigationButton(push: .addCustomer) {
-                        CustomButton4(simbol: "plus")
-                    }
-                })
-                .padding(.trailing, 15)
-                .padding(.bottom, 15)
-            })
+            .background(Color.background)
         }
     }
 }

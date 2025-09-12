@@ -15,23 +15,40 @@ struct SaleProductView: View {
             VStack {
                 ProductSearchTopBar(productViewModel: $productViewModel, showMenu: showMenu)
                 Spacer()
-                CustomTabView()
+                BottomBar(findText: $productViewModel.searchText, addDestination: .addProduct)
             }
+            .padding(.horizontal, 10)
         }
-        .onAppear {
-            Task {
-                await productViewModel.lazyFetchProducts()
-            }
-        }
+        .background(Color.background)
         .onChange(of: syncManager.lastTokenByEntities.product) { _, newValue in
             Task {
                 await productViewModel.updateCurrentList(newToken: newValue)
             }
         }
+        .task {
+            await productViewModel.lazyFetchProducts()
+        }
     }
 }
 #Preview {
+    @Previewable @State var webSocket: SyncWebSocketClient = SyncWebSocketClient(
+        synchronizerDBUseCase: SynchronizerDBInteractorMock(),
+        lastTokenByEntities: LastTokenByEntities(
+            image: 1,
+            company: 1,
+            subsidiary: 1,
+            customer: 1,
+            employee: 1,
+            product: 1,
+            sale: 1
+        )
+    )
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
+    let session = SessionContainer.preview
     SaleProductView(ses: SessionContainer.preview, showMenu: {})
+        .environment(mainRouter)
+        .environment(session)
+        .environment(webSocket)
 }
 
 struct ListaControler: View {
@@ -40,23 +57,14 @@ struct ListaControler: View {
     var body: some View {
         HStack(spacing: 0) {
             if viewModel.productsCoreData.count == 0 {
-                VStack {
-                    Image("groundhog_finding")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 300, height: 300)
-                    Text("Agreguemos productos a nuestra tienda.")
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 20)
-                        .font(.custom("Artifika-Regular", size: 18))
-//                    Button(action: goToEditProduct) {
-//                        CustomButton1(text: "Agregar")
-//                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color("color_background"))
+                EmptyView(
+                    imageName: "groundhog_finding",
+                    text: "Agreguemos productos a nuestra tienda.",
+                    textButton: "Agregar",
+                    pushDestination: .addProduct
+                )
             } else {
-                HStack(spacing: 0, content: {
+                HStack(spacing: 0) {
                     List {
                         ForEach(0 ..< viewModel.deleteCount, id: \.self) { _ in
                             Spacer()
@@ -79,33 +87,37 @@ struct ListaControler: View {
                                 secondaryIndicator: String(producto.qty),
                                 secondaryIndicatorAlert: false, size: 80
                             )
+                            .padding(.horizontal, 10)
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
+                            .listRowBackground(Color.background)
                             .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                Button(action: {
+                                Button {
                                     agregarProductoACarrito(producto: producto)
-                                }, label: {
+                                } label: {
                                     Image(systemName: "cart")
-                                })
-                                .tint(Color("color_accent"))
+                                }
+                                .tint(Color.accent)
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(action: {
-//                                    editProduct(product: producto)
-                                }, label: {
+                                NavigationButton(push: .editProduct(productId: producto.id)) {
                                     Image(systemName: "pencil")
-                                })
-                                .tint(Color("color_accent"))
+                                }
+                                .tint(Color.accent)
                             }
                         }
                     }
+                    .safeAreaInset(edge: .top) {
+                        Color.clear.frame(height: 32) // margen superior
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        Color.clear.frame(height: 32) // margen inferior
+                    }
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())
-                })
+                }
             }
         }
-        .background(Color("color_background"))
     }
     func shouldLoadData(product: Product) {
         Task {

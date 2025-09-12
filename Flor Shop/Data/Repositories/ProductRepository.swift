@@ -11,6 +11,7 @@ protocol ProductRepository: Syncronizable {
     func updateProducts(products: [Product]) -> [Product]
     func save(product: Product) async throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
+    func getProduct(id: UUID) throws -> Product
 }
 
 protocol Syncronizable {
@@ -51,5 +52,9 @@ public class ProductRepositoryImpl: ProductRepository {
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         return localManager.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)
+    }
+    
+    func getProduct(id: UUID) throws -> Product {
+        return try localManager.getProduct(id: id)
     }
 }

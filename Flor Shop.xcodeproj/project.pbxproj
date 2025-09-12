@@ -22,8 +22,6 @@
 		0B69C9262E66A4E500476B9C /* CustomerSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C9252E66A4E500476B9C /* CustomerSelectionView.swift */; };
 		0B69C9292E66ABB300476B9C /* AddCustomerViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C9272E66ABB300476B9C /* AddCustomerViewModelFactory.swift */; };
 		0B69C92C2E66ADC700476B9C /* CartViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C92A2E66ADC700476B9C /* CartViewModelFactory.swift */; };
-		0B69C92E2E66B2DF00476B9C /* EditCustomerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C92D2E66B2DF00476B9C /* EditCustomerView.swift */; };
-		0B69C9302E66B51F00476B9C /* EditProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C92F2E66B51F00476B9C /* EditProductView.swift */; };
 		0B69C9322E66B79200476B9C /* PaymentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C9312E66B79200476B9C /* PaymentViewModel.swift */; };
 		0B69C9352E66B79A00476B9C /* PaymentViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B69C9332E66B79A00476B9C /* PaymentViewModelFactory.swift */; };
 		0B7C515B2CB181E8005C655A /* Request Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7C515A2CB181D9005C655A /* Request Parameters.swift */; };
@@ -202,8 +200,6 @@
 		0B69C9252E66A4E500476B9C /* CustomerSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerSelectionView.swift; sourceTree = "<group>"; };
 		0B69C9272E66ABB300476B9C /* AddCustomerViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomerViewModelFactory.swift; sourceTree = "<group>"; };
 		0B69C92A2E66ADC700476B9C /* CartViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewModelFactory.swift; sourceTree = "<group>"; };
-		0B69C92D2E66B2DF00476B9C /* EditCustomerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCustomerView.swift; sourceTree = "<group>"; };
-		0B69C92F2E66B51F00476B9C /* EditProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProductView.swift; sourceTree = "<group>"; };
 		0B69C9312E66B79200476B9C /* PaymentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewModel.swift; sourceTree = "<group>"; };
 		0B69C9332E66B79A00476B9C /* PaymentViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewModelFactory.swift; sourceTree = "<group>"; };
 		0B7C515A2CB181D9005C655A /* Request Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request Parameters.swift"; sourceTree = "<group>"; };
@@ -1281,7 +1277,6 @@
 			children = (
 				27C241FA2A0089BC0045B2A0 /* Components */,
 				279EF9D42A9124C500F97CB1 /* AddProductView.swift */,
-				0B69C92F2E66B51F00476B9C /* EditProductView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1389,7 +1384,6 @@
 			children = (
 				2733AF612ACB932E00BF8531 /* Components */,
 				2702C9D52ADACCFA008DBF66 /* AddCustomerView.swift */,
-				0B69C92D2E66B2DF00476B9C /* EditCustomerView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1666,7 +1660,6 @@
 				2729CC112C51AFE70096B841 /* CartDTO.swift in Sources */,
 				0B69C9242E66A33700476B9C /* CustomerSelectionTopBar.swift in Sources */,
 				279C64A82A8D9823003B29BC /* SaleDetail.swift in Sources */,
-				0B69C9302E66B51F00476B9C /* EditProductView.swift in Sources */,
 				279C64962A8D798A003B29BC /* CustomerRepository.swift in Sources */,
 				0B9F31422E5E7D55008BA436 /* ProductViewModelFactory.swift in Sources */,
 				279C649E2A8D9488003B29BC /* Company.swift in Sources */,
@@ -1804,7 +1797,6 @@
 				27F2F4992B1E15A5003E4197 /* RegisterUserUseCase.swift in Sources */,
 				270930A22B46F4C300BDF3CD /* RemoteProductManager.swift in Sources */,
 				0B7C515D2CB181F9005C655A /* Response Parameters.swift in Sources */,
-				0B69C92E2E66B2DF00476B9C /* EditCustomerView.swift in Sources */,
 				2728EAB42A1B0E0D002B534A /* Sale.swift in Sources */,
 				278142082AC333A60093B402 /* CartViews.swift in Sources */,
 				278CA6552C432CA000C200C5 /* RemoteEmployeeManager.swift in Sources */,

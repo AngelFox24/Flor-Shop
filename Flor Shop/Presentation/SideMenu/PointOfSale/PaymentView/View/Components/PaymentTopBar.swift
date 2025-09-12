@@ -5,21 +5,17 @@ struct PaymentTopBar: View {
     let registerSale: () -> Void
     var body: some View {
         HStack {
-            HStack(content: {
-                BackButton(backAction: backAction)
-                Spacer()
-                Button(action: registerSale) {
-                    CustomButton1(text: "Finalizar")
-                }
-            })
+            BackButton(backAction: backAction)
+            Spacer()
+            Button(action: registerSale) {
+                CustomButton1(text: "Finalizar")
+            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.bottom, 8)
-        .padding(.horizontal, 10)
-        .background(Color.primary)
     }
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     PaymentTopBar(backAction: {}, registerSale: {})
+        .environment(mainRouter)
 }

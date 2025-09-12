@@ -19,7 +19,7 @@ struct CustomerHistoryTopBar: View {
                 .padding(.vertical, 8)
                 .foregroundColor(Color.background)
                 .background(Color.accent)
-                .cornerRadius(15.0)
+                .clipShape(RoundedRectangle(cornerRadius: 15))
             }
             if let customer = customer {
                 NavigationButton(push: .addCustomer) {
@@ -29,14 +29,11 @@ struct CustomerHistoryTopBar: View {
                 EmptyProfileButton()
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.bottom, 8)
-        .padding(.horizontal, 10)
-        .background(Color.primary)
     }
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     CustomerHistoryTopBar(
         customer: Customer(
             id: UUID(),
@@ -58,5 +55,7 @@ struct CustomerHistoryTopBar: View {
         backAction: {},
         payDebt: {}
     )
+    .environment(mainRouter)
+    .background(Color.primary)
 }
 

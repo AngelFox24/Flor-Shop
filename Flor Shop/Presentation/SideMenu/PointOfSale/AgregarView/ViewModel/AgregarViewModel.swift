@@ -16,17 +16,20 @@ class AgregarViewModel {
     private let getImageUseCase: GetImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
     private let importProductsUseCase: ImportProductsUseCase
+    private let getProductsUseCase: GetProductsUseCase
     //MARK: Init
     init(
         saveProductUseCase: SaveProductUseCase,
         getImageUseCase: GetImageUseCase,
         exportProductsUseCase: ExportProductsUseCase,
-        importProductsUseCase: ImportProductsUseCase
+        importProductsUseCase: ImportProductsUseCase,
+        getProductsUseCase: GetProductsUseCase
     ) {
         self.saveProductUseCase = saveProductUseCase
         self.getImageUseCase = getImageUseCase
         self.exportProductsUseCase = exportProductsUseCase
         self.importProductsUseCase = importProductsUseCase
+        self.getProductsUseCase = getProductsUseCase
     }
     //MARK: Funtions
     func releaseResources() {
@@ -89,7 +92,9 @@ class AgregarViewModel {
         self.agregarFields.unitPriceEdited = true
     }
     func loadProduct(productId: UUID) async throws {
-        
+        let product = try self.getProductsUseCase.getProduct(id: productId)
+        print("[Flor] product: \(product.name)")
+        try await editProduct(product: product)
     }
     func editProduct(product: Product) async throws {
         await MainActor.run {

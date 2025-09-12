@@ -8,7 +8,7 @@ struct NavigationContainer<Content: View>: View {
     @State var router: FlorShopRouter
     @Binding var showMenu: Bool
     @ViewBuilder var content: () -> Content
-
+    @State var paddingShowMenu: CGFloat? = nil
     init(
         parentRouter: FlorShopRouter,
         tab: TabDestination? = nil,
@@ -23,9 +23,10 @@ struct NavigationContainer<Content: View>: View {
     var body: some View {
         InnerContainer(router: router) {
             content()
+                .padding(.vertical, showMenu ? 20 : 0)
         }
         .clipShape(
-            RoundedRectangle(cornerRadius: showMenu ?? false ? 35 : 0, style: .continuous)
+            RoundedRectangle(cornerRadius: showMenu ? 35 : 0, style: .continuous)
         )
         .environment(router)
         .onAppear(perform: router.setActive)
@@ -52,6 +53,8 @@ private struct InnerContainer<Content: View>: View {
             content()
                 .navigationDestination(for: PushDestination.self) { destination in
                     view(for: destination)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .navigationBarBackButtonHidden(true)
                 }
         }
         // it's important that the these modifiers are **outside** the `NavigationStack`

@@ -7,13 +7,15 @@ struct PaymentView: View {
         paymentViewModel = PaymentViewModelFactory.getPaymentViewModel(sessionContainer: ses)
     }
     var body: some View {
-        VStack(spacing: 0) {
-            PaymentTopBar(backAction: router.back, registerSale: registerSale)
+        ZStack {
             PaymentsFields(paymentViewModel: $paymentViewModel)
+            VStack {
+                PaymentTopBar(backAction: router.back, registerSale: registerSale)
+                Spacer()
+            }
         }
-        .background(Color("color_background"))
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
+        .padding(.horizontal, 10)
+        .background(Color.background)
     }
     func registerSale() {
         Task {
@@ -28,7 +30,9 @@ struct PaymentView: View {
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     PaymentView(ses: SessionContainer.preview)
+        .environment(mainRouter)
 }
 
 struct PaymentsFields: View {
@@ -92,6 +96,6 @@ struct PaymentsFields: View {
                 })
             })
         })
-        .padding(.horizontal, 10)
+        .padding(.top, 30)
     }
 }

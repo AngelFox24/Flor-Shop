@@ -24,7 +24,6 @@ struct ProductSearchTopBar: View {
                 loadProducts()
             }
         }
-        .padding(.horizontal, 10)
     }
     func loadProducts() {
         Task {
@@ -38,6 +37,8 @@ struct ProductSearchTopBar: View {
 
 #Preview {
     @Previewable @State var vm = ProductViewModelFactory.getProductViewModel(sessionContainer: SessionContainer.preview)
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     ProductSearchTopBar(productViewModel: $vm, showMenu: {})
         .background(Color.primary)
+        .environment(mainRouter)
 }

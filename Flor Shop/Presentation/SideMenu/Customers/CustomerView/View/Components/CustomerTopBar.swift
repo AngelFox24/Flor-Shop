@@ -2,25 +2,12 @@ import SwiftUI
 
 struct CustomerTopBar: View {
     @Binding var customerViewModel: CustomerViewModel
-    @Binding var showMenu: Bool
+    let showMenu: () -> Void
     var body: some View {
         VStack {
-            HStack(spacing: 10, content: {
-                Button {
-                    withAnimation(.spring()){
-                        showMenu.toggle()
-                    }
-                } label: {
-                    HStack {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                    .background(Color.launchBackground)
-                    .cornerRadius(10)
-                    .frame(width: 40, height: 40)
-                }
-                CustomSearchField(text: $customerViewModel.searchWord)
+            HStack(spacing: 10) {
+                FlorShopButton(backAction: showMenu)
+                Spacer()
                 Menu {
                     Section("Ordenamiento") {
                         ForEach(CustomerOrder.allValues, id: \.self) { orden in
@@ -49,12 +36,8 @@ struct CustomerTopBar: View {
                 .onChange(of: customerViewModel.filter) { _, _ in
                     customerViewModel.fetchListCustomer()
                 }
-            })
-            .padding(.horizontal, 10)
+            }
         }
-        .padding(.top, showMenu ? 15 : 0)
-        .padding(.bottom, 9)
-        .background(Color("color_primary"))
     }
     func setOrder(order: CustomerOrder) {
         customerViewModel.setOrder(order: order)
@@ -63,4 +46,12 @@ struct CustomerTopBar: View {
         customerViewModel.setFilter(filter: filter)
         print("Se presiono setFilter")
     }
+}
+
+#Preview {
+    @Previewable @State var customerViewModel = CustomerViewModelFactory.getCustomerViewModelFactory(sessionContainer: SessionContainer.preview)
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
+    CustomerTopBar(customerViewModel: $customerViewModel, showMenu: {})
+        .environment(mainRouter)
+        .background(Color.primary)
 }

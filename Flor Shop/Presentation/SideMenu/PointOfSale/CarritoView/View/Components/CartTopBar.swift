@@ -7,7 +7,7 @@ struct CartTopBar: View {
     var body: some View {
         HStack {
             HStack{
-                FlorShopButton(backAction: backAction)
+                BackButton(backAction: backAction)
                 Spacer()
                 NavigationButton(push: .payment) {
                     HStack(spacing: 5, content: {
@@ -21,7 +21,7 @@ struct CartTopBar: View {
                     .padding(.vertical, 8)
                     .foregroundColor(Color.background)
                     .background(Color.accent)
-                    .cornerRadius(15.0)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
                 }
                 NavigationButton(push: .selectCustomer) {
                     if let customer = cartViewModel.customerInCar, let image = customer.image {
@@ -39,14 +39,13 @@ struct CartTopBar: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.bottom, 8)
-        .padding(.horizontal, 10)
-        .background(Color.primary)
     }
 }
 
 #Preview {
     @Previewable @State var cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: SessionContainer.preview)
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     CartTopBar(cartViewModel: $cartViewModel, backAction: {})
+        .environment(mainRouter)
+        .background(Color.primary)
 }

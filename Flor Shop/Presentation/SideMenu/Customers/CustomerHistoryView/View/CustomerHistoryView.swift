@@ -19,17 +19,10 @@ struct CustomerHistoryView: View {
                 customerHistoryViewModel: $customerHistoryViewModel
             )
         }
+        .padding(.horizontal, 10)
         .task {
             try? await customerHistoryViewModel.loadCustomer(customerId: self.customerId)
         }
-        .onAppear(perform: {
-            customerHistoryViewModel.lazyFetch()
-        })
-        .onDisappear(perform: {
-            customerHistoryViewModel.releaseResources()
-        })
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
     }
     func payDebt() {
         Task {
@@ -44,7 +37,10 @@ struct CustomerHistoryView: View {
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     CustomerHistoryView(ses: SessionContainer.preview, customerId: UUID())
+        .environment(mainRouter)
+        .background(Color.background)
 }
 
 struct CustomerHistoryViewListController: View {
@@ -98,8 +94,6 @@ struct CustomerHistoryViewListController: View {
                     .listStyle(PlainListStyle())
                 }
             }
-            .padding(.horizontal, 10)
-            .background(Color.background)
         }
     }
 }

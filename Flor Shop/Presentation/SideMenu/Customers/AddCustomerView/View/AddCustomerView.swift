@@ -3,23 +3,33 @@ import SwiftUI
 struct AddCustomerView: View {
     @Environment(FlorShopRouter.self) private var router
     @State var addCustomerViewModel: AddCustomerViewModel
+    let customerId: UUID?
     init(ses: SessionContainer) {
         addCustomerViewModel = AddCustomerViewModelFactory.getAddCustomerViewModel(sessionContainer: ses)
+        self.customerId = nil
+    }
+    init(
+        ses: SessionContainer,
+        customerId: UUID
+    ) {
+        addCustomerViewModel = AddCustomerViewModelFactory.getAddCustomerViewModel(sessionContainer: ses)
+        self.customerId = customerId
     }
     var body: some View {
-        ZStack(content: {
-            VStack(spacing: 0) {
-                AddCustomerTopBar {
-                    router.back()
-                } saveCustomerAction: {
-                    addCustomer()
-                }
-                AddCustomerFields(addCustomerViewModel: $addCustomerViewModel)
+        VStack(spacing: 0) {
+            AddCustomerTopBar {
+                router.back()
+            } saveCustomerAction: {
+                addCustomer()
             }
-            .background(Color.background)
-        })
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
+            AddCustomerFields(addCustomerViewModel: $addCustomerViewModel)
+        }
+        .padding(.horizontal, 10)
+        .background(Color.background)
+        .task {
+            guard let customerId else { return }
+            addCustomerViewModel.loadCustomer(id: customerId)
+        }
     }
     func addCustomer() {
         Task {
@@ -36,7 +46,9 @@ struct AddCustomerView: View {
 }
 
 #Preview {
+    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     AddCustomerView(ses: SessionContainer.preview)
+        .environment(mainRouter)
 }
 
 struct AddCustomerFields : View {
@@ -105,7 +117,6 @@ struct AddCustomerFields : View {
             })
             .padding(.top, 10)
         })
-        .padding(.horizontal, 10)
         .scrollDismissesKeyboard(.immediately)
         .onDisappear {
             Task {

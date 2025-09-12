@@ -4,6 +4,7 @@ protocol GetProductsUseCase {
     func getLastToken() -> Int64
     func updateProducts(products: [Product]) -> [Product]
     func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product]
+    func getProduct(id: UUID) throws -> Product
 }
 
 final class GetProductInteractor: GetProductsUseCase {
@@ -26,5 +27,8 @@ final class GetProductInteractor: GetProductsUseCase {
     func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product] {
         guard page >= 1 else { return [] }
         return self.productRepository.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 15)
+    }
+    func getProduct(id: UUID) throws -> Product {
+        return try self.productRepository.getProduct(id: id)
     }
 }
