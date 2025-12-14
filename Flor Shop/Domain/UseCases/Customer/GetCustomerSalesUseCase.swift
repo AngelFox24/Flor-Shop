@@ -5,7 +5,6 @@ protocol GetCustomerSalesUseCase {
 }
 
 final class GetCustomerSalesInteractor: GetCustomerSalesUseCase {
-    
     private let customerRepository: CustomerRepository
     
     init(customerRepository: CustomerRepository) {

@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ChangeProductAmountInCartUseCase {
-    func execute(productId: UUID, amount: Int) throws
+    func execute(productCic: String, amount: Int) throws
 }
 
 final class ChangeProductAmountInCartInteractor: ChangeProductAmountInCartUseCase {
@@ -11,8 +11,8 @@ final class ChangeProductAmountInCartInteractor: ChangeProductAmountInCartUseCas
         self.cartRepository = cartRepository
     }
     
-    func execute(productId: UUID, amount: Int) throws {
+    func execute(productCic: String, amount: Int) throws {
         print("ChangeProductAmountInCartUseCase: execute")
-        try self.cartRepository.changeProductAmountInCartDetail(productId: productId, amount: amount)
+        try self.cartRepository.changeProductAmountInCartDetail(productCic: productCic, amount: amount)
     }
 }

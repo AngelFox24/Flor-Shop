@@ -14,10 +14,6 @@ final class SaveProductInteractor: SaveProductUseCase {
         self.imageRepository = imageRepository
     }
     func execute(product: Product) async throws {
-        do {
-            try await self.productRepository.save(product: product)
-        } catch {
-            throw error
-        }
+        try await self.productRepository.save(product: product)
     }
 }

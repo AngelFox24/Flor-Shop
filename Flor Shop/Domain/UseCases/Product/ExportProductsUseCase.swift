@@ -38,7 +38,7 @@ final class ExportProductsInteractor: ExportProductsUseCase {
                     // Escribir cada fila en el archivo
                     for product in products {
                         let idProduct = product.id.description
-                        var imageURL: String = product.image?.imageUrl ?? ""
+                        var imageURL: String = product.imageUrl ?? ""
                         imageURL = imageURL.replacingOccurrences(of: "\\r\\n|\\n|\\r", with: "", options: .regularExpression)
                         imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
                         imageURL = imageURL.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)

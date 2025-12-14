@@ -1,4 +1,5 @@
 import Foundation
+import FlorShopDTOs
 
 @Observable
 class PaymentViewModel {
@@ -11,7 +12,7 @@ class PaymentViewModel {
             return [.cash]
         }
         if customer.isCreditLimitActive || customer.isDateLimitActive {
-            return PaymentType.allValues
+            return PaymentType.allCases
         } else {
             return [.cash]
         }
@@ -40,6 +41,6 @@ class PaymentViewModel {
     }
     func registerSale() async throws {
         guard let cart = cartCoreData else { return }
-        try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerId: customerInCar?.customerId)
+        try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerCic: customerInCar?.customerCic)
     }
 }

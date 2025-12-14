@@ -24,8 +24,8 @@ struct CartTopBar: View {
                     .clipShape(RoundedRectangle(cornerRadius: 15))
                 }
                 NavigationButton(push: .selectCustomer) {
-                    if let customer = cartViewModel.customerInCar, let image = customer.image {
-                        CustomAsyncImageView(imageUrl: image, size: 40)
+                    if let customer = cartViewModel.customerInCar {
+                        CustomAsyncImageView(imageUrlString: customer.imageUrl, size: 40)
                             .contextMenu(menuItems: {
                                 Button(role: .destructive,action: {
                                     cartViewModel.customerInCar = nil

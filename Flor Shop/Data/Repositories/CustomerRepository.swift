@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import FlorShop_DTOs
+import FlorShopDTOs
 
 protocol CustomerRepository: Syncronizable {
     func save(customer: Customer) async throws
@@ -27,12 +27,15 @@ class CustomerRepositoryImpl: CustomerRepository {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
         try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: syncDTOs.customers)
     }
     func payClientTotalDebt(customer: Customer) async throws -> Bool {
+        guard let customerCic = customer.customerCic else {
+            throw LocalStorageError.invalidInput("El cliente no tiene CIC")
+        }
         if cloudBD {
-            let change = try await self.remoteManager.payDebt(customerId: customer.id, amount: customer.totalDebt.cents)
+            let change = try await self.remoteManager.payDebt(customerCic: customerCic, amount: customer.totalDebt.cents)
             //TODO: Improve error throwing
             if change != 0 {
                 throw LocalStorageError.invalidInput("Quedo vuelto para el cliente: \(Money(change).solesString)")

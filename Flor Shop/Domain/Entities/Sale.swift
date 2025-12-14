@@ -1,4 +1,5 @@
 import Foundation
+import FlorShopDTOs
 
 struct Sale: Identifiable {
     let id: UUID

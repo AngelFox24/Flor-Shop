@@ -8,6 +8,7 @@ import SwiftUI
 struct FlorShopApp: App {
     init() {
 //        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
+        KingfisherConfig.configureKingfisher()
     }
     var body: some Scene {
         WindowGroup {

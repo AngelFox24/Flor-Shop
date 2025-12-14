@@ -89,13 +89,14 @@ struct WindowsEffect: View {
     @Previewable @State var webSocket: SyncWebSocketClient = SyncWebSocketClient(
         synchronizerDBUseCase: SynchronizerDBInteractorMock(),
         lastTokenByEntities: LastTokenByEntities(
-            image: 1,
             company: 1,
             subsidiary: 1,
             customer: 1,
             employee: 1,
             product: 1,
-            sale: 1
+            sale: 1,
+            productSubsidiary: 1,
+            employeeSubsidiary: 1
         )
     )
     let session = SessionContainer.preview

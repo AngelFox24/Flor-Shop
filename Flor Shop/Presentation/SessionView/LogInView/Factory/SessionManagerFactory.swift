@@ -1,7 +1,7 @@
 struct SessionManagerFactory {
     @MainActor static func getSessionManager() -> SessionManager {
         return SessionManager(
-            storage: getSessionRepository()
+            sessionRepository: getSessionRepository()
         )
     }
     //UseCases

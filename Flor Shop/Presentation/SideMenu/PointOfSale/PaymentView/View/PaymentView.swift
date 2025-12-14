@@ -61,15 +61,17 @@ struct PaymentsFields: View {
                     VStack {
                         if let customer = paymentViewModel.customerInCar {
                             CardViewTipe2(
-                                imageUrl: customer.image,
-                                topStatusColor: customer.customerTipe.color,
-                                topStatus: customer.customerTipe.description,
-                                mainText: customer.name + " " + customer.lastName,
+                                imageUrl: customer.imageUrl,
+                                topStatusColor: nil,
+                                topStatus: nil,
+                                mainText: customer.name + " " + (customer.lastName ?? ""),
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(customer.totalDebt.cents),
                                 mainIndicatorAlert: customer.isCreditLimit,
-                                secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
-                                secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                secondaryIndicatorSuffix: nil, //TODO: poner en variable calculada
+//                                    customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                secondaryIndicator: nil,//TODO: poner en variable calculada
+//                                    customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
                                 secondaryIndicatorAlert: customer.isDateLimit, size: 80
                             )
                             .contextMenu(menuItems: {

@@ -29,12 +29,12 @@ public enum TabDestination: String, Hashable {
 enum PushDestination: Hashable, CustomStringConvertible {
     //CustomerList for selection in payment flow
     case selectCustomer
-    case editCustomer(customerId: UUID)
+    case editCustomer(customerCic: String)
     case addCustomer
-    case customerHistory(customerId: UUID)
+    case customerHistory(customerCic: String)
     case payment
     case cartList
-    case editProduct(productId: UUID)
+    case editProduct(productCic: String)
     case addProduct
 
     var description: String {

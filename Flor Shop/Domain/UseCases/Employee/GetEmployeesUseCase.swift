@@ -1,12 +1,10 @@
 import Foundation
 
 protocol GetEmployeesUseCase {
-    
     func execute(page: Int) -> [Employee]
 }
 
 final class GetEmployeesUseCaseInteractor: GetEmployeesUseCase {
-    
     private let employeeRepository: EmployeeRepository
     
     init(employeeRepository: EmployeeRepository) {

@@ -1,11 +1,12 @@
 import Foundation
+import FlorShopDTOs
 
 struct SaleDetail: Identifiable {
     var id: UUID
-    var image: ImageUrl?
+    var imageUrl: String?
     var barCode: String?
     var productName: String
-    var unitType: UnitTypeEnum
+    var unitType: UnitType
     var unitCost: Money
     var unitPrice: Money
     var quantitySold: Int

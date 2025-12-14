@@ -1,4 +1,5 @@
 import Foundation
+import FlorShopDTOs
 
 @Observable
 class CartViewModel {
@@ -11,7 +12,7 @@ class CartViewModel {
             return [.cash]
         }
         if customer.isCreditLimitActive || customer.isDateLimitActive {
-            return PaymentType.allValues
+            return PaymentType.allCases
         } else {
             return [.cash]
         }
@@ -53,9 +54,9 @@ class CartViewModel {
         try self.emptyCartUseCase.execute()
         await fetchCart()
     }
-    func changeProductAmount(productId: UUID, amount: Int) async throws {
+    func changeProductAmount(productCic: String, amount: Int) async throws {
         print("CartViewModel: changeProductAmount")
-        try self.changeProductAmountInCartUseCase.execute(productId: productId, amount: amount)
+        try self.changeProductAmountInCartUseCase.execute(productCic: productCic, amount: amount)
     }
     func releaseResources() {
         self.cartCoreData = nil

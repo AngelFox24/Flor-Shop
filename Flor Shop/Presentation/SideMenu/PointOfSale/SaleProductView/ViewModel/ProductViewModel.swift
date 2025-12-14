@@ -33,16 +33,30 @@ class ProductViewModel {
         self.addProductoToCartUseCase = addProductoToCartUseCase
         self.lastToken = self.getProductsUseCase.getLastToken()
     }
-    func updateCurrentList(newToken: Int64) async {
+    //Old
+    func updateCurrentListOld(newToken: Int64) async {
         if lastToken < newToken {
             let productsUpdated = self.getProductsUseCase.updateProducts(products: self.productsCoreData)
             await MainActor.run {
                 for productUpdated in productsUpdated {
                     if let index = self.productsCoreData.firstIndex(where: { $0.id == productUpdated.id }) {
+                        print("[FlorShop] Se cambiara: \(productsCoreData[index].name), price: \(productsCoreData[index].unitPrice.solesString)")
                         self.productsCoreData[index] = productUpdated
+                        print("[FlorShop] Se cambio: \(productsCoreData[index].name), price: \(productsCoreData[index].unitPrice.solesString)")
                     }
                 }
                 self.lastToken = self.getProductsUseCase.getLastToken()
+            }
+        }
+    }
+    //New, TODO: verificar si no hay problemas con el scroll
+    func updateCurrentList(newToken: Int64) async {
+        guard let lastPage = self.currentPagesInScreen.last?[0] else { return }
+        if lastToken < newToken {
+            let productsUpdated = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: lastPage)
+            await MainActor.run {
+                self.productsCoreData = productsUpdated
+                self.lastToken = newToken
             }
         }
     }
@@ -120,9 +134,9 @@ class ProductViewModel {
         } else {
             guard let lastProduct = self.productsCoreData.last else { return }
             guard let firstProduct = self.productsCoreData.first else { return }
-            if product == lastProduct {
+            if product.id == lastProduct.id {
                 await fetchNextPage()
-            } else if product == firstProduct {
+            } else if product.id == firstProduct.id {
                 await fetchPreviousPage()
             }
         }

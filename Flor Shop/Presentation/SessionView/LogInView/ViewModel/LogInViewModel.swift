@@ -7,32 +7,7 @@ enum LogInStatus {
 @Observable
 class LogInViewModel {
     //MARK: LogInFields
-    var userOrEmail: String = "angel.curi"
-    var userOrEmailEdited: Bool = false
-    var userOrEmailError: String {
-        if userOrEmail == "" && userOrEmailEdited {
-            return "Nombre de producto no válido"
-        } else {
-            return ""
-        }
-    }
-    var password: String = "password"
-    var passwordEdited: Bool = false
-    var passwordError: String {
-        if self.password == "" && self.passwordEdited {
-            return "Contraseña no válido"
-        } else {
-            return ""
-        }
-    }
     var errorLogIn: String = ""
-    
-    
-    func fieldsTrue() {
-        print("All value true")
-        userOrEmailEdited = true
-        passwordEdited = true
-    }
 //    func logIn() async throws -> SessionConfig {
 //        return try await self.logInUseCase.execute(
 //            username: userOrEmail,

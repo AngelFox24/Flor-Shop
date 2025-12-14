@@ -23,7 +23,7 @@ struct CustomerHistoryTopBar: View {
             }
             if let customer = customer {
                 NavigationButton(push: .addCustomer) {
-                    CustomAsyncImageView(imageUrl: customer.image, size: 40)
+                    CustomAsyncImageView(imageUrlString: customer.imageUrl, size: 40)
                 }
             } else {
                 EmptyProfileButton()
@@ -37,13 +37,11 @@ struct CustomerHistoryTopBar: View {
     CustomerHistoryTopBar(
         customer: Customer(
             id: UUID(),
-            customerId: UUID(),
+            customerCic: UUID().uuidString,
             name: "Test Customer",
             lastName: "Tests Last Name",
             creditLimit: .init(2450),
-            isCreditLimit: false,
             creditDays: 23,
-            isDateLimit: false,
             creditScore: 3000,
             dateLimit: Date(),
             phoneNumber: "99855352",

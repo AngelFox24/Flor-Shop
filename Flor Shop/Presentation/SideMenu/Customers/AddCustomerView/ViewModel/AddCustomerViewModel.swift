@@ -1,4 +1,5 @@
 import Foundation
+import Kingfisher
 import _PhotosUI_SwiftUI
 
 @Observable
@@ -13,14 +14,14 @@ class AddCustomerViewModel {
     }
     
     private let saveCustomerUseCase: SaveCustomerUseCase
-    private let getImageUseCase: GetImageUseCase
+    private let saveImageUseCase: SaveImageUseCase
     
     init(
         saveCustomerUseCase: SaveCustomerUseCase,
-        getImageUseCase: GetImageUseCase
+        saveImageUseCase: SaveImageUseCase
     ) {
         self.saveCustomerUseCase = saveCustomerUseCase
-        self.getImageUseCase = getImageUseCase
+        self.saveImageUseCase = saveImageUseCase
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
@@ -31,11 +32,10 @@ class AddCustomerViewModel {
                     print("Imagen vacia")
                     return
                 }
-                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
-                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
+                let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: uiImage)
                 await MainActor.run {
                     print("Se le asigno la imagen")
-                    self.selectedImage = uiImageTreated
+                    self.selectedImage = optimizedImage
                 }
             } catch {
                 print("Error: \(error)")
@@ -50,25 +50,32 @@ class AddCustomerViewModel {
         //fieldsAddCustomer.dateLimitEdited = true
         fieldsAddCustomer.creditLimitEdited = true
     }
-    func loadCustomer(id: UUID) {
+    func loadCustomer(customerCic: String) {
         
     }
     func editCustomer(customer: Customer) async throws {
-        if let imageUrl = customer.image {
-            let uiImage = try await LocalImageManagerImpl.loadImage(image: imageUrl)
+        if let imageUrlString = customer.imageUrl,
+           let imageUrl = URL(string: imageUrlString) {
+            let result = try await KingfisherManager.shared.retrieveImage(
+                with: imageUrl,
+                options: [
+                    .cacheMemoryOnly
+                ]
+            )
+            let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: result.image)
             await MainActor.run {
-                self.selectedImage = uiImage
+                self.selectedImage = optimizedImage
             }
             print("Se agrego el id correctamente")
         }
         await MainActor.run {
-            fieldsAddCustomer.idImage = customer.image?.id
-            fieldsAddCustomer.id = customer.id
+            fieldsAddCustomer.imageUrl = customer.imageUrl
+            fieldsAddCustomer.customerCic = customer.customerCic
             fieldsAddCustomer.name = customer.name
-            fieldsAddCustomer.lastname = customer.lastName
-            fieldsAddCustomer.phoneNumber = customer.phoneNumber
+            fieldsAddCustomer.lastname = customer.lastName ?? ""
+            fieldsAddCustomer.phoneNumber = customer.phoneNumber ?? ""
             fieldsAddCustomer.totalDebt = customer.totalDebt.cents
-            fieldsAddCustomer.dateLimit = customer.dateLimit
+            fieldsAddCustomer.dateLimit = customer.dateLimit ?? Date()
             fieldsAddCustomer.firstDatePurchaseWithCredit = customer.firstDatePurchaseWithCredit
             fieldsAddCustomer.dateLimitFlag = customer.isDateLimitActive
             fieldsAddCustomer.creditLimitFlag = customer.isCreditLimitActive
@@ -94,15 +101,13 @@ class AddCustomerViewModel {
         }
         if isErrorsEmpty() {
             return Customer(
-                id: fieldsAddCustomer.id ?? UUID(),
-                customerId: fieldsAddCustomer.id ?? nil,
+                id: UUID(),
+                customerCic: fieldsAddCustomer.customerCic,
                 name: fieldsAddCustomer.name,
                 lastName: fieldsAddCustomer.lastname,
-                image: try await getImageIfExist(),
+                imageUrl: fieldsAddCustomer.imageUrl,
                 creditLimit: Money(fieldsAddCustomer.creditLimit),
-                isCreditLimit: false,
                 creditDays: creditDaysInt,
-                isDateLimit: false,
                 creditScore: fieldsAddCustomer.creditScore,
                 dateLimit: fieldsAddCustomer.dateLimit,
                 phoneNumber: fieldsAddCustomer.phoneNumber,
@@ -123,12 +128,6 @@ class AddCustomerViewModel {
         self.fieldsAddCustomer.creditLimitError.isEmpty
         return isEmpty
     }
-    func getImageIfExist() async throws -> ImageUrl? {
-        guard let image = self.selectedImage else {
-            return nil
-        }
-        return try await self.getImageUseCase.execute(uiImage: image)
-    }
     func releaseResources() async {
         await MainActor.run {
             self.selectedImage = nil
@@ -140,8 +139,8 @@ class AddCustomerViewModel {
 }
 
 struct FieldsAddCustomer {
-    var id: UUID?
-    var idImage: UUID?
+    var customerCic: String?
+    var imageUrl: String?
     var isShowingPicker = false
     var name: String = ""
     var nameEdited: Bool = false

@@ -1,32 +1,29 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 struct Employee: Identifiable {
     var id: UUID
-    let employeeId: UUID?
+    let employeeCic: String?
     var name: String
-    var user: String
     var email: String
-    var lastName: String
-    var role: String
-    var image: ImageUrl?
+    var lastName: String?
+    var role: UserSubsidiaryRole
+    var imageUrl: String?
     var active: Bool
-    var phoneNumber: String
+    var phoneNumber: String?
 }
 
 extension Employee {
-    func toEmployeeDTO(subsidiaryId: UUID) -> EmployeeServerDTO {
+    func toEmployeeDTO() -> EmployeeServerDTO {
         return EmployeeServerDTO(
-            id: employeeId,
-            user: user,
+            employeeCic: employeeCic,
             name: name,
             lastName: lastName,
             email: email,
             phoneNumber: phoneNumber,
             role: role,
             active: active,
-            subsidiaryID: subsidiaryId,
-            imageUrl: image?.toImageUrlDTO()
+            imageUrl: imageUrl
         )
     }
 }

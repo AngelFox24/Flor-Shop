@@ -5,7 +5,6 @@ protocol DeleteCartDetailUseCase {
 }
 
 final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
-    
     private let cartRepository: CarRepository
     
     init(cartRepository: CarRepository) {

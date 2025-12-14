@@ -24,6 +24,7 @@ struct NavigationContainer<Content: View>: View {
         InnerContainer(router: router) {
             content()
                 .padding(.vertical, showMenu ? 20 : 0)
+                .background(Color.background)
         }
         .clipShape(
             RoundedRectangle(cornerRadius: showMenu ? 35 : 0, style: .continuous)

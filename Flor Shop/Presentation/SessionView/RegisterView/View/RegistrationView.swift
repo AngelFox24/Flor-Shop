@@ -34,16 +34,9 @@ struct RegistrationView: View {
                                 }
                             }
                             VStack {
-                                CustomTextField(title: "Usuario" ,value: $registrationViewModel.registrationFields.user, edited: $registrationViewModel.registrationFields.userEdited)
-                                if registrationViewModel.registrationFields.userError != "" {
-                                    ErrorMessageText(message: registrationViewModel.registrationFields.userError)
-                                    //.padding(.top, 18)
-                                }
-                            }
-                            VStack {
-                                CustomTextField(title: "Contraseña" ,value: $registrationViewModel.registrationFields.password, edited: $registrationViewModel.registrationFields.passwordEdited)
-                                if registrationViewModel.registrationFields.passwordError != "" {
-                                    ErrorMessageText(message: registrationViewModel.registrationFields.passwordError)
+                                CustomTextField(title: "Subdominio" ,value: $registrationViewModel.registrationFields.subdomain, edited: $registrationViewModel.registrationFields.subdomainEdited)
+                                if registrationViewModel.registrationFields.subdomainError != "" {
+                                    ErrorMessageText(message: registrationViewModel.registrationFields.subdomainError)
                                     //.padding(.top, 18)
                                 }
                             }

@@ -1,9 +1,9 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 struct Company: Identifiable {
     var id: UUID
-    let companyId: UUID?
+    var companyCic: String?
     var companyName: String
     var ruc: String
 }
@@ -11,7 +11,6 @@ struct Company: Identifiable {
 extension Company {
     func toCompanyDTO() -> CompanyServerDTO {
         return CompanyServerDTO(
-            id: companyId,
             companyName: companyName,
             ruc: ruc
         )

@@ -1,61 +1,51 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
-struct Product: Identifiable, Codable, Equatable {
+struct Product: Identifiable, Codable {
     var id: UUID
-    let productId: UUID?
+    let productCic: String?
     var active: Bool
     var barCode: String?
     var name: String
     var qty: Int
-    var unitType: UnitTypeEnum
+    var unitType: UnitType
     var unitCost: Money
     var unitPrice: Money
     var expirationDate: Date?
-    var image: ImageUrl?
+    var imageUrl: String?
     
     static func getDummyProduct() -> Product {
         return Product(
             id: UUID(),
-            productId: nil,
+            productCic: UUID().uuidString,
             active: true,
             name: "No existe",
             qty: 0,
             unitType: .unit,
-            unitCost: Money(0),
-            unitPrice: Money(0)
+            unitCost: .init(0),
+            unitPrice: .init(0)
         )
-    }
-    static func == (lhs: Product, rhs: Product) -> Bool {
-        return lhs.id == rhs.id
     }
 }
 
 extension Product {
-    func toProductDTO(subsidiaryId: UUID) -> ProductServerDTO {
+    func toProductDTO() -> ProductServerDTO {
         return ProductServerDTO(
-            id: productId,
+            productCic: productCic,
             productName: name,
-            barCode: barCode ?? "",
+            barCode: barCode ?? "",//TODO: barcode shoul'd be optional
             active: active,
             expirationDate: expirationDate,
             quantityStock: qty,
-            unitType: unitType.rawValue,
+            unitType: unitType,
             unitCost: unitCost.cents,
             unitPrice: unitPrice.cents,
-            subsidiaryId: subsidiaryId,
-            imageUrl: image?.toImageUrlDTO()
+            imageUrl: imageUrl
         )
     }
     func isEquals(to other: Product) -> Bool {
-        let imageIsEquals: Bool
-        if let image = self.image {
-            imageIsEquals = image.isEquals(to: other.image)
-        } else {
-            imageIsEquals = other.image == nil
-        }
         return (
-            self.productId == other.productId &&
+            self.productCic == other.productCic &&
             self.name == other.name &&
             self.barCode == other.barCode &&
             self.qty == other.qty &&
@@ -63,8 +53,7 @@ extension Product {
             self.unitCost == other.unitCost &&
             self.expirationDate == other.expirationDate &&
             self.active == other.active &&
-            self.image?.id == other.image?.id &&
-            imageIsEquals
+            self.imageUrl == other.imageUrl
         )
     }
 }

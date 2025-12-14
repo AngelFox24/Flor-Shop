@@ -1,7 +1,8 @@
 import Foundation
+import FlorShopDTOs
 
 protocol LogInUseCase {
-    func execute(username: String, password: String) async throws -> SessionConfig
+    func execute(provider: AuthProvider, token: String) async throws
 }
 
 final class LogInInteractor: LogInUseCase {
@@ -13,7 +14,7 @@ final class LogInInteractor: LogInUseCase {
     ) {
         self.sessionRepository = sessionRepository
     }
-    func execute(username: String, password: String) async throws -> SessionConfig {
-        return try await self.sessionRepository.logIn(username: username, password: password)
+    func execute(provider: AuthProvider, token: String) async throws {
+        try await self.sessionRepository.logIn(provider: provider, token: token)
     }
 }

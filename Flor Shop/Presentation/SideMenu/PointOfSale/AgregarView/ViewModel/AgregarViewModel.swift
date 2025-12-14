@@ -1,5 +1,7 @@
 import Foundation
 import SwiftUI
+import Kingfisher
+import FlorShopDTOs
 import _PhotosUI_SwiftUI
 
 @Observable
@@ -13,20 +15,20 @@ class AgregarViewModel {
     }
     
     private let saveProductUseCase: SaveProductUseCase
-    private let getImageUseCase: GetImageUseCase
+    private let saveImageUseCase: SaveImageUseCase
     private let exportProductsUseCase: ExportProductsUseCase
     private let importProductsUseCase: ImportProductsUseCase
     private let getProductsUseCase: GetProductsUseCase
     //MARK: Init
     init(
         saveProductUseCase: SaveProductUseCase,
-        getImageUseCase: GetImageUseCase,
+        saveImageUseCase: SaveImageUseCase,
         exportProductsUseCase: ExportProductsUseCase,
         importProductsUseCase: ImportProductsUseCase,
         getProductsUseCase: GetProductsUseCase
     ) {
         self.saveProductUseCase = saveProductUseCase
-        self.getImageUseCase = getImageUseCase
+        self.saveImageUseCase = saveImageUseCase
         self.exportProductsUseCase = exportProductsUseCase
         self.importProductsUseCase = importProductsUseCase
         self.getProductsUseCase = getProductsUseCase
@@ -49,15 +51,18 @@ class AgregarViewModel {
             let urlPasted = pasteFromClipboard()
 //            LocalImageManagerImpl.loadImage(image: imageUrl)
             if let url = URL(string: urlPasted) {
-                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(url: url)
-                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
-                let imageHash = LocalImageManagerImpl.generarHash(data: imageDataTreated)
+                let result = try await KingfisherManager.shared.retrieveImage(
+                    with: url,
+                    options: [
+                        .cacheMemoryOnly
+                    ]
+                )
+                let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: result.image)
                 await MainActor.run {
                     print("Se le asigno la imagen")
                     self.agregarFields.imageUrl = urlPasted
-                    self.agregarFields.imageHash = imageHash
                     self.agregarFields.idImage = nil
-                    self.selectedLocalImage = uiImageTreated
+                    self.selectedLocalImage = optimizedImage
                 }
             } else {
                 print("NO es URL")
@@ -91,44 +96,49 @@ class AgregarViewModel {
         self.agregarFields.profitMarginEdited = true
         self.agregarFields.unitPriceEdited = true
     }
-    func loadProduct(productId: UUID) async throws {
-        let product = try self.getProductsUseCase.getProduct(id: productId)
-        print("[Flor] product: \(product.name)")
+    func loadProduct(productCic: String) async throws {
+        let product = try self.getProductsUseCase.getProduct(productCic: productCic)
         try await editProduct(product: product)
     }
     func editProduct(product: Product) async throws {
         await MainActor.run {
-            self.agregarFields.idImage = product.image?.id
+            self.agregarFields.productCic = product.productCic
             self.agregarFields.productId = product.id
             self.agregarFields.active = product.active
             self.agregarFields.productName = product.name
-            self.agregarFields.imageUrl = product.image?.imageUrl ?? ""
+            self.agregarFields.imageUrl = product.imageUrl ?? ""
             self.agregarFields.quantityStock = String(product.qty)
             self.agregarFields.unitType = product.unitType
-            print("UnitCost: \(product.unitCost.cents)")
             self.agregarFields.unitCost = product.unitCost.cents
-            print("UnitPrice: \(product.unitPrice.cents)")
             self.agregarFields.unitPrice = product.unitPrice.cents
             self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
             self.agregarFields.errorBD = ""
         }
-        if let imageUrl = product.image {
-            let uiImage = try? await LocalImageManagerImpl.loadImage(image: imageUrl)
+        if let imageUrlString = product.imageUrl,
+           let imageUrl = URL(string: imageUrlString) {
+            let result = try await KingfisherManager.shared.retrieveImage(
+                with: imageUrl,
+                options: [
+                    .cacheMemoryOnly
+                ]
+            )
+            let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: result.image)
             await MainActor.run {
-                self.selectedLocalImage = uiImage
+                self.selectedLocalImage = optimizedImage
             }
         }
         print("Se verifica producto: \(self.agregarFields.productName)")
     }
     func createProduct() async throws -> Product? {
-        guard let quantityStock = Int(self.agregarFields.quantityStock) else {
+        guard let quantityStock = Int(self.agregarFields.quantityStock),
+              let imageUrl = URL(string: self.agregarFields.imageUrl) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
         }
         if agregarFields.isErrorsEmpty() {
             return Product(
                 id: self.agregarFields.productId ?? UUID(),
-                productId: self.agregarFields.productId ?? nil,
+                productCic: self.agregarFields.productCic,
                 active: self.agregarFields.active,
                 barCode: self.agregarFields.scannedCode == "" ? nil : self.agregarFields.scannedCode,
                 name: self.agregarFields.productName,
@@ -137,7 +147,7 @@ class AgregarViewModel {
                 unitCost: Money(self.agregarFields.unitCost),
                 unitPrice: Money(self.agregarFields.unitPrice),
                 expirationDate: self.agregarFields.expirationDate,
-                image: try await getImageIfExist()
+                imageUrl: imageUrl.absoluteString
             )
         } else {
             return nil
@@ -152,12 +162,11 @@ class AgregarViewModel {
                     print("Imagen vacia")
                     return
                 }
-                let imageDataTreated = try await LocalImageManagerImpl.getEfficientImageTreated(image: uiImage)
-                let uiImageTreated = try LocalImageManagerImpl.getUIImage(data: imageDataTreated)
+                let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: uiImage)
                 await MainActor.run {
                     print("Se le asigno la imagen")
                     self.agregarFields.imageUrl = ""
-                    self.selectedLocalImage = uiImageTreated
+                    self.selectedLocalImage = optimizedImage
                 }
             } catch {
                 print("Error: \(error)")
@@ -170,30 +179,13 @@ class AgregarViewModel {
     func importCSV(url: URL) async {
         await self.importProductsUseCase.execute(url: url)
     }
-    func getImageIfExist() async throws -> ImageUrl? {
-        //Verificar si hay URL, se da prioridad
-        if self.agregarFields.imageUrl != "" {
-            //Devolver ImageUrl nuevo
-            print("[AgregarViewModel] Imagen URL no es vacia")
-            return ImageUrl(
-                id: self.agregarFields.idImage ?? UUID(),
-                imageUrlId: self.agregarFields.idImage ?? nil,
-                imageUrl: self.agregarFields.imageUrl,
-                imageHash: self.agregarFields.imageHash
-            )
-        } else if let uiImage = self.selectedLocalImage {
-            print("[AgregarViewModel] Hay UIImage")
-            return try await self.getImageUseCase.execute(uiImage: uiImage)
-        } else {
-            return nil
-        }
-    }
 }
 //MARK: Fields
 struct AgregarFields {
     var isShowingPicker = false
     var isShowingScanner = false
     var productId: UUID?
+    var productCic: String?
     var scannedCode: String = ""
     var active: Bool = true
     var productName: String = ""
@@ -225,10 +217,9 @@ struct AgregarFields {
     }
     var idImage: UUID?
     var imageUrl: String = ""
-    var imageHash: String = ""
     var imageURLEdited: Bool = false
     var imageURLError: String = ""
-    var unitType: UnitTypeEnum = .unit
+    var unitType: UnitType = .unit
     var unitCost: Int = 0
     var unitCostEdited: Bool = false
     var unitCostError: String {

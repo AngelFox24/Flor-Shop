@@ -1,20 +1,19 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 struct Subsidiary: Identifiable {
     var id: UUID
-    let subsidiaryId: UUID?
+    let subsidiaryCic: String?
     var name: String
-    var image: ImageUrl?
+    var imageUrl: String?
 }
 
 extension Subsidiary {
-    func toSubsidiaryDTO(companyId: UUID) -> SubsidiaryServerDTO {
+    func toSubsidiaryDTO() -> SubsidiaryServerDTO {
         return SubsidiaryServerDTO(
-            id: subsidiaryId,
+            subsidiaryCic: subsidiaryCic,
             name: name,
-            companyID: companyId,
-            imageUrl: image?.toImageUrlDTO()
+            imageUrl: imageUrl,
         )
     }
 }

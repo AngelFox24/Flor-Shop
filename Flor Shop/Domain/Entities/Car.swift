@@ -1,5 +1,5 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 struct Car: Identifiable {
     let id: UUID
@@ -14,16 +14,16 @@ struct Car: Identifiable {
 }
 
 extension Car {
-    func toCartDTO(subsidiaryId: UUID) -> CartServerDTO {
+    func toCartDTO() -> CartServerDTO {
         return CartServerDTO(
-            cartDetails: cartDetails.mapToListCartDetailsDTOs(subsidiaryId: subsidiaryId),
+            cartDetails: cartDetails.mapToListCartDetailsDTOs(),
             total: total.cents
         )
     }
 }
 
 extension Array where Element == CartDetail {
-    func mapToListCartDetailsDTOs(subsidiaryId: UUID) -> [CartDetailServerDTO] {
-        return self.compactMap {$0.toCartDetailDTO(subsidiaryId: subsidiaryId)}
+    func mapToListCartDetailsDTOs() -> [CartDetailServerDTO] {
+        return self.compactMap {$0.toCartDetailDTO()}
     }
 }

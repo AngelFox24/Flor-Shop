@@ -43,7 +43,7 @@ class CustomerHistoryViewModel {
         }
         return try await self.payClientDebtUseCase.total(customer: customerNN)
     }
-    func loadCustomer(customerId: UUID) async throws {
+    func loadCustomer(customerCic: String) async throws {
         
     }
     func setCustomerInContext(customer: Customer) {

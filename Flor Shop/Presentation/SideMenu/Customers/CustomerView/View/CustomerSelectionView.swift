@@ -63,19 +63,17 @@ struct CustomerSelectionListController: View {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
                             CardViewTipe2(
-                                imageUrl: customer.image,
+                                imageUrl: customer.imageUrl,
                                 topStatusColor: nil,
                                 topStatus: nil,
-                                mainText: customer.name + " " + customer.lastName,
+                                mainText: customer.name + " " + (customer.lastName ?? ""),
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
                                 mainIndicatorAlert: customer.isCreditLimit,
-                                secondaryIndicatorSuffix: customer.isDateLimitActive ? (
-                                    " " + String(
-                                        customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month)
-                                    )
-                                ) : nil,
-                                secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                secondaryIndicatorSuffix: nil, //TODO: poner en variable calculada
+//                                    customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                secondaryIndicator: nil, //TODO: poner en variable calculada
+//                                customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
                                 secondaryIndicatorAlert: customer.isDateLimit,
                                 size: 80
                             )

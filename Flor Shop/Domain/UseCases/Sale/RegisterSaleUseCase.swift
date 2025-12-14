@@ -1,7 +1,8 @@
 import Foundation
+import FlorShopDTOs
 
 protocol RegisterSaleUseCase {
-    func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
+    func execute(cart: Car, paymentType: PaymentType, customerCic: String?) async throws
 }
 
 final class RegisterSaleInteractor: RegisterSaleUseCase {
@@ -13,11 +14,7 @@ final class RegisterSaleInteractor: RegisterSaleUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
-        do {
-            try await self.saleRepository.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
-        } catch {
-            throw error
-        }
+    func execute(cart: Car, paymentType: PaymentType, customerCic: String?) async throws {
+        try await self.saleRepository.registerSale(cart: cart, paymentType: paymentType, customerCic: customerCic)
     }
 }

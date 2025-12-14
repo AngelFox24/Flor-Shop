@@ -1,22 +1,35 @@
 import Foundation
 actor SyncManager {
     private var isSyncing = false
-    private var previousToken: Int64
-    private var latestToken: Int64
+    
+    private var previousGlobalToken: Int64
+    private var previousBranchToken: Int64
+    
+    private var latestGlobalToken: Int64
+    private var latestBranchToken: Int64
+    
     private let synchronizer: SynchronizerDBUseCase
     private let logPrefix: String = "[WebSocket]"
 
     init(
         synchronizer: SynchronizerDBUseCase,
-        latestToken: Int64
+        latestGlobalToken: Int64,
+        latestBranchToken: Int64
     ) {
         self.synchronizer = synchronizer
-        self.latestToken = latestToken
-        self.previousToken = latestToken
+        self.latestGlobalToken = latestGlobalToken
+        self.latestBranchToken = latestBranchToken
+        self.previousGlobalToken = latestGlobalToken
+        self.previousBranchToken = latestBranchToken
     }
     
-    func handleNewToken(_ token: Int64) async {
-        latestToken = token
+    func handleNewToken(globalSyncToken: Int64?, branchSyncToken: Int64?) async {
+        if let globalSyncToken {
+            latestGlobalToken = globalSyncToken
+        }
+        if let branchSyncToken {
+            latestBranchToken = branchSyncToken
+        }
         if !isSyncing {
             print("\(logPrefix) Se inició la sincronización ...")
             await syncNext()
@@ -29,18 +42,26 @@ actor SyncManager {
     
     private func syncNext() async {
         //Reservamos el ultimo token local
-        let previousToken = self.previousToken
-        let latestToken = self.latestToken
-        guard previousToken != latestToken else {
+        let previousGlobalToken = self.previousGlobalToken
+        let latestGlobalToken = self.latestGlobalToken
+        let previousBranchToken = self.previousBranchToken
+        let latestBranchToken = self.latestBranchToken
+        guard previousGlobalToken != latestGlobalToken && previousBranchToken != latestBranchToken else {
             print("\(logPrefix) Mismo parametros, no se sincroniza.")
             return
         }
         isSyncing = true
         
         do {
-            let lastTokenUpdate = try await synchronizer.sync(lastToken: previousToken)
-            await self.verifySyncCompletion(lastTokenUpdate: lastTokenUpdate, targetToken: latestToken)
-            self.previousToken = latestToken
+            let lastTokenUpdate = try await synchronizer.sync(globalSyncToken: previousGlobalToken, branchSyncToken: previousBranchToken)
+            await self.verifySyncCompletion(
+                lastGlobalTokenUpdate: lastTokenUpdate.globalSyncToken,
+                lastBranchTokenUpdate: lastTokenUpdate.branchSyncToken,
+                targetGlobalToken: latestGlobalToken,
+                targetBranchToken: latestBranchToken
+            )
+            self.previousGlobalToken = latestGlobalToken
+            self.previousBranchToken = latestBranchToken
             print("\(logPrefix) ✅ Sincronización completa")
         } catch {
             print("\(logPrefix) ❌ Error sync: \(error)")
@@ -48,10 +69,11 @@ actor SyncManager {
         await self.syncCompleted()
     }
     
-    private func verifySyncCompletion(lastTokenUpdate: Int64, targetToken: Int64) async {
-        if lastTokenUpdate < targetToken {
-            self.previousToken = lastTokenUpdate
-            print("\(logPrefix) Se inició la sincronización porque el token de la respuesta anterior no es el último, obejtivo es: \(targetToken), actual: \(lastTokenUpdate) ...")
+    private func verifySyncCompletion(lastGlobalTokenUpdate: Int64, lastBranchTokenUpdate: Int64, targetGlobalToken: Int64, targetBranchToken: Int64) async {
+        if lastGlobalTokenUpdate < targetGlobalToken || lastBranchTokenUpdate < targetBranchToken {
+            self.previousGlobalToken = lastGlobalTokenUpdate
+            self.previousBranchToken = lastBranchTokenUpdate
+            print("\(logPrefix) Se inició la sincronización porque el token de la respuesta anterior no es el último, objetivo global es: \(targetGlobalToken) branch es \(targetBranchToken), actual global es: \(lastGlobalTokenUpdate) branch es: \(lastBranchTokenUpdate) ...")
             await syncNext()
         } else {
             print("\(logPrefix) Sincronizacion completa, se verificara si hay nuevos cambios mientras se estaba sincronizando ...")
@@ -61,7 +83,7 @@ actor SyncManager {
     
     private func syncCompleted() async {
         isSyncing = false
-        guard previousToken != latestToken else {
+        guard previousGlobalToken != latestGlobalToken || previousBranchToken != latestBranchToken else {
             print("\(logPrefix) No hay nuevos cambios para syncronizar mientras sincronizaba ...")
             return
         }

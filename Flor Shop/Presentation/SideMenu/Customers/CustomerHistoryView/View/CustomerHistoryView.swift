@@ -1,12 +1,13 @@
 import SwiftUI
+import FlorShopDTOs
 
 struct CustomerHistoryView: View {
     @Environment(FlorShopRouter.self) private var router
     @State var customerHistoryViewModel: CustomerHistoryViewModel
-    let customerId: UUID
-    init(ses: SessionContainer, customerId: UUID) {
+    let customerCic: String
+    init(ses: SessionContainer, customerCic: String) {
         self.customerHistoryViewModel = CustomerHistoryViewModelFactory.getCustomerHistoryViewModel(sessionContainer: ses)
-        self.customerId = customerId
+        self.customerCic = customerCic
     }
     var body: some View {
         VStack(spacing: 0) {
@@ -21,7 +22,7 @@ struct CustomerHistoryView: View {
         }
         .padding(.horizontal, 10)
         .task {
-            try? await customerHistoryViewModel.loadCustomer(customerId: self.customerId)
+            try? await customerHistoryViewModel.loadCustomer(customerCic: self.customerCic)
         }
     }
     func payDebt() {
@@ -38,7 +39,7 @@ struct CustomerHistoryView: View {
 
 #Preview {
     @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
-    CustomerHistoryView(ses: SessionContainer.preview, customerId: UUID())
+    CustomerHistoryView(ses: SessionContainer.preview, customerCic: UUID().uuidString)
         .environment(mainRouter)
         .background(Color.background)
 }
@@ -63,13 +64,14 @@ struct CustomerHistoryViewListController: View {
                 } else {
                     List {
                         ForEach(customerHistoryViewModel.salesDetail) { saleDetail in
-                            let day: String = saleDetail.saleDate.getDateComponent(dateComponent: .day).description
-                            let month: String = saleDetail.saleDate.getShortNameComponent(dateStringNameComponent: .month)
-                            let year: String = saleDetail.saleDate.getDateComponent(dateComponent: .year).description
+//                            let day: String = saleDetail.saleDate.getDateComponent(dateComponent: .day).description
+//                            let month: String = saleDetail.saleDate.getShortNameComponent(dateStringNameComponent: .month)
+//                            let year: String = saleDetail.saleDate.getDateComponent(dateComponent: .year).description
                             CardViewTipe2(
-                                imageUrl: saleDetail.image,
+                                imageUrl: saleDetail.imageUrl,
                                 topStatusColor: saleDetail.paymentType == PaymentType.cash ? .green : .red,
-                                topStatus: saleDetail.paymentType == PaymentType.cash ? "Pagado \(day) \(month) \(year)" : "Sin Pagar \(day) \(month) \(year)",
+                                topStatus: nil, //TODO: Poner en variable calculada
+//                                    saleDetail.paymentType == PaymentType.cash ? "Pagado \(day) \(month) \(year)" : "Sin Pagar \(day) \(month) \(year)",
                                 mainText: saleDetail.productName,
                                 mainIndicatorPrefix: "S/. ",
                                 mainIndicator: String(format: "%.2f", saleDetail.subtotal.soles),

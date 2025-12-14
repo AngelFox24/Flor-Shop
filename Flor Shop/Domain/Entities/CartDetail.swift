@@ -1,5 +1,5 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 struct CartDetail: Identifiable {
     let id: UUID
@@ -12,11 +12,14 @@ struct CartDetail: Identifiable {
 }
 
 extension CartDetail {
-    func toCartDetailDTO(subsidiaryId: UUID) -> CartDetailServerDTO {
+    func toCartDetailDTO() -> CartDetailServerDTO? {
+        guard let productCic = product.productCic else {
+            return nil
+        }
         return CartDetailServerDTO(
             quantity: quantity,
             subtotal: subtotal.cents,
-            productId: product.id
+            productCic: productCic
         )
     }
 }

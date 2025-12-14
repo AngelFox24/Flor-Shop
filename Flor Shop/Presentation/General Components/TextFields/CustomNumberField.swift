@@ -24,15 +24,13 @@ struct CustomNumberField: View {
                             .foregroundColor(.black)
                             .padding(.vertical, 4)
                             .disableAutocorrection(true)
-                            .onChange(of: viewText) { oldValue, newValue in
+                            .onChange(of: viewText) { _, newValue in
                                 if isInputActive {
-                                    print("isInputActive")
                                     if newValue != "" {
                                         edited = true
                                     }
                                     let stringsito = newValue.replacingOccurrences(of: ".", with: "")
                                     if let val = Int(stringsito) {
-                                        print("Updated userIput")
                                         userInput = val
                                         viewText = formatNumber(val)
                                     } else {
@@ -40,9 +38,8 @@ struct CustomNumberField: View {
                                     }
                                 }
                             }
-                            .onChange(of: isInputActive) { oldFocus, newFocus in
+                            .onChange(of: isInputActive) { _, newFocus in
                                 if !newFocus {
-                                    print("Se ejecuta UnFocused")
                                     onUnFocused?()
                                     if userInput == 0 {//Cuando el teclado desaparece que aparesca el placeholder
                                         viewText = ""
@@ -50,13 +47,15 @@ struct CustomNumberField: View {
                                     }
                                 }
                             }
-                            .onChange(of: userInput) { oldValue, newValue in
+                            .onChange(of: userInput) { _, newValue in
                                 if newValue == 0 {
                                     if isInputActive {//Si el teclado esta en pantalla no se puede limpiar el texto porque ocurre errores
                                         viewText = "0"
                                     } else {
                                         viewText = ""
                                     }
+                                } else if !isInputActive {//Si no se esta editando y cambia el input entonces actualizamos el texto mostrado, es porque el input se actualizado desde fuera del CustomNumberField
+                                    viewText = formatNumber(userInput)
                                 }
                             }
                             .disabled(disable)
@@ -132,9 +131,11 @@ struct CustomNumberField: View {
 }
 
 #Preview {
+    @Previewable @State var userInput: Int = 120
+    @Previewable @State var edited: Bool = false
     VStack {
         Spacer()
-        CustomNumberField(userInput: .constant(34), edited: .constant(false))
+        CustomNumberField(userInput: $userInput, edited: $edited)
         Spacer()
     }
     .background(Color.gray.opacity(0.9))

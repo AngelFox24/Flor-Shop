@@ -1,9 +1,11 @@
 import SwiftUI
-import AVFoundation
+import Equatable
 
+@Equatable
 struct SaleProductView: View {
     @Environment(SyncWebSocketClient.self) private var syncManager
     @State var productViewModel: ProductViewModel
+    @EquatableIgnoredUnsafeClosure
     let showMenu: () -> Void
     init(ses: SessionContainer, showMenu: @escaping () -> Void) {
         self.productViewModel = ProductViewModelFactory.getProductViewModel(sessionContainer: ses)
@@ -11,7 +13,7 @@ struct SaleProductView: View {
     }
     var body: some View {
         ZStack {
-            ListaControler(viewModel: $productViewModel)
+            ListaControler(viewModel: productViewModel)
             VStack {
                 ProductSearchTopBar(productViewModel: $productViewModel, showMenu: showMenu)
                 Spacer()
@@ -19,7 +21,6 @@ struct SaleProductView: View {
             }
             .padding(.horizontal, 10)
         }
-        .background(Color.background)
         .onChange(of: syncManager.lastTokenByEntities.product) { _, newValue in
             Task {
                 await productViewModel.updateCurrentList(newToken: newValue)
@@ -34,13 +35,14 @@ struct SaleProductView: View {
     @Previewable @State var webSocket: SyncWebSocketClient = SyncWebSocketClient(
         synchronizerDBUseCase: SynchronizerDBInteractorMock(),
         lastTokenByEntities: LastTokenByEntities(
-            image: 1,
             company: 1,
             subsidiary: 1,
             customer: 1,
             employee: 1,
             product: 1,
-            sale: 1
+            sale: 1,
+            productSubsidiary: 1,
+            employeeSubsidiary: 1
         )
     )
     @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
@@ -52,8 +54,7 @@ struct SaleProductView: View {
 }
 
 struct ListaControler: View {
-    @Binding var viewModel: ProductViewModel
-    @State private var audioPlayer: AVAudioPlayer?
+    var viewModel: ProductViewModel
     var body: some View {
         HStack(spacing: 0) {
             if viewModel.productsCoreData.count == 0 {
@@ -76,7 +77,7 @@ struct ListaControler: View {
                         }
                         ForEach(viewModel.productsCoreData) { producto in
                             CardViewTipe2(
-                                imageUrl: producto.image,
+                                imageUrl: producto.imageUrl,
                                 topStatusColor: Color.red,
                                 topStatus: nil,
                                 mainText: producto.name,
@@ -100,11 +101,19 @@ struct ListaControler: View {
                                 .tint(Color.accent)
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                NavigationButton(push: .editProduct(productId: producto.id)) {
+                                if let productCic = producto.productCic {
+                                    NavigationButton(push: .editProduct(productCic: productCic)) {
+                                        Image(systemName: "pencil")
+                                    }
+                                    .tint(Color.accent)
+                                } else {
                                     Image(systemName: "pencil")
+                                        .tint(Color.gray)
                                 }
-                                .tint(Color.accent)
                             }
+                            .onAppear(perform: {
+                                shouldLoadData(product: producto)
+                            })
                         }
                     }
                     .safeAreaInset(edge: .top) {
@@ -139,26 +148,10 @@ struct ListaControler: View {
 //            loading = true
             do {
                 try await viewModel.addProductoToCarrito(product: producto)
-                playSound(named: "Success1")
             } catch {
 //                router.presentAlert(.error(error.localizedDescription))
-                playSound(named: "Fail1")
             }
 //            loading = false
-        }
-    }
-    private func playSound(named fileName: String) {
-        var soundURL: URL?
-        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
-        guard let url = soundURL else {
-            print("No se pudo encontrar el archivo de sonido.")
-            return
-        }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
         }
     }
 }

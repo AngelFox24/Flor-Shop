@@ -4,7 +4,6 @@ protocol CreateSubsidiaryUseCase {
     func execute(subsidiary: Subsidiary) async throws
 }
 final class CreateSubsidiaryInteractor: CreateSubsidiaryUseCase {
-    
     private let subsidiaryRepository: SubsidiaryRepository
     
     init(subsidiaryRepository: SubsidiaryRepository) {

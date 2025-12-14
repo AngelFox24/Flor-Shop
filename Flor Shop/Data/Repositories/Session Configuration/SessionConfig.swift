@@ -2,14 +2,15 @@ import Foundation
 import CoreData
 
 struct SessionConfig: Codable, Equatable {
-    let companyId: UUID
-    let subsidiaryId: UUID
-    let employeeId: UUID
+    let subdomain: String
+    let companyCic: String
+    let subsidiaryCic: String
+    let employeeCic: String
     static let structName = "SessionConfig"
     
-    func getCompanyEntityById(context: NSManagedObjectContext, companyId: UUID) throws -> Tb_Company? {
+    func getCompanyEntityByCic(context: NSManagedObjectContext, companyCic: String) throws -> Tb_Company? {
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()
-        let predicate = NSPredicate(format: "idCompany == %@", companyId.uuidString)
+        let predicate = NSPredicate(format: "companyCic == %@", companyCic)
         request.predicate = predicate
         request.fetchLimit = 1
         do {
@@ -22,9 +23,9 @@ struct SessionConfig: Codable, Equatable {
             throw LocalStorageError.fetchFailed(cusError)
         }
     }
-    func getSubsidiaryEntityById(context: NSManagedObjectContext, subsidiaryId: UUID) throws -> Tb_Subsidiary? {
+    func getSubsidiaryEntityByCic(context: NSManagedObjectContext, subsidiaryCic: String) throws -> Tb_Subsidiary? {
         let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()
-        let predicate = NSPredicate(format: "idSubsidiary == %@ AND toCompany.idCompany == %@", subsidiaryId.uuidString, self.companyId.uuidString)
+        let predicate = NSPredicate(format: "subsidiaryCic == %@ AND toCompany.companyCic == %@", subsidiaryCic, self.companyCic)
         request.predicate = predicate
         request.fetchLimit = 1
         do {
@@ -37,9 +38,9 @@ struct SessionConfig: Codable, Equatable {
             throw LocalStorageError.fetchFailed(cusError)
         }
     }
-    func getCustomerEntityById(context: NSManagedObjectContext, customerId: UUID) throws -> Tb_Customer? {
+    func getCustomerEntityByCic(context: NSManagedObjectContext, customerCic: String) throws -> Tb_Customer? {
         let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()
-        let predicate = NSPredicate(format: "idCustomer == %@ AND toCompany.idCompany == %@", customerId.uuidString, self.companyId.uuidString)
+        let predicate = NSPredicate(format: "customerCic == %@ AND toCompany.companyCic == %@", customerCic, self.companyCic)
         request.predicate = predicate
         request.fetchLimit = 1
         do {
@@ -52,9 +53,9 @@ struct SessionConfig: Codable, Equatable {
             throw LocalStorageError.fetchFailed(cusError)
         }
     }
-    func getEmployeeEntityById(context: NSManagedObjectContext, employeeId: UUID) throws -> Tb_Employee? {
+    func getEmployeeEntityByCic(context: NSManagedObjectContext, employeeCic: String) throws -> Tb_Employee? {
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
-        let predicate = NSPredicate(format: "idEmployee == %@ AND toSubsidiary.idSubsidiary == %@", employeeId.uuidString, self.subsidiaryId.uuidString)
+        let predicate = NSPredicate(format: "employeeCic == %@ AND toCompany.companyCic == %@", employeeCic, self.companyCic)
         request.predicate = predicate
         request.fetchLimit = 1
         do {
@@ -67,9 +68,39 @@ struct SessionConfig: Codable, Equatable {
             throw LocalStorageError.fetchFailed(cusError)
         }
     }
-    func getProductEntityById(context: NSManagedObjectContext, productId: UUID) throws -> Tb_Product? {
+    func getEmployeeSubsidiaryEntityByCic(context: NSManagedObjectContext, employeeCic: String) throws -> Tb_EmployeeSubsidiary? {
+        let request: NSFetchRequest<Tb_EmployeeSubsidiary> = Tb_EmployeeSubsidiary.fetchRequest()
+        let predicate = NSPredicate(format: "toEmployee.employeeCic == %@ AND toSubsidiary.subsidiaryCic == %@", employeeCic, self.subsidiaryCic)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try context.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            context.rollback()
+            let cusError: String = "\(SessionConfig.structName) error fetching: \(error.localizedDescription)"
+            throw LocalStorageError.fetchFailed(cusError)
+        }
+    }
+    func getProductEntityByCic(context: NSManagedObjectContext, productCic: String) throws -> Tb_Product? {
         let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
-        let predicate = NSPredicate(format: "idProduct == %@ AND toSubsidiary.idSubsidiary == %@", productId.uuidString, self.subsidiaryId.uuidString)
+        let predicate = NSPredicate(format: "productCic == %@ AND toCompany.companyCic == %@", productCic, self.companyCic)
+        request.predicate = predicate
+        request.fetchLimit = 1
+        do {
+            let result = try context.fetch(request).first
+            return result
+        } catch let error {
+            print("Error fetching. \(error)")
+            context.rollback()
+            let cusError: String = "\(SessionConfig.structName) error fetching: \(error.localizedDescription)"
+            throw LocalStorageError.fetchFailed(cusError)
+        }
+    }
+    func getProductSubsidiaryEntityByCic(context: NSManagedObjectContext, productCic: String) throws -> Tb_ProductSubsidiary? {
+        let request: NSFetchRequest<Tb_ProductSubsidiary> = Tb_ProductSubsidiary.fetchRequest()
+        let predicate = NSPredicate(format: "toProduct.productCic == %@ AND toSubsidiary.subsidiaryCic == %@", productCic, self.subsidiaryCic)
         request.predicate = predicate
         request.fetchLimit = 1
         do {
@@ -83,7 +114,7 @@ struct SessionConfig: Codable, Equatable {
         }
     }
     func getCartEntityById(context: NSManagedObjectContext, cartId: UUID) throws -> Tb_Cart? {
-        let filterAtt = NSPredicate(format: "idCart == %@ AND toEmployee.idEmployee == %@", cartId.uuidString, self.employeeId.uuidString)
+        let filterAtt = NSPredicate(format: "idCart == %@ AND toEmployee.employeeCic == %@", cartId.uuidString, self.employeeCic)
         let request: NSFetchRequest<Tb_Cart> = Tb_Cart.fetchRequest()
         request.predicate = filterAtt
         do {
@@ -111,26 +142,12 @@ struct SessionConfig: Codable, Equatable {
         }
     }
     func getSaleEntityById(context: NSManagedObjectContext, saleId: UUID) throws -> Tb_Sale? {
-        let filterAtt = NSPredicate(format: "idSale == %@ AND toSubsidiary.idSubsidiary == %@", saleId.uuidString, self.subsidiaryId.uuidString)
+        let filterAtt = NSPredicate(format: "idSale == %@ AND toSubsidiary.subsidiaryCic == %@", saleId.uuidString, self.subsidiaryCic)
         let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
         request.predicate = filterAtt
         do {
             let saleEntity = try context.fetch(request).first
             return saleEntity
-        } catch let error {
-            print("Error fetching. \(error)")
-            context.rollback()
-            let cusError: String = "\(SessionConfig.structName) error fetching: \(error.localizedDescription)"
-            throw LocalStorageError.fetchFailed(cusError)
-        }
-    }
-    func getImageEntityById(context: NSManagedObjectContext, imageId: UUID) throws -> Tb_ImageUrl? {
-        let filterAtt = NSPredicate(format: "idImageUrl == %@", imageId.uuidString)
-        let request: NSFetchRequest<Tb_ImageUrl> = Tb_ImageUrl.fetchRequest()
-        request.predicate = filterAtt
-        do {
-            let imageEntity = try context.fetch(request).first
-            return imageEntity
         } catch let error {
             print("Error fetching. \(error)")
             context.rollback()

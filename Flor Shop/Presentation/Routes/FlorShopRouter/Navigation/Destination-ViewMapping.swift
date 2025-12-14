@@ -7,17 +7,17 @@ func view(for destination: PushDestination) -> some View {
         WithSession { ses in
             CustomerSelectionView(ses: ses)
         }
-    case .editCustomer(let customerId):
+    case .editCustomer(let customerCic):
         WithSession { ses in
-            AddCustomerView(ses: ses, customerId: customerId)
+            AddCustomerView(ses: ses, customerCic: customerCic)
         }
     case .addCustomer:
         WithSession { ses in
             AddCustomerView(ses: ses)
         }
-    case .customerHistory(let customerId):
+    case .customerHistory(let customerCic):
         WithSession { ses in
-            CustomerHistoryView(ses: ses, customerId: customerId)
+            CustomerHistoryView(ses: ses, customerCic: customerCic)
         }
     case .payment:
         WithSession { ses in
@@ -27,9 +27,9 @@ func view(for destination: PushDestination) -> some View {
         WithSession { ses in
             CartView(ses: ses)
         }
-    case .editProduct(let productId):
+    case .editProduct(let productCic):
         WithSession { ses in
-            AddProductView(ses: ses, productId: productId)
+            AddProductView(ses: ses, productCic: productCic)
         }
     case .addProduct:
         WithSession { ses in

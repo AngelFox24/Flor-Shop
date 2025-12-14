@@ -1,7 +1,8 @@
 import SwiftUI
+import Kingfisher
 
 struct CardViewTipe1: View {
-    let image: ImageUrl?
+    let imageUrl: String?
     let topStatusColor: Color
     let topStatus: String
     let mainText: String
@@ -10,7 +11,7 @@ struct CardViewTipe1: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(imageUrl: image, size: size)
+                CustomAsyncImageView(imageUrlString: imageUrl, size: size)
                 VStack(spacing: 2) {
                     HStack{
                         topStatusColor
@@ -52,7 +53,7 @@ struct CardViewTipe1: View {
     }
 }
 struct CardViewTipe2: View {
-    var imageUrl: ImageUrl?
+    var imageUrl: String?
     var topStatusColor: Color?
     var topStatus: String?
     var mainText: String
@@ -66,7 +67,7 @@ struct CardViewTipe2: View {
     var body: some View {
         VStack{
             HStack(spacing: 0, content: {
-                CustomAsyncImageView(imageUrl: imageUrl, size: size)
+                CustomAsyncImageView(imageUrlString: imageUrl, size: size)
                 VStack(spacing: 2) {
                     if let topStatusUnwrap = topStatus, let topStatusColorUnwrap = topStatusColor {
                         HStack{
@@ -141,7 +142,7 @@ struct CardViewTipe3: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                CustomAsyncImageView(imageUrl: cartDetail.product.image, size: size)
+                CustomAsyncImageView(imageUrlString: cartDetail.product.imageUrl, size: size)
                 VStack {
                     HStack {
                         Text(cartDetail.product.name)

@@ -1,18 +1,38 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 struct Customer: Identifiable {
     var id: UUID
-    let customerId: UUID?
+    let customerCic: String?
     var name: String
-    var lastName: String
-    var image: ImageUrl?
+    var lastName: String?
+    var imageUrl: String?
     var creditLimit: Money
-    var isCreditLimit: Bool
     var creditDays: Int
-    var isDateLimit: Bool
     var creditScore: Int
-    var customerTipe: CustomerTipeByCredit {
+    var dateLimit: Date?
+    var firstDatePurchaseWithCredit: Date?
+    var phoneNumber: String?
+    var lastDatePurchase: Date
+    var totalDebt: Money
+    var isCreditLimitActive: Bool
+    var isDateLimitActive: Bool
+    
+    var isDateLimit: Bool {
+        if isDateLimitActive {
+            return true
+        } else {
+            return false
+        }
+    }
+    var isCreditLimit: Bool {
+        if isCreditLimitActive {
+            return true
+        } else {
+            return false
+        }
+    }
+    var customerType: CustomerTipeByCredit {
         if creditScore >= 0 && creditScore < 33 {
             return .bad
         } else if creditScore >= 33 && creditScore < 66 {
@@ -21,35 +41,25 @@ struct Customer: Identifiable {
             return .good
         }
     }
-    var dateLimit: Date
-    var firstDatePurchaseWithCredit: Date?
-    var phoneNumber: String
-    var lastDatePurchase: Date
-    var totalDebt: Money
-    var isCreditLimitActive: Bool
-    var isDateLimitActive: Bool
 }
 
 extension Customer {
-    func toCustomerDTO(companyId: UUID) -> CustomerServerDTO {
+    func toCustomerDTO() -> CustomerServerDTO {
         return CustomerServerDTO(
-            id: customerId,
+            customerCic: customerCic,
             name: name,
             lastName: lastName,
             totalDebt: totalDebt.cents,
             creditScore: creditScore,
             creditDays: creditDays,
             isCreditLimitActive: isCreditLimitActive,
-            isCreditLimit: isCreditLimit,
             isDateLimitActive: isDateLimitActive,
-            isDateLimit: isDateLimit,
-            dateLimit: dateLimit,
+            dateLimit: dateLimit ?? Date(),
             firstDatePurchaseWithCredit: firstDatePurchaseWithCredit,
             lastDatePurchase: lastDatePurchase,
             phoneNumber: phoneNumber,
             creditLimit: creditLimit.cents,
-            companyID: companyId,
-            imageUrl: image?.toImageUrlDTO()
+            imageUrl: imageUrl
         )
     }
 }

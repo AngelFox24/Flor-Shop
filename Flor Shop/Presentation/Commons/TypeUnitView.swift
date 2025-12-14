@@ -1,7 +1,8 @@
 import SwiftUI
+import FlorShopDTOs
 
 struct customViewPre: View {
-    @State private var selection: UnitTypeEnum = .unit
+    @State private var selection: UnitType = .unit
     var body: some View {
         TypeUnitView(value: $selection)
     }
@@ -9,14 +10,14 @@ struct customViewPre: View {
 
 struct TypeUnitView: View {
 //    @State private var selection: UnitTypeEnum = .unit
-    @Binding var value: UnitTypeEnum
+    @Binding var value: UnitType
     var body: some View {
         VStack {
             HStack {
                 HStack {
                     HStack {
                         Image(systemName: value == .unit ? "circle.inset.filled" : "circle")
-                            .foregroundStyle(Color("color_accent"))
+                            .foregroundStyle(Color.accent)
                             .font(.system(size: 30))
                     }
                     Text("Unidad")
@@ -32,7 +33,7 @@ struct TypeUnitView: View {
                 HStack {
                     HStack {
                         Image(systemName: value == .unit ? "circle" : "circle.inset.filled")
-                            .foregroundStyle(Color("color_accent"))
+                            .foregroundStyle(Color.accent)
                             .font(.system(size: 30))
                     }
                     Text("Kilogramo")

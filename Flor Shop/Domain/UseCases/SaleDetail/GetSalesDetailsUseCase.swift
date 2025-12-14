@@ -1,12 +1,10 @@
 import Foundation
 
 protocol GetSalesDetailsUseCase {
-    
     func execute(page: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
 }
 
 final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
-    
     private let saleRepository: SaleRepository
     
     init(saleRepository: SaleRepository) {

@@ -1,9 +1,9 @@
 import Foundation
 import CoreData
+import FlorShopDTOs
 
 protocol CompanyRepository: Syncronizable {
     func save(company: Company) async throws
-    func getSyncTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters
 }
 
 class CompanyRepositoryImpl: CompanyRepository {
@@ -23,7 +23,7 @@ class CompanyRepositoryImpl: CompanyRepository {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
         if let companyDTO = syncDTOs.company {
             try self.localManager.sync(backgroundContext: backgroundContext, companyDTO: companyDTO)
         }
@@ -34,8 +34,5 @@ class CompanyRepositoryImpl: CompanyRepository {
         } else {
             try self.localManager.save(company: company)
         }
-    }
-    func getSyncTokens(localTokens: VerifySyncParameters) async throws -> VerifySyncParameters {
-        return try await self.remoteManager.getTokens(localTokens: localTokens)
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import CoreData
+import FlorShopDTOs
 
 enum RepositoryError: Error {
     case syncFailed(String)
@@ -11,12 +12,12 @@ protocol ProductRepository: Syncronizable {
     func updateProducts(products: [Product]) -> [Product]
     func save(product: Product) async throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product]
-    func getProduct(id: UUID) throws -> Product
+    func getProduct(productCic: String) throws -> Product
 }
 
 protocol Syncronizable {
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws
-    func getLastToken(context: NSManagedObjectContext) -> Int64
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws
+//    func getLastToken(context: NSManagedObjectContext) -> Int64
     func getLastToken() -> Int64
 }
 
@@ -44,7 +45,7 @@ public class ProductRepositoryImpl: ProductRepository {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         self.localManager.getLastToken(context: context)
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
         try self.localManager.sync(backgroundContext: backgroundContext, productsDTOs: syncDTOs.products)
     }
     func updateProducts(products: [Product]) -> [Product] {
@@ -53,8 +54,7 @@ public class ProductRepositoryImpl: ProductRepository {
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) -> [Product] {
         return localManager.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: pageSize)
     }
-    
-    func getProduct(id: UUID) throws -> Product {
-        return try localManager.getProduct(id: id)
+    func getProduct(productCic: String) throws -> Product {
+        return try localManager.getProduct(productCic: productCic)
     }
 }

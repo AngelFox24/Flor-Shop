@@ -45,17 +45,23 @@ struct EmployeeListController: View {
             List {
                 ForEach(employeeViewModel.employeeList) { employee in
                     let _ = print("Empleado: \(employee.name)")
-                    CardViewTipe1(image: employee.image, topStatusColor: .green, topStatus: employee.role, mainText: employee.name + " " + employee.lastName, secondaryText: "Falta", size: 80)
+                    CardViewTipe1(
+                        imageUrl: employee.imageUrl,
+                        topStatusColor: .green,
+                        topStatus: "Falta de estatus",
+                        mainText: employee.name + " " + (employee.lastName ?? ""),
+                        secondaryText: "Falta",
+                        size: 80
+                    )
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                    .listRowBackground(Color("color_background"))
+                    .listRowBackground(Color.background)
                 }
             }
             .listStyle(PlainListStyle())
             }
         }
         .padding(.horizontal, 10)
-        .background(Color("color_background"))
     }
 }
 

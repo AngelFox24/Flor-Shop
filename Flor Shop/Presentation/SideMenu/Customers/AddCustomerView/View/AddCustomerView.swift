@@ -3,17 +3,17 @@ import SwiftUI
 struct AddCustomerView: View {
     @Environment(FlorShopRouter.self) private var router
     @State var addCustomerViewModel: AddCustomerViewModel
-    let customerId: UUID?
+    let customerCic: String?
     init(ses: SessionContainer) {
         addCustomerViewModel = AddCustomerViewModelFactory.getAddCustomerViewModel(sessionContainer: ses)
-        self.customerId = nil
+        self.customerCic = nil
     }
     init(
         ses: SessionContainer,
-        customerId: UUID
+        customerCic: String
     ) {
         addCustomerViewModel = AddCustomerViewModelFactory.getAddCustomerViewModel(sessionContainer: ses)
-        self.customerId = customerId
+        self.customerCic = customerCic
     }
     var body: some View {
         VStack(spacing: 0) {
@@ -27,8 +27,8 @@ struct AddCustomerView: View {
         .padding(.horizontal, 10)
         .background(Color.background)
         .task {
-            guard let customerId else { return }
-            addCustomerViewModel.loadCustomer(id: customerId)
+            guard let customerCic else { return }
+            addCustomerViewModel.loadCustomer(customerCic: customerCic)
         }
     }
     func addCustomer() {

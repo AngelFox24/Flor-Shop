@@ -1,77 +1,83 @@
 import Foundation
 import CoreData
+import FlorShopDTOs
 
 protocol SynchronizerDBUseCase {
-    func sync(lastToken: Int64) async throws -> Int64
+    func sync(globalSyncToken: Int64, branchSyncToken: Int64) async throws -> (globalSyncToken: Int64, branchSyncToken: Int64)
     func getLastToken() -> LastTokenByEntities
 }
 
 final class SynchronizerDBInteractorMock: SynchronizerDBUseCase {
-    func sync(lastToken: Int64) async throws -> Int64 {
-        return 0
+    func sync(globalSyncToken: Int64, branchSyncToken: Int64) async throws -> (globalSyncToken: Int64, branchSyncToken: Int64) {
+        return (0, 0)
     }
     func getLastToken() -> LastTokenByEntities {
         return LastTokenByEntities(
-            image: 0,
             company: 0,
             subsidiary: 0,
             customer: 0,
             employee: 0,
             product: 0,
-            sale: 0
+            sale: 0,
+            productSubsidiary: 0,
+            employeeSubsidiary: 0
         )
     }
 }
 
 final class SynchronizerDBInteractor: SynchronizerDBUseCase {
     private let persistentContainer: NSPersistentContainer
-    private let imageRepository: Syncronizable
     private let companyRepository: Syncronizable & CompanyRepository
     private let subsidiaryRepository: Syncronizable
     private let customerRepository: Syncronizable
     private let employeeRepository: Syncronizable
     private let productRepository: Syncronizable
     private let saleRepository: Syncronizable
+    private let productSubsidiaryRepository: Syncronizable
+    private let employeeSubsidiaryRepository: Syncronizable
     private let syncRepository: SyncRepository
     
     init(
         persistentContainer: NSPersistentContainer,
-        imageRepository: Syncronizable,
         companyRepository: Syncronizable & CompanyRepository,
         subsidiaryRepository: Syncronizable,
         customerRepository: Syncronizable,
         employeeRepository: Syncronizable,
         productRepository: Syncronizable,
         saleRepository: Syncronizable,
+        productSubsidiaryRepository: Syncronizable,
+        employeeSubsidiaryRepository: Syncronizable,
         syncRepository: SyncRepository
     ) {
         self.persistentContainer = persistentContainer
-        self.imageRepository = imageRepository
         self.companyRepository = companyRepository
         self.subsidiaryRepository = subsidiaryRepository
         self.customerRepository = customerRepository
         self.employeeRepository = employeeRepository
         self.productRepository = productRepository
         self.saleRepository = saleRepository
+        self.productSubsidiaryRepository = saleRepository
+        self.employeeSubsidiaryRepository = saleRepository
         self.syncRepository = syncRepository
     }
     
-    func sync(lastToken: Int64) async throws -> Int64 {// 0.231891 segundos aprox ??????
+    func sync(globalSyncToken: Int64, branchSyncToken: Int64) async throws -> (globalSyncToken: Int64, branchSyncToken: Int64) {// 0.231891 segundos aprox ??????
         //            let clock = ContinuousClock()
         //            let start = clock.now
         let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
         backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         backgroundTaskContext.undoManager = nil
         do {
-            let syncClientParameters: SyncClientParameters = try await self.syncRepository.sync(lastToken: lastToken)
-            try await self.imageRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            let syncClientParameters: SyncResponse = try await self.syncRepository.sync(globalSyncToken: globalSyncToken, branchSyncToken: branchSyncToken)
             try await self.companyRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.customerRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
-            return syncClientParameters.lastToken
+            try await self.productSubsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.employeeSubsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            return (syncClientParameters.lastGlobalToken, syncClientParameters.lastBranchToken)
         } catch {
             if !error.localizedDescription.contains("Parents are not up to date") {
                 throw error
@@ -88,22 +94,25 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
 
         //            print(String(format: "[SynchronizerDBInteractor] Tiempo de ejecución: %.6f segundos", fractionalSeconds))
     }
+    
     func getLastToken() -> LastTokenByEntities {
-        let imageUrlLastToken = self.imageRepository.getLastToken()
         let companyLastToken = self.companyRepository.getLastToken()
         let subsidiaryLastToken = self.subsidiaryRepository.getLastToken()
         let customerLastToken = self.customerRepository.getLastToken()
         let employeeLastToken = self.employeeRepository.getLastToken()
         let productLastToken = self.productRepository.getLastToken()
         let saleLastToken = self.saleRepository.getLastToken()
+        let productSubsidiaryLastToken = self.productSubsidiaryRepository.getLastToken()
+        let employeeSubsidiaryLastToken = self.employeeSubsidiaryRepository.getLastToken()
         return LastTokenByEntities(
-            image: imageUrlLastToken,
             company: companyLastToken,
             subsidiary: subsidiaryLastToken,
             customer: customerLastToken,
             employee: employeeLastToken,
             product: productLastToken,
-            sale: saleLastToken
+            sale: saleLastToken,
+            productSubsidiary: productSubsidiaryLastToken,
+            employeeSubsidiary: employeeSubsidiaryLastToken
         )
     }
 }

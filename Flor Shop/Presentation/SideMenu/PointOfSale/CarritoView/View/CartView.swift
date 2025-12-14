@@ -80,30 +80,30 @@ struct ListCartController: View {
             }
         }
     }
-    func goToProductsList() {
+//    func goToProductsList() {
 //        self.tab = .magnifyingglass
-        addProductToCart()
-    }
-    func addProductToCart() {
-        let car = Car(
-            id: UUID(),
-            cartDetails: [.init(
-                id: UUID(),
-                quantity: 3,
-                product: .init(
-                    id: UUID(),
-                    productId: UUID(),
-                    active: true,
-                    name: "Test PRoduct",
-                    qty: 23,
-                    unitType: .unit,
-                    unitCost: .init(3450),
-                    unitPrice: .init(5650)
-                )
-            )]
-        )
-        cartViewModel.cartCoreData = car
-    }
+//        addProductToCart()
+//    }
+//    func addProductToCart() {
+//        let car = Car(
+//            id: UUID(),
+//            cartDetails: [.init(
+//                id: UUID(),
+//                quantity: 3,
+//                product: .init(
+//                    id: UUID(),
+//                    productCic: UUID().uuidString,
+//                    active: true,
+//                    name: "Test PRoduct",
+//                    qty: 23,
+//                    unitType: .unit,
+//                    unitCost: .init(3450),
+//                    unitPrice: .init(5650)
+//                )
+//            )]
+//        )
+//        cartViewModel.cartCoreData = car
+//    }
     func deleteCartDetail(cartDetail: CartDetail) {
         Task {
 //            loading = true
@@ -122,8 +122,8 @@ struct ListCartController: View {
             do {
                 if cartDetail.quantity - 1 <= 0 {
                     try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
-                } else {
-                    try await cartViewModel.changeProductAmount(productId: cartDetail.product.id, amount: cartDetail.quantity - 1)
+                } else if let productCic = cartDetail.product.productCic {
+                    try await cartViewModel.changeProductAmount(productCic: productCic, amount: cartDetail.quantity - 1)
                 }
                 await cartViewModel.fetchCart()
             } catch {
@@ -136,8 +136,10 @@ struct ListCartController: View {
         Task {
 //            loading = true
             do {
-                try await cartViewModel.changeProductAmount(productId: cartDetail.product.id, amount: cartDetail.quantity + 1)
-                await cartViewModel.fetchCart()
+                if let productCic = cartDetail.product.productCic {
+                    try await cartViewModel.changeProductAmount(productCic: productCic, amount: cartDetail.quantity + 1)
+                    await cartViewModel.fetchCart()
+                }
             } catch {
 //                router.presentAlert(.error(error.localizedDescription))
             }

@@ -1,8 +1,9 @@
 import Foundation
 import CoreData
+import FlorShopDTOs
 
 protocol SyncRepository {
-    func sync(lastToken: Int64) async throws -> SyncClientParameters
+    func sync(globalSyncToken: Int64, branchSyncToken: Int64) async throws -> SyncResponse
 }
 
 class SyncRepositoryImpl: SyncRepository {
@@ -17,7 +18,7 @@ class SyncRepositoryImpl: SyncRepository {
 //    func getLastToken(context: NSManagedObjectContext) -> Int64 {
 //        return self.localManager.getLastToken(context: context)
 //    }
-    func sync(lastToken: Int64) async throws -> SyncClientParameters {
-        return try await self.remoteSyncManager.sync(lastToken: lastToken)
+    func sync(globalSyncToken: Int64, branchSyncToken: Int64) async throws -> SyncResponse {
+        return try await self.remoteSyncManager.sync(globalSyncToken: globalSyncToken, branchSyncToken: branchSyncToken)
     }
 }

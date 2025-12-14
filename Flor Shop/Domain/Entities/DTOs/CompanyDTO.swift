@@ -1,18 +1,18 @@
 import Foundation
-import FlorShop_DTOs
+import FlorShopDTOs
 
 extension CompanyClientDTO {
-    func toCompany() -> Company {
-        return Company(
-            id: id,
-            companyId: id,
-            companyName: companyName,
-            ruc: ruc
-        )
-    }
+//    func toCompany() -> Company {
+//        return Company(
+//            id: UUID(),
+//            companyCic: companyCic,
+//            companyName: companyName,
+//            ruc: ruc
+//        )
+//    }
     func isEquals(to other: Tb_Company) -> Bool {
         return (
-            self.id == other.idCompany &&
+            self.companyCic == other.companyCic &&
             self.companyName == other.companyName &&
             self.ruc == other.ruc &&
             self.syncToken == other.syncToken

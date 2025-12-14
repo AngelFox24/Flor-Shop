@@ -1,9 +1,16 @@
 import SwiftUI
 
+enum VersionCheckState {
+    case iddle
+    case loading
+    case lockVersion
+}
+
 struct VersionCheckView: View {
-    @State private var versionCheck = VersionViewModel()
+    //TODO: Get from cloud
+    @State private var versionCheck = VersionCheckState.iddle
     var body: some View {
-        if versionCheck.isSupported {
+        if case .iddle = versionCheck {
             RootView()
         } else {
             VersionCheckContendView(versionCheck: versionCheck)
@@ -12,10 +19,10 @@ struct VersionCheckView: View {
 }
 
 struct VersionCheckContendView: View {
-    @Bindable var versionCheck: VersionViewModel
+    var versionCheck: VersionCheckState
     var body: some View {
-        switch versionCheck.versionState {
-        case .loading:
+        switch versionCheck {
+        case .loading, .iddle:
             LaunchScreenView()
         case .lockVersion:
             LockScreenView()

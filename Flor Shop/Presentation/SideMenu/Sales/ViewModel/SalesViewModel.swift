@@ -1,4 +1,5 @@
 import Foundation
+import FlorShopDTOs
 
 @Observable
 class SalesViewModel {
@@ -54,8 +55,8 @@ class SalesViewModel {
             return saleDetail == lastSaleDetail
         }
     }
-    func registerSale(cart: Car, customerId: UUID?, paymentType: PaymentType) async throws {
-        try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerId: customerId)
+    func registerSale(cart: Car, customerCic: String?, paymentType: PaymentType) async throws {
+        try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerCic: customerCic)
     }
     func nextDate() {
         switch salesDateInterval {

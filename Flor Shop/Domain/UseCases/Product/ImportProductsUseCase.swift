@@ -1,4 +1,5 @@
 import Foundation
+import FlorShopDTOs
 import UniformTypeIdentifiers
 
 protocol ImportProductsUseCase {
@@ -45,15 +46,9 @@ final class ImportProductsInteractor: ImportProductsUseCase {
                 }
                 let unitType = getTreatedUnitType(elements[2])
                 let quantity = getTreatedQuantity(quantity: elements[2], unitType: unitType)
-                let imageUrl = ImageUrl(
-                    id: UUID(),
-                    imageUrlId: nil,
-                    imageUrl: elements[0],
-                    imageHash: ""
-                )
                 let product = Product(
                     id: UUID(),
-                    productId: nil,
+                    productCic: nil,
                     active: true,
                     name: elements[1],
                     qty: quantity,
@@ -61,7 +56,7 @@ final class ImportProductsInteractor: ImportProductsUseCase {
                     unitCost: getTreatedAmount(elements[2]),
                     unitPrice: getTreatedAmount(elements[2]),
                     expirationDate: nil,
-                    image: imageUrl
+                    imageUrl: elements[0]
                 )
                 do {
                     try await productRepository.save(product: product)
@@ -117,16 +112,16 @@ final class ImportProductsInteractor: ImportProductsUseCase {
             throw LocalStorageError.fileSaveFailed("Error al guardar el archivo: \(error)")
         }
     }
-    private func getTreatedUnitType(_ input: String) -> UnitTypeEnum {
-        var unitType = UnitTypeEnum.unit
-        for type in UnitTypeEnum.allValues {
+    private func getTreatedUnitType(_ input: String) -> UnitType {
+        var unitType = UnitType.unit
+        for type in UnitType.allValues {
             if type.description.lowercased() == input.lowercased() {
                 unitType = type
             }
         }
         return unitType
     }
-    private func getTreatedQuantity(quantity: String, unitType: UnitTypeEnum) -> Int {
+    private func getTreatedQuantity(quantity: String, unitType: UnitType) -> Int {
         var quantityString = quantity
         switch unitType {
         case .unit:

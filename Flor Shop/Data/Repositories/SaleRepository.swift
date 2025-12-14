@@ -1,8 +1,9 @@
 import Foundation
 import CoreData
+import FlorShopDTOs
 
 protocol SaleRepository: Syncronizable {
-    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws
+    func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) async throws
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -22,11 +23,11 @@ class SaleRepositoryImpl: SaleRepository {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func registerSale(cart: Car, paymentType: PaymentType, customerId: UUID?) async throws {
+    func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) async throws {
         if cloudBD {
-            try await self.remoteManager.save(cart: cart, paymentType: paymentType, customerId: customerId)
+            try await self.remoteManager.save(cart: cart, paymentType: paymentType, customerCic: customerCic)
         } else {
-            try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerId: customerId)
+            try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerCic: customerCic)
         }
     }
     func getLastToken() -> Int64 {
@@ -35,7 +36,7 @@ class SaleRepositoryImpl: SaleRepository {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
         try self.localManager.sync(backgroundContext: backgroundContext, salesDTOs: syncDTOs.sales)
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {

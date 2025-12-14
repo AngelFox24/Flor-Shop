@@ -45,7 +45,7 @@ struct SalesListController: View {
                 List {
                     ForEach(salesViewModel.salesDetailsList) { saleDetail in
                         CardViewTipe2(
-                            imageUrl: saleDetail.image,
+                            imageUrl: saleDetail.imageUrl,
                             mainText: saleDetail.productName,
                             mainIndicatorPrefix: "S/. ",
                             mainIndicator: String(format: "%.2f", saleDetail.subtotal.soles),

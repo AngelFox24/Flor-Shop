@@ -1,18 +1,21 @@
 import Foundation
 import SwiftUI
 
-protocol GetImageUseCase {
-    func execute(uiImage: UIImage) async throws -> ImageUrl
+protocol SaveImageUseCase {
+    func execute(uiImage: UIImage) async throws -> URL
+    func getOptimizedImage(uiImage: UIImage) throws -> UIImage
 }
 
-final class GetImageInteractor: GetImageUseCase {
-    
+final class SaveImageInteractor: SaveImageUseCase {
     private let imageRepository: ImageRepository
     
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
     }
-    func execute(uiImage: UIImage) async throws -> ImageUrl {
-        return try await self.imageRepository.getImage(image: uiImage)
+    func execute(uiImage: UIImage) async throws -> URL {
+        return try await self.imageRepository.saveImage(uiImage: uiImage)
+    }
+    func getOptimizedImage(uiImage: UIImage) throws -> UIImage {
+        try self.imageRepository.getOptimizedImage(uiImage: uiImage)
     }
 }

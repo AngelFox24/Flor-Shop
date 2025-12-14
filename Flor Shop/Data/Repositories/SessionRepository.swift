@@ -1,16 +1,17 @@
 import Foundation
+import FlorShopDTOs
 
 protocol SessionRepository {
     func loadSession() -> SessionConfig?
-    func logIn(username: String, password: String) async throws -> SessionConfig
+    func logIn(provider: AuthProvider, token: String) async throws
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
+    func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
     func clear()
 }
 
 class SessionRepositoryImpl: SessionRepository {
     let remoteManager: RemoteSessionManager
     let localManager: LocalSessionManager
-    let cloudBD = true
     init(
         remoteManager: RemoteSessionManager,
         localManager: LocalSessionManager
@@ -21,16 +22,16 @@ class SessionRepositoryImpl: SessionRepository {
     func loadSession() -> SessionConfig? {
         return self.localManager.loadSession()
     }
-    func logIn(username: String, password: String) async throws -> SessionConfig {
-        let session = try await self.remoteManager.logIn(username: username, password: password)
+    func logIn(provider: AuthProvider, token: String) async throws {
+        try await self.remoteManager.login(provider: provider, token: token)
+    }
+    func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
+        let session = try await self.remoteManager.register(registerStuff: registerStuff)
         self.saveSession(session)
         return session
     }
-    func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
-        guard let registerParams = RegisterParameters(registerStuff: registerStuff) else {
-            throw NetworkError.unknownError(statusCode: 800)
-        }
-        let session = try await self.remoteManager.register(registerParams: registerParams)
+    func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
+        let session = try await self.remoteManager.selectSubsidiary(subsidiaryCic: subsidiaryCic)
         self.saveSession(session)
         return session
     }

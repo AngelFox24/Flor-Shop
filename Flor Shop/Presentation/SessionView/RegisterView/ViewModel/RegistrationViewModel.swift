@@ -4,9 +4,8 @@ import Foundation
 class RegistrationViewModel {
     var registrationFields: RegistrationFields = RegistrationFields()
     func fieldsTrue() {
+        registrationFields.subdomainEdited = true
         registrationFields.emailEdited = true
-        registrationFields.userEdited = true
-        registrationFields.passwordEdited = true
         registrationFields.companyNameEdited = true
         registrationFields.managerNameEdited = true
         registrationFields.managerLastNameEdited = true
@@ -15,7 +14,7 @@ class RegistrationViewModel {
     func registerUser() async throws -> RegisterStuffs {
         let newCompany = Company(
             id: UUID(),
-            companyId: nil,
+            companyCic: nil,
             companyName: registrationFields.companyName,
             ruc: registrationFields.companyRUC
         )
@@ -28,9 +27,9 @@ class RegistrationViewModel {
 //        )
         let newSubsidiary = Subsidiary(
             id: UUID(),
-            subsidiaryId: nil,
+            subsidiaryCic: nil,
             name: registrationFields.companyName,
-            image: nil
+            imageUrl: nil
         )
 //        let newEmployeeImage = ImageUrl(
 //            id: UUID(),
@@ -41,47 +40,38 @@ class RegistrationViewModel {
 //        )
         let newEmployee = Employee(
             id: UUID(),
-            employeeId: nil,
+            employeeCic: nil,
             name: registrationFields.managerName,
-            user: registrationFields.user,
             email: registrationFields.email,
             lastName: registrationFields.managerLastName,
-            role: "Manager",
-            image: nil,
+            role: .manager,
+            imageUrl: nil,
             active: true,
             phoneNumber: ""
         )
         return RegisterStuffs(
             company: newCompany,
             subsidiary: newSubsidiary,
-            employee: newEmployee
+            employee: newEmployee,
+            subdomain: registrationFields.subdomain
         )
     }
 }
 struct RegistrationFields {
+    var subdomain: String = ""
+    var subdomainEdited: Bool = false
+    var subdomainError: String {
+        if subdomain == "" && subdomainEdited {
+            return "El subdominio no puede estar vacio"
+        } else {
+            return ""
+        }
+    }
     var email: String = "curilaurente@gmail.com"
     var emailEdited: Bool = false
     var emailError: String {
         if email == "" && emailEdited {
             return "El email no puede estar vacio"
-        } else {
-            return ""
-        }
-    }
-    var user: String = "angel.curi"
-    var userEdited: Bool = false
-    var userError: String {
-        if user == "" && userEdited {
-            return "El nombre de usuario no puede estar vacio"
-        } else {
-            return ""
-        }
-    }
-    var password: String = "password"
-    var passwordEdited: Bool = false
-    var passwordError: String {
-        if self.password == "" && self.passwordEdited {
-            return "Contraseña no válido"
         } else {
             return ""
         }

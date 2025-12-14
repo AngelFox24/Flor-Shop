@@ -25,7 +25,7 @@ struct MainContendView: View {
     let sessionContainer: SessionContainer
     init(sessionConfig: SessionConfig) {
         self.sessionContainer = SessionContainer(sessionConfig: sessionConfig)
-        self.webSocket = SyncWebSocketClientFatory.getProductViewModel(sessionContainer: sessionContainer)
+        self.webSocket = SyncWebSocketClientFactory.getWebSocketClient(sessionContainer: sessionContainer)
     }
     var body: some View {
         VStack(spacing: 0) {

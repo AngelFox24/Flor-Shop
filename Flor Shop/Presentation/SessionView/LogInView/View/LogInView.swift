@@ -1,4 +1,5 @@
 import SwiftUI
+import FlorShopDTOs
 import AVFoundation
 
 struct LogInView: View {
@@ -26,47 +27,7 @@ struct LogInView: View {
                     .padding(.horizontal, 15)
                     ScrollView {
                         VStack(spacing: 30) {
-                            VStack(spacing: 40){
-                                VStack {
-                                    CustomTextField(
-                                        title: "Usuario o Correo" ,
-                                        value: $logInViewModel.userOrEmail,
-                                        edited: $logInViewModel.userOrEmailEdited,
-                                        keyboardType: .default
-                                    )
-                                    if logInViewModel.userOrEmailError != "" {
-                                        ErrorMessageText(message: logInViewModel.userOrEmailError)
-                                        //.padding(.top, 18)
-                                    }
-                                }
-                                VStack {
-                                    CustomTextField(
-                                        title: "Contraseña" ,
-                                        value: $logInViewModel.password,
-                                        edited: $logInViewModel.passwordEdited,
-                                        keyboardType: .default
-                                    )
-                                    if logInViewModel.passwordError != "" {
-                                        ErrorMessageText(message: logInViewModel.passwordError)
-                                        //.padding(.top, 18)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 30)
                             VStack(spacing: 30) {
-                                Button {
-                                    logIn(user: self.logInViewModel.userOrEmail, password: self.logInViewModel.password)
-                                } label: {
-                                    VStack {
-                                        CustomButton2(text: "Ingresar", backgroudColor: Color("color_accent"), minWidthC: 250)
-                                            .foregroundColor(Color(.black))
-                                        if logInViewModel.errorLogIn != "" {
-                                            ErrorMessageText(message: logInViewModel.errorLogIn)
-                                        }
-                                    }
-                                }
-                                Color(.gray)
-                                    .frame(width: 280, height: 2)
                                 Button(action: {}, label: {
                                     CustomButton2(text: "Continuar con Google", backgroudColor: Color("color_secondary"), minWidthC: 250)
                                         .foregroundColor(Color(.black))
@@ -87,11 +48,11 @@ struct LogInView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
     }
-    private func logIn(user: String, password: String) {
+    private func logIn(provider: AuthProvider, token: String) {
         Task {
             do {
                 print("Se logeara desde Remote")
-                try await sessionManager.login(username: user, password: password)
+                try await sessionManager.login(provider: provider, token: token)
                 print("Log In Correcto")
                 playSound(named: "Success1")
             } catch {

@@ -17,7 +17,6 @@ struct CustomersView: View {
             }
         }
         .padding(.horizontal, 10)
-        .background(Color.background)
         .task {
             customerViewModel.lazyFetchList()
         }
@@ -45,23 +44,30 @@ struct CustomerListController: View {
                 } else {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
-                            NavigationButton(push: .customerHistory(customerId: customer.id)) {
-                                CardViewTipe2(
-                                    imageUrl: customer.image,
-                                    topStatusColor: nil,
-                                    topStatus: nil,
-                                    mainText: customer.name + " " + customer.lastName,
-                                    mainIndicatorPrefix: "S/. ",
-                                    mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
-                                    mainIndicatorAlert: customer.isCreditLimit,
-                                    secondaryIndicatorSuffix: customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
-                                    secondaryIndicator: customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
-                                    secondaryIndicatorAlert: customer.isDateLimit, size: 80
-                                )
+                            if let customerCic = customer.customerCic {
+                                NavigationButton(push: .customerHistory(customerCic: customerCic)) {
+                                    CardViewTipe2(
+                                        imageUrl: customer.imageUrl,
+                                        topStatusColor: nil,
+                                        topStatus: nil,
+                                        mainText: customer.name + " " + (customer.lastName ?? ""),
+                                        mainIndicatorPrefix: "S/. ",
+                                        mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
+                                        mainIndicatorAlert: customer.isCreditLimit,
+                                        secondaryIndicatorSuffix: nil,
+                                        //TODO: poner en variable calculada
+                                        //String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
+                                        secondaryIndicator: nil,
+                                        //TODO: poner en variable calculada
+                                        //customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
+                                        secondaryIndicatorAlert: customer.isDateLimit,
+                                        size: 80
+                                    )
+                                }
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                                .listRowBackground(Color.background)
                             }
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color.background)
                         }
                     }
                     .safeAreaInset(edge: .top) {

@@ -1,23 +1,31 @@
 import Foundation
+import FlorShopDTOs
 
 struct LastTokenByEntities {
-    var image: Int64
     var company: Int64
     var subsidiary: Int64
     var customer: Int64
     var employee: Int64
     var product: Int64
     var sale: Int64
+    var productSubsidiary: Int64
+    var employeeSubsidiary: Int64
     
-    var maxToken: Int64 {
+    var maxGlobalToken: Int64 {
         return max(
-            image,
             company,
             subsidiary,
             customer,
             employee,
-            product,
-            sale
+            product
+        )
+    }
+    
+    var maxBranchToken: Int64 {
+        return max(
+            sale,
+            productSubsidiary,
+            employeeSubsidiary
         )
     }
 }
@@ -41,7 +49,8 @@ final class SyncWebSocketClient {
         self.lastTokenByEntities = lastTokenByEntities
         self.syncManager = SyncManager(
             synchronizer: synchronizerDBUseCase,
-            latestToken: lastTokenByEntities.maxToken
+            latestGlobalToken: lastTokenByEntities.maxGlobalToken,
+            latestBranchToken: lastTokenByEntities.maxBranchToken
         )
     }
     func connect() {
@@ -51,7 +60,7 @@ final class SyncWebSocketClient {
             return
         }
 
-        guard let url = URL(string: "\(AppConfig.wsBaseURL)\(APIEndpoint.Sync.webSocekt)") else {
+        guard let url = URL(string: "\(AppConfig.florShopCoreWSBaseURL)/sync/ws") else {
             print("\(logPrefix) URL inválida")
             return
         }
@@ -82,9 +91,9 @@ final class SyncWebSocketClient {
                 switch message {
                 case .string(let text):
                     print("\(self.logPrefix) Mensaje recibido: \(text)")
-                    if let lastToken = self.parseSyncToken(from: text) {
+                    if let lastToken = self.parseSyncToken(from: text) {//TODO: Fix this with new tokens
                         Task {
-                            await self.syncManager.handleNewToken(lastToken)
+                            await self.syncManager.handleNewToken(globalSyncToken: lastToken.globalToken, branchSyncToken: lastToken.branchToken)
                             let newTokens = await self.syncManager.getLastTokenByEntities()
                             await MainActor.run {
                                 self.lastTokenByEntities = newTokens
@@ -116,12 +125,12 @@ final class SyncWebSocketClient {
         }
     }
     
-    private func parseSyncToken(from json: String) -> Int64? {
+    private func parseSyncToken(from json: String) -> SyncTokensDTO? {
         guard let data = json.data(using: .utf8) else {
             return nil
         }
 
         let decoder = JSONDecoder()
-        return try? decoder.decode(Int64.self, from: data)
+        return try? decoder.decode(SyncTokensDTO.self, from: data)
     }
 }

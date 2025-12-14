@@ -1,5 +1,6 @@
 import Foundation
 import CoreData
+import FlorShopDTOs
 
 protocol EmployeeRepository: Syncronizable {
     func save(employee: Employee) async throws
@@ -23,7 +24,7 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)
     }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncClientParameters) async throws {
+    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
         try self.localManager.sync(backgroundContext: backgroundContext, employeesDTOs: syncDTOs.employees)
     }
     func save(employee: Employee) async throws {
