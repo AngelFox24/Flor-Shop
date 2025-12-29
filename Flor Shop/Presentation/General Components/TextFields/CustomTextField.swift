@@ -9,6 +9,8 @@ struct CustomTextField: View {
     var disable: Bool = false
     var keyboardType: UIKeyboardType = .default
     var disableAutocorrection: Bool = true
+    
+    @State private var isKeyboardShowing = false
     var body: some View {
         HStack {
             ZStack {
@@ -33,12 +35,12 @@ struct CustomTextField: View {
                         .disabled(disable)
                         .toolbar {
                             if isInputActive {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    CustomHideKeyboard(action: {
+                                ToolbarItem(placement: .keyboard) {
+                                    CustomHideKeyboard {
                                         isInputActive = false
-                                    })
-                                    .frame(width: UIScreen.main.bounds.width)
+                                    }
                                 }
+//                                ToolbarSpacer(.fixed, placement: .keyboard)
                             }
                         }
                     if isInputActive && !value.isEmpty {
@@ -50,7 +52,7 @@ struct CustomTextField: View {
                             }
                         }, label: {
                             Image(systemName: "x.circle")
-                                .foregroundColor(Color.accent)
+                                .foregroundColor(Color.accentColor)
                                 .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 12)
@@ -91,5 +93,5 @@ struct CustomTextField: View {
         //CustomTextField(edited: .constant(false))
     }
     .frame(maxHeight: .infinity)
-    .background(Color.accent)
+    .background(Color.accentColor)
 }

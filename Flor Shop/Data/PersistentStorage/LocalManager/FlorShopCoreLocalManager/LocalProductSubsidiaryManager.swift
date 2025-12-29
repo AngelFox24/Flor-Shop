@@ -19,7 +19,7 @@ class LocalProductSubsidiaryManagerImpl: LocalProductSubsidiaryManager {
         self.sessionConfig = sessionConfig
     }
     func getLastToken() -> Int64 {
-        let request: NSFetchRequest<Tb_Product> = Tb_Product.fetchRequest()
+        let request: NSFetchRequest<Tb_ProductSubsidiary> = Tb_ProductSubsidiary.fetchRequest()
         let predicate = NSPredicate(format: "toSubsidiary.subsidiaryCic == %@ AND syncToken != nil", self.sessionConfig.subsidiaryCic)
         let sortDescriptor = NSSortDescriptor(key: "syncToken", ascending: false)
         request.sortDescriptors = [sortDescriptor]
@@ -57,7 +57,7 @@ class LocalProductSubsidiaryManagerImpl: LocalProductSubsidiaryManager {
                 productSubsidiaryEntity.createdAt = productSubsidiaryDTO.createdAt
                 productSubsidiaryEntity.updatedAt = productSubsidiaryDTO.updatedAt
                 try saveData(context: backgroundContext)
-                print("\(className) Se actualizo el producto")
+                print("\(className) Se actualizo el producto: \(productSubsidiaryDTO.productCic) con cantidad: \(productSubsidiaryDTO.quantityStock)")
             } else {
                 guard let subsidiaryEntity = try self.sessionConfig.getSubsidiaryEntityByCic(
                     context: backgroundContext,
@@ -88,7 +88,7 @@ class LocalProductSubsidiaryManagerImpl: LocalProductSubsidiaryManager {
                 newProductSubsidiaryEntity.toProduct = productEntity
                 newProductSubsidiaryEntity.toSubsidiary = subsidiaryEntity
                 try saveData(context: backgroundContext)
-                print("\(className) Se creo el producto")
+                print("\(className) Se creo el producto: \(productSubsidiaryDTO.productCic) con cantidad: \(productSubsidiaryDTO.quantityStock)")
             }
         }
     }

@@ -9,14 +9,14 @@ struct CustomButton1: View {
             .multilineTextAlignment(.center)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(Color("color_accent"))
+            .background(Color.accentColor)
             .cornerRadius(15.0)
     }
 }
 
 struct CustomButton2: View {
     let text: String
-    var backgroudColor: Color = Color("color_accent")
+    var backgroudColor: Color = Color.accentColor
     var minWidthC: CGFloat = 200
     var body: some View {
         Text(text)
@@ -51,7 +51,7 @@ struct CustomButton4: View {
             .font(.custom("Artifika-Regular", size: 30))
             .foregroundColor(Color("color_background"))
             .frame(width: 50, height: 50)
-            .background(Color.accent)
+            .background(Color.accentColor)
             .cornerRadius(30)
     }
 }
@@ -61,7 +61,7 @@ struct CustomButton6: View {
     var body: some View {
         Image(systemName: simbol)
             .font(.custom("Artifika-Regular", size: 18))
-            .foregroundColor(Color("color_accent"))
+            .foregroundColor(Color.accentColor)
             .frame(width: 30, height: 30)
             .background(.white)
             .cornerRadius(20)

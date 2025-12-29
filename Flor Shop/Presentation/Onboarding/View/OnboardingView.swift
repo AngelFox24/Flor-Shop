@@ -11,13 +11,13 @@ struct OnboardingView: View {
                     VStack(spacing: 0) {
                         Text(item.title)
                             .font(.custom("Artifika-Regular", size: 28))
-                            .foregroundColor(Color("color_accent"))
+                            .foregroundColor(Color.accentColor)
                             .multilineTextAlignment(.center)
                         Text(item.subtitle)
                             .font(.custom("Artifika-Regular", size: 20))
                             .multilineTextAlignment(.center)
                             .padding(.top, 8)
-                            .foregroundColor(Color("color_accent"))
+                            .foregroundColor(Color.accentColor)
                     }
                     .opacity(isItemSelected(item.id, to: selectedItemId) ? 1 : 0)
                     .offset(CGSize(width: 0, height: isItemSelected(item.id, to: selectedItemId) ? 0 : -100))
@@ -38,7 +38,7 @@ struct OnboardingView: View {
             // Puntitos
             HStack(spacing: 8) {
                 ForEach(onboardinItems) { item in
-                    Color("color_accent")
+                    Color.accentColor
                         .opacity(isItemSelected(item.id, to: selectedItemId) ? 1 : 0.5)
                         .frame(width: isItemSelected(item.id, to: selectedItemId) ? 14 : 10, height: isItemSelected(item.id, to: selectedItemId) ? 14 : 10)
                         .cornerRadius(6)

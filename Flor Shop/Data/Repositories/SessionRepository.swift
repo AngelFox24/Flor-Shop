@@ -3,13 +3,14 @@ import FlorShopDTOs
 
 protocol SessionRepository {
     func loadSession() -> SessionConfig?
-    func logIn(provider: AuthProvider, token: String) async throws
+    func logIn(provider: AuthProvider, token: String) async throws -> [CompanyResponseDTO]
+    func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO]
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
     func clear()
 }
 
-class SessionRepositoryImpl: SessionRepository {
+final class SessionRepositoryImpl: SessionRepository {
     let remoteManager: RemoteSessionManager
     let localManager: LocalSessionManager
     init(
@@ -22,8 +23,12 @@ class SessionRepositoryImpl: SessionRepository {
     func loadSession() -> SessionConfig? {
         return self.localManager.loadSession()
     }
-    func logIn(provider: AuthProvider, token: String) async throws {
+    func logIn(provider: AuthProvider, token: String) async throws -> [CompanyResponseDTO] {
         try await self.remoteManager.login(provider: provider, token: token)
+        return try await self.remoteManager.getCompanies()
+    }
+    func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO] {
+        return try await self.remoteManager.getSubsidiaries(companyCic: companyCic)
     }
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
         let session = try await self.remoteManager.register(registerStuff: registerStuff)
@@ -40,5 +45,14 @@ class SessionRepositoryImpl: SessionRepository {
     }
     private func saveSession(_ sessionConfig: SessionConfig) {
         self.localManager.saveSession(sessionConfig)
+    }
+}
+
+extension SessionRepositoryImpl {
+    static func mock() -> SessionRepositoryImpl {
+        return SessionRepositoryImpl(
+            remoteManager: RemoteSessionManagerMock(),
+            localManager: LocalSessionManagerMock()
+        )
     }
 }

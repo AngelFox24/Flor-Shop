@@ -50,14 +50,13 @@ struct CustomTabBar: View {
                             VStack {
                                 Image(systemName: selectedTab == tab ? tab.filled : tab.normal)
                                     .scaleEffect(tab == selectedTab ? 1.25 : 1.0)
-                                    .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
+                                    .foregroundColor(tab == selectedTab ? Color.accentColor : .white)
                                     .font(.custom("Artifika-Regular", size: 24))
                                 Text(tab.description)
                                     .font(.custom("Artifika-Regular", size: 16))
-                                    .foregroundColor(tab == selectedTab ? Color("color_accent") : .white)
+                                    .foregroundColor(tab == selectedTab ? Color.accentColor : .white)
                             }
                             .padding(.top, 8)
-                            //.padding(.bottom, 60)
                             Spacer()
                         }
                         .frame(maxHeight: .infinity)

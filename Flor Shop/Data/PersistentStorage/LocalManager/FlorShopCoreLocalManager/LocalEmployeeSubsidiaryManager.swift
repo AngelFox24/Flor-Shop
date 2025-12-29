@@ -55,6 +55,7 @@ class LocalEmployeeSubsidiaryManagerImpl: LocalEmployeeSubsidiaryManager {
                 employeeSubsidiaryEntity.createdAt = employeeSubsidiaryDTO.createdAt
                 employeeSubsidiaryEntity.updatedAt = employeeSubsidiaryDTO.updatedAt
                 try saveData(context: backgroundContext)
+                print("\(className) Se creo el empleadoSubsidiary")
             } else {
                 guard let employeeEntity = try self.sessionConfig.getEmployeeEntityByCic(
                     context: backgroundContext,
@@ -82,6 +83,7 @@ class LocalEmployeeSubsidiaryManagerImpl: LocalEmployeeSubsidiaryManager {
                 newEmployeeSubsidiaryEntity.toEmployee = employeeEntity
                 newEmployeeSubsidiaryEntity.toSubsidiary = subsidiaryEntity
                 try saveData(context: backgroundContext)
+                print("\(className) Se actualizo el empleadoSubsidiary")
             }
         }
     }

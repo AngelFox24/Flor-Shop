@@ -6,6 +6,12 @@ protocol LocalSessionManager {
     func clear()
 }
 
+final class LocalSessionManagerMock: LocalSessionManager {
+    func loadSession() -> SessionConfig? { nil }
+    func saveSession(_ session: SessionConfig) { }
+    func clear() { }
+}
+
 final class LocalSessionManagerImpl: LocalSessionManager {
     private let defaults = UserDefaults.standard
     

@@ -4,6 +4,7 @@ import FlorShopDTOs
 enum FlorShopAuthApiRequest {
     case auth(provider: AuthProvider, providerToken: String)
     case getCompanies(baseToken: String)
+    case getSubsidiaries(companyCic: String, baseToken: String)
     case selectSubsidiary(subsidiaryCic: String, baseToken: String)
     case registerCompany(request: RegisterCompanyRequest, providerToken: String)
     case registerInvitation(request: InvitationRequest, scopedToken: String)
@@ -19,8 +20,10 @@ extension FlorShopAuthApiRequest: NetworkRequest {
             path = "/auth"
         case .getCompanies:
             path = "/company"
+        case .getSubsidiaries(let companyCic, _):
+            path = "/subsidiary?companyCic=\(companyCic)"
         case .selectSubsidiary(let subsidiaryCic, _):
-            path = "subsidiary?id=\(subsidiaryCic)"
+            path = "/subsidiary/selection?cic=\(subsidiaryCic)"
         case .registerCompany:
             path = "/company"
         case .registerInvitation:
@@ -37,6 +40,8 @@ extension FlorShopAuthApiRequest: NetworkRequest {
                 .post
         case .getCompanies:
                 .get
+        case .getSubsidiaries:
+                .get
         case .selectSubsidiary:
                 .get
         case .registerCompany:
@@ -50,24 +55,22 @@ extension FlorShopAuthApiRequest: NetworkRequest {
     
     var headers: [HTTPHeader : String]? {
         var headers: [HTTPHeader: String] = [:]
+        headers[.contentType] = ContentType.json.rawValue
         switch self {
         case .auth(_, let providerToken):
-            headers[.contentType] = ContentType.json.rawValue
             headers[.authorization] = "Bearer \(providerToken)"
         case .getCompanies(let baseToken):
-            headers[.contentType] = ContentType.json.rawValue
+            headers[.authorization] = "Bearer \(baseToken)"
+        case .getSubsidiaries(_, let baseToken):
             headers[.authorization] = "Bearer \(baseToken)"
         case .selectSubsidiary(_, let baseToken):
-            headers[.contentType] = ContentType.json.rawValue
             headers[.authorization] = "Bearer \(baseToken)"
         case .registerCompany(_, let providerToken):
-            headers[.contentType] = ContentType.json.rawValue
             headers[.authorization] = "Bearer \(providerToken)"
         case .registerInvitation(_, let scopedToken):
-            headers[.contentType] = ContentType.json.rawValue
             headers[.authorization] = "Bearer \(scopedToken)"
         case .refresh:
-            headers[.contentType] = ContentType.json.rawValue
+            headers[.contentType] = ContentType.json.rawValue//TODO: Mejorar esto
         }
         return headers
     }
@@ -77,6 +80,8 @@ extension FlorShopAuthApiRequest: NetworkRequest {
         case .auth(let provider, _):
             return ["provider": provider]
         case .getCompanies:
+            return nil
+        case .getSubsidiaries:
             return nil
         case .selectSubsidiary:
             return nil

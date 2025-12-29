@@ -61,12 +61,12 @@ struct CustomNumberField: View {
                             .disabled(disable)
                             .toolbar {
                                 if isInputActive {
-                                    ToolbarItemGroup(placement: .keyboard) {
-                                        CustomHideKeyboard(action: {
+                                    ToolbarItem(placement: .keyboard) {
+                                        CustomHideKeyboard {
                                             isInputActive = false
-                                        })
-                                        .frame(width: UIScreen.main.bounds.width)
+                                        }
                                     }
+//                                    ToolbarSpacer(.fixed, placement: .keyboard)
                                 }
                             }
                         if isInputActive {
@@ -78,7 +78,7 @@ struct CustomNumberField: View {
                                 }
                             }, label: {
                                 Image(systemName: "x.circle")
-                                    .foregroundColor(Color("color_accent"))
+                                    .foregroundColor(Color.accentColor)
                                     .font(.custom("Artifika-Regular", size: 16))
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 12)

@@ -1,20 +1,18 @@
 import SwiftUI
-//import FirebaseAuth
-
-//typealias MainRouter = FlorShopRouter2<FlowRoutes, SheetRoutes, AlertRoutes>
-//typealias SessionRouter = FlorShopRouter2<SessionRoutes, SheetRoutes, AlertRoutes>
 
 @main
 struct FlorShopApp: App {
+    @State private var overlay = OverlayViewModel()
     init() {
-//        FirebaseApp.configure() // Configura Firebase al inicializar la aplicación
-        KingfisherConfig.configureKingfisher()
+        KingfisherConfig.config()
+        GoogleSignConfig.config()
     }
     var body: some Scene {
         WindowGroup {
-            VersionCheckView()
+            OverlayContainer {
+                VersionCheckView()
+            }
+            .environment(overlay)
         }
     }
 }
-
-

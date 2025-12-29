@@ -15,7 +15,7 @@ struct SalesTopBar: View {
                             .foregroundColor(salesCoreDataViewModel.salesDateInterval == .diary ? Color.white : Color("color_primary"))
                             .frame(maxWidth: .infinity, alignment: .center)
                     })
-                    .background(salesCoreDataViewModel.salesDateInterval == .diary ? Color("color_accent") : Color.clear)
+                    .background(salesCoreDataViewModel.salesDateInterval == .diary ? Color.accentColor : Color.clear)
                     .cornerRadius(15)
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .diary
@@ -29,7 +29,7 @@ struct SalesTopBar: View {
                             .foregroundColor(salesCoreDataViewModel.salesDateInterval == .monthly ? Color.white : Color("color_primary"))
                             .frame(maxWidth: .infinity, alignment: .center)
                     })
-                    .background(salesCoreDataViewModel.salesDateInterval == .monthly ? Color("color_accent") : Color.clear)
+                    .background(salesCoreDataViewModel.salesDateInterval == .monthly ? Color.accentColor : Color.clear)
                     .cornerRadius(15)
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .monthly
@@ -43,7 +43,7 @@ struct SalesTopBar: View {
                             .foregroundColor(salesCoreDataViewModel.salesDateInterval == .yearly ? Color.white : Color("color_primary"))
                             .frame(maxWidth: .infinity, alignment: .center)
                     })
-                    .background(salesCoreDataViewModel.salesDateInterval == .yearly ? Color("color_accent") : Color.clear)
+                    .background(salesCoreDataViewModel.salesDateInterval == .yearly ? Color.accentColor : Color.clear)
                     .cornerRadius(15)
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .yearly
@@ -86,7 +86,7 @@ struct SalesTopBar: View {
             HStack(content: {
                 HStack(spacing: 0, content: {
                     Text("Hoy")
-                        .foregroundColor(Color("color_accent"))
+                        .foregroundColor(Color.accentColor)
                         .font(.custom("Artifika-Regular", size: 13))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 6)
@@ -100,7 +100,7 @@ struct SalesTopBar: View {
                 Spacer()
                 Image(systemName: "chevron.backward")
                     .frame(width: 50, height: 30)
-                    .foregroundColor(Color("color_accent"))
+                    .foregroundColor(Color.accentColor)
                     .font(.custom("Artifika-Regular", size: 24))
                     .padding(.vertical, 5)
                     .onTapGesture {
@@ -113,26 +113,26 @@ struct SalesTopBar: View {
                         Text(String(salesCoreDataViewModel.salesCurrentDateFilter.getDateComponent(dateComponent: .day)))
                         Text(salesCoreDataViewModel.salesCurrentDateFilter.getShortNameComponent(dateStringNameComponent: .month).capitalized + ".")
                     })
-                    .foregroundColor(Color("color_accent"))
+                    .foregroundColor(Color.accentColor)
                     .font(.custom("Artifika-Regular", size: 16))
                 case .monthly:
                     HStack(content: {
                         Text(salesCoreDataViewModel.salesCurrentDateFilter.getShortNameComponent(dateStringNameComponent: .month).capitalized + ".")
                         Text(String(salesCoreDataViewModel.salesCurrentDateFilter.getDateComponent(dateComponent: .year)))
                     })
-                    .foregroundColor(Color("color_accent"))
+                    .foregroundColor(Color.accentColor)
                     .font(.custom("Artifika-Regular", size: 16))
                 case .yearly:
                     HStack(content: {
                         Text(String(salesCoreDataViewModel.salesCurrentDateFilter.getDateComponent(dateComponent: .year)))
                     })
-                    .foregroundColor(Color("color_accent"))
+                    .foregroundColor(Color.accentColor)
                     .font(.custom("Artifika-Regular", size: 16))
                 }
                 Image(systemName: "chevron.backward")
                     .frame(width: 50, height: 30)
                     .rotationEffect(.degrees(180))
-                    .foregroundColor(Color("color_accent"))
+                    .foregroundColor(Color.accentColor)
                     .font(.custom("Artifika-Regular", size: 24))
                     .padding(.vertical, 5)
                     .onTapGesture {
@@ -141,7 +141,7 @@ struct SalesTopBar: View {
                 Spacer()
                 HStack(spacing: 0, content: {
                     Text("Hoy")
-                        .foregroundColor(Color("color_accent"))
+                        .foregroundColor(Color.accentColor)
                         .font(.custom("Artifika-Regular", size: 16))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 6)

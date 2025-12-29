@@ -85,23 +85,23 @@ extension FlorShopCoreApiRequest: NetworkRequest {
         headers[.contentType] = ContentType.json.rawValue
         switch self {
         case .saveCompany(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveCustomer(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .payCustomerDebt(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveEmployee(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveProduct(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .registerSale(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .register(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveSubsidiary(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .sync(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         }
         return headers
     }

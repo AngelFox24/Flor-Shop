@@ -3,6 +3,8 @@ import Foundation
 
 @Observable
 final class SessionContainer {
+    //Session Config
+    let session: SessionConfig
     //Main Context
     private let mainContext: NSManagedObjectContext
     //Services
@@ -40,6 +42,7 @@ final class SessionContainer {
     let imageRepository: ImageRepository
     let syncRepository: SyncRepository
     init(sessionConfig: SessionConfig) {
+        self.session = sessionConfig
         self.mainContext = FlorShopCoreDBProvider.shared.viewContext
         //MARK: Helpers
         self.fileManager = LocalImageFileManagerImpl()

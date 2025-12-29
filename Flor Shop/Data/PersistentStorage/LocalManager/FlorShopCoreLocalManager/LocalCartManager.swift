@@ -2,7 +2,8 @@ import Foundation
 import CoreData
 
 protocol LocalCartManager {
-    func getCart() throws -> Car?
+    func createCartIdNotExist() throws
+    func getCart() throws -> Car
     func deleteCartDetail(cartDetail: CartDetail) throws
     func addProductToCart(productIn: Product) throws
     func changeProductAmountInCartDetail(productCic: String, amount: Int) throws
@@ -20,8 +21,21 @@ class LocalCartManagerImpl: LocalCartManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
-    func getCart() throws -> Car? {
-        return try getCartEntity()?.toCar()
+    func createCartIdNotExist() throws {
+        guard let employeeSubsidiaryEntity = try self.sessionConfig.getEmployeeSubsidiaryEntityByCic(
+            context: self.mainContext,
+            employeeCic: self.sessionConfig.employeeCic
+        ) else {
+            throw LocalStorageError.entityNotFound("No se encontro el empleado en esta sucursal")
+        }
+        if let cartEntity = employeeSubsidiaryEntity.toCart {
+            return
+        } else {
+            try self.createCart()
+        }
+    }
+    func getCart() throws -> Car {
+        return try getCartEntity().toCar()
     }
     func deleteCartDetail(cartDetail: CartDetail) throws {
         guard let cartDetailEntity = try self.sessionConfig.getCartDetailEntityById(context: self.mainContext, cartDetailId: cartDetail.id) else {
@@ -32,12 +46,8 @@ class LocalCartManagerImpl: LocalCartManager {
         try saveData()
     }
     func addProductToCart(productIn: Product) throws {
-//        try ensureCartExist()
         var success: Bool = false
-        guard let cartEntity = try getCartEntity() else {
-            print("Empleado por defecto no tiene carrito")
-            throw LocalStorageError.entityNotFound("Empleado por defecto no tiene carrito")
-        }
+        let cartEntity = try getCartEntity()
         guard let productCic = productIn.productCic else {
             print("Product a agregar no tiene CIC")
             throw LocalStorageError.entityNotFound("Product a agregar no tiene CIC")
@@ -135,37 +145,22 @@ class LocalCartManagerImpl: LocalCartManager {
         newCart.toEmployeeSubsidiary = employeeSubsidiaryEntity
         try saveData()
     }
-    private func getCartEntity() throws -> Tb_Cart? {
-//        try ensureCartExist()
+    private func getCartEntity() throws -> Tb_Cart {
         guard let employeeSubsidiaryEntity = try self.sessionConfig.getEmployeeSubsidiaryEntityByCic(
             context: self.mainContext,
             employeeCic: self.sessionConfig.employeeCic
         ) else {
             throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
         }
-        return employeeSubsidiaryEntity.toCart
-    }
-    private func cartExist() throws -> Bool {
-        guard let employeeSubsidiaryEntity = try self.sessionConfig.getEmployeeSubsidiaryEntityByCic(
-            context: self.mainContext,
-            employeeCic: self.sessionConfig.employeeCic
-        ) else {
-            throw LocalStorageError.entityNotFound("No se encontro la subisidiaria")
+        guard let cartEntity = employeeSubsidiaryEntity.toCart else {
+            print("Empleado por defecto no tiene carrito")
+            throw LocalStorageError.entityNotFound("Empleado por defecto no tiene carrito")
         }
-        guard let _ = employeeSubsidiaryEntity.toCart else {
-            return false
-        }
-        return true
+        return cartEntity
     }
-//    private func ensureCartExist() throws {
-//        if try !cartExist() {
-//            try createCart()
-//        }
-//    }
     private func getCartDetail(productCic: String) throws -> Tb_CartDetail? {
-//        try ensureCartExist()
         let request: NSFetchRequest<Tb_CartDetail> = Tb_CartDetail.fetchRequest()
-        let predicate = NSPredicate(format: "toProductSubsidiary.productCic == %@", productCic)
+        let predicate = NSPredicate(format: "toProductSubsidiary.toProduct.productCic == %@", productCic)
         request.predicate = predicate
         request.fetchLimit = 1
         do {

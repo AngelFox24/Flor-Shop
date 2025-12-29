@@ -10,6 +10,8 @@ struct MainView: View {
             switch session.state {
             case .loggedOut:
                 WelcomeView()
+//            case .preLogIn(let companies):
+//                CompanySelectionView(companies: companies)
             case .loggedIn(let sessionConfig):
                 MainContendView(sessionConfig: sessionConfig)
             }
@@ -20,6 +22,7 @@ struct MainView: View {
 
 struct MainContendView: View {
     @Environment(\.scenePhase) var scenePhase
+    @Environment(OverlayViewModel.self) var overlayViewModel
     @State var webSocket: SyncWebSocketClient
     //TODO: Verificar si no perjudica a las vistar con el repintado
     let sessionContainer: SessionContainer
@@ -33,21 +36,57 @@ struct MainContendView: View {
                 .environment(sessionContainer)
                 .environment(webSocket)
         }
-        .onChange(of: scenePhase) { oldValue, newValue in
-            switch newValue {
-            case .active:
-                webSocket.connect()
-            case .inactive, .background:
-                print("[WebScoket] Se desconetará por: \(newValue)")
-                webSocket.disconnect()
-                print("[WebScoket] Desconectado")
-            default:
-                webSocket.disconnect()
+        .onAppear {
+            self.initialization()
+            self.connectWebSocket()
+        }
+//        .onChange(of: scenePhase) { oldValue, newValue in
+//            switch newValue {
+//            case .active:
+//                self.connectWebSocket()
+//            case .inactive,
+//                    .background:
+//                print("[WebScoket] Se desconetará por: \(newValue)")
+//                webSocket.disconnect()
+//                print("[WebScoket] Desconectado")
+//            default:
+//                webSocket.disconnect()
+//            }
+//        }
+    }
+    private func initialization() {
+        do {
+            try self.sessionContainer.cartRepository.createCartIdNotExist()
+        } catch {
+            self.overlayViewModel.showAlert(
+                title: "Error Websocket",
+                message: "Ha ocurrido un error en la incializacion.",
+                primary: AlertAction(title: "Aceptar", action: {})
+            )
+        }
+    }
+    private func connectWebSocket() {
+        Task {
+            do {
+                try await webSocket.connect(
+                    subdomain: self.sessionContainer.session.subdomain,
+                    subsidiaryCic: self.sessionContainer.session.subsidiaryCic
+                )
+            } catch {
+                self.overlayViewModel.showAlert(
+                    title: "Error Websocket",
+                    message: "Ha ocurrido un error en la sincronización.",
+                    primary: AlertAction(title: "Aceptar") {
+                        webSocket.disconnect()
+                    }
+                )
             }
         }
     }
 }
 
 #Preview {
+    @Previewable @State var overlayViewModel = OverlayViewModel()
     MainView()
+        .environment(overlayViewModel)
 }

@@ -1,12 +1,13 @@
 import SwiftUI
 
 struct SideMenuView: View {
+    @Environment(SessionManager.self) var sessionManager
     @Binding var menuTab: TabDestination
     let showMenu: () -> Void
     let navTabsIter: [TabDestination] = TabDestination.navTabs()
     var body: some View {
             ZStack {
-                Color.accent
+                Color.accentColor
                     .ignoresSafeArea()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 15, content: {
@@ -40,7 +41,11 @@ struct SideMenuView: View {
                         })
                         Spacer()
                         VStack(alignment: .leading, spacing: 5, content: {
-                            //TabButton(tab: MenuTab.logOut, selectedTab: $selectedTab, showMenu: $showMenu)
+                            Button {
+                                self.sessionManager.logout()
+                            } label: {
+                                LogoutButtonView()
+                            }
                             Text("App Version 2.0.2")
                                 .font(.caption)
                                 .fontWeight(.semibold)

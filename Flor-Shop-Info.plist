@@ -2,6 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.648840386734-v3sog1pcvqd9a0v4aak8i418bd5n1uf2</string>
+			</array>
+		</dict>
+	</array>
+	<key>GIDClientID</key>
+	<string>648840386734-v3sog1pcvqd9a0v4aak8i418bd5n1uf2.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>648840386734-g3ndgfbuk1cin8auqllqum4iug1jdlpo.apps.googleusercontent.com</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Artifika-Regular.ttf</string>
@@ -13,8 +28,6 @@
 		<key>UIImageRespectsSafeAreaInsets</key>
 		<true/>
 	</dict>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Esta app necesita acceder a la red local para conectarse al servidor.</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

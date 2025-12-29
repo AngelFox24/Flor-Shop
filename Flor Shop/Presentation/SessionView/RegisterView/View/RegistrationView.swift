@@ -66,7 +66,7 @@ struct RegistrationView: View {
                         }
                         .padding(.horizontal, 30)
                         Button(action: registerUser) {
-                            CustomButton2(text: "Registrar", backgroudColor: Color("color_accent"), minWidthC: 250)
+                            CustomButton2(text: "Registrar", backgroudColor: Color.accentColor, minWidthC: 250)
                                 .foregroundColor(Color(.black))
                         }
                     }

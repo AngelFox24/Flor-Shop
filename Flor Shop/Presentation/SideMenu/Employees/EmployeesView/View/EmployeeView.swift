@@ -9,15 +9,20 @@ struct EmployeeView: View {
         self.showMenu = showMenu
     }
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-//                ProductSearchTopBar(showMenu: $showMenu, productViewModel: $pro)
-                EmployeeListController(employeeViewModel: $employeeViewModel)
+        //                ProductSearchTopBar(showMenu: $showMenu, productViewModel: $pro)
+        EmployeeListController(employeeViewModel: $employeeViewModel)
+            .navigationTitle("Empleados")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $employeeViewModel.searchText, placement: .toolbar)
+            .searchToolbarBehavior(.minimize)
+            .toolbar {
+                LogoToolBar(action: showMenu)
+//                ProductTopToolbar(productViewModel: $productViewModel, badge: nil)
+                MainBottomToolbar(destination: .addCustomer)
             }
             .onAppear {
                 employeeViewModel.lazyFetchList()
             }
-        }
     }
 }
 
@@ -42,23 +47,24 @@ struct EmployeeListController: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-            List {
-                ForEach(employeeViewModel.employeeList) { employee in
-                    let _ = print("Empleado: \(employee.name)")
-                    CardViewTipe1(
-                        imageUrl: employee.imageUrl,
-                        topStatusColor: .green,
-                        topStatus: "Falta de estatus",
-                        mainText: employee.name + " " + (employee.lastName ?? ""),
-                        secondaryText: "Falta",
-                        size: 80
-                    )
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                    .listRowBackground(Color.background)
+                List {
+                    ForEach(employeeViewModel.employeeList) { employee in
+                        let _ = print("Empleado: \(employee.name)")
+                        CardViewTipe1(
+                            imageUrl: employee.imageUrl,
+                            topStatusColor: .green,
+                            topStatus: "Falta de estatus",
+                            mainText: employee.name + " " + (employee.lastName ?? ""),
+                            secondaryText: "Falta",
+                            size: 80
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                        .listRowBackground(Color.background)
+                    }
                 }
-            }
-            .listStyle(PlainListStyle())
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                .listStyle(PlainListStyle())
             }
         }
         .padding(.horizontal, 10)

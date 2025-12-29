@@ -3,6 +3,7 @@ import PhotosUI
 
 struct AddProductView: View {
     @Environment(FlorShopRouter.self) private var router
+    @Environment(OverlayViewModel.self) private var overlayViewModel
     @State var agregarViewModel: AgregarViewModel
     let productCic: String?
     init(ses: SessionContainer) {
@@ -17,40 +18,49 @@ struct AddProductView: View {
         self.productCic = productCic
     }
     var body: some View {
-        ZStack {
-            CamposProductoAgregar(agregarViewModel: $agregarViewModel)
-            VStack(spacing: 0) {
-                AgregarTopBar(backAction: router.back, saveAction: saveProduct)
-                Spacer()
+        CamposProductoAgregar(agregarViewModel: $agregarViewModel)
+            .navigationTitle(productCic == nil ? "Agregar" : "Editar")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                MainConfirmationToolbar(disabled: false, action: saveProduct)
             }
-        }
-        .padding(.horizontal, 10)
-        .background(Color.background)
-        .task {
-            guard let productCic else { return }
-            try? await agregarViewModel.loadProduct(productCic: productCic)
-        }
+            .background(Color.background)
+            .task {
+                guard let productCic else { return }
+                try? await agregarViewModel.loadProduct(productCic: productCic)
+            }
     }
     private func saveProduct() {
+        let loadingId = self.overlayViewModel.showLoading()
         Task {
             do {
                 try await agregarViewModel.addProduct()
-//                await productViewModel.releaseResources()
-//                playSound(named: "Success1")
+                self.overlayViewModel.endLoading(id: loadingId)
             } catch {
-//                router.presentAlert(.error(error.localizedDescription))
-//                playSound(named: "Fail1")
+                print("[AddProductView] Ha ocurrido un error: \(error)")
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ha ocurrido un error al guardar.",
+                    primary: AlertAction(
+                        title: "Aceptar",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId)
+                        }
+                    )
+                )
             }
         }
     }
 }
 
 #Preview {
+    @Previewable @State var overlayViewModel = OverlayViewModel()
     @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
     let session = SessionContainer.preview
     AddProductView(ses: SessionContainer.preview)
         .environment(mainRouter)
         .environment(session)
+        .environment(overlayViewModel)
 }
 
 struct ErrorMessageText: View {
@@ -123,7 +133,7 @@ struct CamposProductoAgregar: View {
                         } label: {
                             Image(systemName: "barcode.viewfinder")
                                 .font(.largeTitle)
-                                .foregroundStyle(Color("color_accent"))
+                                .foregroundStyle(Color.accentColor)
                                 .padding(.horizontal, 5)
                         }
                         .sheet(isPresented: $agregarViewModel.agregarFields.isShowingScanner) {
@@ -131,7 +141,7 @@ struct CamposProductoAgregar: View {
                                 agregarViewModel.agregarFields.scannedCode = code
                                 agregarViewModel.agregarFields.isShowingScanner = false
                             }
-                            .presentationDetents([.height(CGFloat(UIScreen.main.bounds.height / 3))])
+                            .presentationDetents([.large])
                         }
                     }
                 }
@@ -163,7 +173,7 @@ struct CamposProductoAgregar: View {
                         }
                         Toggle("", isOn: $agregarViewModel.agregarFields.active)
                             .labelsHidden()
-                            .toggleStyle(SwitchToggleStyle(tint: Color("color_accent")))
+                            .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
                             .padding(.horizontal, 5)
                     }
                 }
@@ -195,11 +205,8 @@ struct CamposProductoAgregar: View {
                     }
                 }
             }
-            .padding(.top, 10)
         }
-        .safeAreaInset(edge: .top) {
-            Color.clear.frame(height: 32) // margen superior
-        }
+        .padding(.horizontal, 10)
     }
     private func findImageOnInternet() {
         agregarViewModel.findProductNameOnInternet()

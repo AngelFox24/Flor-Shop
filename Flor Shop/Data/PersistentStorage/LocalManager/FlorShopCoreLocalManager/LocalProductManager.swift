@@ -85,7 +85,7 @@ class LocalProductManagerImpl: LocalProductManager {
         
         var predicate1 = NSPredicate(format: "toSubsidiary.subsidiaryCic == %@", self.sessionConfig.subsidiaryCic)
         if seachText != "" {
-            predicate1 = NSPredicate(format: "productName CONTAINS[c] %@ AND toSubsidiary.subsidiaryCic == %@", seachText, self.sessionConfig.subsidiaryCic)
+            predicate1 = NSPredicate(format: "toProduct.productName CONTAINS[c] %@ AND toSubsidiary.subsidiaryCic == %@", seachText, self.sessionConfig.subsidiaryCic)
         }
         let predicate2 = getFilterAtribute(filter: filterAttribute)
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: [predicate1, predicate2])
@@ -290,12 +290,12 @@ class LocalProductManagerImpl: LocalProductManager {
         context.rollback()
     }
     private func getOrderFilter(order: PrimaryOrder) -> NSSortDescriptor {
-        var sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
+        var sortDescriptor = NSSortDescriptor(key: "toProduct.productName", ascending: true)
         switch order {
         case .nameAsc:
-            sortDescriptor = NSSortDescriptor(key: "productName", ascending: true)
+            sortDescriptor = NSSortDescriptor(key: "toProduct.productName", ascending: true)
         case .nameDesc:
-            sortDescriptor = NSSortDescriptor(key: "productName", ascending: false)
+            sortDescriptor = NSSortDescriptor(key: "toProduct.productName", ascending: false)
         case .priceAsc:
             sortDescriptor = NSSortDescriptor(key: "unitPrice", ascending: true)
         case .priceDesc:

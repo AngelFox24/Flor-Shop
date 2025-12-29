@@ -56,14 +56,15 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
         self.employeeRepository = employeeRepository
         self.productRepository = productRepository
         self.saleRepository = saleRepository
-        self.productSubsidiaryRepository = saleRepository
-        self.employeeSubsidiaryRepository = saleRepository
+        self.productSubsidiaryRepository = productSubsidiaryRepository
+        self.employeeSubsidiaryRepository = employeeSubsidiaryRepository
         self.syncRepository = syncRepository
     }
     
     func sync(globalSyncToken: Int64, branchSyncToken: Int64) async throws -> (globalSyncToken: Int64, branchSyncToken: Int64) {// 0.231891 segundos aprox ??????
         //            let clock = ContinuousClock()
         //            let start = clock.now
+        print("[SynchronizerDBInteractor] Syncrhonizando...")
         let backgroundTaskContext = self.persistentContainer.newBackgroundContext()
         backgroundTaskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         backgroundTaskContext.undoManager = nil

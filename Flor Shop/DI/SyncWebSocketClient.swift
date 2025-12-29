@@ -53,25 +53,31 @@ final class SyncWebSocketClient {
             latestBranchToken: lastTokenByEntities.maxBranchToken
         )
     }
-    func connect() {
+    func connect(subdomain: String, subsidiaryCic: String) async throws {
         if let task = webSocketTask,
            task.state == .running {
             print("\(logPrefix) ⚠️ WebSocket ya está conectado")
             return
         }
-
-        guard let url = URL(string: "\(AppConfig.florShopCoreWSBaseURL)/sync/ws") else {
-            print("\(logPrefix) URL inválida")
+        let baseUrl = AppConfig.florShopCoreWSBaseURL
+        let newUrl = baseUrl.replacingOccurrences(of: "{subdomain}", with: subdomain)
+        guard let url = URL(string: "\(newUrl)/sync/ws") else {
+            print("\(logPrefix) URL inválida: \(AppConfig.florShopCoreWSBaseURL)/sync/ws")
             return
         }
-
-        webSocketTask = urlSession.webSocketTask(with: url)
+        guard let scopedToken = try? await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
+            print("\(logPrefix) ⚠️ No hay scoped token para la sucursal: \(subsidiaryCic)")
+            return
+        }
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(scopedToken.accessToken)", forHTTPHeaderField: "Authorization")
+        webSocketTask = urlSession.webSocketTask(with: request)
         webSocketTask?.resume()
         
         isConnected = true // ✅ Se actualiza estado
         
-        listen()
-        print("\(logPrefix) 🔗 WebSocket conectado")
+        print("\(logPrefix) 🟢 WebSocket conectado")
+        try await listen()
     }
     
     func disconnect() {
@@ -81,47 +87,38 @@ final class SyncWebSocketClient {
         print("\(logPrefix) 🔴 WebSocket desconectado")
     }
     
-    private func listen() {
-        webSocketTask?.receive { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .failure(let error):
-                self.handleWebSocketError(error)
-            case .success(let message):
-                switch message {
-                case .string(let text):
-                    print("\(self.logPrefix) Mensaje recibido: \(text)")
-                    if let lastToken = self.parseSyncToken(from: text) {//TODO: Fix this with new tokens
-                        Task {
-                            await self.syncManager.handleNewToken(globalSyncToken: lastToken.globalToken, branchSyncToken: lastToken.branchToken)
-                            let newTokens = await self.syncManager.getLastTokenByEntities()
-                            await MainActor.run {
-                                self.lastTokenByEntities = newTokens
-                            }
-                        }
-                    }
-                case .data(let data):
-                    print("\(self.logPrefix) Mensaje binario recibido, tamaño: \(data.count)")
-                @unknown default:
-                    print("\(self.logPrefix) Mensaje desconocido recibido")
+    private func listen() async throws {
+        let result = try await webSocketTask?.receive()
+        switch result {
+        case .data(let data):
+            print("\(self.logPrefix) Mensaje binario recibido, tamaño: \(data.count)")
+        case .string(let text):
+            print("\(self.logPrefix) Mensaje recibido: \(text)")
+            if let lastToken = self.parseSyncToken(from: text) {
+                try await self.syncManager.handleNewToken(globalSyncToken: lastToken.globalToken, branchSyncToken: lastToken.branchToken)
+                let newTokens = await self.syncManager.getLastTokenByEntities()
+                await MainActor.run {
+                    self.lastTokenByEntities = newTokens
                 }
             }
-            
-            // Volver a escuchar
-            self.listen()
+        case .none, .some(_):
+            print("\(self.logPrefix) Mensaje desconocido recibido")
         }
+        try await self.listen()
     }
     
     private func handleWebSocketError(_ error: Error) {
-        print("\(self.logPrefix) Error recibiendo mensaje: \(error)")
+        print("\(logPrefix) Error recibiendo mensaje: \(error)")
 
-        if let nsError = error as NSError? {
-            self.retryByCode[nsError.code, default: 0] += 1
-            if self.retryByCode[nsError.code, default: 0] < 5 {
-                print("\(self.logPrefix) Desconectado por muchos reintentos del error \(nsError.code)")
-                self.disconnect()
-                self.retryByCode[nsError.code] = 0
-            }
+        guard let nsError = error as NSError? else { return }
+
+        let retries = (retryByCode[nsError.code] ?? 0) + 1
+        retryByCode[nsError.code] = retries
+
+        if retries >= 5 {
+            print("\(logPrefix) Demasiados errores (\(nsError.code)), cerrando socket")
+            retryByCode[nsError.code] = 0
+            disconnect()
         }
     }
     

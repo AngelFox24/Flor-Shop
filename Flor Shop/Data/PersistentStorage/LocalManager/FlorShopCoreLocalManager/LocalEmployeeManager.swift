@@ -57,6 +57,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 employeeEntity.createdAt = employeeDTO.createdAt
                 employeeEntity.updatedAt = employeeDTO.updatedAt
                 try saveData(context: backgroundContext)
+                print("\(className) Se creo el empleado")
             } else {
                 guard let companyEntity = try self.sessionConfig.getCompanyEntityByCic(context: backgroundContext, companyCic: employeeDTO.companyCic) else {
                     rollback(context: backgroundContext)
@@ -65,7 +66,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 }
                 //Create Employee
                 let newEmployeeEntity = Tb_Employee(context: backgroundContext)
-                newEmployeeEntity.employeeCic = UUID().uuidString
+                newEmployeeEntity.employeeCic = employeeDTO.employeeCic
                 newEmployeeEntity.name = employeeDTO.name
                 newEmployeeEntity.lastName = employeeDTO.lastName
                 newEmployeeEntity.imageUrl = employeeDTO.imageUrl
@@ -76,6 +77,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
                 newEmployeeEntity.createdAt = employeeDTO.createdAt
                 newEmployeeEntity.updatedAt = employeeDTO.updatedAt
                 try saveData(context: backgroundContext)
+                print("\(className) Se actualizo el empleado")
             }
         }
     }
@@ -133,7 +135,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         }
     }
     func getEmployees() -> [Employee] {
-        let filterAtt = NSPredicate(format: "toEmployee.toSubsidiary.subsidiaryCic == %@", self.sessionConfig.subsidiaryCic)
+        let filterAtt = NSPredicate(format: "toSubsidiary.subsidiaryCic == %@", self.sessionConfig.subsidiaryCic)
         let request: NSFetchRequest<Tb_EmployeeSubsidiary> = Tb_EmployeeSubsidiary.fetchRequest()
         request.predicate = filterAtt
         do {

@@ -17,7 +17,7 @@ struct TabButton: View {
                     .frame(minWidth: 50)
                 Text(tab.description)
             }
-            .foregroundColor(selectedTab == tab ? Color.accent : Color(.white))
+            .foregroundColor(selectedTab == tab ? Color.accentColor : Color(.white))
             .padding(.vertical, 12)
             .padding(.horizontal, 10)
             .frame(maxWidth: getRect().width - 200, alignment: .leading)
@@ -31,6 +31,21 @@ struct TabButton: View {
                 }
             )
         }
+    }
+}
+
+struct LogoutButtonView: View {
+    var body: some View {
+            HStack(spacing: 10) {
+                Image(systemName: "iphone.and.arrow.right.outward")
+                    .font(.title2)
+                    .frame(minWidth: 50)
+                Text("Cerrar sesión")
+            }
+            .foregroundColor(Color(.white))
+            .padding(.vertical, 12)
+            .padding(.horizontal, 10)
+            .frame(maxWidth: getRect().width - 200, alignment: .leading)
     }
 }
 

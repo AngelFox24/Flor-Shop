@@ -2,6 +2,7 @@ import Foundation
 import CoreData
 
 protocol CarRepository {
+    func createCartIdNotExist() throws
     func getCart() throws -> Car?
     func deleteCartDetail(cartDetail: CartDetail) throws
     func addProductoToCarrito(product: Product) throws
@@ -15,6 +16,9 @@ class CarRepositoryImpl: CarRepository {
         localManager: LocalCartManager
     ) {
         self.localManager = localManager
+    }
+    func createCartIdNotExist() throws {
+        try self.localManager.createCartIdNotExist()
     }
     func getCart() throws -> Car? {
         return try self.localManager.getCart()

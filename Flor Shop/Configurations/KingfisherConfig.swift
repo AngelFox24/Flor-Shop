@@ -1,7 +1,7 @@
 import Kingfisher
 
 enum KingfisherConfig {
-    static func configureKingfisher() {
+    static func config() {
         let cache = ImageCache.default
         
         // Memoria

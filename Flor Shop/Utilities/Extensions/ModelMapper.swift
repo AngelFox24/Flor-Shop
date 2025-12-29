@@ -45,7 +45,9 @@ extension Tb_ProductSubsidiary {
             qty: Int(quantityStock),
             unitType: unitTypeEnum,
             unitCost: Money(Int(unitCost)),
-            unitPrice: Money(Int(unitPrice))
+            unitPrice: Money(Int(unitPrice)),
+            expirationDate: expirationDate,
+            imageUrl: product.imageUrl
         )
     }
 }

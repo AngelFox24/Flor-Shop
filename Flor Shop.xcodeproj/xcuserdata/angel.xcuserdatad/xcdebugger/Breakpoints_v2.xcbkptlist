@@ -7,64 +7,64 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EAAA575B-E68A-4A67-A64E-AEB2A0D31C09"
+            uuid = "D6BB2BBB-8D5F-414A-9B2B-EC2EE0A8B931"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Flor Shop/Presentation/SideMenu/PointOfSale/SaleProductView/View/SaleProductView.swift"
+            filePath = "Flor Shop/Utilities/Extensions/ModelMapper.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
-            landmarkName = "body"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "44B6056B-5E79-4749-9D6F-4A131A402B94"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Flor Shop/Presentation/SideMenu/PointOfSale/SaleProductView/ViewModel/ProductViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
-            landmarkName = "updateCurrentList(newToken:)"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "toProductModel()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0CF808E9-9553-4901-8B2A-1093B642CFF1"
+            uuid = "5F353B30-95C2-4613-9E28-A118363120C9"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Flor Shop/Presentation/SideMenu/PointOfSale/SaleProductView/View/SaleProductView.swift"
+            filePath = "Flor Shop/Presentation/SessionView/WelcomeView/GoogleSingInButton.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "handleSignInButton()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6935DB2D-7182-4929-B93E-7B61CC13BE15"
+            uuid = "B645497F-7E72-4681-B09A-0DD07E35A4A6"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Flor Shop/Presentation/SideMenu/PointOfSale/SaleProductView/ViewModel/ProductViewModel.swift"
+            filePath = "Flor Shop/Presentation/SessionView/CompanySelectionView/View/CompanySelectionView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
-            landmarkName = "lazyFetchProducts()"
+            startingLineNumber = "15"
+            endingLineNumber = "15"
+            landmarkName = "init(provider:token:path:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FE672088-29FD-4B81-A3B0-27FED322C745"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Flor Shop/Presentation/SessionView/CompanySelectionView/View/CompanySelectionView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "loadInfo()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

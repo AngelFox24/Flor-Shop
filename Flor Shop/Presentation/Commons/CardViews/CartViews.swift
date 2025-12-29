@@ -40,7 +40,7 @@ struct CardViewTipe1: View {
                 .padding(.horizontal, 8)
                 HStack{
                     Image(systemName: "chevron.backward")
-                        .foregroundColor(Color("color_accent"))
+                        .foregroundColor(Color.accentColor)
                         .font(.custom("Artifika-Regular", size: 22))
                         .rotationEffect(.degrees(180))
                         .padding(.horizontal, 12)
@@ -160,8 +160,8 @@ struct CardViewTipe3: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 12, height: 12)
                                 .padding(8)
-                                .foregroundColor(Color("color_accent"))
-                                .background(Color("color_secondary"))
+                                .foregroundColor(Color.accentColor)
+                                .background(Color.secondary)
                                 .clipShape(Circle())
                         })
                         .highPriorityGesture(TapGesture().onEnded {
@@ -173,7 +173,7 @@ struct CardViewTipe3: View {
                                 .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.vertical, 2)
                                 .padding(.horizontal, 10)
-                                .background(Color("color_secondary"))
+                                .background(Color.secondary)
                                 .cornerRadius(20)
                         }
                         Button(action: {}, label: {
@@ -183,8 +183,8 @@ struct CardViewTipe3: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 12, height: 12)
                                 .padding(8)
-                                .foregroundColor(Color("color_accent"))
-                                .background(Color("color_secondary"))
+                                .foregroundColor(Color.accentColor)
+                                .background(Color.secondary)
                                 .clipShape(Circle())
                         })
                         .highPriorityGesture(TapGesture().onEnded {
@@ -233,7 +233,7 @@ struct CardViewTipe4: View {
             Spacer()
         })
         .frame(width: 80, height: 80)
-        .background(enable ? Color("color_accent") : Color(.white))
+        .background(enable ? Color.accentColor : Color.white)
         .cornerRadius(15)
     }
 }
@@ -302,7 +302,7 @@ struct CardViews_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 10,
                content: {
-//            CardViewTipe1(image: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
+            CardViewTipe1(imageUrl: nil, topStatusColor: Color(.red), topStatus: "Manager", mainText: "Pedro Gonzales", secondaryText: "Flor Shop - Santa Anita", size: 80)
 //            CardViewTipe2(id: nil, url: nil, topStatusColor: Color.red, topStatus: "Manager", mainText: "Carlos", mainIndicatorPrefix: "S/. ", mainIndicator: "23.00", mainIndicatorAlert: false, secondaryIndicatorSuffix: " u", secondaryIndicator: "3", secondaryIndicatorAlert: true, size: 80)
             let cartDetail = CartDetail(
                 id: UUID(),

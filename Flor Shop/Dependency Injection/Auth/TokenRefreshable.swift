@@ -22,7 +22,7 @@ struct TokenRefreshable: Sendable, Codable {
     }
     func refreshToken() async throws -> Self {
         guard let refreshToken else { throw NetworkError.dataNotFound }
-        let request = FlorShopAuthApiRequest.refresh(request: RefreshTokenRequest(refreshToken: accessToken, identifier: identifier))
+        let request = FlorShopAuthApiRequest.refresh(request: RefreshTokenRequest(refreshToken: refreshToken, identifier: identifier))
         let response = try await NetworkManager.shared.perform(request, decodeTo: ScopedTokenResponse.self)
         let token = TokenRefreshable(
             id: id,

@@ -1,7 +1,7 @@
 import Foundation
 
 @Observable
-class ProductViewModel {
+final class ProductViewModel {
     var productsCoreData: [Product] = []
     var counter: Int = 0
     var searchText: String = "" {
@@ -51,6 +51,7 @@ class ProductViewModel {
     }
     //New, TODO: verificar si no hay problemas con el scroll
     func updateCurrentList(newToken: Int64) async {
+        print("[ProductViewModel] Se obtuvo un nuevo token: \(newToken)")
         guard let lastPage = self.currentPagesInScreen.last?[0] else { return }
         if lastToken < newToken {
             let productsUpdated = self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: lastPage)

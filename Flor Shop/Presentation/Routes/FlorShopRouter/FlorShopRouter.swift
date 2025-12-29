@@ -37,11 +37,11 @@ final class FlorShopRouter {
         self.identifierTab = identifierTab
         self.parent = nil
 
-        logger.debug("\(self.debugDescription) initialized")
+//        logger.debug("\(self.debugDescription) initialized")
     }
 
     deinit {
-        logger.debug("\(self.debugDescription) cleared")
+//        logger.debug("\(self.debugDescription) cleared")
     }
 
     private func resetContent() {
@@ -61,13 +61,13 @@ extension FlorShopRouter {
     }
 
     func setActive() {
-        logger.debug("\(self.debugDescription): \(#function)")
+//        logger.debug("\(self.debugDescription): \(#function)")
         parent?.resignActive()
         isActive = true
     }
 
     func resignActive() {
-        logger.debug("\(self.debugDescription): \(#function)")
+//        logger.debug("\(self.debugDescription): \(#function)")
         isActive = false
         parent?.setActive()
     }
@@ -81,7 +81,7 @@ extension FlorShopRouter {
 
 extension FlorShopRouter {
     func back() {
-        logger.debug("\(self.debugDescription): \(#function)")
+//        logger.debug("\(self.debugDescription): \(#function)")
         guard !navigationStackPath.isEmpty else { return }
         navigationStackPath.removeLast()
     }
@@ -118,19 +118,19 @@ extension FlorShopRouter {
     }
     //TODO: Add sheet destionations
     func present(sheet destination: SheetDestination) {
-        logger.debug("\(self.debugDescription): \(#function) \(destination)")
+//        logger.debug("\(self.debugDescription): \(#function) \(destination)")
         presentingSheet = destination
     }
     //TODO: Add fullScreen destionations
     func present(fullScreen destination: FullScreenDestination) {
-        logger.debug("\(self.debugDescription): \(#function) \(destination)")
+//        logger.debug("\(self.debugDescription): \(#function) \(destination)")
         presentingFullScreen = destination
     }
 
     func deepLinkOpen(to destination: Destination) {
         guard isActive else { return }
 
-        logger.debug("\(self.debugDescription): \(#function) \(destination)")
+//        logger.debug("\(self.debugDescription): \(#function) \(destination)")
         navigate(to: destination)
     }
 }

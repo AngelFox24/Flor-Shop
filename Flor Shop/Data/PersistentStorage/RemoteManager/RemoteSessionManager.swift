@@ -4,8 +4,44 @@ import FlorShopDTOs
 protocol RemoteSessionManager {
     func login(provider: AuthProvider, token: String) async throws
     func getCompanies() async throws -> [CompanyResponseDTO]
+    func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO]
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
+}
+
+final class RemoteSessionManagerMock: RemoteSessionManager {
+    func login(provider: AuthProvider, token: String) async throws {}
+    func getCompanies() async throws -> [CompanyResponseDTO] {
+        [.init(
+            company_cic: UUID().uuidString,
+            name: "Mock Company 1",
+            subdomain: "Mock Subdomain 1",
+            is_company_owner: true
+        )]
+    }
+    func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO] {
+        [.init(
+            subsidiary_cic: UUID().uuidString,
+            name: "Mock Subsidiary 1",
+            subsidiary_role: .cashier
+        )]
+    }
+    func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
+        return SessionConfig(
+            subdomain: "Mock subdomain",
+            companyCic: UUID().uuidString,
+            subsidiaryCic: UUID().uuidString,
+            employeeCic: UUID().uuidString
+        )
+    }
+    func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
+        return SessionConfig(
+            subdomain: "Mock subdomain",
+            companyCic: UUID().uuidString,
+            subsidiaryCic: subsidiaryCic,
+            employeeCic: UUID().uuidString
+        )
+    }
 }
 
 final class RemoteSessionManagerImpl: RemoteSessionManager {
@@ -30,6 +66,14 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
         }
         let request = FlorShopAuthApiRequest.getCompanies(baseToken: baseToken.accessToken)
         let data: [CompanyResponseDTO] = try await NetworkManager.shared.perform(request, decodeTo: [CompanyResponseDTO].self)
+        return data
+    }
+    func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO] {
+        guard let baseToken = try await TokenManager.shared.getToken(identifier: .baseToken) else {
+            throw NetworkError.dataNotFound
+        }
+        let request = FlorShopAuthApiRequest.getSubsidiaries(companyCic: companyCic, baseToken: baseToken.accessToken)
+        let data: [SubsidiaryResponseDTO] = try await NetworkManager.shared.perform(request, decodeTo: [SubsidiaryResponseDTO].self)
         return data
     }
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {

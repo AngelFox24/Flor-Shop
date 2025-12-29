@@ -17,7 +17,7 @@ struct TypeUnitView: View {
                 HStack {
                     HStack {
                         Image(systemName: value == .unit ? "circle.inset.filled" : "circle")
-                            .foregroundStyle(Color.accent)
+                            .foregroundStyle(Color.accentColor)
                             .font(.system(size: 30))
                     }
                     Text("Unidad")
@@ -33,7 +33,7 @@ struct TypeUnitView: View {
                 HStack {
                     HStack {
                         Image(systemName: value == .unit ? "circle" : "circle.inset.filled")
-                            .foregroundStyle(Color.accent)
+                            .foregroundStyle(Color.accentColor)
                             .font(.system(size: 30))
                     }
                     Text("Kilogramo")

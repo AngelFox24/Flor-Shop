@@ -18,7 +18,7 @@ struct CustomerHistoryTopBar: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
                 .foregroundColor(Color.background)
-                .background(Color.accent)
+                .background(Color.accentColor)
                 .clipShape(RoundedRectangle(cornerRadius: 15))
             }
             if let customer = customer {

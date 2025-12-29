@@ -7,18 +7,15 @@ struct CartView: View {
         cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: ses)
     }
     var body: some View {
-        ZStack {
-            ListCartController(cartViewModel: $cartViewModel, backAction: router.back)
-            VStack(spacing: 0) {
-                CartTopBar(cartViewModel: $cartViewModel, backAction: router.back)
-                Spacer()
+        ListCartController(cartViewModel: $cartViewModel, backAction: router.back)
+            .padding(.horizontal, 10)
+            .background(Color.background)
+            .toolbar {
+                CartTopToolbar(cartViewModel: $cartViewModel)
             }
-        }
-        .padding(.horizontal, 10)
-        .background(Color.background)
-        .task {
-            await cartViewModel.lazyFetchCart()
-        }
+            .task {
+                await cartViewModel.lazyFetchCart()
+            }
     }
 }
 
@@ -34,33 +31,44 @@ struct ListCartController: View {
     var body: some View {
         VStack(spacing: 0) {
             if let cart = cartViewModel.cartCoreData {
-                HStack(spacing: 0) {
-                    List {
-                        ForEach(cart.cartDetails) { cartDetail in
-                            CardViewTipe3(
-                                cartDetail: cartDetail,
-                                size: 80,
-                                decreceProductAmount: decreceProductAmount,
-                                increaceProductAmount: increaceProductAmount
-                            )
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color.background)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive, action: {
-                                    deleteCartDetail(cartDetail: cartDetail)
-                                }, label: {
-                                    Image(systemName: "trash")
-                                })
-                                .tint(Color.accent)
-                            }
+                List {
+                    ForEach(cart.cartDetails) { cartDetail in
+                        CardViewTipe3(
+                            cartDetail: cartDetail,
+                            size: 80,
+                            decreceProductAmount: decreceProductAmount,
+                            increaceProductAmount: increaceProductAmount
+                        )
+                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                        .listRowBackground(Color.background)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive, action: {
+                                deleteCartDetail(cartDetail: cartDetail)
+                            }, label: {
+                                Image(systemName: "trash")
+                            })
+                            .tint(Color.accentColor)
                         }
-                        .listRowSeparator(.hidden)
                     }
-                    .safeAreaInset(edge: .top) {
-                        Color.clear.frame(height: 32) // margen superior
+                    .listRowSeparator(.hidden)
+                }
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                .listStyle(PlainListStyle())
+                .safeAreaBar(edge: .bottom, alignment: .center) {
+                    HStack {
+                        Text("Total:")
+                        Spacer()
+                        Text(String("S/. "))
+                            .font(.custom("Artifika-Regular", size: 15))
+                        let total = cartViewModel.cartCoreData?.total.solesString ?? "0"
+                        Text(total)
+                            .font(.custom("Artifika-Regular", size: 20))
                     }
-                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
-                    .listStyle(PlainListStyle())
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.bottom, 10)
                 }
             } else {
                 VStack {

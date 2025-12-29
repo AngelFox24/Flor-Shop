@@ -54,8 +54,8 @@ private struct InnerContainer<Content: View>: View {
             content()
                 .navigationDestination(for: PushDestination.self) { destination in
                     view(for: destination)
-                        .navigationBarTitleDisplayMode(.inline)
-                        .navigationBarBackButtonHidden(true)
+//                        .navigationBarTitleDisplayMode(.inline)
+//                        .navigationBarBackButtonHidden(true)
                 }
         }
         // it's important that the these modifiers are **outside** the `NavigationStack`

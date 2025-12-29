@@ -12,26 +12,33 @@ struct SaleProductView: View {
         self.showMenu = showMenu
     }
     var body: some View {
-        ZStack {
-            ListaControler(viewModel: productViewModel)
-            VStack {
-                ProductSearchTopBar(productViewModel: $productViewModel, showMenu: showMenu)
-                Spacer()
-                BottomBar(findText: $productViewModel.searchText, addDestination: .addProduct)
+        SaleListProductView(viewModel: productViewModel)
+            .navigationTitle("Productos")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $productViewModel.searchText, placement: .toolbar)
+            .searchToolbarBehavior(.minimize)
+            .toolbar {
+                LogoToolBar(action: showMenu)
+                ProductTopToolbar(productViewModel: $productViewModel, badge: nil)
+                MainBottomToolbar(destination: .addProduct)
             }
-            .padding(.horizontal, 10)
-        }
-        .onChange(of: syncManager.lastTokenByEntities.product) { _, newValue in
-            Task {
-                await productViewModel.updateCurrentList(newToken: newValue)
+            .onChange(of: syncManager.lastTokenByEntities.product) { _, newValue in
+                Task {
+                    await productViewModel.updateCurrentList(newToken: newValue)
+                }
             }
-        }
-        .task {
-            await productViewModel.lazyFetchProducts()
-        }
+            .onChange(of: syncManager.lastTokenByEntities.productSubsidiary) { _, newValue in
+                Task {
+                    await productViewModel.updateCurrentList(newToken: newValue)
+                }
+            }
+            .task {
+                await productViewModel.lazyFetchProducts()
+            }
     }
 }
 #Preview {
+    @Previewable @State var overlay = OverlayViewModel()
     @Previewable @State var webSocket: SyncWebSocketClient = SyncWebSocketClient(
         synchronizerDBUseCase: SynchronizerDBInteractorMock(),
         lastTokenByEntities: LastTokenByEntities(
@@ -51,9 +58,11 @@ struct SaleProductView: View {
         .environment(mainRouter)
         .environment(session)
         .environment(webSocket)
+        .environment(overlay)
 }
 
-struct ListaControler: View {
+struct SaleListProductView: View {
+    @Environment(OverlayViewModel.self) private var overlayViewModel
     var viewModel: ProductViewModel
     var body: some View {
         HStack(spacing: 0) {
@@ -65,66 +74,58 @@ struct ListaControler: View {
                     pushDestination: .addProduct
                 )
             } else {
-                HStack(spacing: 0) {
-                    List {
-                        ForEach(0 ..< viewModel.deleteCount, id: \.self) { _ in
-                            Spacer()
-                                .frame(maxWidth: .infinity, minHeight: 80)
-                                .onAppear {
-                                    print("Products gosht")
-                                    loadProducts()
-                                }
-                        }
-                        ForEach(viewModel.productsCoreData) { producto in
-                            CardViewTipe2(
-                                imageUrl: producto.imageUrl,
-                                topStatusColor: Color.red,
-                                topStatus: nil,
-                                mainText: producto.name,
-                                mainIndicatorPrefix: "S/. ",
-                                mainIndicator: producto.unitPrice.solesString,
-                                mainIndicatorAlert: false,
-                                secondaryIndicatorSuffix: " u",
-                                secondaryIndicator: String(producto.qty),
-                                secondaryIndicatorAlert: false, size: 80
-                            )
-                            .padding(.horizontal, 10)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color.background)
-                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                Button {
-                                    agregarProductoACarrito(producto: producto)
-                                } label: {
-                                    Image(systemName: "cart")
-                                }
-                                .tint(Color.accent)
+                List {
+                    ForEach(0 ..< viewModel.deleteCount, id: \.self) { _ in
+                        Spacer()
+                            .frame(maxWidth: .infinity, minHeight: 80)
+                            .onAppear {
+                                print("Products gosht")
+                                loadProducts()
                             }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                if let productCic = producto.productCic {
-                                    NavigationButton(push: .editProduct(productCic: productCic)) {
-                                        Image(systemName: "pencil")
-                                    }
-                                    .tint(Color.accent)
-                                } else {
+                    }
+                    ForEach(viewModel.productsCoreData) { producto in
+                        CardViewTipe2(
+                            imageUrl: producto.imageUrl,
+                            topStatusColor: Color.red,
+                            topStatus: nil,
+                            mainText: producto.name,
+                            mainIndicatorPrefix: "S/. ",
+                            mainIndicator: producto.unitPrice.solesString,
+                            mainIndicatorAlert: false,
+                            secondaryIndicatorSuffix: " u",
+                            secondaryIndicator: String(producto.qty),
+                            secondaryIndicatorAlert: false, size: 80
+                        )
+                        .padding(.horizontal, 10)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                        .listRowBackground(Color.background)
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button {
+                                agregarProductoACarrito(producto: producto)
+                            } label: {
+                                Image(systemName: "cart")
+                            }
+                            .tint(Color.accentColor)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            if let productCic = producto.productCic {
+                                NavigationButton(push: .editProduct(productCic: productCic)) {
                                     Image(systemName: "pencil")
-                                        .tint(Color.gray)
                                 }
+                                .tint(Color.accentColor)
+                            } else {
+                                Image(systemName: "pencil")
+                                    .tint(Color.gray)
                             }
-                            .onAppear(perform: {
-                                shouldLoadData(product: producto)
-                            })
                         }
+                        .onAppear(perform: {
+                            shouldLoadData(product: producto)
+                        })
                     }
-                    .safeAreaInset(edge: .top) {
-                        Color.clear.frame(height: 32) // margen superior
-                    }
-                    .safeAreaInset(edge: .bottom) {
-                        Color.clear.frame(height: 32) // margen inferior
-                    }
-                    .scrollIndicators(ScrollIndicatorVisibility.hidden)
-                    .listStyle(PlainListStyle())
                 }
+                .scrollIndicators(ScrollIndicatorVisibility.hidden)
+                .listStyle(PlainListStyle())
             }
         }
     }
@@ -144,14 +145,24 @@ struct ListaControler: View {
         }
     }
     func agregarProductoACarrito(producto: Product) {
+        let loadingId = self.overlayViewModel.showLoading()
         Task {
-//            loading = true
             do {
                 try await viewModel.addProductoToCarrito(product: producto)
+                self.overlayViewModel.endLoading(id: loadingId)
             } catch {
-//                router.presentAlert(.error(error.localizedDescription))
+                print("[SaleListProductView] Ha ocurrido un error: \(error)")
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ha ocurrido un error al agregar producto al carrito.",
+                    primary: AlertAction(
+                        title: "Aceptar",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId)
+                        }
+                    )
+                )
             }
-//            loading = false
         }
     }
 }
