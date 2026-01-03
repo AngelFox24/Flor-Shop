@@ -12,10 +12,11 @@ final class ProductViewModel {
     }
     var primaryOrder: PrimaryOrder = .nameAsc
     var filterAttribute: ProductsFilterAttributes = .allProducts
-    var deleteCount: Int = 0
+    var cartCount: Int = 0
     //Sync Engine
     private var lastToken: Int64
     //Pagination vars
+    var deleteCount: Int = 0
     private var currentPagesInScreen: [[Int]] = []
     private let maxPagesToLoad: Int = 3
     private var lastCarge: Int = 0
@@ -58,6 +59,19 @@ final class ProductViewModel {
             await MainActor.run {
                 self.productsCoreData = productsUpdated
                 self.lastToken = newToken
+            }
+        }
+    }
+    func updateCartQuantity() async {
+        do {
+            let quatity = try self.addProductoToCartUseCase.getCartQuantity()
+            await MainActor.run {
+                self.cartCount = quatity
+                print("[ProductViewModel] Cart quantity: \(self.cartCount, default: "nil")")
+            }
+        } catch {
+            await MainActor.run {
+                self.cartCount = 0
             }
         }
     }

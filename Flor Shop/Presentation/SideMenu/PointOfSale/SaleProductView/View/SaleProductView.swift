@@ -19,7 +19,7 @@ struct SaleProductView: View {
             .searchToolbarBehavior(.minimize)
             .toolbar {
                 LogoToolBar(action: showMenu)
-                ProductTopToolbar(productViewModel: $productViewModel, badge: nil)
+                ProductTopToolbar(productViewModel: $productViewModel)
                 MainBottomToolbar(destination: .addProduct)
             }
             .onChange(of: syncManager.lastTokenByEntities.product) { _, newValue in
@@ -149,6 +149,7 @@ struct SaleListProductView: View {
         Task {
             do {
                 try await viewModel.addProductoToCarrito(product: producto)
+                await viewModel.updateCartQuantity()
                 self.overlayViewModel.endLoading(id: loadingId)
             } catch {
                 print("[SaleListProductView] Ha ocurrido un error: \(error)")

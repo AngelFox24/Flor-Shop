@@ -8,6 +8,7 @@ protocol LocalCartManager {
     func addProductToCart(productIn: Product) throws
     func changeProductAmountInCartDetail(productCic: String, amount: Int) throws
     func emptyCart() throws
+    func getCartQuantity() throws -> Int
 }
 
 class LocalCartManagerImpl: LocalCartManager {
@@ -28,11 +29,15 @@ class LocalCartManagerImpl: LocalCartManager {
         ) else {
             throw LocalStorageError.entityNotFound("No se encontro el empleado en esta sucursal")
         }
-        if let cartEntity = employeeSubsidiaryEntity.toCart {
+        if let _ = employeeSubsidiaryEntity.toCart {
             return
         } else {
             try self.createCart()
         }
+    }
+    func getCartQuantity() throws -> Int {
+        let cart = try getCartEntity()
+        return cart.toCartDetail?.count ?? 0
     }
     func getCart() throws -> Car {
         return try getCartEntity().toCar()

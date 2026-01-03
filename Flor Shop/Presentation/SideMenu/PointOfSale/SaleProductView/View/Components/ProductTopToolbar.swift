@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ProductTopToolbar: ToolbarContent {
     @Binding var productViewModel: ProductViewModel
-    let badge: String?
     let menuOrders: [PrimaryOrder] = PrimaryOrder.allValues
     let menuFilters: [ProductsFilterAttributes] = ProductsFilterAttributes.allValues
     var body: some ToolbarContent {
@@ -27,7 +26,11 @@ struct ProductTopToolbar: ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             NavigationButton(push: .cartList) {
                 Image(systemName: "cart")
-            }.badge(badge == nil ? nil : Text(badge!))
+            }
+//            .badge(productViewModel.cartCount)
+//            .onAppear {
+//                print("[ProductTopToolbar] Se pinto el botón de carrito")
+//            }
         }
     }
 }

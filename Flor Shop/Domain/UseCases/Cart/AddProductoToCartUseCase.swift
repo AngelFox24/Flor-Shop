@@ -2,6 +2,7 @@ import Foundation
 
 protocol AddProductoToCartUseCase {
     func execute(product: Product) throws
+    func getCartQuantity() throws -> Int
 }
 
 final class AddProductoToCartInteractor: AddProductoToCartUseCase {
@@ -13,5 +14,9 @@ final class AddProductoToCartInteractor: AddProductoToCartUseCase {
     
     func execute(product: Product) throws {
         try self.cartRepository.addProductoToCarrito(product: product)
+    }
+    
+    func getCartQuantity() throws -> Int {
+        return try self.cartRepository.getCartQuantity()
     }
 }

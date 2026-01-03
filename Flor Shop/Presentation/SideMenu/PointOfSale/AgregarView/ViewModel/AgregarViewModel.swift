@@ -38,6 +38,13 @@ class AgregarViewModel {
         self.selectedLocalImage = nil
         self.agregarFields = AgregarFields()
     }
+    func saveSelectedImage() async throws {
+        guard let selectedLocalImage else { return }
+        let imageUrl = try await self.saveImageUseCase.execute(uiImage: selectedLocalImage)
+        await MainActor.run {
+            self.agregarFields.imageUrl = imageUrl.absoluteString
+        }
+    }
     func findProductNameOnInternet() {
         if self.agregarFields.productName != "" {
             openGoogleImageSearch(nombre: self.agregarFields.productName)
@@ -130,9 +137,12 @@ class AgregarViewModel {
         print("Se verifica producto: \(self.agregarFields.productName)")
     }
     func createProduct() async throws -> Product? {
+        if self.agregarFields.imageUrl == "" && self.selectedLocalImage != nil {
+            try await self.saveSelectedImage()
+        }
         guard let quantityStock = Int(self.agregarFields.quantityStock),
               let imageUrl = URL(string: self.agregarFields.imageUrl) else {
-            print("Los valores no se pueden convertir correctamente")
+            print("[AgregarViewModel] Los valores no se pueden convertir correctamente, url: \(self.agregarFields.imageUrl)")
             return nil
         }
         if agregarFields.isErrorsEmpty() {

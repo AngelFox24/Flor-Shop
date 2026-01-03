@@ -8,6 +8,7 @@ protocol CarRepository {
     func addProductoToCarrito(product: Product) throws
     func emptyCart() throws
     func changeProductAmountInCartDetail(productCic: String, amount: Int) throws
+    func getCartQuantity() throws -> Int
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -34,5 +35,8 @@ class CarRepositoryImpl: CarRepository {
     }
     func changeProductAmountInCartDetail(productCic: String, amount: Int) throws {
         try self.localManager.changeProductAmountInCartDetail(productCic: productCic, amount: amount)
+    }
+    func getCartQuantity() throws -> Int {
+        return try self.localManager.getCartQuantity()
     }
 }
