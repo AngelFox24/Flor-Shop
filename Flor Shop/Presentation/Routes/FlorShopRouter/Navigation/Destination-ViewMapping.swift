@@ -35,6 +35,10 @@ func view(for destination: PushDestination) -> some View {
         WithSession { ses in
             AddProductView(ses: ses)
         }
+    case .addEmployee:
+        WithSession { ses in
+            AddEmployeeView(ses: ses)
+        }
     }
 }
 

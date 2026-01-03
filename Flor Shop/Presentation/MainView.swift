@@ -10,8 +10,6 @@ struct MainView: View {
             switch session.state {
             case .loggedOut:
                 WelcomeView()
-//            case .preLogIn(let companies):
-//                CompanySelectionView(companies: companies)
             case .loggedIn(let sessionConfig):
                 MainContendView(sessionConfig: sessionConfig)
             }

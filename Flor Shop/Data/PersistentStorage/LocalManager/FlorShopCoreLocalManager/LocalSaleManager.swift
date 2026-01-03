@@ -5,6 +5,7 @@ import FlorShopDTOs
 protocol LocalSaleManager {
     func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) throws
     func sync(backgroundContext: NSManagedObjectContext, salesDTOs: [SaleClientDTO]) throws
+    func getLastToken() -> Int64
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -24,6 +25,9 @@ class LocalSaleManagerImpl: LocalSaleManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+    }
+    func getLastToken() -> Int64 {
+        return self.getLastToken(context: self.mainContext)
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Sale> = Tb_Sale.fetchRequest()
@@ -413,7 +417,7 @@ class LocalSaleManagerImpl: LocalSaleManager {
         let startDate = getStartDate(date: date, interval: interval)
         let endDate = getEndDate(date: date, interval: interval)
         
-        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "Tb_SaleDetail")
+        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: Tb_SaleDetail.schema)
         fetchRequest.fetchLimit = pageSize
         fetchRequest.fetchOffset = (page - 1) * pageSize
         
@@ -440,8 +444,8 @@ class LocalSaleManagerImpl: LocalSaleManager {
         sumSubTotalDescription.expression = sumSubTotalExpression
         sumSubTotalDescription.expressionResultType = .doubleAttributeType
         
-        fetchRequest.propertiesToGroupBy = ["toImageUrl.idImageUrl", "productName"]
-        fetchRequest.propertiesToFetch = ["toImageUrl.idImageUrl", "productName", sumQuantityDescription, sumSubTotalDescription]
+        fetchRequest.propertiesToGroupBy = ["imageUrl", "productName"]
+        fetchRequest.propertiesToFetch = ["imageUrl", "productName", sumQuantityDescription, sumSubTotalDescription]
         fetchRequest.resultType = .dictionaryResultType
         
         let sortDescriptor = getOrder(order: order)

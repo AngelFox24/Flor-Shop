@@ -60,3 +60,23 @@ extension SubsidiaryResponseDTO: @retroactive Identifiable {
         return self.subsidiary_cic
     }
 }
+extension UserSubsidiaryRole {
+    public var description: String {
+        switch self {
+        case .cashier: return "Cajero"
+        case .manager: return "Gerente"
+        case .employee: return "Empleado"
+        case .saler: return "Vendedor"
+        }
+    }
+}
+
+extension UserSubsidiaryRole: Listable {
+    var id: String {
+        self.rawValue
+    }
+    
+    var name: String {
+        self.description
+    }
+}

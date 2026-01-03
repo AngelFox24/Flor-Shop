@@ -15,23 +15,27 @@ protocol SaleRepository: Syncronizable {
 class SaleRepositoryImpl: SaleRepository {
     let localManager: LocalSaleManager
     let remoteManager: RemoteSaleManager
+    let localCartManager: LocalCartManager
     let cloudBD = true
     init(
         localManager: LocalSaleManager,
-        remoteManager: RemoteSaleManager
+        remoteManager: RemoteSaleManager,
+        localCartManager: LocalCartManager
     ) {
         self.localManager = localManager
         self.remoteManager = remoteManager
+        self.localCartManager = localCartManager
     }
     func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) async throws {
         if cloudBD {
             try await self.remoteManager.save(cart: cart, paymentType: paymentType, customerCic: customerCic)
+            try self.localCartManager.emptyCart()
         } else {
             try self.localManager.registerSale(cart: cart, paymentType: paymentType, customerCic: customerCic)
         }
     }
     func getLastToken() -> Int64 {
-        return 0
+        return self.localManager.getLastToken()
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)

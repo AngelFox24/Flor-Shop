@@ -5,6 +5,7 @@ import AVFoundation
 enum SessionRoutes: Hashable {
     case companySelection(provider: AuthProvider, token: String)
     case subsidiarySelection(companyCic: String)
+    case completeEmployeeProfile(subsidiaryCic: String, subdomain: String)
 }
 
 struct WelcomeView: View {
@@ -68,6 +69,8 @@ struct WelcomeView: View {
                     CompanySelectionView(provider: provider, token: token, path: $path)
                 case .subsidiarySelection(let companyCic):
                     SubsidiarySelectionView(companyCic: companyCic, path: $path)
+                case .completeEmployeeProfile(let subsidiaryCic, let subdomain):
+                    CompleteEmployeeProfileView(subsidiaryCic: subsidiaryCic, subdomain: subdomain, path: $path)
                 }
             }
         }

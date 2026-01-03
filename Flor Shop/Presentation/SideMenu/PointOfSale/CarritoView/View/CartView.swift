@@ -71,20 +71,25 @@ struct ListCartController: View {
                     .padding(.bottom, 10)
                 }
             } else {
-                VStack {
-                    Image("groundhog-money")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 300, height: 300)
-                    Text("Deslizemos productos al carrito de ventas.")
-                        .font(.custom("Artifika-Regular", size: 18))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 20)
-                    Button(action: backAction) {
-                        CustomButton1(text: "Ir a Productos")
+                HStack {
+                    Spacer()
+                    VStack {
+                        Spacer()
+                        Image("groundhog-money")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 300, height: 300)
+                        Text("Deslizemos productos al carrito de ventas.")
+                            .font(.custom("Artifika-Regular", size: 18))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 20)
+                        Button(action: backAction) {
+                            CustomButton1(text: "Ir a Productos")
+                        }
+                        Spacer()
                     }
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }

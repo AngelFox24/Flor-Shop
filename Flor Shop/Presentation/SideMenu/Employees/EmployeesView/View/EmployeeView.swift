@@ -18,7 +18,7 @@ struct EmployeeView: View {
             .toolbar {
                 LogoToolBar(action: showMenu)
 //                ProductTopToolbar(productViewModel: $productViewModel, badge: nil)
-                MainBottomToolbar(destination: .addCustomer)
+                MainBottomToolbar(destination: .addEmployee)
             }
             .onAppear {
                 employeeViewModel.lazyFetchList()

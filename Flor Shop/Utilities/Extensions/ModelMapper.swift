@@ -125,6 +125,7 @@ extension Tb_Sale {
 }
 
 extension Tb_SaleDetail {
+    static var schema: String = "Tb_SaleDetail"
     func toSaleDetail() throws -> SaleDetail {
         guard let productName,
               let unitType,

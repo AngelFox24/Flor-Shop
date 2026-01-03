@@ -47,7 +47,7 @@ final class SessionContainer {
         //MARK: Helpers
         self.fileManager = LocalImageFileManagerImpl()
         //MARK: Local Managers
-        self.localImageManager = LocalImageManagerImpl(fileManager: self.fileManager, mainContext: self.mainContext, sessionConfig: sessionConfig)
+        self.localImageManager = LocalImageManagerImpl(fileManager: self.fileManager)
         self.localCompanyManager = LocalCompanyManagerImpl(mainContext: mainContext, sessionConfig: sessionConfig)
         self.localSubsidiaryManager = LocalSubsidiaryManagerImpl(mainContext: mainContext, sessionConfig: sessionConfig)
         self.localEmployeeManager = LocalEmployeeManagerImpl(mainContext: mainContext, sessionConfig: sessionConfig)
@@ -73,7 +73,7 @@ final class SessionContainer {
         self.customerRepository = CustomerRepositoryImpl(localManager: localCustomerManager, remoteManager: remoteCustomerManager)
         self.productRepository = ProductRepositoryImpl(localManager: localProductManager, remoteManager: remoteProductManager)
         self.cartRepository = CarRepositoryImpl(localManager: localCartManager)
-        self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager)
+        self.salesRepository = SaleRepositoryImpl(localManager: localSaleManager, remoteManager: remoteSaleManager, localCartManager: localCartManager)
         self.imageRepository = ImageRepositoryImpl(localManager: localImageManager, remoteManager: remoteImageManager)
         self.productSubsidiaryRepository = ProductSubsidiaryRepositoryImpl(localManager: localProductSubsidiaryManager)
         self.employeeSubsidiaryRepository = EmployeeSubsidiaryRepositoryImpl(localManager: localEmployeeSubsidiaryManager)

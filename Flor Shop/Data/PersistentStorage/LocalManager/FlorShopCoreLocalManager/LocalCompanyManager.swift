@@ -4,6 +4,7 @@ import FlorShopDTOs
 
 protocol LocalCompanyManager {
     func sync(backgroundContext: NSManagedObjectContext, companyDTO: CompanyClientDTO) throws
+    func getLastToken() -> Int64
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func save(company: Company) throws
 }
@@ -18,6 +19,9 @@ class LocalCompanyManagerImpl: LocalCompanyManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+    }
+    func getLastToken() -> Int64 {
+        return self.getLastToken(context: self.mainContext)
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Company> = Tb_Company.fetchRequest()

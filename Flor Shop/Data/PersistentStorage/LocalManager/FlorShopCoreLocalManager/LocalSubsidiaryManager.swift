@@ -4,6 +4,7 @@ import FlorShopDTOs
 
 protocol LocalSubsidiaryManager {
     func sync(backgroundContext: NSManagedObjectContext, subsidiariesDTOs: [SubsidiaryClientDTO]) throws
+    func getLastToken() -> Int64
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func save(subsidiary: Subsidiary) throws
     func getSubsidiaries() -> [Subsidiary]
@@ -19,6 +20,9 @@ class LocalSubsidiaryManagerImpl: LocalSubsidiaryManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+    }
+    func getLastToken() -> Int64 {
+        return self.getLastToken(context: self.mainContext)
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Subsidiary> = Tb_Subsidiary.fetchRequest()

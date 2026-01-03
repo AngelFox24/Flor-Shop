@@ -36,18 +36,20 @@ enum PushDestination: Hashable, CustomStringConvertible {
     case cartList
     case editProduct(productCic: String)
     case addProduct
+    case addEmployee
 
     var description: String {
         switch self {
 //        case .customerView(let parameters): ".customerView(\(parameters))"
         case .selectCustomer: ".selectCustomer"
-        case .editCustomer(let customerId): ".addCustomerView(\(String(describing: customerId)))"
+        case .editCustomer(let customerId): ".editCustomer(\(String(describing: customerId)))"
         case .addCustomer: ".addCustomer"
-        case .customerHistory: ".movieList"
-        case .payment: ".movieList"
+        case .customerHistory: ".customerHistory"
+        case .payment: ".payment"
         case .cartList: ".cartList"
         case .editProduct(let productId): ".editProduct(\(String(describing: productId)))"
         case .addProduct: ".addProduct"
+        case .addEmployee: ".addEmployee"
         }
     }
 }

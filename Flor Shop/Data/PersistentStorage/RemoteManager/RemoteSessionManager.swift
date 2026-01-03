@@ -7,6 +7,8 @@ protocol RemoteSessionManager {
     func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO]
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
+    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws
+    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool
 }
 
 final class RemoteSessionManagerMock: RemoteSessionManager {
@@ -41,6 +43,12 @@ final class RemoteSessionManagerMock: RemoteSessionManager {
             subsidiaryCic: subsidiaryCic,
             employeeCic: UUID().uuidString
         )
+    }
+    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws {
+        
+    }
+    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool {
+        return true
     }
 }
 
@@ -137,5 +145,26 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
             subsidiaryCic: payload.subsidiaryCic,
             employeeCic: payload.sub
         )
+    }
+    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws {
+        guard let scopedToken: TokenRefreshable = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
+            throw NetworkError.dataNotFound
+        }
+        let request = FlorShopCoreApiRequest.saveEmployee(
+            employee: employee.toEmployeeDTO(),
+            token: ScopedTokenWithSubdomain(
+                scopedToken: scopedToken.accessToken,
+                subdomain: subdomain
+            )
+        )
+        let response: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
+    }
+    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool {
+        guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
+            throw NetworkError.dataNotFound
+        }
+        let request = FlorShopCoreApiRequest.isRegistrationComplete(token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: subdomain))
+        let response: CompleteRegistrationResponse = try await NetworkManager.shared.perform(request, decodeTo: CompleteRegistrationResponse.self)
+        return response.isRegistered
     }
 }

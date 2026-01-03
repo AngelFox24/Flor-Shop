@@ -22,7 +22,7 @@ class CustomerRepositoryImpl: CustomerRepository {
         self.remoteManager = remoteManager
     }
     func getLastToken() -> Int64 {
-        return 0
+        return self.localManager.getLastToken()
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)

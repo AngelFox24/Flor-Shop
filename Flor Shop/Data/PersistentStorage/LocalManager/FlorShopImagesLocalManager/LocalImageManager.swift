@@ -20,18 +20,12 @@ protocol LocalImageManager {
 }
 
 final class LocalImageManagerImpl: LocalImageManager {
-    let mainContext: NSManagedObjectContext
-    let sessionConfig: SessionConfig
     let className = "[LocalImageManager]"
     let fileManager: LocalImageFileManager
     init(
-        fileManager: LocalImageFileManager,
-        mainContext: NSManagedObjectContext,
-        sessionConfig: SessionConfig
+        fileManager: LocalImageFileManager
     ) {
         self.fileManager = fileManager
-        self.mainContext = mainContext
-        self.sessionConfig = sessionConfig
     }
     //MARK: Main Functions
 //    func getImage(url: URL) throws -> UIImage? {

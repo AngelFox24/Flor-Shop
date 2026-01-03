@@ -11,6 +11,7 @@ enum FlorShopCoreApiRequest {
     case saveCustomer(customer: CustomerServerDTO, token: ScopedTokenWithSubdomain)
     case payCustomerDebt(params: PayCustomerDebtServerDTO, token: ScopedTokenWithSubdomain)
     case saveEmployee(employee: EmployeeServerDTO, token: ScopedTokenWithSubdomain)
+    case isRegistrationComplete(token: ScopedTokenWithSubdomain)
     case saveProduct(product: ProductServerDTO, token: ScopedTokenWithSubdomain)
     case registerSale(sale: RegisterSaleParameters, token: ScopedTokenWithSubdomain)
     case register(register: RegisterParameters, token: ScopedTokenWithSubdomain)
@@ -35,6 +36,9 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             subdomain = token.subdomain
         case .saveEmployee(_, let token):
             path = "/employees"
+            subdomain = token.subdomain
+        case .isRegistrationComplete(let token):
+            path = "/employees/isComplete"
             subdomain = token.subdomain
         case .saveProduct(_, let token):
             path = "/products"
@@ -65,6 +69,8 @@ extension FlorShopCoreApiRequest: NetworkRequest {
                 .post
         case .saveEmployee:
                 .post
+        case .isRegistrationComplete:
+                .get
         case .payCustomerDebt:
                 .post
         case .saveProduct:
@@ -92,6 +98,8 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveEmployee(_, let scopedToken):
             headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
+        case .isRegistrationComplete(let scopedToken):
+            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveProduct(_, let scopedToken):
             headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .registerSale(_, let scopedToken):
@@ -116,6 +124,8 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             return params
         case .saveEmployee(let employee, _):
             return employee
+        case .isRegistrationComplete:
+            return nil
         case .saveProduct(let product, _):
             return product
         case .registerSale(let sale, _):

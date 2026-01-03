@@ -6,6 +6,7 @@ protocol LocalCustomerManager {
     func save(customer: Customer) throws
     func payClientTotalDebt(customer: Customer) throws -> Bool
     func sync(backgroundContext: NSManagedObjectContext, customersDTOs: [CustomerClientDTO]) throws
+    func getLastToken() -> Int64
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
     func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
@@ -22,6 +23,9 @@ class LocalCustomerManagerImpl: LocalCustomerManager {
     ) {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
+    }
+    func getLastToken() -> Int64 {
+        return self.getLastToken(context: self.mainContext)
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Customer> = Tb_Customer.fetchRequest()

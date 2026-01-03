@@ -4,12 +4,13 @@ import FlorShopDTOs
 
 protocol LocalEmployeeManager {
     func sync(backgroundContext: NSManagedObjectContext, employeesDTOs: [EmployeeClientDTO]) throws
+    func getLastToken() -> Int64
     func getLastToken(context: NSManagedObjectContext) -> Int64
     func save(employee: Employee) throws
     func getEmployees() -> [Employee]
 }
 
-class LocalEmployeeManagerImpl: LocalEmployeeManager {
+final class LocalEmployeeManagerImpl: LocalEmployeeManager {
     let sessionConfig: SessionConfig
     let mainContext: NSManagedObjectContext
     let className = "[LocalEmployeeManager]"
@@ -20,6 +21,9 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         self.mainContext = mainContext
         self.sessionConfig = sessionConfig
     }
+    func getLastToken() -> Int64 {
+        return self.getLastToken(context: self.mainContext)
+    }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         let request: NSFetchRequest<Tb_Employee> = Tb_Employee.fetchRequest()
         let predicate = NSPredicate(format: "toCompany.companyCic == %@ AND syncToken != nil", self.sessionConfig.companyCic)
@@ -29,6 +33,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
         request.fetchLimit = 1
         do {
             let syncToken = try self.mainContext.fetch(request).compactMap{$0.syncToken}.first
+            print("\(className): LastToken: \(syncToken ?? 0)")
             return syncToken ?? 0
         } catch let error {
             print("Error fetching. \(error)")
@@ -44,7 +49,7 @@ class LocalEmployeeManagerImpl: LocalEmployeeManager {
             }
             if let employeeEntity = try self.sessionConfig.getEmployeeEntityByCic(context: backgroundContext, employeeCic: employeeDTO.employeeCic) {
                 guard !employeeDTO.isEquals(to: employeeEntity) else {
-                    print("\(className) No se actualiza, es lo mismo")
+                    print("\(className) No se actualiza, es lo mismo, tokenDTO: \(employeeDTO.syncToken), tokenBD: \(employeeEntity.syncToken)")
                     continue
                 }
                 //Update Employee

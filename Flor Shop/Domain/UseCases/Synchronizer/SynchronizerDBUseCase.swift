@@ -74,10 +74,10 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
             try await self.subsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.customerRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.employeeRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
-            try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
-            try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
-            try await self.productSubsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             try await self.employeeSubsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.productRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.productSubsidiaryRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
+            try await self.saleRepository.sync(backgroundContext: backgroundTaskContext, syncDTOs: syncClientParameters)
             return (syncClientParameters.lastGlobalToken, syncClientParameters.lastBranchToken)
         } catch {
             if !error.localizedDescription.contains("Parents are not up to date") {
@@ -101,6 +101,7 @@ final class SynchronizerDBInteractor: SynchronizerDBUseCase {
         let subsidiaryLastToken = self.subsidiaryRepository.getLastToken()
         let customerLastToken = self.customerRepository.getLastToken()
         let employeeLastToken = self.employeeRepository.getLastToken()
+        print("[SynchronizerDBInteractor] lastToken employee: \(employeeLastToken)")
         let productLastToken = self.productRepository.getLastToken()
         let saleLastToken = self.saleRepository.getLastToken()
         let productSubsidiaryLastToken = self.productSubsidiaryRepository.getLastToken()

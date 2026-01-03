@@ -6,14 +6,11 @@ protocol CreateEmployeeUseCase {
 
 final class CreateEmployeeInteractor: CreateEmployeeUseCase {
     private let employeeRepository: EmployeeRepository
-    private let imageRepository: ImageRepository
     
     init(
-        employeeRepository: EmployeeRepository,
-        imageRepository: ImageRepository
+        employeeRepository: EmployeeRepository
     ) {
         self.employeeRepository = employeeRepository
-        self.imageRepository = imageRepository
     }
     
     func execute(employee: Employee) async throws {

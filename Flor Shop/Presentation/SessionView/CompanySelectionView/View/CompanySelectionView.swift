@@ -98,9 +98,7 @@ struct CompanySelectionListView: View {
                             }
                         }
                     }
-//                    .padding(.vertical, 10)
                 }
-//                .background(Color.background)
             }
         }
     }

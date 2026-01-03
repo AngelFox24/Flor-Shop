@@ -35,10 +35,23 @@ final class SessionManager {
         sessionRepository.clear()
         state = .loggedOut
     }
+    @discardableResult
+    func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
+        let session: SessionConfig = try await self.sessionRepository.selectSubsidiary(subsidiaryCic: subsidiaryCic)
+        let isRegistered = try await self.isRegistrationComplete(subsidiaryCic: session.subsidiaryCic, subdomain: session.subdomain)
+        if isRegistered {
+            self.state = .loggedIn(session)
+        }
+        return session
+    }
     
-    func selectSubsidiary(subsidiaryCic: String) async throws {
-        let session = try await self.sessionRepository.selectSubsidiary(subsidiaryCic: subsidiaryCic)
-        self.state = .loggedIn(session)
+    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws {
+        try await self.sessionRepository.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic, subdomain: subdomain)
+        self.restoreSession()
+    }
+    
+    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool {
+        return try await self.sessionRepository.isRegistrationComplete(subsidiaryCic: subsidiaryCic, subdomain: subdomain)
     }
     
     func register(registerStuff: RegisterStuffs) async throws {

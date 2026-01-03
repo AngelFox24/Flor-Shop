@@ -4,6 +4,7 @@ import FlorShopDTOs
 
 protocol EmployeeRepository: Syncronizable {
     func save(employee: Employee) async throws
+    func invite(email: String, role: UserSubsidiaryRole) async throws
     func getEmployees() -> [Employee]
 }
 
@@ -19,7 +20,7 @@ class EmployeeRepositoryImpl: EmployeeRepository {
         self.remoteManager = remoteManager
     }
     func getLastToken() -> Int64 {
-        return 0
+        return self.localManager.getLastToken()
     }
     func getLastToken(context: NSManagedObjectContext) -> Int64 {
         return self.localManager.getLastToken(context: context)
@@ -32,6 +33,11 @@ class EmployeeRepositoryImpl: EmployeeRepository {
             try await self.remoteManager.save(employee: employee)
         } else {
             try self.localManager.save(employee: employee)
+        }
+    }
+    func invite(email: String, role: UserSubsidiaryRole) async throws {
+        if cloudBD {
+            try await self.remoteManager.invite(email: email, role: role)
         }
     }
     func getEmployees() -> [Employee] {

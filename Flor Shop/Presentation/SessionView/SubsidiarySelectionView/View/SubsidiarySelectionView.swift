@@ -14,7 +14,7 @@ struct SubsidiarySelectionView: View {
         self._path = path
     }
     var body: some View {
-        SubsidiarySelectionListView(viewModel: viewModel, subsidiaries: subsidiaries)
+        SubsidiarySelectionListView(viewModel: viewModel, subsidiaries: subsidiaries, path: $path)
             .background(Color.background)
             .navigationTitle("Seleccione la sucursal")
             .navigationBarTitleDisplayMode(.inline)
@@ -53,6 +53,7 @@ struct SubsidiarySelectionListView: View {
     @Environment(SessionManager.self) var sessionManager
     var viewModel: SubsidiarySelectionViewModel
     let subsidiaries: [SubsidiaryResponseDTO]
+    @Binding var path: [SessionRoutes]
     var body: some View {
         HStack(spacing: 0) {
             if subsidiaries.isEmpty {
@@ -101,7 +102,8 @@ struct SubsidiarySelectionListView: View {
     
     private func selectSubsidiary(subsidiaryCic: String) {
         Task {
-            try await self.sessionManager.selectSubsidiary(subsidiaryCic: subsidiaryCic)
+            let session = try await self.sessionManager.selectSubsidiary(subsidiaryCic: subsidiaryCic)
+            self.path.append(.completeEmployeeProfile(subsidiaryCic: session.subsidiaryCic, subdomain: session.subdomain))
         }
     }
 }
