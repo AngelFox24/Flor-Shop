@@ -1,77 +1,92 @@
 import SwiftUI
 
 struct CustomTextField: View {
-    var placeHolder: String = ""
-    var title: String = "Campo"
+    let title: String
     @Binding var value: String
     @Binding var edited: Bool
     @FocusState var isInputActive: Bool
-    var disable: Bool = false
-    var keyboardType: UIKeyboardType = .default
-    var disableAutocorrection: Bool = true
+    let disable: Bool
+    let keyboardType: UIKeyboardType
+    let disableAutocorrection: Bool
+    let alignment: TextAlignment
+    private var placeHolderPerform: Bool { isInputActive || !value.isEmpty }
+    init(
+        title: String = "Campo",
+        value: Binding<String>,
+        edited: Binding<Bool>,
+        disable: Bool = false,
+        keyboardType: UIKeyboardType = .default,
+        disableAutocorrection: Bool = true,
+        alignment: TextAlignment = .center
+    ) {
+        self.title = title
+        self._value = value
+        self._edited = edited
+        self.disable = disable
+        self.keyboardType = keyboardType
+        self.disableAutocorrection = disableAutocorrection
+        self.alignment = alignment
+    }
     
     @State private var isKeyboardShowing = false
     var body: some View {
-        HStack {
-            ZStack {
-                HStack(spacing: 0) {
-                    TextField(placeHolder, text: $value)
-                        .focused($isInputActive)
-                        .foregroundColor(.black)
-                        .font(.custom("Artifika-Regular", size: 20))
-                        .multilineTextAlignment(.center)
-                        .keyboardType(keyboardType)
-                        .padding(.all, 5)
-                        .foregroundColor(.black)
-                        .padding(.vertical, 4)
-                        .disableAutocorrection(disableAutocorrection)
-                        .onChange(of: value) { oldText, newText in
-                            if isInputActive {
-                                if newText != "" {
-                                    edited = true
-                                }
-                            }
-                        }
-                        .disabled(disable)
-                        .toolbar {
-                            if isInputActive {
-                                ToolbarItem(placement: .keyboard) {
-                                    CustomHideKeyboard {
-                                        isInputActive = false
-                                    }
-                                }
-//                                ToolbarSpacer(.fixed, placement: .keyboard)
-                            }
-                        }
-                    if isInputActive && !value.isEmpty {
-                        Button(action: {
-                            if isInputActive {
-                                value.removeAll()
-                            } else if !disable {
-                                isInputActive = true
-                            }
-                        }, label: {
-                            Image(systemName: "x.circle")
-                                .foregroundColor(Color.accentColor)
-                                .font(.custom("Artifika-Regular", size: 16))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 12)
-                                .animation(.easeInOut(duration: 0.9), value: isInputActive)
-                        })
-                    }
-                }
-                .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
-                .cornerRadius(8)
-                Text(title)
-                    .font(.custom("Artifika-Regular", size: 14))
-                    .padding(.horizontal, 8)
+        ZStack {
+            HStack(spacing: 0) {
+                TextField("", text: $value)
+                    .focused($isInputActive)
+                    .font(.custom("Artifika-Regular", size: 20))
+                    .multilineTextAlignment(alignment)
+                    .keyboardType(keyboardType)
+                    .padding(.all, 5)
                     .foregroundColor(.black)
-                    .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
-                    .cornerRadius(5)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .offset(y: -22)
+                    .padding(.vertical, 4)
+                    .disableAutocorrection(disableAutocorrection)
+                    .onChange(of: value) { oldText, newText in
+                        if isInputActive {
+                            if newText != "" {
+                                edited = true
+                            }
+                        }
+                    }
                     .disabled(disable)
+                    .toolbar {
+                        if isInputActive {
+                            ToolbarItem(placement: .keyboard) {
+                                CustomHideKeyboard {
+                                    isInputActive = false
+                                }
+                            }
+                        }
+                    }
+                if isInputActive && !value.isEmpty {
+                    Button(action: {
+                        if isInputActive {
+                            value.removeAll()
+                        } else if !disable {
+                            isInputActive = true
+                        }
+                    }, label: {
+                        Image(systemName: "x.circle")
+                            .foregroundColor(Color.accentColor)
+                            .font(.custom("Artifika-Regular", size: 16))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 12)
+                            .animation(.easeInOut(duration: 0.9), value: isInputActive)
+                    })
+                }
             }
+            .background(disable ? Color.textFieldDisable : Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 25))
+            HStack {
+                Text(title)
+                    .font(.custom("Artifika-Regular", size: placeHolderPerform ? 14 : 20))
+                    .padding(.horizontal, 10)
+                    .foregroundColor(Color.textFieldTittle)
+                    .disabled(disable)
+                Spacer()
+            }
+            .offset(y: placeHolderPerform ? -34 : 0)
+            .animation(.easeOut(duration: 0.2), value: placeHolderPerform)
         }
         .onTapGesture {
             if !disable {
@@ -93,5 +108,5 @@ struct CustomTextField: View {
         //CustomTextField(edited: .constant(false))
     }
     .frame(maxHeight: .infinity)
-    .background(Color.accentColor)
+    .background(Color.background)
 }

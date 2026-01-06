@@ -41,6 +41,7 @@ extension Tb_ProductSubsidiary {
             id: UUID(),
             productCic: productCic,
             active: active,
+            barCode: product.barCode,
             name: productName,
             qty: Int(quantityStock),
             unitType: unitTypeEnum,

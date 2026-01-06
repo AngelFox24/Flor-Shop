@@ -157,38 +157,6 @@ struct SalesTopBar: View {
                 })
             })
             .padding(.horizontal, 10)
-            HStack(spacing: 0, content: {
-                VStack(spacing: 2, content: {
-                    Text("Ventas")
-                        .font(.custom("Artifika-Regular", size: 13))
-                        .foregroundColor(Color("color_primary"))
-                    Text(salesCoreDataViewModel.salesAmount.solesString)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color.blue)
-                })
-                .frame(maxWidth: .infinity, alignment: .center)
-                VStack(spacing: 2, content: {
-                    Text("Costo")
-                        .font(.custom("Artifika-Regular", size: 13))
-                        .foregroundColor(Color("color_primary"))
-                    Text(salesCoreDataViewModel.costAmount.solesString)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color.red)
-                })
-                .frame(maxWidth: .infinity, alignment: .center)
-                VStack(spacing: 2, content: {
-                    Text("Ganancia")
-                        .font(.custom("Artifika-Regular", size: 13))
-                        .foregroundColor(Color("color_primary"))
-                    Text(salesCoreDataViewModel.revenueAmount.solesString)
-                        .font(.custom("Artifika-Regular", size: 16))
-                        .foregroundColor(Color.black)
-                })
-                .frame(maxWidth: .infinity, alignment: .center)
-            })
-            .padding(.top, 2)
-            .padding(.bottom, 5)
-            .background(Color("color_secondary"))
         }
         .background(Color("color_primary"))
     }

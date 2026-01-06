@@ -16,20 +16,18 @@ struct AddCustomerView: View {
         self.customerCic = customerCic
     }
     var body: some View {
-        VStack(spacing: 0) {
-            AddCustomerTopBar {
-                router.back()
-            } saveCustomerAction: {
-                addCustomer()
+        AddCustomerFields(addCustomerViewModel: $addCustomerViewModel)
+            .padding(.horizontal, 10)
+            .background(Color.background)
+            .navigationTitle("Agregar cliente")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                MainConfirmationToolbar(disabled: false, action: addCustomer)
             }
-            AddCustomerFields(addCustomerViewModel: $addCustomerViewModel)
-        }
-        .padding(.horizontal, 10)
-        .background(Color.background)
-        .task {
-            guard let customerCic else { return }
-            addCustomerViewModel.loadCustomer(customerCic: customerCic)
-        }
+            .task {
+                guard let customerCic else { return }
+                addCustomerViewModel.loadCustomer(customerCic: customerCic)
+            }
     }
     func addCustomer() {
         Task {
@@ -90,7 +88,7 @@ struct AddCustomerFields : View {
                 HStack(content: {
                     CustomTextField(title: "Móvil" ,value: $addCustomerViewModel.fieldsAddCustomer.phoneNumber, edited: $addCustomerViewModel.fieldsAddCustomer.phoneNumberEdited, keyboardType: .numberPad)
 //                    CustomTextField(title: "Deuda Total" ,value: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
-                    CustomNumberField(placeHolder: "0", title: "Deuda Total", userInput: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
+                    CustomNumberField(title: "Deuda Total", userInput: $addCustomerViewModel.fieldsAddCustomer.totalDebt, edited: .constant(false), disable: true)
                 })
                 HStack(content: {
                     CustomTextField(title: "Fecha Límite" ,value: .constant(addCustomerViewModel.fieldsAddCustomer.dateLimitString), edited: .constant(false), disable: true)
@@ -108,7 +106,7 @@ struct AddCustomerFields : View {
                     ErrorMessageText(message: addCustomerViewModel.fieldsAddCustomer.creditDaysError)
                 }
                 HStack(content: {
-                    CustomNumberField(placeHolder: "0", title: "Límite de Crédito", userInput: $addCustomerViewModel.fieldsAddCustomer.creditLimit, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
+                    CustomNumberField(title: "Límite de Crédito", userInput: $addCustomerViewModel.fieldsAddCustomer.creditLimit, edited: $addCustomerViewModel.fieldsAddCustomer.creditLimitEdited, disable: !addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
                     Toggle("", isOn: $addCustomerViewModel.fieldsAddCustomer.creditLimitFlag)
                         .labelsHidden()
                         .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
@@ -118,11 +116,6 @@ struct AddCustomerFields : View {
             .padding(.top, 10)
         })
         .scrollDismissesKeyboard(.immediately)
-        .onDisappear {
-            Task {
-                await addCustomerViewModel.releaseResources()
-            }
-        }
     }
     func searchFromGallery() {
         addCustomerViewModel.fieldsAddCustomer.isShowingPicker = true

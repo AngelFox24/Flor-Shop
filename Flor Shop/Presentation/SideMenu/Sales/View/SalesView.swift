@@ -8,16 +8,28 @@ struct SalesView: View {
         self.showMenu = showMenu
     }
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                SalesTopBar(salesCoreDataViewModel: $salesViewModel, backAction: showMenu)
-                SalesListController(salesViewModel: $salesViewModel)
+        SalesListController(salesViewModel: $salesViewModel)
+            .navigationTitle("Ventas")
+            .navigationSubtitle(salesViewModel.salesCurrentDateFilterString)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                LogoToolBar(action: showMenu)
+                SalesTopToolbar(salesViewModel: $salesViewModel)
+                SalesBottomToolbar(salesViewModel: $salesViewModel)
             }
-            .background(Color.primary)
             .task {
                 salesViewModel.lazyFetchList()
             }
-        }
+            .onChange(of: salesViewModel.order) { _, _ in
+                salesViewModel.fetchSalesDetailsList()
+            }
+            .onChange(of: salesViewModel.grouper) { _, _ in
+                salesViewModel.fetchSalesDetailsList()
+            }
+            .onChange(of: salesViewModel.salesDateInterval) { _, _ in
+                salesViewModel.updateAmountsBar()
+                salesViewModel.fetchSalesDetailsList()
+            }
     }
 }
 
@@ -57,18 +69,22 @@ struct SalesListController: View {
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color.background)
-                        .onTapGesture {
-                            
-                        }
-                        .onAppear(perform: {
+                        .onAppear {
                             if salesViewModel.shouldSalesDetailsListLoadData(saleDetail: saleDetail) {
                                 salesViewModel.fetchSalesDetailsListNextPage()
                             }
-                        })
+                        }
                     }
                 }
                 .scrollIndicators(ScrollIndicatorVisibility.hidden)
                 .listStyle(PlainListStyle())
+                .safeAreaBar(edge: .top) {
+                    SalesSafeAreaBar(
+                        sales: salesViewModel.salesAmount.solesString,
+                        cost: salesViewModel.costAmount.solesString,
+                        revenue: salesViewModel.revenueAmount.solesString
+                    )
+                }
             }
         }
         .padding(.horizontal, 10)

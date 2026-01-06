@@ -16,4 +16,12 @@ extension Color {
   public static var launchBackground: Color {
     Color("color_launch_background")
   }
+
+  public static var textFieldTittle: Color {
+    Color("color_textfield_tittle")
+  }
+
+  public static var textFieldDisable: Color {
+    Color("color_textfield_disable")
+  }
 }

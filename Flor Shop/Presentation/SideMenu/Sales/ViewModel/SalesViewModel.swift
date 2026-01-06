@@ -9,6 +9,16 @@ class SalesViewModel {
     var grouper: SalesGrouperAttributes = .byProduct
     
     var salesCurrentDateFilter: Date = Date.now
+    var salesCurrentDateFilterString: String {
+        switch salesDateInterval {
+        case .diary:
+            return salesCurrentDateFilter.formatted(.dateTime.day().month(.wide).year())
+        case .monthly:
+            return salesCurrentDateFilter.formatted(.dateTime.month(.wide).year())
+        case .yearly:
+            return salesCurrentDateFilter.formatted(.dateTime.year())
+        }
+    }
     var salesDateInterval: SalesDateInterval = .diary
     
     var salesAmount: Money = Money(0)

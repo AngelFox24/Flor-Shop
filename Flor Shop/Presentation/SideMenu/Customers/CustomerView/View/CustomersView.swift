@@ -3,23 +3,28 @@ import SwiftUI
 struct CustomersView: View {
     @State var customerViewModel: CustomerViewModel
     let showMenu: () -> Void
-    init(ses: SessionContainer, showMenu: @escaping () -> Void) {
+    init(
+        ses: SessionContainer,
+        showMenu: @escaping () -> Void
+    ) {
         self.customerViewModel = CustomerViewModelFactory.getCustomerViewModelFactory(sessionContainer: ses)
         self.showMenu = showMenu
     }
     var body: some View {
-        ZStack {
-            CustomerListController(customerViewModel: $customerViewModel)
-            VStack {
-                CustomerTopBar(customerViewModel: $customerViewModel, showMenu: showMenu)
-                Spacer()
-                BottomBar(findText: $customerViewModel.searchWord, addDestination: .addCustomer)
+        CustomerListController(customerViewModel: $customerViewModel)
+            .padding(.horizontal, 10)
+            .navigationTitle("Clientes")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $customerViewModel.searchText, placement: .toolbar)
+            .searchToolbarBehavior(.minimize)
+            .toolbar {
+                LogoToolBar(action: showMenu)
+                CustomerTopToolbar(viewModel: $customerViewModel)
+                MainBottomToolbar(destination: .addCustomer)
             }
-        }
-        .padding(.horizontal, 10)
-        .task {
-            customerViewModel.lazyFetchList()
-        }
+            .task {
+                customerViewModel.lazyFetchList()
+            }
     }
 }
 
@@ -69,12 +74,6 @@ struct CustomerListController: View {
                                 .listRowBackground(Color.background)
                             }
                         }
-                    }
-                    .safeAreaInset(edge: .top) {
-                        Color.clear.frame(height: 32) // margen superior
-                    }
-                    .safeAreaInset(edge: .bottom) {
-                        Color.clear.frame(height: 32) // margen inferior
                     }
                     .scrollIndicators(ScrollIndicatorVisibility.hidden)
                     .listStyle(PlainListStyle())

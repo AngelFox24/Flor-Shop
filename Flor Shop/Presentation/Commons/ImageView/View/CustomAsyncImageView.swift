@@ -27,9 +27,17 @@ struct CustomAsyncImageView: View {
                 KFImage(imageUrl)
                     .setProcessor(processor)
                     .resizable()
-                    .roundCorner(radius: .point(15))
+//                    .roundCorner(radius: .point(15))
                     .serialize(as: .PNG)
                     .cancelOnDisappear(true)
+                    .onSuccess { result in
+                        print("""
+                        [CustomAsyncImageView] onSuccess
+                        - cacheType: \(result.cacheType)
+                        - source: \(result.source)
+                        - key: \(result.source.cacheKey)
+                        """)
+                    }
                     .onFailure { _ in
                         didFail = true
                     }

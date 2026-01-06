@@ -63,11 +63,11 @@ struct CompleteEmployeeProfileListView: View {
                 takePhoto: takePhoto
             )
             .photosPicker(isPresented: $viewModel.fields.isShowingPicker, selection: $viewModel.selectionImage, matching: .any(of: [.images, .screenshots]))
-            CustomTextField(placeHolder: "", title: "Nombre" , value: $viewModel.fields.name, edited: .constant(false))
-            CustomTextField(placeHolder: "", title: "Apellidos" , value: $viewModel.fields.lastName, edited: .constant(false))
-            CustomTextField(placeHolder: "", title: "Correo" , value: $viewModel.fields.email, edited: .constant(false))
-            CustomTextField(placeHolder: "", title: "Móvil" , value: $viewModel.fields.phone, edited: .constant(false))
-            CustomTextField(placeHolder: "", title: "Rol" , value: .constant(viewModel.fields.role.description), edited: .constant(false), disable: true)
+            CustomTextField(title: "Nombre" , value: $viewModel.fields.name, edited: .constant(false))
+            CustomTextField(title: "Apellidos" , value: $viewModel.fields.lastName, edited: .constant(false))
+            CustomTextField(title: "Correo" , value: $viewModel.fields.email, edited: .constant(false))
+            CustomTextField(title: "Móvil" , value: $viewModel.fields.phone, edited: .constant(false))
+            CustomTextField(title: "Rol" , value: .constant(viewModel.fields.role.description), edited: .constant(false), disable: true)
         }
         .padding(.horizontal, 10)
         .background(Color.background)

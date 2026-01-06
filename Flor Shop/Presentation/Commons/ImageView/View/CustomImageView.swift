@@ -10,20 +10,14 @@ struct CustomImageView: View {
     var body: some View {
         Menu {
             if let searchAction = searchFromInternet {
-                Button(action: {
-                    searchAction()
-                }) {
+                Button(action: searchAction) {
                     Label("Buscar en Internet", systemImage: "globe")
                 }
             }
-            Button(action: {
-                searchFromGallery()
-            }) {
+            Button(action: searchFromGallery) {
                 Label("Buscar en Galería", systemImage: "photo.on.rectangle.angled")
             }
-            Button(action: {
-                takePhoto()
-            }) {
+            Button(action: takePhoto) {
                 Label("Tomar Foto", systemImage: "camera")
             }
         } label: {
@@ -39,18 +33,15 @@ struct CustomImageView: View {
         }
     }
 }
-func doNothing() {
-    
-}
 
 #Preview {
     VStack {
         CustomImageView(
             uiImage: .constant(nil),
             size: 100,
-            searchFromInternet: doNothing,
-            searchFromGallery: doNothing,
-            takePhoto: doNothing
+            searchFromInternet: {},
+            searchFromGallery: {},
+            takePhoto: {}
         )
         Spacer()
     }

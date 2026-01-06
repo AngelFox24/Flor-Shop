@@ -63,11 +63,11 @@ final class SyncWebSocketClient {
         let newUrl = baseUrl.replacingOccurrences(of: "{subdomain}", with: subdomain)
         guard let url = URL(string: "\(newUrl)/sync/ws") else {
             print("\(logPrefix) URL inválida: \(AppConfig.florShopCoreWSBaseURL)/sync/ws")
-            return
+            throw NSError(domain: "com.flor.shop.core.sync", code: -1, userInfo: nil)
         }
         guard let scopedToken = try? await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
             print("\(logPrefix) ⚠️ No hay scoped token para la sucursal: \(subsidiaryCic)")
-            return
+            throw NSError(domain: "com.flor.shop.core.sync", code: -1, userInfo: nil)
         }
         var request = URLRequest(url: url)
         request.setValue("Bearer \(scopedToken.accessToken)", forHTTPHeaderField: "Authorization")

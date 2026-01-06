@@ -3,15 +3,33 @@ import SwiftUI
 struct CartView: View {
     @Environment(FlorShopRouter.self) private var router
     @State var cartViewModel: CartViewModel
+    @State private var datesito = Date()
     init(ses: SessionContainer) {
         cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: ses)
     }
     var body: some View {
         ListCartController(cartViewModel: $cartViewModel, backAction: router.back)
-            .padding(.horizontal, 10)
-            .background(Color.background)
+            .navigationTitle("Carrito")
+            .navigationSubtitle(Text(datesito.formatted(.dateTime.day().month().year())))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CartTopToolbar(cartViewModel: $cartViewModel)
+//                ToolbarSpacer(placement: .bottomBar)
+                ToolbarItem(placement: .bottomBar) {
+                    Image(systemName: "chevron.backward")
+                }
+                ToolbarItem(placement: .bottomBar) {
+                    Text(datesito.formatted(.dateTime.day().month().year()))
+                        .overlay {
+                            DatePicker("", selection: $datesito, in: ...Date(), displayedComponents: .date)
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .colorMultiply(.clear)
+                        }
+                }
+                ToolbarItem(placement: .bottomBar) {
+                    Image(systemName: "chevron.forward")
+                }
             }
             .task {
                 await cartViewModel.lazyFetchCart()
@@ -54,21 +72,9 @@ struct ListCartController: View {
                 }
                 .scrollIndicators(ScrollIndicatorVisibility.hidden)
                 .listStyle(PlainListStyle())
-                .safeAreaBar(edge: .bottom, alignment: .center) {
-                    HStack {
-                        Text("Total:")
-                        Spacer()
-                        Text(String("S/. "))
-                            .font(.custom("Artifika-Regular", size: 15))
-                        let total = cartViewModel.cartCoreData?.total.solesString ?? "0"
-                        Text(total)
-                            .font(.custom("Artifika-Regular", size: 20))
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-                    .background(Color.secondary)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .padding(.bottom, 10)
+                .safeAreaBar(edge: .top, alignment: .center) {
+                    let total = cartViewModel.cartCoreData?.total.solesString ?? "0"
+                    TotalSafeAreaBarView(total: total)
                 }
             } else {
                 HStack {
@@ -92,6 +98,8 @@ struct ListCartController: View {
                 }
             }
         }
+        .padding(.horizontal, 10)
+        .background(Color.background)
     }
 //    func goToProductsList() {
 //        self.tab = .magnifyingglass

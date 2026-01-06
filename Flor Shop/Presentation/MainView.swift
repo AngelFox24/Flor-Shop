@@ -21,6 +21,7 @@ struct MainView: View {
 struct MainContendView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(OverlayViewModel.self) var overlayViewModel
+    @Environment(SessionManager.self) var sessionManager
     @State var webSocket: SyncWebSocketClient
     //TODO: Verificar si no perjudica a las vistar con el repintado
     let sessionContainer: SessionContainer
@@ -38,19 +39,6 @@ struct MainContendView: View {
             self.initialization()
             self.connectWebSocket()
         }
-//        .onChange(of: scenePhase) { oldValue, newValue in
-//            switch newValue {
-//            case .active:
-//                self.connectWebSocket()
-//            case .inactive,
-//                    .background:
-//                print("[WebScoket] Se desconetará por: \(newValue)")
-//                webSocket.disconnect()
-//                print("[WebScoket] Desconectado")
-//            default:
-//                webSocket.disconnect()
-//            }
-//        }
     }
     private func initialization() {
         do {
@@ -76,6 +64,7 @@ struct MainContendView: View {
                     message: "Ha ocurrido un error en la sincronización.",
                     primary: AlertAction(title: "Aceptar") {
                         webSocket.disconnect()
+                        self.sessionManager.logout()
                     }
                 )
             }

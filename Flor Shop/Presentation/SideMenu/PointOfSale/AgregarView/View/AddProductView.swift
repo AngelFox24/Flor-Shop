@@ -27,8 +27,27 @@ struct AddProductView: View {
             .background(Color.background)
             .task {
                 guard let productCic else { return }
-                try? await agregarViewModel.loadProduct(productCic: productCic)
+                await self.loadProduct(productCic: productCic)
             }
+    }
+    private func loadProduct(productCic: String) async {
+        let loadingId = self.overlayViewModel.showLoading()
+        do {
+            try await agregarViewModel.loadProduct(productCic: productCic)
+            self.overlayViewModel.endLoading(id: loadingId)
+        } catch {
+            print("[AddProductView] Ha ocurrido un error: \(error)")
+            self.overlayViewModel.showAlert(
+                title: "Error",
+                message: "Ha ocurrido un error al cargar un producto.",
+                primary: AlertAction(
+                    title: "Aceptar",
+                    action: {
+                        self.overlayViewModel.endLoading(id: loadingId)
+                    }
+                )
+            )
+        }
     }
     private func saveProduct() {
         let loadingId = self.overlayViewModel.showLoading()
@@ -127,7 +146,7 @@ struct CamposProductoAgregar: View {
                 }
                 VStack {
                     HStack {
-                        CustomTextField(placeHolder: "", title: "Código de barras" ,value: $agregarViewModel.agregarFields.scannedCode, edited: .constant(false))
+                        CustomTextField(title: "Código de barras", value: $agregarViewModel.agregarFields.scannedCode, edited: .constant(false))
                         Button {
                             agregarViewModel.agregarFields.isShowingScanner.toggle()
                         } label: {
@@ -149,17 +168,17 @@ struct CamposProductoAgregar: View {
                     HStack {
                         // El texto hace que tenga una separacion mayor del elemento
                         HStack {
-                            CustomTextField(title: "Nombre del Producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
+                            CustomTextField(title: "Nombre del producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
                         }
-                        Button(action: findImageOnInternet) {
-                            Text("Buscar Imagen")
-                                .foregroundColor(.black)
-                                .font(.custom("Artifika-Regular", size: 16))
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 5)
-                                .background(Color("color_secondary"))
-                                .cornerRadius(10)
-                        }
+//                        Button(action: findImageOnInternet) {
+//                            Text("Buscar Imagen")
+//                                .foregroundColor(.black)
+//                                .font(.custom("Artifika-Regular", size: 16))
+//                                .padding(.vertical, 6)
+//                                .padding(.horizontal, 5)
+//                                .background(Color("color_secondary"))
+//                                .cornerRadius(10)
+//                        }
                     }
                     if agregarViewModel.agregarFields.productError != "" {
                         ErrorMessageText(message: agregarViewModel.agregarFields.productError)
@@ -181,9 +200,9 @@ struct CamposProductoAgregar: View {
                     TypeUnitView(value: $agregarViewModel.agregarFields.unitType)
                 }
                 VStack {
-                    HStack {
-                        CustomTextField(placeHolder: "0", title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
-                        CustomNumberField(placeHolder: "0", title: "Costo Unitario", userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
+                    HStack(spacing: 10) {
+                        CustomTextField(title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
+                        CustomNumberField(title: "Costo unitario", userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
                     }
                     if agregarViewModel.agregarFields.quantityError != "" {
                         ErrorMessageText(message: agregarViewModel.agregarFields.quantityError)
@@ -195,9 +214,9 @@ struct CamposProductoAgregar: View {
                     }
                 }
                 VStack {
-                    HStack {
-                        CustomTextField(title: "Margen de Ganancia" ,value: .constant(agregarViewModel.agregarFields.profitMargin), edited: .constant(false), disable: true)
-                        CustomNumberField(placeHolder: "0", title: "Precio de Venta", userInput: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited)
+                    HStack(spacing: 10) {
+                        CustomTextField(title: "Margen de ganancia" ,value: .constant(agregarViewModel.agregarFields.profitMargin), edited: .constant(false), disable: true)
+                        CustomNumberField(title: "Precio de venta", userInput: $agregarViewModel.agregarFields.unitPrice, edited: $agregarViewModel.agregarFields.unitPriceEdited)
                     }
                     if agregarViewModel.agregarFields.unitPriceError != "" {
                         ErrorMessageText(message: agregarViewModel.agregarFields.unitPriceError)

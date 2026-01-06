@@ -54,7 +54,7 @@ struct AddEmployeeListController: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 10) {
-                CustomTextField(placeHolder: "", title: "Correo" , value: $addEmployeeViewModel.email, edited: .constant(false))
+                CustomTextField(title: "Correo" , value: $addEmployeeViewModel.email, edited: .constant(false))
                 DropDownView(
                     hind: "Role",
                     options: UserSubsidiaryRole.allCases,

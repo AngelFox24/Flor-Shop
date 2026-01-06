@@ -3,6 +3,7 @@ import Combine
 
 @Observable
 class CustomerViewModel {
+    var searchText: String = ""
     var customerList: [Customer] = []
     var searchWord: String = "" {
         didSet {

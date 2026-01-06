@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct CustomNumberField: View {
-    var placeHolder: String = "0.00"
     var title: String = "Campo"
     @State private var firstFocusTriggered = false
     @State private var viewText: String = ""
@@ -10,94 +9,92 @@ struct CustomNumberField: View {
     @FocusState var isInputActive: Bool
     var disable: Bool = false
     var onUnFocused: (() -> Void)?
+    private var placeHolderPerform: Bool { isInputActive || !viewText.isEmpty }
     var body: some View {
-        HStack {
-            ZStack {
-                    HStack(spacing: 0) {
-                        TextField(placeHolder, text: $viewText)
-                            .focused($isInputActive)
-                            .foregroundColor(.black)
-                            .font(.custom("Artifika-Regular", size: 20))
-                            .multilineTextAlignment(.center)
-                            .keyboardType(.numberPad)
-                            .padding(.all, 5)
-                            .foregroundColor(.black)
-                            .padding(.vertical, 4)
-                            .disableAutocorrection(true)
-                            .onChange(of: viewText) { _, newValue in
-                                if isInputActive {
-                                    if newValue != "" {
-                                        edited = true
-                                    }
-                                    let stringsito = newValue.replacingOccurrences(of: ".", with: "")
-                                    if let val = Int(stringsito) {
-                                        userInput = val
-                                        viewText = formatNumber(val)
-                                    } else {
-                                        viewText = "0"
-                                    }
-                                }
-                            }
-                            .onChange(of: isInputActive) { _, newFocus in
-                                if !newFocus {
-                                    onUnFocused?()
-                                    if userInput == 0 {//Cuando el teclado desaparece que aparesca el placeholder
-                                        viewText = ""
-                                        edited = false
-                                    }
-                                }
-                            }
-                            .onChange(of: userInput) { _, newValue in
-                                if newValue == 0 {
-                                    if isInputActive {//Si el teclado esta en pantalla no se puede limpiar el texto porque ocurre errores
-                                        viewText = "0"
-                                    } else {
-                                        viewText = ""
-                                    }
-                                } else if !isInputActive {//Si no se esta editando y cambia el input entonces actualizamos el texto mostrado, es porque el input se actualizado desde fuera del CustomNumberField
-                                    viewText = formatNumber(userInput)
-                                }
-                            }
-                            .disabled(disable)
-                            .toolbar {
-                                if isInputActive {
-                                    ToolbarItem(placement: .keyboard) {
-                                        CustomHideKeyboard {
-                                            isInputActive = false
-                                        }
-                                    }
-//                                    ToolbarSpacer(.fixed, placement: .keyboard)
-                                }
-                            }
+        ZStack {
+            HStack(spacing: 0) {
+                TextField("", text: $viewText)
+                    .focused($isInputActive)
+                    .font(.custom("Artifika-Regular", size: 20))
+                    .multilineTextAlignment(.center)
+                    .keyboardType(.numberPad)
+                    .padding(.all, 5)
+                    .foregroundColor(.black)
+                    .padding(.vertical, 4)
+                    .disableAutocorrection(true)
+                    .onChange(of: viewText) { _, newValue in
                         if isInputActive {
-                            Button(action: {
-                                if isInputActive {
-                                    viewText.removeAll()
-                                } else if !disable {
-                                    isInputActive = true
-                                }
-                            }, label: {
-                                Image(systemName: "x.circle")
-                                    .foregroundColor(Color.accentColor)
-                                    .font(.custom("Artifika-Regular", size: 16))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 12)
-                                    .animation(.easeInOut(duration: 0.4), value: isInputActive)
-                            })
+                            if newValue != "" {
+                                edited = true
+                            }
+                            let stringsito = newValue.replacingOccurrences(of: ".", with: "")
+                            if let val = Int(stringsito) {
+                                userInput = val
+                                viewText = formatNumber(val)
+                            } else {
+                                viewText = "0"
+                            }
                         }
                     }
-                    .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
-                    .cornerRadius(8)
-                    Text(title)
-                        .font(.custom("Artifika-Regular", size: 14))
-                        .padding(.horizontal, 8)
-                        .foregroundColor(.black)
-                        .background(disable ? Color(hue: 1.0, saturation: 0.0, brightness: 0.884) : .white)
-                        .cornerRadius(5)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .offset(y: -22)
-                        .disabled(disable)
+                    .onChange(of: isInputActive) { _, newFocus in
+                        if !newFocus {
+                            onUnFocused?()
+                            if userInput == 0 {//Cuando el teclado desaparece que aparesca el placeholder
+                                viewText = ""
+                                edited = false
+                            }
+                        }
+                    }
+                    .onChange(of: userInput) { _, newValue in
+                        if newValue == 0 {
+                            if isInputActive {//Si el teclado esta en pantalla no se puede limpiar el texto porque ocurre errores
+                                viewText = "0"
+                            } else {
+                                viewText = ""
+                            }
+                        } else if !isInputActive {//Si no se esta editando y cambia el input entonces actualizamos el texto mostrado, es porque el input se actualizado desde fuera del CustomNumberField
+                            viewText = formatNumber(userInput)
+                        }
+                    }
+                    .disabled(disable)
+                    .toolbar {
+                        if isInputActive {
+                            ToolbarItem(placement: .keyboard) {
+                                CustomHideKeyboard {
+                                    isInputActive = false
+                                }
+                            }
+                        }
+                    }
+                if isInputActive {
+                    Button(action: {
+                        if isInputActive {
+                            viewText.removeAll()
+                        } else if !disable {
+                            isInputActive = true
+                        }
+                    }, label: {
+                        Image(systemName: "x.circle")
+                            .foregroundColor(Color.accentColor)
+                            .font(.custom("Artifika-Regular", size: 16))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 12)
+                            .animation(.easeInOut(duration: 0.4), value: isInputActive)
+                    })
+                }
             }
+            .background(disable ? Color.textFieldDisable : .white)
+            .clipShape(RoundedRectangle(cornerRadius: 25))
+            HStack {
+                Text(title)
+                    .font(.custom("Artifika-Regular", size: placeHolderPerform ? 14 : 20))
+                    .padding(.horizontal, 10)
+                    .foregroundColor(Color.textFieldTittle)
+                    .disabled(disable)
+                Spacer()
+            }
+            .offset(y: placeHolderPerform ? -34 : 0)
+            .animation(.easeOut(duration: 0.2), value: placeHolderPerform)
         }
         .onTapGesture {
             if !disable {
@@ -138,5 +135,5 @@ struct CustomNumberField: View {
         CustomNumberField(userInput: $userInput, edited: $edited)
         Spacer()
     }
-    .background(Color.gray.opacity(0.9))
+    .background(Color.background)
 }

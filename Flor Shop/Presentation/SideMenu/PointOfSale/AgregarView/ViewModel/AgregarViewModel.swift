@@ -118,20 +118,54 @@ class AgregarViewModel {
             self.agregarFields.unitType = product.unitType
             self.agregarFields.unitCost = product.unitCost.cents
             self.agregarFields.unitPrice = product.unitPrice.cents
-            self.agregarFields.scannedCode = product.barCode == nil ? "" : product.barCode!
+            self.agregarFields.scannedCode = product.barCode ?? ""
+            print("[AgregarViewModel] barcode: \(product.barCode, default: "nil")")
             self.agregarFields.errorBD = ""
         }
         if let imageUrlString = product.imageUrl,
            let imageUrl = URL(string: imageUrlString) {
-            let result = try await KingfisherManager.shared.retrieveImage(
-                with: imageUrl,
-                options: [
-                    .cacheMemoryOnly
-                ]
-            )
+            print("[AgregarViewModel] Se contruyo la url: \(imageUrl.absoluteString)")
+            let processor = DownsamplingImageProcessor(size: CGSize(width: 200, height: 200))
+            let serializer = FormatIndicatedCacheSerializer.png
+            var result: RetrieveImageResult?
+            do {
+                result = try await KingfisherManager.shared.retrieveImage(
+                    with: imageUrl,
+                    options: [
+                        .onlyFromCache,
+                        .processor(processor),
+                        .cacheSerializer(serializer)
+                    ]
+                )
+                print("[AgregarViewModel] Firstry trajo imagen desde cache")
+            } catch {
+                print("[AgregarViewModel] Firstry no trajo imagen, error: \(error)")
+            }
+            do {
+                if result == nil {
+                    result = try await KingfisherManager.shared.retrieveImage(
+                        with: imageUrl,
+                        options: [
+                            .cacheMemoryOnly,
+                            .processor(processor),
+                            .cacheSerializer(serializer)
+                        ]
+                    )
+                }
+                print("[AgregarViewModel] Secondtry trajo imagen desde cache")
+            } catch {
+                print("[AgregarViewModel] Secondtry no trajo imagen, error: \(error)")
+                throw error
+            }
+            print("[AgregarViewModel] Se obtuvo la imagen desde Kingfisher")
+            guard let result else {
+                throw KingfisherError.requestError(reason: .invalidURL(request: .init(url: imageUrl)))
+            }
             let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: result.image)
+            print("[AgregarViewModel] Se optimizo la imagen")
             await MainActor.run {
                 self.selectedLocalImage = optimizedImage
+                print("[AgregarViewModel] Se coloca la imagen a la vista")
             }
         }
         print("Se verifica producto: \(self.agregarFields.productName)")

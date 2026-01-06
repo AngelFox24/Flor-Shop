@@ -20,18 +20,18 @@ struct CustomerSelectionView: View {
         self.customerViewModel = CustomerViewModelFactory.getCustomerViewModelFactory(sessionContainer: ses)
     }
     var body: some View {
-        ZStack {
-            CustomerSelectionListController(customerViewModel: $customerViewModel, backAction: router.back)
-            VStack {
-                CustomerSelectionTopBar(customerViewModel: $customerViewModel, backAction: router.back)
-                Spacer()
-                BottomBar(findText: $customerViewModel.searchWord, addDestination: .addCustomer)
+        CustomerSelectionListController(customerViewModel: $customerViewModel, backAction: router.back)
+            .navigationTitle("Clientes")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $customerViewModel.searchText, placement: .toolbar)
+            .searchToolbarBehavior(.minimize)
+            .toolbar {
+                CustomerTopToolbar(viewModel: $customerViewModel)
+                MainBottomToolbar(destination: .addCustomer)
             }
-            .padding(.horizontal, 10)
-        }
-        .task {
-            customerViewModel.lazyFetchList()
-        }
+            .task {
+                customerViewModel.lazyFetchList()
+            }
     }
 }
 
