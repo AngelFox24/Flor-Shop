@@ -19,31 +19,6 @@ actor TokenManager {
         try? await self.store.save(token)
     }
     
-//    func currentScopedToken() async throws -> String? {
-//        guard let currentToken else {
-//            return nil
-//        }
-//        return try await authHeader(identifier: currentToken.identifier)
-//    }
-    
-//    func authHeader(identifier: TokenRefresableIdentifier) async throws -> String? {
-//        var bearerToken: TokenRefreshable
-//        if let currentToken,
-//           case .scopedToken(let subsidiaryCic) = currentToken.identifier,
-//           subsidiaryCic == identifier.identifier {
-//            bearerToken = currentToken
-//        } else {
-//            guard let token = try await self.store.load(identifier: identifier) else {
-//                throw NetworkError.dataNotFound
-//            }
-//            bearerToken = token
-//        }
-//        if try await needsRefresh(token: bearerToken) {
-//            bearerToken = try await refreshIfNeeded(token: bearerToken, identifier: identifier)
-//        }
-//        return "Bearer \(bearerToken.accessToken)"
-//    }
-    
     func getToken(identifier: TokenRefresableIdentifier) async throws -> TokenRefreshable? {
         var bearerToken: TokenRefreshable
         if let currentToken,

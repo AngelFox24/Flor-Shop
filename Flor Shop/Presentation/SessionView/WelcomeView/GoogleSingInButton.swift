@@ -46,6 +46,7 @@ struct GoogleSingInButton: View {
                 guard let token = result.user.idToken?.tokenString else {
                     throw NSError(domain: "No token", code: 0, userInfo: nil)
                 }
+                print("[GoogleSingInButton] googletoken: \(token)")
                 await MainActor.run {
                     self.path.append(.companySelection(provider: .google, token: token))
                 }

@@ -170,15 +170,6 @@ struct CamposProductoAgregar: View {
                         HStack {
                             CustomTextField(title: "Nombre del producto" ,value: $agregarViewModel.agregarFields.productName, edited: $agregarViewModel.agregarFields.productEdited)
                         }
-//                        Button(action: findImageOnInternet) {
-//                            Text("Buscar Imagen")
-//                                .foregroundColor(.black)
-//                                .font(.custom("Artifika-Regular", size: 16))
-//                                .padding(.vertical, 6)
-//                                .padding(.horizontal, 5)
-//                                .background(Color("color_secondary"))
-//                                .cornerRadius(10)
-//                        }
                     }
                     if agregarViewModel.agregarFields.productError != "" {
                         ErrorMessageText(message: agregarViewModel.agregarFields.productError)
