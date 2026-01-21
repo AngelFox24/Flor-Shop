@@ -3,7 +3,7 @@ import Foundation
 protocol GetSalesUseCase {
     func getSalesAmount(date: Date, interval: SalesDateInterval) -> Money
     func getCostAmount(date: Date, interval: SalesDateInterval) -> Money
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) throws -> Money
 }
 
 final class GetSalesInteractor: GetSalesUseCase {
@@ -30,7 +30,7 @@ final class GetSalesInteractor: GetSalesUseCase {
             return Money(0)
         }
     }
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) -> Money {
-        return self.saleRepository.getRevenueAmount(date: date, interval: interval)
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) throws -> Money {
+        return try self.saleRepository.getRevenueAmount(date: date, interval: interval)
     }
 }

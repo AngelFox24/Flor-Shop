@@ -2,7 +2,7 @@ import Foundation
 import FlorShopDTOs
 
 protocol GetEmployeesUseCase {
-    func execute(page: Int) -> [Employee]
+    func execute(page: Int) async throws -> [Employee]
     func inviteEmployee(email: String, role: UserSubsidiaryRole) async throws
 }
 
@@ -13,8 +13,8 @@ final class GetEmployeesUseCaseInteractor: GetEmployeesUseCase {
         self.employeeRepository = employeeRepository
     }
     
-    func execute(page: Int) -> [Employee] {
-        return self.employeeRepository.getEmployees()
+    func execute(page: Int) async throws -> [Employee] {
+        return try await self.employeeRepository.getEmployees()
     }
     
     func inviteEmployee(email: String, role: UserSubsidiaryRole) async throws {

@@ -16,7 +16,6 @@ enum FlorShopCoreApiRequest {
     case registerSale(sale: RegisterSaleParameters, token: ScopedTokenWithSubdomain)
     case register(register: RegisterParameters, token: ScopedTokenWithSubdomain)
     case saveSubsidiary(subsidiary: SubsidiaryServerDTO, token: ScopedTokenWithSubdomain)
-    case sync(syncParams: SyncRequest, token: ScopedTokenWithSubdomain)
 }
 
 extension FlorShopCoreApiRequest: NetworkRequest {
@@ -52,9 +51,6 @@ extension FlorShopCoreApiRequest: NetworkRequest {
         case .saveSubsidiary(_, let token):
             path = "/subsidiaries"
             subdomain = token.subdomain
-        case .sync(_, let token):
-            path = "/sync"
-            subdomain = token.subdomain
         }
         let newBaseUrl = baseUrl.replacingOccurrences(of: "{subdomain}", with: subdomain)
         let completePath = newBaseUrl + path
@@ -81,8 +77,6 @@ extension FlorShopCoreApiRequest: NetworkRequest {
                 .post
         case .saveSubsidiary:
                 .post
-        case .sync:
-                .post
         }
     }
     
@@ -108,8 +102,6 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         case .saveSubsidiary(_, let scopedToken):
             headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
-        case .sync(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken.scopedToken)"
         }
         return headers
     }
@@ -134,8 +126,6 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             return register
         case .saveSubsidiary(let subsidiary, _):
             return subsidiary
-        case .sync(let sync, _):
-            return sync
         }
     }
 }

@@ -1,11 +1,10 @@
 import Foundation
-import CoreData
 import FlorShopDTOs
 
-protocol EmployeeRepository: Syncronizable {
+protocol EmployeeRepository {
     func save(employee: Employee) async throws
     func invite(email: String, role: UserSubsidiaryRole) async throws
-    func getEmployees() -> [Employee]
+    func getEmployees() async throws -> [Employee]
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -19,20 +18,9 @@ class EmployeeRepositoryImpl: EmployeeRepository {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func getLastToken() -> Int64 {
-        return self.localManager.getLastToken()
-    }
-    func getLastToken(context: NSManagedObjectContext) -> Int64 {
-        return self.localManager.getLastToken(context: context)
-    }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
-        try self.localManager.sync(backgroundContext: backgroundContext, employeesDTOs: syncDTOs.employees)
-    }
     func save(employee: Employee) async throws {
         if cloudBD {
             try await self.remoteManager.save(employee: employee)
-        } else {
-            try self.localManager.save(employee: employee)
         }
     }
     func invite(email: String, role: UserSubsidiaryRole) async throws {
@@ -40,7 +28,7 @@ class EmployeeRepositoryImpl: EmployeeRepository {
             try await self.remoteManager.invite(email: email, role: role)
         }
     }
-    func getEmployees() -> [Employee] {
-        return self.localManager.getEmployees()
+    func getEmployees() async throws -> [Employee] {
+        return try await self.localManager.getEmployees()
     }
 }

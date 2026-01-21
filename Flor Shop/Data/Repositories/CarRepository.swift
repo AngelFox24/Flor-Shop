@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 protocol CarRepository {
     func createCartIdNotExist() throws

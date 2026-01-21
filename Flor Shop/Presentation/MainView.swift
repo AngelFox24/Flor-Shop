@@ -22,52 +22,50 @@ struct MainContendView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(OverlayViewModel.self) var overlayViewModel
     @Environment(SessionManager.self) var sessionManager
-    @State var webSocket: SyncWebSocketClient
     //TODO: Verificar si no perjudica a las vistar con el repintado
     let sessionContainer: SessionContainer
     init(sessionConfig: SessionConfig) {
         self.sessionContainer = SessionContainer(sessionConfig: sessionConfig)
-        self.webSocket = SyncWebSocketClientFactory.getWebSocketClient(sessionContainer: sessionContainer)
     }
     var body: some View {
         VStack(spacing: 0) {
             MenuView()
                 .environment(sessionContainer)
-                .environment(webSocket)
         }
-        .onAppear {
-            self.initialization()
-            self.connectWebSocket()
+        .task {
+            await self.connectPowerSync()
+            await self.initialization()
         }
     }
-    private func initialization() {
+    private func initialization() async {
+        let loadingId = self.overlayViewModel.showLoading()
         do {
             try self.sessionContainer.cartRepository.createCartIdNotExist()
+            try await self.sessionContainer.powerSyncService.waitForFirstSync()
+            try await Task.sleep(nanoseconds: 5_000_000_000)//5 segundos
+            self.overlayViewModel.endLoading(id: loadingId)
         } catch {
             self.overlayViewModel.showAlert(
-                title: "Error Websocket",
+                title: "Error en la inicializacion.",
                 message: "Ha ocurrido un error en la incializacion.",
-                primary: AlertAction(title: "Aceptar", action: {})
+                primary: AlertAction(title: "Aceptar") {
+                    self.overlayViewModel.endLoading(id: loadingId)
+                }
             )
         }
     }
-    private func connectWebSocket() {
-        Task {
-            do {
-                try await webSocket.connect(
-                    subdomain: self.sessionContainer.session.subdomain,
-                    subsidiaryCic: self.sessionContainer.session.subsidiaryCic
-                )
-            } catch {
-                self.overlayViewModel.showAlert(
-                    title: "Error Websocket",
-                    message: "Ha ocurrido un error en la sincronización.",
-                    primary: AlertAction(title: "Aceptar") {
-                        webSocket.disconnect()
-                        self.sessionManager.logout()
-                    }
-                )
-            }
+    private func connectPowerSync() async {
+        do {
+            try await self.sessionContainer.powerSyncService.connect()
+        } catch {
+            print("[MainContendView] Error al contectar a PowerSync: \(error)")
+            self.overlayViewModel.showAlert(
+                title: "Error al contectar a PowerSync",
+                message: "Ha ocurrido un error en la sincronización.",
+                primary: AlertAction(title: "Aceptar") {
+                    self.sessionManager.logout()
+                }
+            )
         }
     }
 }

@@ -1,8 +1,8 @@
 import Foundation
+import PowerSync
 import FlorShopDTOs
 
-protocol SaleRepository {
-    func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) async throws
+protocol LocalSaleManager {
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail]
@@ -11,42 +11,37 @@ protocol SaleRepository {
     func getRevenueAmount(date: Date, interval: SalesDateInterval) throws -> Money
 }
 
-class SaleRepositoryImpl: SaleRepository {
-    let localManager: LocalSaleManager
-    let remoteManager: RemoteSaleManager
-    let localCartManager: LocalCartManager
-    let cloudBD = true
+final class SQLiteSaleManager: LocalSaleManager {
+    let sessionConfig: SessionConfig
+    let db: PowerSyncDatabaseProtocol
     init(
-        localManager: LocalSaleManager,
-        remoteManager: RemoteSaleManager,
-        localCartManager: LocalCartManager
+        sessionConfig: SessionConfig,
+        db: PowerSyncDatabaseProtocol
     ) {
-        self.localManager = localManager
-        self.remoteManager = remoteManager
-        self.localCartManager = localCartManager
-    }
-    func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) async throws {
-        if cloudBD {
-            try await self.remoteManager.save(cart: cart, paymentType: paymentType, customerCic: customerCic)
-            try self.localCartManager.emptyCart()
-        }
+        self.sessionConfig = sessionConfig
+        self.db = db
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
-        return try self.localManager.getSalesDetailsHistoric(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        []
     }
+    
     func getSalesDetailsGroupedByProduct(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
-        return try self.localManager.getSalesDetailsGroupedByProduct(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        []
     }
+    
     func getSalesDetailsGroupedByCustomer(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {
-        return try self.localManager.getSalesDetailsGroupedByCustomer(page: page, pageSize: pageSize, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+        []
     }
+    
     func getSalesAmount(date: Date, interval: SalesDateInterval) throws -> Money {
-        return try self.localManager.getSalesAmount(date: date, interval: interval)
+        throw NSError(domain: "Not implemented", code: 0, userInfo: nil)
     }
+    
     func getCostAmount(date: Date, interval: SalesDateInterval) throws -> Money {
-        return try self.localManager.getCostAmount(date: date, interval: interval)
+        throw NSError(domain: "Not implemented", code: 0, userInfo: nil)
     }
+    
     func getRevenueAmount(date: Date, interval: SalesDateInterval) throws -> Money {
-        return try self.localManager.getRevenueAmount(date: date, interval: interval)
+        throw NSError(domain: "Not implemented", code: 0, userInfo: nil)
     }
 }

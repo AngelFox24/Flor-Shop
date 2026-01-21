@@ -1,10 +1,9 @@
 import Foundation
-import CoreData
 import FlorShopDTOs
 
-protocol SubsidiaryRepository: Syncronizable {
+protocol SubsidiaryRepository {
     func save(subsidiary: Subsidiary) async throws
-    func getSubsidiaries() -> [Subsidiary]
+    func getSubsidiaries() async throws -> [Subsidiary]
 }
 
 class SubsidiaryRepositoryImpl: SubsidiaryRepository {
@@ -18,23 +17,12 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func getLastToken() -> Int64 {
-        return self.localManager.getLastToken()
-    }
-    func getLastToken(context: NSManagedObjectContext) -> Int64 {
-        return self.localManager.getLastToken(context: context)
-    }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
-        try self.localManager.sync(backgroundContext: backgroundContext, subsidiariesDTOs: syncDTOs.subsidiaries)
-    }
     func save(subsidiary: Subsidiary) async throws {
         if cloudBD {
             try await self.remoteManager.save(subsidiary: subsidiary)
-        } else {
-            try self.localManager.save(subsidiary: subsidiary)
         }
     }
-    func getSubsidiaries() -> [Subsidiary] {
-        return self.localManager.getSubsidiaries()
+    func getSubsidiaries() async throws -> [Subsidiary] {
+        return try await self.localManager.getSubsidiaries()
     }
 }

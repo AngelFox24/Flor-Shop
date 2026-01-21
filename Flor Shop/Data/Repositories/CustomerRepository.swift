@@ -1,8 +1,7 @@
 import Foundation
-import CoreData
 import FlorShopDTOs
 
-protocol CustomerRepository: Syncronizable {
+protocol CustomerRepository {
     func save(customer: Customer) async throws
     func payClientTotalDebt(customer: Customer) async throws -> Bool
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
@@ -21,15 +20,6 @@ class CustomerRepositoryImpl: CustomerRepository {
         self.localManager = localManager
         self.remoteManager = remoteManager
     }
-    func getLastToken() -> Int64 {
-        return self.localManager.getLastToken()
-    }
-    func getLastToken(context: NSManagedObjectContext) -> Int64 {
-        return self.localManager.getLastToken(context: context)
-    }
-    func sync(backgroundContext: NSManagedObjectContext, syncDTOs: SyncResponse) async throws {
-        try self.localManager.sync(backgroundContext: backgroundContext, customersDTOs: syncDTOs.customers)
-    }
     func payClientTotalDebt(customer: Customer) async throws -> Bool {
         guard let customerCic = customer.customerCic else {
             throw LocalStorageError.invalidInput("El cliente no tiene CIC")
@@ -43,14 +33,12 @@ class CustomerRepositoryImpl: CustomerRepository {
                 return true
             }
         } else {
-            return try self.localManager.payClientTotalDebt(customer: customer)
+            return false
         }
     }
     func save(customer: Customer) async throws {
         if cloudBD {
             try await self.remoteManager.save(customer: customer)
-        } else {
-            try self.localManager.save(customer: customer)
         }
     }
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {

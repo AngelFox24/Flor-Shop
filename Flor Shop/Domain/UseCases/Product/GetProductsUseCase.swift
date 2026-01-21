@@ -1,10 +1,9 @@
 import Foundation
 
 protocol GetProductsUseCase {
-    func getLastToken() -> Int64
     func updateProducts(products: [Product]) -> [Product]
-    func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product]
-    func getProduct(productCic: String) throws -> Product
+    func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) async throws -> [Product]
+    func getProduct(productCic: String) async throws -> Product
 }
 
 final class GetProductInteractor: GetProductsUseCase {
@@ -15,20 +14,14 @@ final class GetProductInteractor: GetProductsUseCase {
     ) {
         self.productRepository = productRepository
     }
-    
-    func getLastToken() -> Int64 {
-        return self.productRepository.getLastToken()
-    }
-    
     func updateProducts(products: [Product]) -> [Product] {
         return self.productRepository.updateProducts(products: products)
     }
-    
-    func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) -> [Product] {
+    func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) async throws -> [Product] {
         guard page >= 1 else { return [] }
-        return self.productRepository.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 15)
+        return try await self.productRepository.getProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page, pageSize: 15)
     }
-    func getProduct(productCic: String) throws -> Product {
-        return try self.productRepository.getProduct(productCic: productCic)
+    func getProduct(productCic: String) async throws -> Product {
+        return try await self.productRepository.getProduct(productCic: productCic)
     }
 }
