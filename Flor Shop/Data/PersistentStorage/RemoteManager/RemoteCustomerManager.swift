@@ -19,7 +19,7 @@ final class RemoteCustomerManagerImpl: RemoteCustomerManager {
         }
         let request = FlorShopCoreApiRequest.saveCustomer(
             customer: customer.toCustomerDTO(),
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain)
+            token: scopedToken.accessToken
         )
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
@@ -29,7 +29,7 @@ final class RemoteCustomerManagerImpl: RemoteCustomerManager {
         }
         let request = FlorShopCoreApiRequest.payCustomerDebt(
             params: PayCustomerDebtServerDTO(customerCic: customerCic, amount: amount),
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain)
+            token: scopedToken.accessToken
         )
         let response: PayCustomerDebtClientDTO = try await NetworkManager.shared.perform(request, decodeTo: PayCustomerDebtClientDTO.self)
         return response.change

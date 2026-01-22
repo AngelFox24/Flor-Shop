@@ -19,7 +19,7 @@ final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
         }
         let request = FlorShopCoreApiRequest.saveEmployee(
             employee: employee.toEmployeeDTO(),
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain)
+            token: scopedToken.accessToken
         )
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }

@@ -33,7 +33,7 @@ final class ProductViewModel {
     }
     func updateCartQuantity() async {
         do {
-            let quatity = try self.addProductoToCartUseCase.getCartQuantity()
+            let quatity = try await self.addProductoToCartUseCase.getCartQuantity()
             await MainActor.run {
                 self.cartCount = quatity
                 print("[ProductViewModel] Cart quantity: \(self.cartCount, default: "nil")")
@@ -110,7 +110,7 @@ final class ProductViewModel {
 //        print("ProductsCoreData: \(productsCoreData.count.description)")
     }
     func addProductoToCarrito(product: Product) async throws {
-        try self.addProductoToCartUseCase.execute(product: product)
+        try await self.addProductoToCartUseCase.execute(product: product)
     }
     func shouldLoadData(product: Product) async throws {
         if self.productsCoreData.isEmpty {

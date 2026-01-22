@@ -7,11 +7,9 @@ struct CompleteEmployeeProfileView: View {
     @Binding var path: [SessionRoutes]
     @State private var viewModel: CompleteEmployeeProfileViewModel
     let subsidiaryCic: String
-    let subdomain: String
-    init(subsidiaryCic: String, subdomain: String, path: Binding<[SessionRoutes]>) {
+    init(subsidiaryCic: String, path: Binding<[SessionRoutes]>) {
         self.viewModel = CompleteEmployeeProfileViewModelFactory.getViewModel()
         self._path = path
-        self.subdomain = subdomain
         self.subsidiaryCic = subsidiaryCic
     }
     var body: some View {
@@ -28,7 +26,7 @@ struct CompleteEmployeeProfileView: View {
         Task {
             do {
                 let employee = self.viewModel.getEmployee()
-                try await self.sessionManager.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic, subdomain: subdomain)
+                try await self.sessionManager.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic)
                 self.overlayViewModel.endLoading(id: loadingId)
             } catch {
                 self.overlayViewModel.showAlert(
@@ -47,7 +45,7 @@ struct CompleteEmployeeProfileView: View {
 }
 
 #Preview {
-    CompleteEmployeeProfileView(subsidiaryCic: UUID().uuidString, subdomain: "", path: .constant([]))
+    CompleteEmployeeProfileView(subsidiaryCic: UUID().uuidString, path: .constant([]))
 }
 
 struct CompleteEmployeeProfileListView: View {

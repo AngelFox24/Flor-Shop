@@ -14,25 +14,9 @@ struct CartView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CartTopToolbar(cartViewModel: $cartViewModel)
-//                ToolbarSpacer(placement: .bottomBar)
-                ToolbarItem(placement: .bottomBar) {
-                    Image(systemName: "chevron.backward")
-                }
-                ToolbarItem(placement: .bottomBar) {
-                    Text(datesito.formatted(.dateTime.day().month().year()))
-                        .overlay {
-                            DatePicker("", selection: $datesito, in: ...Date(), displayedComponents: .date)
-                                .datePickerStyle(.compact)
-                                .labelsHidden()
-                                .colorMultiply(.clear)
-                        }
-                }
-                ToolbarItem(placement: .bottomBar) {
-                    Image(systemName: "chevron.forward")
-                }
             }
             .task {
-                await cartViewModel.lazyFetchCart()
+                await cartViewModel.fetchCart()
             }
     }
 }
@@ -61,7 +45,7 @@ struct ListCartController: View {
                         .listRowBackground(Color.background)
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive, action: {
-                                deleteCartDetail(cartDetail: cartDetail)
+                                deleteCartDetail(cartDetailId: cartDetail.id)
                             }, label: {
                                 Image(systemName: "trash")
                             })
@@ -125,11 +109,11 @@ struct ListCartController: View {
 //        )
 //        cartViewModel.cartCoreData = car
 //    }
-    func deleteCartDetail(cartDetail: CartDetail) {
+    func deleteCartDetail(cartDetailId: UUID) {
         Task {
 //            loading = true
             do {
-                try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+                try await cartViewModel.deleteCartDetail(cartDetailId: cartDetailId)
                 await cartViewModel.fetchCart()
             } catch {
 //                router.presentAlert(.error(error.localizedDescription))
@@ -142,9 +126,9 @@ struct ListCartController: View {
 //            loading = true
             do {
                 if cartDetail.quantity - 1 <= 0 {
-                    try await cartViewModel.deleteCartDetail(cartDetail: cartDetail)
+                    try await cartViewModel.deleteCartDetail(cartDetailId: cartDetail.id)
                 } else if let productCic = cartDetail.product.productCic {
-                    try await cartViewModel.changeProductAmount(productCic: productCic, amount: cartDetail.quantity - 1)
+                    try await cartViewModel.changeProductAmount(cartDetailId: cartDetail.id, productCic: productCic, amount: cartDetail.quantity - 1)
                 }
                 await cartViewModel.fetchCart()
             } catch {
@@ -158,7 +142,7 @@ struct ListCartController: View {
 //            loading = true
             do {
                 if let productCic = cartDetail.product.productCic {
-                    try await cartViewModel.changeProductAmount(productCic: productCic, amount: cartDetail.quantity + 1)
+                    try await cartViewModel.changeProductAmount(cartDetailId: cartDetail.id, productCic: productCic, amount: cartDetail.quantity + 1)
                     await cartViewModel.fetchCart()
                 }
             } catch {

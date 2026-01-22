@@ -40,23 +40,23 @@ class CartViewModel {
     // MARK: CRUD Core Data
     @MainActor
     func fetchCart() async {
-        self.cartCoreData = self.getCartUseCase.execute()
+        self.cartCoreData = await self.getCartUseCase.execute()
         print("When fecthing cart, totalInCart: \(self.cartCoreData?.total.cents ?? 0)")
     }
-    func deleteCartDetail(cartDetail: CartDetail) async throws {
-        try self.deleteCartDetailUseCase.execute(cartDetail: cartDetail)
+    func deleteCartDetail(cartDetailId: UUID) async throws {
+        try await self.deleteCartDetailUseCase.execute(cartDetailId: cartDetailId)
     }
     func addProductoToCarrito(product: Product) async throws {
-        try self.addProductoToCartUseCase.execute(product: product)
+        try await self.addProductoToCartUseCase.execute(product: product)
         await fetchCart()
     }
     func emptyCart() async throws {
-        try self.emptyCartUseCase.execute()
+        try await self.emptyCartUseCase.execute()
         await fetchCart()
     }
-    func changeProductAmount(productCic: String, amount: Int) async throws {
+    func changeProductAmount(cartDetailId: UUID, productCic: String, amount: Int) async throws {
         print("CartViewModel: changeProductAmount")
-        try self.changeProductAmountInCartUseCase.execute(productCic: productCic, amount: amount)
+        try await self.changeProductAmountInCartUseCase.execute(cartDetailId: cartDetailId, productCic: productCic, amount: amount)
     }
     func releaseResources() {
         self.cartCoreData = nil
@@ -64,10 +64,5 @@ class CartViewModel {
     }
     func releaseCustomer() {
         self.customerInCar = nil
-    }
-    func lazyFetchCart() async {
-        if cartCoreData == nil {
-            await fetchCart()
-        }
     }
 }

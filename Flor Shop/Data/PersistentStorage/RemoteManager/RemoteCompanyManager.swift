@@ -19,7 +19,7 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         }
         let request = FlorShopCoreApiRequest.saveCompany(
             company: company.toCompanyDTO(),
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain)
+            token: scopedToken.accessToken
         )
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
@@ -29,7 +29,7 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         }
         let request = FlorShopCoreApiRequest.register(
             register: registerParams,
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain)
+            token: scopedToken.accessToken
         )
         let data: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }

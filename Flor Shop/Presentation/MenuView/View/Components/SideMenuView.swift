@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SideMenuView: View {
     @Environment(SessionManager.self) var sessionManager
+    @Environment(SessionContainer.self) var sessionContainer
     @Binding var menuTab: TabDestination
     let showMenu: () -> Void
     let navTabsIter: [TabDestination] = TabDestination.navTabs()
@@ -42,7 +43,7 @@ struct SideMenuView: View {
                         Spacer()
                         VStack(alignment: .leading, spacing: 5, content: {
                             Button {
-                                self.sessionManager.logout()
+                                self.logout()
                             } label: {
                                 LogoutButtonView()
                             }
@@ -58,6 +59,14 @@ struct SideMenuView: View {
                     Spacer()
                 }
             }
+    }
+    @MainActor
+    private func logout() {
+        Task { @MainActor in
+            self.sessionManager.logout()
+            try? await self.sessionContainer.powerSyncService.disconnect()
+        }
+        
     }
 }
 

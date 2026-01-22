@@ -83,46 +83,9 @@ final class SQLiteProductManager: LocalProductManager {
         []//TODO: Creo que se debe reemplazar con watch
     }
     func getProduct(productCic: String) async throws -> Product {
-        let sql = """
-        SELECT
-            p.id,
-            p.product_cic,
-            p.product_name,
-            p.bar_code,
-            p.unit_type,
-            p.image_url,
-            ps.active,
-            ps.quantity_stock,
-            ps.unit_cost,
-            ps.unit_price,
-            ps.expiration_date
-        FROM products p
-        JOIN product_subsidiary ps ON ps.product_id = p.id
-        WHERE p.product_cic = ?
-        LIMIT 1
-        """
-        
-        return try await db.get(
-            sql: sql,
-            parameters: [productCic],
-            mapper: { cursor in
-                return try Product(
-                    id: UUID(uuidString: cursor.getString(name: "id")) ?? UUID(),
-                    productCic: cursor.getStringOptional(name: "product_cic"),
-                    active: cursor.getBoolean(name: "active"),
-                    barCode: cursor.getStringOptional(name: "bar_code"),
-                    name: cursor.getString(name: "product_name"),
-                    qty: cursor.getInt(name: "quantity_stock"),
-                    unitType: UnitType(rawValue: cursor.getString(name: "unit_type")) ?? .unit,
-                    unitCost: Money(cursor.getInt(name: "unit_cost")),
-                    unitPrice: Money(cursor.getInt(name: "unit_price")),
-                    expirationDate: cursor
-                        .getStringOptional(name: "expiration_date")
-                        .flatMap { ISO8601DateFormatter().date(from: $0) },
-                    imageUrl: cursor.getStringOptional(name: "image_url")
-                )
-            }
-        )
+        return try await self.db.readTransaction { tx in
+            return try ProductQueries.getProduct(productCic: productCic, subsidiaryCic: self.sessionConfig.subsidiaryCic, tx: tx)
+        }
     }
 }
 

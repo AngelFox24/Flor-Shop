@@ -7,8 +7,8 @@ protocol SessionRepository {
     func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO]
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
-    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws
-    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool
+    func completeProfile(employee: Employee, subsidiaryCic: String) async throws
+    func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool
     func clear()
 }
 
@@ -42,11 +42,11 @@ final class SessionRepositoryImpl: SessionRepository {
         self.saveSession(session)
         return session
     }
-    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws {
-        try await self.remoteManager.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic, subdomain: subdomain)
+    func completeProfile(employee: Employee, subsidiaryCic: String) async throws {
+        try await self.remoteManager.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic)
     }
-    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool {
-        return try await self.remoteManager.isRegistrationComplete(subsidiaryCic: subsidiaryCic, subdomain: subdomain)
+    func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
+        return try await self.remoteManager.isRegistrationComplete(subsidiaryCic: subsidiaryCic)
     }
     func clear() {
          self.localManager.clear()

@@ -18,7 +18,7 @@ final class RemoteProductManagerImpl: RemoteProductManager {
         }
         let request = FlorShopCoreApiRequest.saveProduct(
             product: product.toProductDTO(),
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain)
+            token: scopedToken.accessToken
         )
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }

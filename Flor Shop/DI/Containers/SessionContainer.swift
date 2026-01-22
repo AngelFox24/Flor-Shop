@@ -69,7 +69,6 @@ extension SessionContainer {
     static var preview: SessionContainer {
         SessionContainer(
             sessionConfig: SessionConfig(
-                subdomain: "previewSubdomain",
                 companyCic: UUID().uuidString,
                 subsidiaryCic: UUID().uuidString,
                 employeeCic: UUID().uuidString

@@ -40,7 +40,7 @@ struct MainContendView: View {
     private func initialization() async {
         let loadingId = self.overlayViewModel.showLoading()
         do {
-            try self.sessionContainer.cartRepository.createCartIdNotExist()
+            try await self.sessionContainer.cartRepository.initializeModel()
             try await self.sessionContainer.powerSyncService.waitForFirstSync()
             try await Task.sleep(nanoseconds: 5_000_000_000)//5 segundos
             self.overlayViewModel.endLoading(id: loadingId)

@@ -1,13 +1,13 @@
 import Foundation
 
 protocol CarRepository {
-    func createCartIdNotExist() throws
-    func getCart() throws -> Car?
-    func deleteCartDetail(cartDetail: CartDetail) throws
-    func addProductoToCarrito(product: Product) throws
-    func emptyCart() throws
-    func changeProductAmountInCartDetail(productCic: String, amount: Int) throws
-    func getCartQuantity() throws -> Int
+    func initializeModel() async throws
+    func getCart() async throws -> Car?
+    func deleteCartDetail(cartDetailId: UUID) async throws
+    func addProductoToCarrito(product: Product) async throws
+    func emptyCart() async throws
+    func changeProductAmountInCartDetail(cartDetailId: UUID, productCic: String, amount: Int) async throws
+    func getCartQuantity() async throws -> Int
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -17,25 +17,25 @@ class CarRepositoryImpl: CarRepository {
     ) {
         self.localManager = localManager
     }
-    func createCartIdNotExist() throws {
-        try self.localManager.createCartIdNotExist()
+    func initializeModel() async throws {
+        try await self.localManager.initializeModel()
     }
-    func getCart() throws -> Car? {
-        return try self.localManager.getCart()
+    func getCart() async throws -> Car? {
+        return try await self.localManager.getCart()
     }
-    func deleteCartDetail(cartDetail: CartDetail) throws {
-        try self.localManager.deleteCartDetail(cartDetail: cartDetail)
+    func deleteCartDetail(cartDetailId: UUID) async throws {
+        try await self.localManager.deleteCartDetail(cartDetailId: cartDetailId)
     }
-    func addProductoToCarrito(product: Product) throws {
-        try self.localManager.addProductToCart(productIn: product)
+    func addProductoToCarrito(product: Product) async throws {
+        try await self.localManager.addProductToCart(productIn: product)
     }
-    func emptyCart() throws {
-        try self.localManager.emptyCart()
+    func emptyCart() async throws {
+        try await self.localManager.emptyCart()
     }
-    func changeProductAmountInCartDetail(productCic: String, amount: Int) throws {
-        try self.localManager.changeProductAmountInCartDetail(productCic: productCic, amount: amount)
+    func changeProductAmountInCartDetail(cartDetailId: UUID, productCic: String, amount: Int) async throws {
+        try await self.localManager.changeProductAmountInCartDetail(cartDetailId: cartDetailId, productCic: productCic, amount: amount)
     }
-    func getCartQuantity() throws -> Int {
-        return try self.localManager.getCartQuantity()
+    func getCartQuantity() async throws -> Int {
+        return try await self.localManager.getCartQuantity()
     }
 }

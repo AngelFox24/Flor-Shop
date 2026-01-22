@@ -9,7 +9,7 @@ enum AppConfig {
     static let bundleID = "MrProFox.FlorShop.dev"
     static let deepLinkScheme = "florshop.dev"
 #else
-    static let florShopCoreBaseURL = "https://{subdomain}.mrangel.dev"
+    static let florShopCoreBaseURL = "https://core.mrangel.dev"
     static let florShopCoreWSBaseURL = "wss://{subdomain}.mrangel.dev"
     static let florShopAuthBaseURL = "https://auth.mrangel.dev"
     static let florShopImagesBaseURL = "https://images.mrangel.dev"

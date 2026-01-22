@@ -7,8 +7,8 @@ protocol RemoteSessionManager {
     func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO]
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
-    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws
-    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool
+    func completeProfile(employee: Employee, subsidiaryCic: String) async throws
+    func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool
 }
 
 final class RemoteSessionManagerMock: RemoteSessionManager {
@@ -30,7 +30,6 @@ final class RemoteSessionManagerMock: RemoteSessionManager {
     }
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
         return SessionConfig(
-            subdomain: "Mock subdomain",
             companyCic: UUID().uuidString,
             subsidiaryCic: UUID().uuidString,
             employeeCic: UUID().uuidString
@@ -38,16 +37,15 @@ final class RemoteSessionManagerMock: RemoteSessionManager {
     }
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
         return SessionConfig(
-            subdomain: "Mock subdomain",
             companyCic: UUID().uuidString,
             subsidiaryCic: subsidiaryCic,
             employeeCic: UUID().uuidString
         )
     }
-    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws {
+    func completeProfile(employee: Employee, subsidiaryCic: String) async throws {
         
     }
-    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool {
+    func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
         return true
     }
 }
@@ -102,7 +100,6 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
         )
         await TokenManager.shared.save(token: token)
         return SessionConfig(
-            subdomain: payload.subdomain,
             companyCic: payload.companyCic,
             subsidiaryCic: payload.subsidiaryCic,
             employeeCic: payload.sub
@@ -140,30 +137,26 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
         )
         await TokenManager.shared.save(token: token)
         return SessionConfig(
-            subdomain: payload.subdomain,
             companyCic: payload.companyCic,
             subsidiaryCic: payload.subsidiaryCic,
             employeeCic: payload.sub
         )
     }
-    func completeProfile(employee: Employee, subsidiaryCic: String, subdomain: String) async throws {
+    func completeProfile(employee: Employee, subsidiaryCic: String) async throws {
         guard let scopedToken: TokenRefreshable = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
             throw NetworkError.dataNotFound
         }
         let request = FlorShopCoreApiRequest.saveEmployee(
             employee: employee.toEmployeeDTO(),
-            token: ScopedTokenWithSubdomain(
-                scopedToken: scopedToken.accessToken,
-                subdomain: subdomain
-            )
+            token: scopedToken.accessToken
         )
-        let response: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
+        let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func isRegistrationComplete(subsidiaryCic: String, subdomain: String) async throws -> Bool {
+    func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
             throw NetworkError.dataNotFound
         }
-        let request = FlorShopCoreApiRequest.isRegistrationComplete(token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: subdomain))
+        let request = FlorShopCoreApiRequest.isRegistrationComplete(token: scopedToken.accessToken)
         let response: CompleteRegistrationResponse = try await NetworkManager.shared.perform(request, decodeTo: CompleteRegistrationResponse.self)
         return response.isRegistered
     }

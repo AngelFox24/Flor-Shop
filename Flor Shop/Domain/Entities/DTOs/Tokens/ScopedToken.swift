@@ -5,7 +5,6 @@ struct ScopedTokenPayload: Decodable {
     let companyCic: String
     let subsidiaryCic: String
     let isOwner: Bool
-    let subdomain: String
     let type: String
     let iss: String
     let iat: TimeInterval

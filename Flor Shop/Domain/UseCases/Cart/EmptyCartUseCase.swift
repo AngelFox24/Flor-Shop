@@ -1,7 +1,7 @@
 import Foundation
 
 protocol EmptyCartUseCase {
-    func execute() throws
+    func execute() async throws
 }
 
 final class EmptyCartInteractor: EmptyCartUseCase {
@@ -11,7 +11,7 @@ final class EmptyCartInteractor: EmptyCartUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute() throws {
-        try self.cartRepository.emptyCart()
+    func execute() async throws {
+        try await self.cartRepository.emptyCart()
     }
 }

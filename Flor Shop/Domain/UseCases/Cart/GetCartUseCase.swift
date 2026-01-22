@@ -1,7 +1,7 @@
 import Foundation
 
 protocol GetCartUseCase {
-    func execute() -> Car?
+    func execute() async -> Car?
 }
 
 final class GetCartInteractor: GetCartUseCase {
@@ -11,9 +11,9 @@ final class GetCartInteractor: GetCartUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute() -> Car? {
+    func execute() async -> Car? {
         do {
-            return try self.cartRepository.getCart()
+            return try await self.cartRepository.getCart()
         } catch {
             return nil
         }

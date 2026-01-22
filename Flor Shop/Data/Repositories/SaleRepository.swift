@@ -28,7 +28,7 @@ class SaleRepositoryImpl: SaleRepository {
     func registerSale(cart: Car, paymentType: PaymentType, customerCic: String?) async throws {
         if cloudBD {
             try await self.remoteManager.save(cart: cart, paymentType: paymentType, customerCic: customerCic)
-            try self.localCartManager.emptyCart()
+            try await self.localCartManager.emptyCart()
         }
     }
     func getSalesDetailsHistoric(page: Int, pageSize: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) throws -> [SaleDetail] {

@@ -1,7 +1,7 @@
 import Foundation
 
 protocol DeleteCartDetailUseCase {
-    func execute(cartDetail: CartDetail) throws
+    func execute(cartDetailId: UUID) async throws
 }
 
 final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
@@ -11,7 +11,7 @@ final class DeleteCartDetailInteractor: DeleteCartDetailUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute(cartDetail: CartDetail) throws {
-        try self.cartRepository.deleteCartDetail(cartDetail: cartDetail)
+    func execute(cartDetailId: UUID) async throws {
+        try await self.cartRepository.deleteCartDetail(cartDetailId: cartDetailId)
     }
 }

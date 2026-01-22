@@ -103,7 +103,7 @@ struct SubsidiarySelectionListView: View {
     private func selectSubsidiary(subsidiaryCic: String) {
         Task {
             let session = try await self.sessionManager.selectSubsidiary(subsidiaryCic: subsidiaryCic)
-            self.path.append(.completeEmployeeProfile(subsidiaryCic: session.subsidiaryCic, subdomain: session.subdomain))
+            self.path.append(.completeEmployeeProfile(subsidiaryCic: session.subsidiaryCic))
         }
     }
 }

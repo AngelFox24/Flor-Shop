@@ -33,10 +33,10 @@ class PaymentViewModel {
     
     @MainActor
     func fetchCart() async {
-        self.cartCoreData = self.getCartUseCase.execute()
+        self.cartCoreData = await self.getCartUseCase.execute()
     }
     func emptyCart() async throws {
-        try self.emptyCartUseCase.execute()
+        try await self.emptyCartUseCase.execute()
         await fetchCart()
     }
     func registerSale() async throws {

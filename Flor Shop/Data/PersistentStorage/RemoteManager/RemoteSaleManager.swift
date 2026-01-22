@@ -21,7 +21,7 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
                 customerCic: customerCic,
                 paymentType: paymentType,
                 cart: cart.toCartDTO()),
-            token: ScopedTokenWithSubdomain(scopedToken: scopedToken.accessToken, subdomain: self.sessionConfig.subdomain))
+            token: scopedToken.accessToken)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
 }
