@@ -20,30 +20,40 @@ class CustomerViewModel {
     private var searchTask: Task<Void, Never>? = nil
     //Dependencies
     private let getCustomersUseCase: GetCustomersUseCase
+    private let setCustomerInCart: SetCustomerInCartUseCase
     
-    init(getCustomersUseCase: GetCustomersUseCase) {
+    init(
+        getCustomersUseCase: GetCustomersUseCase,
+        setCustomerInCart: SetCustomerInCartUseCase
+    ) {
         self.getCustomersUseCase = getCustomersUseCase
+        self.setCustomerInCart = setCustomerInCart
     }
     // MARK: CRUD Core Data
-    func fetchListCustomer(page: Int = 1) {
+    func fetchListCustomer(page: Int = 1) async {
         if page == 1 {
-            let customersNewCarge = self.getCustomersUseCase.execute(seachText: self.searchWord, order: self.order, filter: self.filter, page: self.currentPage)
+            let customersNewCarge = await self.getCustomersUseCase.execute(seachText: self.searchWord, order: self.order, filter: self.filter, page: self.currentPage)
             lastCarge = customersNewCarge.count
             self.customerList = customersNewCarge
         } else {
             if lastCarge > 0 {
-                let customersNewCarge = self.getCustomersUseCase.execute(seachText: self.searchWord, order: self.order, filter: self.filter, page: self.currentPage)
+                let customersNewCarge = await self.getCustomersUseCase.execute(seachText: self.searchWord, order: self.order, filter: self.filter, page: self.currentPage)
                 lastCarge = customersNewCarge.count
                 self.customerList.append(contentsOf: customersNewCarge)
             }
         }
     }
-    func fetchNextPage() {
+    func fetchNextPage() async {
         currentPage = currentPage + 1
-        fetchListCustomer(page: currentPage)
+        await fetchListCustomer(page: currentPage)
     }
     func setCustomerInCart(customer: Customer) {
-        
+        guard let customerCic = customer.customerCic else {
+            return
+        }
+        Task {
+            await self.setCustomerInCart.execute(customerCic: customerCic)
+        }
     }
     func setOrder(order: CustomerOrder) {
         self.order = order
@@ -57,9 +67,9 @@ class CustomerViewModel {
         self.currentPage = 1
         self.lastCarge = 0
     }
-    func lazyFetchList() {
-        if customerList.isEmpty {
-            fetchListCustomer()
+    func updateUI() {
+        Task {
+            await self.fetchListCustomer()
         }
     }
     private func onSearchTextChanged() {
@@ -67,7 +77,7 @@ class CustomerViewModel {
         searchTask = Task {
             try? await Task.sleep(for: .milliseconds(300)) // debounce manual
             self.currentPage = 1
-            fetchListCustomer()
+            await fetchListCustomer()
         }
     }
 }

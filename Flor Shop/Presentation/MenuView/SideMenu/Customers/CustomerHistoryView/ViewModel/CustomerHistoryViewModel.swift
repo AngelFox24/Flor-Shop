@@ -22,15 +22,15 @@ class CustomerHistoryViewModel {
         self.payClientDebtUseCase = payClientDebtUseCase
     }
     // MARK: CRUD Core Data
-    func fetchCustomerSalesDetail(page: Int = 1) {
+    func fetchCustomerSalesDetail(page: Int = 1) async {
         if let customerNN = customer {
             if page == 1 {
-                let newCarge = self.getCustomerSalesUseCase.execute(customer: customerNN, page: page)
+                let newCarge = await self.getCustomerSalesUseCase.execute(customer: customerNN, page: page)
                 lastCarge = newCarge.count
                 self.salesDetail = newCarge
             } else {
                 if lastCarge > 0 {
-                    let newCarge = self.getCustomerSalesUseCase.execute(customer: customerNN, page: page)
+                    let newCarge = await self.getCustomerSalesUseCase.execute(customer: customerNN, page: page)
                     lastCarge = newCarge.count
                     self.salesDetail.append(contentsOf: newCarge)
                 }
@@ -46,13 +46,13 @@ class CustomerHistoryViewModel {
     func loadCustomer(customerCic: String) async throws {
         
     }
-    func setCustomerInContext(customer: Customer) {
+    func setCustomerInContext(customer: Customer) async {
         self.customer = customer
-        fetchCustomerSalesDetail()
+        await fetchCustomerSalesDetail()
     }
-    func fetchNextPage() {
+    func fetchNextPage() async {
         currentPage = currentPage + 1
-        fetchCustomerSalesDetail(page: currentPage)
+        await fetchCustomerSalesDetail(page: currentPage)
     }
     func shouldLoadData(salesDetail: SaleDetail) -> Bool {
         if self.salesDetail.isEmpty {
@@ -66,17 +66,20 @@ class CustomerHistoryViewModel {
         //self.customer = nil
         self.salesDetail = []
     }
-    func updateData() throws {
-        guard let customerNN = customer else {
+    func updateData() async {
+        guard let customerCic = customer?.customerCic else {
             return
         }
-        self.customer = try self.getCustomersUseCase.getCustomer(customer: customerNN)
-        self.salesDetail = []
-        lazyFetch()
+        let customer = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)
+        await MainActor.run {
+            self.customer = customer
+            self.salesDetail = []
+        }
+        updateUI()
     }
-    func lazyFetch() {
-        if salesDetail.isEmpty {
-            fetchCustomerSalesDetail()
+    func updateUI() {
+        Task {
+            await fetchCustomerSalesDetail()
         }
     }
 }

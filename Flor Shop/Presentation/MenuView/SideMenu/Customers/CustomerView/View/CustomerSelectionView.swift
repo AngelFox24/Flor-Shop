@@ -30,7 +30,7 @@ struct CustomerSelectionView: View {
                 MainBottomToolbar(destination: .addCustomer)
             }
             .task {
-                customerViewModel.lazyFetchList()
+                customerViewModel.updateUI()
             }
     }
 }
@@ -79,7 +79,7 @@ struct CustomerSelectionListController: View {
                             )
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
-                            .listRowBackground(Color("color_background"))
+                            .listRowBackground(Color.background)
                             .onTapGesture {
                                 customerViewModel.setCustomerInCart(customer: customer)
                                 backAction()

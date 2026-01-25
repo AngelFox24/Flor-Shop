@@ -19,8 +19,6 @@ struct SalesTopBar: View {
                     .cornerRadius(15)
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .diary
-                        salesCoreDataViewModel.updateAmountsBar()
-                        salesCoreDataViewModel.fetchSalesDetailsList()
                     }
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.monthly.description)
@@ -33,8 +31,6 @@ struct SalesTopBar: View {
                     .cornerRadius(15)
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .monthly
-                        salesCoreDataViewModel.updateAmountsBar()
-                        salesCoreDataViewModel.fetchSalesDetailsList()
                     }
                     HStack(spacing: 0, content: {
                         Text(SalesDateInterval.yearly.description)
@@ -47,8 +43,6 @@ struct SalesTopBar: View {
                     .cornerRadius(15)
                     .onTapGesture {
                         salesCoreDataViewModel.salesDateInterval = .yearly
-                        salesCoreDataViewModel.updateAmountsBar()
-                        salesCoreDataViewModel.fetchSalesDetailsList()
                     }
                 })
                 .background(.white)
@@ -74,12 +68,6 @@ struct SalesTopBar: View {
                     }
                 } label: {
                     FilterButton()
-                }
-                .onChange(of: salesCoreDataViewModel.order) { _, _ in
-                    salesCoreDataViewModel.fetchSalesDetailsList()
-                }
-                .onChange(of: salesCoreDataViewModel.grouper) { _, _ in
-                    salesCoreDataViewModel.fetchSalesDetailsList()
                 }
             })
             .padding(.horizontal, 10)
@@ -152,8 +140,6 @@ struct SalesTopBar: View {
                 })
                 .onTapGesture(perform: {
                     salesCoreDataViewModel.salesCurrentDateFilter = Date()
-                    salesCoreDataViewModel.updateAmountsBar()
-                    salesCoreDataViewModel.fetchSalesDetailsList()
                 })
             })
             .padding(.horizontal, 10)
@@ -162,13 +148,9 @@ struct SalesTopBar: View {
     }
     func nextDate() {
         salesCoreDataViewModel.nextDate()
-        salesCoreDataViewModel.updateAmountsBar()
-        salesCoreDataViewModel.fetchSalesDetailsList()
     }
     func previousDate() {
         salesCoreDataViewModel.previousDate()
-        salesCoreDataViewModel.updateAmountsBar()
-        salesCoreDataViewModel.fetchSalesDetailsList()
     }
 }
 

@@ -18,17 +18,19 @@ struct SalesView: View {
                 SalesBottomToolbar(salesViewModel: $salesViewModel)
             }
             .task {
-                salesViewModel.lazyFetchList()
+                self.salesViewModel.updateUI()
             }
             .onChange(of: salesViewModel.order) { _, _ in
-                salesViewModel.fetchSalesDetailsList()
+                self.salesViewModel.updateUI()
             }
             .onChange(of: salesViewModel.grouper) { _, _ in
-                salesViewModel.fetchSalesDetailsList()
+                self.salesViewModel.updateUI()
+            }
+            .onChange(of: salesViewModel.salesCurrentDateFilter) { _, _ in
+                self.salesViewModel.updateUI()
             }
             .onChange(of: salesViewModel.salesDateInterval) { _, _ in
-                salesViewModel.updateAmountsBar()
-                salesViewModel.fetchSalesDetailsList()
+                self.salesViewModel.updateUI()
             }
     }
 }
@@ -71,7 +73,7 @@ struct SalesListController: View {
                         .listRowBackground(Color.background)
                         .onAppear {
                             if salesViewModel.shouldSalesDetailsListLoadData(saleDetail: saleDetail) {
-                                salesViewModel.fetchSalesDetailsListNextPage()
+                                loadSales()
                             }
                         }
                     }
@@ -89,6 +91,11 @@ struct SalesListController: View {
         }
         .padding(.horizontal, 10)
         .background(Color.background)
+    }
+    private func loadSales() {
+        Task {
+            await salesViewModel.fetchSalesDetailsListNextPage()
+        }
     }
 }
 

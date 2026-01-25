@@ -44,9 +44,14 @@ final class ProductViewModel {
             }
         }
     }
-    func fetchProducts(page: Int = 1, nextPage: Bool = true) async throws {
+    func fetchProducts(page: Int = 1, nextPage: Bool = true, forceUpdate: Bool = false) async throws {
+        if forceUpdate {
+            await MainActor.run {
+                self.productsCoreData = []
+            }
+        }
         let pages = currentPagesInScreen.map { $0[0] }
-        if !pages.contains(page) {
+        if !pages.contains(page) || forceUpdate {
             let productsNewCarge = try await self.getProductsUseCase.execute(seachText: searchText, primaryOrder: primaryOrder, filterAttribute: filterAttribute, page: page)
 //            print("[ProductViewModel] START FETCH PRODUCTS")
 //            for product in productsNewCarge {
@@ -134,11 +139,6 @@ final class ProductViewModel {
             self.deleteCount = 0
             self.currentPagesInScreen = []
             self.lastCarge = 0
-        }
-    }
-    func lazyFetchProducts() async throws {
-        if productsCoreData.isEmpty {
-            try await fetchProducts()
         }
     }
     private func onSearchTextChanged() {

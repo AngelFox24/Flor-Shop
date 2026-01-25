@@ -2,7 +2,7 @@ import Foundation
 import FlorShopDTOs
 
 @Observable
-class SalesViewModel {
+final class SalesViewModel {
     var salesDetailsList: [SaleDetail] = []
     
     var order: SalesOrder = .dateAsc
@@ -38,22 +38,26 @@ class SalesViewModel {
         self.getSalesUseCase = getSalesUseCase
         self.getSalesDetailsUseCase = getSalesDetailsUseCase
     }
-    func fetchSalesDetailsList(page: Int = 1) {
+    func fetchSalesDetailsList(page: Int = 1) async {
         if page == 1 {
-            let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval, order: order, grouper: grouper)
-            lastCarge = newCarge.count
-            self.salesDetailsList = newCarge
+            let newCarge = await self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval, order: order, grouper: grouper)
+            await MainActor.run {
+                lastCarge = newCarge.count
+                self.salesDetailsList = newCarge
+            }
         } else {
             if lastCarge > 0 {
-                let newCarge = self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval, order: order, grouper: grouper)
-                lastCarge = newCarge.count
-                self.salesDetailsList.append(contentsOf: newCarge)
+                let newCarge = await self.getSalesDetailsUseCase.execute(page: page, sale: nil, date: salesCurrentDateFilter, interval: salesDateInterval, order: order, grouper: grouper)
+                await MainActor.run {
+                    lastCarge = newCarge.count
+                    self.salesDetailsList.append(contentsOf: newCarge)
+                }
             }
         }
     }
-    func fetchSalesDetailsListNextPage() {
+    func fetchSalesDetailsListNextPage() async {
         currentPage = currentPage + 1
-        fetchSalesDetailsList(page: currentPage)
+        await fetchSalesDetailsList(page: currentPage)
     }
     func shouldSalesDetailsListLoadData(saleDetail: SaleDetail) -> Bool {
         if self.salesDetailsList.isEmpty {
@@ -88,9 +92,10 @@ class SalesViewModel {
             salesCurrentDateFilter = calendario.date(byAdding: .year, value: -1, to: salesCurrentDateFilter)!
         }
     }
-    func updateAmountsBar() {
-        salesAmount = self.getSalesUseCase.getSalesAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
-        costAmount = self.getSalesUseCase.getCostAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
+    @MainActor
+    func updateAmountsBar() async throws {
+        salesAmount = try await self.getSalesUseCase.getSalesAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
+        costAmount = try await self.getSalesUseCase.getCostAmount(date: salesCurrentDateFilter, interval: salesDateInterval)
         revenueAmount = Money(salesAmount.cents - costAmount.cents)
     }
     func releaseResources() {
@@ -106,10 +111,14 @@ class SalesViewModel {
         self.costAmount = Money(0)
         self.revenueAmount = Money(0)
     }
-    func lazyFetchList() {
-        if salesDetailsList.isEmpty {
-            fetchSalesDetailsList()
-            updateAmountsBar()
+    func updateUI() {
+        Task {
+            do {
+                try await fetchSalesDetailsList()
+                try await updateAmountsBar()
+            } catch {
+                print("[SalesViewModel] Error: \(error.localizedDescription)")
+            }
         }
     }
 }

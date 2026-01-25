@@ -86,6 +86,7 @@
 		0B8CA3852E03DC52003F2A1B /* RegisterStuffs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8CA3842E03DC52003F2A1B /* RegisterStuffs.swift */; };
 		0B8FE78A2EFDBE76000623CD /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8FE7892EFDBE76000623CD /* WelcomeView.swift */; };
 		0B8FE78C2EFDBF5C000623CD /* GoogleSingInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8FE78B2EFDBF5C000623CD /* GoogleSingInButton.swift */; };
+		0B9425CF2F2580FE00855135 /* SetCustomerInCartUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9425CE2F2580FE00855135 /* SetCustomerInCartUseCase.swift */; };
 		0B950E4A2E67D206002DF1D1 /* SalesViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B950E482E67D206002DF1D1 /* SalesViewModelFactory.swift */; };
 		0B9F31422E5E7D55008BA436 /* ProductViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9F31412E5E7D55008BA436 /* ProductViewModelFactory.swift */; };
 		0BA3A3C32EE8844D00771CE2 /* ScopedToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA3A3C22EE8844D00771CE2 /* ScopedToken.swift */; };
@@ -308,6 +309,7 @@
 		0B8CA3842E03DC52003F2A1B /* RegisterStuffs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterStuffs.swift; sourceTree = "<group>"; };
 		0B8FE7892EFDBE76000623CD /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		0B8FE78B2EFDBF5C000623CD /* GoogleSingInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSingInButton.swift; sourceTree = "<group>"; };
+		0B9425CE2F2580FE00855135 /* SetCustomerInCartUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetCustomerInCartUseCase.swift; sourceTree = "<group>"; };
 		0B950E482E67D206002DF1D1 /* SalesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesViewModelFactory.swift; sourceTree = "<group>"; };
 		0B9F31412E5E7D55008BA436 /* ProductViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewModelFactory.swift; sourceTree = "<group>"; };
 		0BA3A3C22EE8844D00771CE2 /* ScopedToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopedToken.swift; sourceTree = "<group>"; };
@@ -1081,6 +1083,7 @@
 			isa = PBXGroup;
 			children = (
 				273576792B1F48E500E9CF12 /* GetCartUseCase.swift */,
+				0B9425CE2F2580FE00855135 /* SetCustomerInCartUseCase.swift */,
 				2735767C2B1F4A2C00E9CF12 /* DeleteCartDetailUseCase.swift */,
 				2735767E2B1F4AD700E9CF12 /* AddProductoToCartUseCase.swift */,
 				273576802B1F4BAE00E9CF12 /* EmptyCartUseCase.swift */,
@@ -2179,6 +2182,7 @@
 				2735D45D2B21E28000C892AF /* SalesView.swift in Sources */,
 				0BA3A3C72EE886B000771CE2 /* BaseToken.swift in Sources */,
 				0BA3A3CB2EE8A58900771CE2 /* RegisterCompanyRequest+Mapper.swift in Sources */,
+				0B9425CF2F2580FE00855135 /* SetCustomerInCartUseCase.swift in Sources */,
 				273576872B1F71F800E9CF12 /* RegisterSaleUseCase.swift in Sources */,
 				0B8265152E64EA3900FAF6B3 /* SessionManager.swift in Sources */,
 				27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */,
@@ -2273,6 +2277,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 9TAXVQDQJU;
+				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2298,6 +2303,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALIDATE_PRODUCT = NO;
 			};
 			name = Debug;
 		};
@@ -2336,11 +2342,17 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 9TAXVQDQJU;
-				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -2348,12 +2360,14 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				VALIDATE_PRODUCT = YES;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALIDATE_PRODUCT = NO;
 			};
 			name = Release;
 		};
@@ -2444,7 +2458,7 @@
 				274CE2A329E6D793007C703D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		274CE2A429E6D793007C703D /* Build configuration list for PBXNativeTarget "Flor Shop" */ = {
 			isa = XCConfigurationList;
@@ -2453,7 +2467,7 @@
 				274CE2A629E6D793007C703D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 

@@ -30,10 +30,10 @@ struct CustomerSelectionTopBar: View {
                 FilterButton()
             }
             .onChange(of: customerViewModel.order) { _, _ in
-                customerViewModel.fetchListCustomer()
+                self.customerViewModel.updateUI()
             }
             .onChange(of: customerViewModel.filter) { _, _ in
-                customerViewModel.fetchListCustomer()
+                self.customerViewModel.updateUI()
             }
         }
     }

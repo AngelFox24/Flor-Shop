@@ -7,7 +7,8 @@ struct CartViewModelFactory {
             deleteCartDetailUseCase: getDeleteCartDetailUseCase(sessionContainer: sessionContainer),
             addProductoToCartUseCase: getAddProductoToCartUseCase(sessionContainer: sessionContainer),
             emptyCartUseCase: getEmptyCartUseCase(sessionContainer: sessionContainer),
-            changeProductAmountInCartUseCase: getChangeProductAmountInCartUseCase(sessionContainer: sessionContainer)
+            changeProductAmountInCartUseCase: getChangeProductAmountInCartUseCase(sessionContainer: sessionContainer),
+            getCustomersUseCase: getCustomersUseCase(sessionContainer: sessionContainer)
         )
     }
     static private func getCartUseCase(sessionContainer: SessionContainer) -> GetCartUseCase {
@@ -24,5 +25,8 @@ struct CartViewModelFactory {
     }
     static private func getChangeProductAmountInCartUseCase(sessionContainer: SessionContainer) -> ChangeProductAmountInCartUseCase {
         return ChangeProductAmountInCartInteractor(cartRepository: sessionContainer.cartRepository)
+    }
+    static private func getCustomersUseCase(sessionContainer: SessionContainer) -> GetCustomersUseCase {
+        return GetCustomersInteractor(customerRepository: sessionContainer.customerRepository)
     }
 }

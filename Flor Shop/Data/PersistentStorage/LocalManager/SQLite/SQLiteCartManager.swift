@@ -10,6 +10,7 @@ protocol LocalCartManager {
     func changeProductAmountInCartDetail(cartDetailId: UUID, productCic: String, amount: Int) async throws
     func emptyCart() async throws
     func getCartQuantity() async throws -> Int
+    func setCustomerInCart(customerCic: String,) async throws
 }
 
 final class SQLiteCartManager: LocalCartManager {
@@ -106,13 +107,39 @@ final class SQLiteCartManager: LocalCartManager {
             return try CartQueries.getCartQuantity(cartId: cart.id.uuidString, tx: tx)
         }
     }
+    
+    func setCustomerInCart(customerCic: String) async throws {
+        try await self.db.writeTransaction { tx in
+            let cart = try self.getCartWithoutDetails(tx: tx)
+            let sql = """
+                    UPDATE cart
+                    SET customer_cic = ?
+                    WHERE id = ?
+                    """
+            
+            let rows = try tx.execute(
+                sql: sql,
+                parameters: [
+                    customerCic,
+                    cart.id.uuidString
+                ]
+            )
+            
+            if rows == 0 {
+                throw LocalStorageError.entityNotFound(
+                    "[SQLiteCartManager] No se encontró el carrito para asignar cliente"
+                )
+            }
+        }
+    }
     //MARK: Private funtions
     private func createCartModel(tx: Transaction) throws {
         let sql = """
             CREATE TABLE IF NOT EXISTS cart (
                 id TEXT PRIMARY KEY,
                 employee_cic TEXT NOT NULL,
-                subsidiary_cic TEXT NOT NULL
+                subsidiary_cic TEXT NOT NULL,
+                customer_cic TEXT
             );
             """
         try tx.execute(sql: sql, parameters: [])
@@ -160,7 +187,8 @@ final class SQLiteCartManager: LocalCartManager {
                 }
                 return Car(
                     id: uuid,
-                    cartDetails: []
+                    cartDetails: [],
+                    customerCic: nil
                 )
             }
         ) {
@@ -188,7 +216,8 @@ final class SQLiteCartManager: LocalCartManager {
                 }
                 return Car(
                     id: uuid,
-                    cartDetails: []
+                    cartDetails: [],
+                    customerCic: nil
                 )
             }
         )

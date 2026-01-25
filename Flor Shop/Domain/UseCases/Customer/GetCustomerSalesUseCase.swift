@@ -1,7 +1,7 @@
 import Foundation
 
 protocol GetCustomerSalesUseCase {
-    func execute(customer: Customer, page: Int) -> [SaleDetail]
+    func execute(customer: Customer, page: Int) async -> [SaleDetail]
 }
 
 final class GetCustomerSalesInteractor: GetCustomerSalesUseCase {
@@ -11,7 +11,12 @@ final class GetCustomerSalesInteractor: GetCustomerSalesUseCase {
         self.customerRepository = customerRepository
     }
     
-    func execute(customer: Customer, page: Int) -> [SaleDetail] {
-        return self.customerRepository.getSalesDetailHistory(customer: customer, page: page, pageSize: 20)
+    func execute(customer: Customer, page: Int) async -> [SaleDetail] {
+        do {
+            return try await self.customerRepository.getSalesDetailHistory(customer: customer, page: page, pageSize: 20)
+        } catch {
+            print("[GetCustomerSalesInteractor] Error: \(error)")
+            return []
+        }
     }
 }

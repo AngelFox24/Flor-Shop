@@ -22,19 +22,22 @@ class CartViewModel {
     private let addProductoToCartUseCase: AddProductoToCartUseCase
     private let emptyCartUseCase: EmptyCartUseCase
     private let changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase
+    private let getCustomersUseCase: GetCustomersUseCase
     
     init(
         getCartUseCase: GetCartUseCase,
         deleteCartDetailUseCase: DeleteCartDetailUseCase,
         addProductoToCartUseCase: AddProductoToCartUseCase,
         emptyCartUseCase: EmptyCartUseCase,
-        changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase
+        changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase,
+        getCustomersUseCase: GetCustomersUseCase
     ) {
         self.getCartUseCase = getCartUseCase
         self.deleteCartDetailUseCase = deleteCartDetailUseCase
         self.addProductoToCartUseCase = addProductoToCartUseCase
         self.emptyCartUseCase = emptyCartUseCase
         self.changeProductAmountInCartUseCase = changeProductAmountInCartUseCase
+        self.getCustomersUseCase = getCustomersUseCase
     }
     
     // MARK: CRUD Core Data
@@ -42,6 +45,10 @@ class CartViewModel {
     func fetchCart() async {
         self.cartCoreData = await self.getCartUseCase.execute()
         print("When fecthing cart, totalInCart: \(self.cartCoreData?.total.cents ?? 0)")
+        guard let customerCic = cartCoreData?.customerCic else {
+            return
+        }
+        self.customerInCar = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)
     }
     func deleteCartDetail(cartDetailId: UUID) async throws {
         try await self.deleteCartDetailUseCase.execute(cartDetailId: cartDetailId)

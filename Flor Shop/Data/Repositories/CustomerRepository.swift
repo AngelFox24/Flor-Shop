@@ -4,9 +4,9 @@ import FlorShopDTOs
 protocol CustomerRepository {
     func save(customer: Customer) async throws
     func payClientTotalDebt(customer: Customer) async throws -> Bool
-    func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer]
-    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail]
-    func getCustomer(customer: Customer) throws -> Customer?
+    func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) async throws -> [Customer]
+    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) async throws -> [SaleDetail]
+    func getCustomer(customerCic: String) async throws -> Customer?
 }
 
 class CustomerRepositoryImpl: CustomerRepository {
@@ -41,13 +41,13 @@ class CustomerRepositoryImpl: CustomerRepository {
             try await self.remoteManager.save(customer: customer)
         }
     }
-    func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) -> [Customer] {
-        return self.localManager.getCustomers(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)
+    func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) async throws -> [Customer] {
+        return try await self.localManager.getCustomers(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)
     }
-    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) -> [SaleDetail] {
-        return self.localManager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
+    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) async throws -> [SaleDetail] {
+        return try await self.localManager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
     }
-    func getCustomer(customer: Customer) throws -> Customer? {
-        return try self.localManager.getCustomer(customer: customer)
+    func getCustomer(customerCic: String) async throws -> Customer? {
+        return try await self.localManager.getCustomer(customerCic: customerCic)
     }
 }

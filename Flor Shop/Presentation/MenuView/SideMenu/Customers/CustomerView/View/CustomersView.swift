@@ -23,7 +23,7 @@ struct CustomersView: View {
                 MainBottomToolbar(destination: .addCustomer)
             }
             .task {
-                customerViewModel.lazyFetchList()
+                customerViewModel.updateUI()
             }
     }
 }

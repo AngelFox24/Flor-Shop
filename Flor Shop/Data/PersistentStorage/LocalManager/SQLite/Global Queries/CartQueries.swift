@@ -5,9 +5,9 @@ import FlorShopDTOs
 enum CartQueries {
     static func getCart(employeeCic: String, subsidiaryCic: String, tx: Transaction) throws -> Car {
         let checkCartSQL = """
-            SELECT id
-            FROM cart
-            WHERE employee_cic = ? AND subsidiary_cic = ?
+            SELECT c.id, c.customer_cic
+            FROM cart c
+            WHERE c.employee_cic = ? AND c.subsidiary_cic = ?
             LIMIT 1
             """
         
@@ -19,9 +19,10 @@ enum CartQueries {
                 guard let uuid = UUID(uuidString: cartId) else {
                     throw NSError(domain: "InvalidCartId", code: 0)
                 }
-                return Car(
+                return try Car(
                     id: uuid,
-                    cartDetails: try CartDetailQueries.getCartDetails(cartId: cartId, subsidiaryCic: subsidiaryCic, tx: tx)
+                    cartDetails: CartDetailQueries.getCartDetails(cartId: cartId, subsidiaryCic: subsidiaryCic, tx: tx),
+                    customerCic: cursor.getStringOptional(name: "customer_cic")
                 )
             }
         )

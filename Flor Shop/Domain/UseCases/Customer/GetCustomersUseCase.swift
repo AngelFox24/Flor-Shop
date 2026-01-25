@@ -1,8 +1,8 @@
 import Foundation
 
 protocol GetCustomersUseCase {
-    func execute(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int) -> [Customer]
-    func getCustomer(customer: Customer) throws -> Customer?
+    func execute(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int) async -> [Customer]
+    func getCustomer(customerCic: String) async -> Customer?
 }
 
 final class GetCustomersInteractor: GetCustomersUseCase {
@@ -12,11 +12,21 @@ final class GetCustomersInteractor: GetCustomersUseCase {
         self.customerRepository = customerRepository
     }
     
-    func execute(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int) -> [Customer] {
-        return self.customerRepository.getCustomers(seachText: seachText, order: order, filter: filter, page: page, pageSize: 20)
+    func execute(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int) async -> [Customer] {
+        do {
+            return try await self.customerRepository.getCustomers(seachText: seachText, order: order, filter: filter, page: page, pageSize: 20)
+        } catch {
+            print("[GetCustomersInteractor] Error: \(error)")
+            return []
+        }
     }
     
-    func getCustomer(customer: Customer) throws -> Customer? {
-        return try self.customerRepository.getCustomer(customer: customer)
+    func getCustomer(customerCic: String) async -> Customer? {
+        do {
+            return try await self.customerRepository.getCustomer(customerCic: customerCic)
+        } catch {
+            print("[GetCustomersInteractor] Error: \(error)")
+            return nil
+        }
     }
 }

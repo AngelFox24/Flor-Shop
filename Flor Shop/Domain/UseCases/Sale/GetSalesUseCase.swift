@@ -1,9 +1,9 @@
 import Foundation
 
 protocol GetSalesUseCase {
-    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Money
-    func getCostAmount(date: Date, interval: SalesDateInterval) -> Money
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) throws -> Money
+    func getSalesAmount(date: Date, interval: SalesDateInterval) async throws -> Money
+    func getCostAmount(date: Date, interval: SalesDateInterval) async throws -> Money
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) async throws -> Money
 }
 
 final class GetSalesInteractor: GetSalesUseCase {
@@ -14,23 +14,13 @@ final class GetSalesInteractor: GetSalesUseCase {
         self.saleRepository = saleRepository
     }
     
-    func getSalesAmount(date: Date, interval: SalesDateInterval) -> Money {
-        do {
-            return try self.saleRepository.getSalesAmount(date: date, interval: interval)
-        } catch {
-            print("Error: \(error.localizedDescription)")
-            return Money(0)
-        }
+    func getSalesAmount(date: Date, interval: SalesDateInterval) async throws -> Money {
+        return try await self.saleRepository.getSalesAmount(date: date, interval: interval)
     }
-    func getCostAmount(date: Date, interval: SalesDateInterval) -> Money {
-        do {
-            return try self.saleRepository.getCostAmount(date: date, interval: interval)
-        } catch {
-            print("Error: \(error.localizedDescription)")
-            return Money(0)
-        }
+    func getCostAmount(date: Date, interval: SalesDateInterval) async throws -> Money {
+        return try await self.saleRepository.getCostAmount(date: date, interval: interval)
     }
-    func getRevenueAmount(date: Date, interval: SalesDateInterval) throws -> Money {
-        return try self.saleRepository.getRevenueAmount(date: date, interval: interval)
+    func getRevenueAmount(date: Date, interval: SalesDateInterval) async throws -> Money {
+        return try await self.saleRepository.getRevenueAmount(date: date, interval: interval)
     }
 }

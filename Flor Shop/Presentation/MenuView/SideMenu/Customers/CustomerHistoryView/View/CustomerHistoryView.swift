@@ -86,16 +86,21 @@ struct CustomerHistoryViewListController: View {
                             .onTapGesture {
                                 
                             }
-                            .onAppear(perform: {
+                            .onAppear {
                                 if customerHistoryViewModel.shouldLoadData(salesDetail: saleDetail) {
-                                    customerHistoryViewModel.fetchNextPage()
+                                    loadSalesHistory()
                                 }
-                            })
+                            }
                         }
                     }
                     .listStyle(PlainListStyle())
                 }
             }
+        }
+    }
+    private func loadSalesHistory() {
+        Task {
+            await customerHistoryViewModel.fetchNextPage()
         }
     }
 }

@@ -20,20 +20,28 @@ class PaymentViewModel {
     private let getCartUseCase: GetCartUseCase
     private let emptyCartUseCase: EmptyCartUseCase
     private let registerSaleUseCase: RegisterSaleUseCase
+    private let getCustomersUseCase: GetCustomersUseCase
     
     init(
         registerSaleUseCase: RegisterSaleUseCase,
         getCartUseCase: GetCartUseCase,
-        emptyCartUseCase: EmptyCartUseCase
+        emptyCartUseCase: EmptyCartUseCase,
+        getCustomersUseCase: GetCustomersUseCase
     ) {
         self.registerSaleUseCase = registerSaleUseCase
         self.getCartUseCase = getCartUseCase
         self.emptyCartUseCase = emptyCartUseCase
+        self.getCustomersUseCase = getCustomersUseCase
     }
     
     @MainActor
     func fetchCart() async {
         self.cartCoreData = await self.getCartUseCase.execute()
+        guard let customerCic = cartCoreData?.customerCic else {
+            return
+        }
+        let customer = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)//TODO: Refactor, debe llamarse desde un hilo no principal
+        self.customerInCar = customer
     }
     func emptyCart() async throws {
         try await self.emptyCartUseCase.execute()

@@ -1,6 +1,18 @@
 import SwiftUI
 import Equatable
 
+extension View {
+    nonisolated
+    func onChangeAsync<V: Equatable>(
+        of value: V,
+        _ action: @escaping @Sendable (_ newValue: V) async -> Void
+    ) -> some View {
+        task(id: value) {
+            await action(value)
+        }
+    }
+}
+
 @Equatable
 struct SaleProductView: View {
     @State var productViewModel: ProductViewModel
@@ -21,13 +33,24 @@ struct SaleProductView: View {
                 ProductTopToolbar(productViewModel: $productViewModel)
                 MainBottomToolbar(destination: .addProduct)
             }
-            .task {
-                do {
-                    try await productViewModel.lazyFetchProducts()
-                } catch {
-                    print("[SaleProductView] Error: \(error)")
-                }
+            .onChange(of: productViewModel.filterAttribute) { _, _ in
+                fetchProducts(forceUpdate: true)
             }
+            .onChange(of: productViewModel.primaryOrder) { _, _ in
+                fetchProducts(forceUpdate: true)
+            }
+            .task {
+                try? await productViewModel.fetchProducts()
+            }
+    }
+    private func fetchProducts(forceUpdate: Bool) {
+        Task {
+            do {
+                try await productViewModel.fetchProducts(forceUpdate: forceUpdate)
+            } catch {
+                print("[SaleProductView] Error: \(error)")
+            }
+        }
     }
 }
 #Preview {
@@ -121,7 +144,7 @@ struct SaleListProductView: View {
         Task {
             do {
                 await viewModel.releaseResources()
-                try await viewModel.lazyFetchProducts()
+                try await viewModel.fetchProducts()
             } catch {
                 print("[SaleListProductView] Error: \(error)")
             }

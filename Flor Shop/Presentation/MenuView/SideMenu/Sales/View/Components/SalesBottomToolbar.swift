@@ -17,8 +17,6 @@ struct SalesBottomToolbar: ToolbarContent {
         ToolbarItem(placement: .bottomBar) {
             Button {
                 salesViewModel.salesCurrentDateFilter = Date()
-                salesViewModel.updateAmountsBar()
-                salesViewModel.fetchSalesDetailsList()
             } label: {
                 Text("Hoy")
             }
@@ -26,12 +24,8 @@ struct SalesBottomToolbar: ToolbarContent {
     }
     func nextDate() {
         salesViewModel.nextDate()
-        salesViewModel.updateAmountsBar()
-        salesViewModel.fetchSalesDetailsList()
     }
     func previousDate() {
         salesViewModel.previousDate()
-        salesViewModel.updateAmountsBar()
-        salesViewModel.fetchSalesDetailsList()
     }
 }

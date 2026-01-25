@@ -109,7 +109,7 @@ class AddCustomerViewModel {
                 creditLimit: Money(fieldsAddCustomer.creditLimit),
                 creditDays: creditDaysInt,
                 creditScore: fieldsAddCustomer.creditScore,
-                dateLimit: fieldsAddCustomer.dateLimit,
+                dateLimit: fieldsAddCustomer.dateLimitFlag ? fieldsAddCustomer.dateLimit : nil,
                 phoneNumber: fieldsAddCustomer.phoneNumber,
                 lastDatePurchase: Date(),
                 totalDebt: Money(fieldsAddCustomer.totalDebt),

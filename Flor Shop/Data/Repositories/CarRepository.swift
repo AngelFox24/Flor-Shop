@@ -8,6 +8,7 @@ protocol CarRepository {
     func emptyCart() async throws
     func changeProductAmountInCartDetail(cartDetailId: UUID, productCic: String, amount: Int) async throws
     func getCartQuantity() async throws -> Int
+    func setCustomerInCart(customerCic: String) async throws
 }
 
 class CarRepositoryImpl: CarRepository {
@@ -37,5 +38,8 @@ class CarRepositoryImpl: CarRepository {
     }
     func getCartQuantity() async throws -> Int {
         return try await self.localManager.getCartQuantity()
+    }
+    func setCustomerInCart(customerCic: String) async throws {
+        return try await self.localManager.setCustomerInCart(customerCic: customerCic)
     }
 }

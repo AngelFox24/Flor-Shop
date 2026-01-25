@@ -18,23 +18,23 @@ extension FlorShopCoreApiRequest: NetworkRequest {
         let baseUrl = AppConfig.florShopCoreBaseURL
         let path: String
         switch self {
-        case .saveCompany(_, let token):
+        case .saveCompany:
             path = "/companies"
-        case .saveCustomer(_, let token):
+        case .saveCustomer:
             path = "/customers"
-        case .payCustomerDebt(_, let token):
+        case .payCustomerDebt:
             path = "/customer/payDebt"
-        case .saveEmployee(_, let token):
+        case .saveEmployee:
             path = "/employees"
-        case .isRegistrationComplete(let token):
+        case .isRegistrationComplete:
             path = "/employees/isComplete"
-        case .saveProduct(_, let token):
+        case .saveProduct:
             path = "/products"
-        case .registerSale(_, let token):
+        case .registerSale:
             path = "/sales"
-        case .register(_, let token):
+        case .register:
             path = "/session/register"
-        case .saveSubsidiary(_, let token):
+        case .saveSubsidiary:
             path = "/subsidiaries"
         }
         let completePath = baseUrl + path

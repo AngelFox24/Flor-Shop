@@ -1,7 +1,7 @@
 import Foundation
 
 protocol GetSalesDetailsUseCase {
-    func execute(page: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail]
+    func execute(page: Int, sale: Sale?, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) async -> [SaleDetail]
 }
 
 final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
@@ -11,15 +11,15 @@ final class GetSalesDetailsInteractor: GetSalesDetailsUseCase {
         self.saleRepository = saleRepository
     }
     
-    func execute(page: Int, sale: Sale? = nil, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) -> [SaleDetail] {
+    func execute(page: Int, sale: Sale? = nil, date: Date, interval: SalesDateInterval, order: SalesOrder, grouper: SalesGrouperAttributes) async -> [SaleDetail] {
         do {
             switch grouper {
             case .historic:
-                return try self.saleRepository.getSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+                return try await self.saleRepository.getSalesDetailsHistoric(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
             case .byProduct:
-                return try self.saleRepository.getSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+                return try await self.saleRepository.getSalesDetailsGroupedByProduct(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
             case .byCustomer:
-                return try self.saleRepository.getSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
+                return try await self.saleRepository.getSalesDetailsGroupedByCustomer(page: page, pageSize: 20, sale: sale, date: date, interval: interval, order: order, grouper: grouper)
             }
         } catch {
             return []
