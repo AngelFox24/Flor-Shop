@@ -6,7 +6,8 @@ struct PaymentViewModelFactory {
             registerSaleUseCase: getRegisterSaleUseCase(sessionContainer: sessionContainer),
             getCartUseCase: getCartUseCase(sessionContainer: sessionContainer),
             emptyCartUseCase: getEmptyCartUseCase(sessionContainer: sessionContainer),
-            getCustomersUseCase: getRegisterSaleUseCase(sessionContainer: sessionContainer)
+            getCustomersUseCase: getRegisterSaleUseCase(sessionContainer: sessionContainer),
+            setCustomerInCartUseCase: getSetCustomerInCartUserCase(sessionContainer: sessionContainer)
         )
     }
     static private func getCartUseCase(sessionContainer: SessionContainer) -> GetCartUseCase {
@@ -20,5 +21,10 @@ struct PaymentViewModelFactory {
     }
     static private func getRegisterSaleUseCase(sessionContainer: SessionContainer) -> GetCustomersUseCase {
         return GetCustomersInteractor(customerRepository: sessionContainer.customerRepository)
+    }
+    static private func getSetCustomerInCartUserCase(sessionContainer: SessionContainer) -> SetCustomerInCartUseCase {
+        return SetCustomerInCartInteractor(
+            cartRepository: sessionContainer.cartRepository
+        )
     }
 }

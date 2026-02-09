@@ -1,7 +1,7 @@
 import Foundation
 
 @Observable
-class CustomerHistoryViewModel {
+final class CustomerHistoryViewModel {
     var customer: Customer?
     var salesDetail: [SaleDetail] = []
     
@@ -23,32 +23,27 @@ class CustomerHistoryViewModel {
     }
     // MARK: CRUD Core Data
     func fetchCustomerSalesDetail(page: Int = 1) async {
-        if let customerNN = customer {
+        if let customerCic = customer?.customerCic {
+            print("[CustomerHistoryViewModel] hay customerCic")
             if page == 1 {
-                let newCarge = await self.getCustomerSalesUseCase.execute(customer: customerNN, page: page)
+                let newCarge = await self.getCustomerSalesUseCase.execute(customerCic: customerCic, page: page)
                 lastCarge = newCarge.count
                 self.salesDetail = newCarge
             } else {
                 if lastCarge > 0 {
-                    let newCarge = await self.getCustomerSalesUseCase.execute(customer: customerNN, page: page)
+                    let newCarge = await self.getCustomerSalesUseCase.execute(customerCic: customerCic, page: page)
                     lastCarge = newCarge.count
                     self.salesDetail.append(contentsOf: newCarge)
                 }
             }
         }
     }
-    func payTotalAmount() async throws -> Bool {
-        guard let customerNN = customer else {
-            return false
+    func loadCustomer(customerCic: String) async {
+        if let customer = await self.getCustomersUseCase.getCustomer(customerCic: customerCic) {
+            await MainActor.run {
+                self.customer = customer
+            }
         }
-        return try await self.payClientDebtUseCase.total(customer: customerNN)
-    }
-    func loadCustomer(customerCic: String) async throws {
-        
-    }
-    func setCustomerInContext(customer: Customer) async {
-        self.customer = customer
-        await fetchCustomerSalesDetail()
     }
     func fetchNextPage() async {
         currentPage = currentPage + 1
@@ -62,24 +57,8 @@ class CustomerHistoryViewModel {
             return salesDetail == last
         }
     }
-    func releaseResources() {
-        //self.customer = nil
-        self.salesDetail = []
-    }
-    func updateData() async {
-        guard let customerCic = customer?.customerCic else {
-            return
-        }
-        let customer = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)
-        await MainActor.run {
-            self.customer = customer
-            self.salesDetail = []
-        }
-        updateUI()
-    }
-    func updateUI() {
-        Task {
-            await fetchCustomerSalesDetail()
-        }
+    func updateUI(customerCic: String) async {
+        await self.loadCustomer(customerCic: customerCic)
+        await self.fetchCustomerSalesDetail()
     }
 }

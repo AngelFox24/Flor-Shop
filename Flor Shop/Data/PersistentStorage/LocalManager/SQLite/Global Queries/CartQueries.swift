@@ -38,7 +38,7 @@ enum CartQueries {
             sql: sql,
             parameters: [cartId],
             mapper: { cursor in
-                try cursor.getInt(name: "total_quantity")
+                try cursor.getInt(name: "total_items")
             }
         )
     }

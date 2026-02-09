@@ -3,7 +3,7 @@ import Kingfisher
 import _PhotosUI_SwiftUI
 
 @Observable
-class AddCustomerViewModel {
+final class AddCustomerViewModel {
     var fieldsAddCustomer: FieldsAddCustomer = FieldsAddCustomer()
     var isPresented: Bool = false
     var selectedImage: UIImage?
@@ -35,6 +35,7 @@ class AddCustomerViewModel {
                 let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: uiImage)
                 await MainActor.run {
                     print("Se le asigno la imagen")
+                    self.fieldsAddCustomer.imageUrl = ""
                     self.selectedImage = optimizedImage
                 }
             } catch {
@@ -95,6 +96,9 @@ class AddCustomerViewModel {
         await releaseResources()
     }
     func createCustomer() async throws -> Customer? {
+        if self.fieldsAddCustomer.imageUrl == "" && self.selectedImage != nil {
+            try await self.saveSelectedImage()
+        }
         guard let creditDaysInt = Int(fieldsAddCustomer.creditDays) else {
             print("Los valores no se pueden convertir correctamente")
             return nil
@@ -134,6 +138,13 @@ class AddCustomerViewModel {
             self.selectionImage = nil
             self.isPresented = false
             fieldsAddCustomer = FieldsAddCustomer()
+        }
+    }
+    private func saveSelectedImage() async throws {
+        guard let selectedImage else { return }
+        let imageUrl = try await self.saveImageUseCase.execute(uiImage: selectedImage)
+        await MainActor.run {
+            self.fieldsAddCustomer.imageUrl = imageUrl.absoluteString
         }
     }
 }

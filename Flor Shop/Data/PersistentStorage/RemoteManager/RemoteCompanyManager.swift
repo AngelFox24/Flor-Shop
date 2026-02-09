@@ -31,6 +31,6 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
             register: registerParams,
             token: scopedToken.accessToken
         )
-        let data: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
+        let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
 }

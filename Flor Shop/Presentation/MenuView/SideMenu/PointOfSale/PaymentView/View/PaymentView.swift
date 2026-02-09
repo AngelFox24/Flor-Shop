@@ -19,21 +19,21 @@ struct PaymentView: View {
             }
     }
     func registerSale() {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "[PaymentView]")
         Task {
             do {
                 try await self.paymentViewModel.registerSale()
                 router.back()
-                self.overlayViewModel.endLoading(id: loadingId)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[PaymentView]")
             } catch {
                 print("Error al registrar la venta: \(error.localizedDescription)")
                 self.overlayViewModel.showAlert(
                     title: "Error",
                     message: "Ha ocurrido un error al registrar la venta.",
-                    primary: AlertAction(
+                    primary: ConfirmAction(
                         title: "Aceptar",
                         action: {
-                            self.overlayViewModel.endLoading(id: loadingId)
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[PaymentView]")
                         }
                     )
                 )
@@ -59,9 +59,7 @@ struct PaymentsFields: View {
                     Text("S/.")
                         .font(.custom("Artifika-Regular", size: 26))
                         .foregroundColor(.black)
-                    let total = paymentViewModel.cartCoreData?.total.cents ?? 0
-                    let totalD = Double(total/100)
-                    Text(String(format: "%.2f", totalD))
+                    Text("\(paymentViewModel.cartCoreData?.total.solesString, default: "0")")
                         .font(.custom("Artifika-Regular", size: 55))
                         .foregroundColor(.black)
                 }
@@ -75,23 +73,19 @@ struct PaymentsFields: View {
                 NavigationButton(push: .selectCustomer) {
                     VStack {
                         if let customer = paymentViewModel.customerInCar {
-                            CardViewTipe2(
+                            CustomerCardView(
                                 imageUrl: customer.imageUrl,
-                                topStatusColor: nil,
-                                topStatus: nil,
-                                mainText: customer.name + " " + (customer.lastName ?? ""),
+                                mainText: customer.mainText,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(customer.totalDebt.cents),
+                                mainIndicator: customer.totalDebt.solesString,
                                 mainIndicatorAlert: customer.isCreditLimit,
-                                secondaryIndicatorSuffix: nil, //TODO: poner en variable calculada
-//                                    customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
-                                secondaryIndicator: nil,//TODO: poner en variable calculada
-//                                    customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
-                                secondaryIndicatorAlert: customer.isDateLimit, size: 80
+                                secondaryIndicatorSuffix: customer.secondaryIndicatorSuffix,
+                                secondaryIndicator: customer.secondaryIndicator,
+                                secondaryIndicatorAlert: customer.isDateLimit
                             )
                             .contextMenu {
                                 Button(role: .destructive) {
-                                    paymentViewModel.customerInCar = nil
+                                    paymentViewModel.unlinkClient()
                                 } label: {
                                     Text("Desvincular Cliente")
                                 }

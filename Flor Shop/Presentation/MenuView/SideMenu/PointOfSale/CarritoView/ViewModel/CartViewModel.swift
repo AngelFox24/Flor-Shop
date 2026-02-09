@@ -2,7 +2,7 @@ import Foundation
 import FlorShopDTOs
 
 @Observable
-class CartViewModel {
+final class CartViewModel {
     var cartCoreData: Car?
     var customerInCar: Customer?
     var paymentType: PaymentType = .cash
@@ -23,6 +23,7 @@ class CartViewModel {
     private let emptyCartUseCase: EmptyCartUseCase
     private let changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase
     private let getCustomersUseCase: GetCustomersUseCase
+    private let setCustomerInCartUseCase: SetCustomerInCartUseCase
     
     init(
         getCartUseCase: GetCartUseCase,
@@ -30,7 +31,8 @@ class CartViewModel {
         addProductoToCartUseCase: AddProductoToCartUseCase,
         emptyCartUseCase: EmptyCartUseCase,
         changeProductAmountInCartUseCase: ChangeProductAmountInCartUseCase,
-        getCustomersUseCase: GetCustomersUseCase
+        getCustomersUseCase: GetCustomersUseCase,
+        setCustomerInCartUseCase: SetCustomerInCartUseCase
     ) {
         self.getCartUseCase = getCartUseCase
         self.deleteCartDetailUseCase = deleteCartDetailUseCase
@@ -38,6 +40,7 @@ class CartViewModel {
         self.emptyCartUseCase = emptyCartUseCase
         self.changeProductAmountInCartUseCase = changeProductAmountInCartUseCase
         self.getCustomersUseCase = getCustomersUseCase
+        self.setCustomerInCartUseCase = setCustomerInCartUseCase
     }
     
     // MARK: CRUD Core Data
@@ -45,25 +48,42 @@ class CartViewModel {
     func fetchCart() async {
         self.cartCoreData = await self.getCartUseCase.execute()
         print("When fecthing cart, totalInCart: \(self.cartCoreData?.total.cents ?? 0)")
-        guard let customerCic = cartCoreData?.customerCic else {
-            return
+        await fechtCustomer()
+    }
+    func fechtCustomer() async {
+        let customerInCar: Customer?
+        if let customerCic = cartCoreData?.customerCic {
+            customerInCar = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)
+        } else {
+            customerInCar = nil
         }
-        self.customerInCar = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)
+        await MainActor.run {
+            self.customerInCar = customerInCar
+        }
+    }
+    func stepProductAmount(cartDetailId: UUID, type: TypeOfVariation) async throws {
+        try await self.changeProductAmountInCartUseCase.stepProductAmount(cartDetailId: cartDetailId, type: type)
     }
     func deleteCartDetail(cartDetailId: UUID) async throws {
         try await self.deleteCartDetailUseCase.execute(cartDetailId: cartDetailId)
     }
-    func addProductoToCarrito(product: Product) async throws {
-        try await self.addProductoToCartUseCase.execute(product: product)
-        await fetchCart()
+    func addProductInCart(barcode: String) async throws {
+        try await self.addProductoToCartUseCase.execute(barcode: barcode)
     }
     func emptyCart() async throws {
         try await self.emptyCartUseCase.execute()
         await fetchCart()
     }
-    func changeProductAmount(cartDetailId: UUID, productCic: String, amount: Int) async throws {
+    func changeProductAmount(cartDetailId: UUID, amount: Int) async throws {
         print("CartViewModel: changeProductAmount")
-        try await self.changeProductAmountInCartUseCase.execute(cartDetailId: cartDetailId, productCic: productCic, amount: amount)
+        try await self.changeProductAmountInCartUseCase.execute(cartDetailId: cartDetailId, amount: amount)
+    }
+    func unlinkClient() {
+        Task {
+            guard let _ = customerInCar else { return }
+            await self.setCustomerInCartUseCase.execute(customerCic: nil)
+            await fetchCart()
+        }
     }
     func releaseResources() {
         self.cartCoreData = nil

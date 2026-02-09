@@ -114,7 +114,7 @@ final class SalesViewModel {
     func updateUI() {
         Task {
             do {
-                try await fetchSalesDetailsList()
+                await fetchSalesDetailsList()
                 try await updateAmountsBar()
             } catch {
                 print("[SalesViewModel] Error: \(error.localizedDescription)")

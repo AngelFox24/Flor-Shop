@@ -4,7 +4,7 @@ import FlorShopDTOs
 
 protocol LocalCustomerManager {
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) async throws -> [Customer]
-    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) async throws -> [SaleDetail]
+    func getSalesDetailHistory(customerCic: String, page: Int, pageSize: Int) async throws -> [SaleDetail]
     func getCustomer(customerCic: String) async throws -> Customer?
 }
 
@@ -20,34 +20,34 @@ final class SQLiteCustomerManager: LocalCustomerManager {
     }
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) async throws -> [Customer] {
         let offset = (page - 1) * pageSize
-
-            var whereClauses: [String] = []
-            var parameters: [Any] = []
-
-            // 🔎 Búsqueda por texto
-            if !seachText.isEmpty {
-                whereClauses.append("(c.name LIKE ? OR c.last_name LIKE ? OR c.phone_number LIKE ?)")
-                let like = "%\(seachText)%"
-                parameters.append(contentsOf: [like, like, like])
-            }
-
-            // 🎯 Filtro por estado del cliente
-            if let filterClause = filter.sqlWhereClause {
-                whereClauses.append(filterClause)
-            }
-
-            // 🧩 WHERE final
-            let whereSQL: String
-            if whereClauses.isEmpty {
-                whereSQL = ""
-            } else {
-                whereSQL = "WHERE " + whereClauses.joined(separator: " AND ")
-            }
-
-            // 🔢 ORDER
-            let orderSQL = order.sqlOrderClause
-
-            let sql = """
+        
+        var whereClauses: [String] = []
+        var parameters: [Any] = []
+        
+        // 🔎 Búsqueda por texto
+        if !seachText.isEmpty {
+            whereClauses.append("(c.name LIKE ? OR c.last_name LIKE ? OR c.phone_number LIKE ?)")
+            let like = "%\(seachText)%"
+            parameters.append(contentsOf: [like, like, like])
+        }
+        
+        // 🎯 Filtro por estado del cliente
+        if let filterClause = filter.sqlWhereClause {
+            whereClauses.append(filterClause)
+        }
+        
+        // 🧩 WHERE final
+        let whereSQL: String
+        if whereClauses.isEmpty {
+            whereSQL = ""
+        } else {
+            whereSQL = "WHERE " + whereClauses.joined(separator: " AND ")
+        }
+        
+        // 🔢 ORDER
+        let orderSQL = order.sqlOrderClause
+        
+        let sql = """
             SELECT
                 c.customer_cic,
                 c.name,
@@ -107,14 +107,10 @@ final class SQLiteCustomerManager: LocalCustomerManager {
         }
     }
     
-    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) async throws -> [SaleDetail] {
-        guard let customerCic = customer.customerCic else {
-                return []
-            }
-
-            let offset = (page - 1) * pageSize
-
-            let sql = """
+    func getSalesDetailHistory(customerCic: String, page: Int, pageSize: Int) async throws -> [SaleDetail] {
+        let offset = (page - 1) * pageSize
+        
+        let sql = """
             SELECT
                 sd.id,
                 sd.product_name,
@@ -133,14 +129,23 @@ final class SQLiteCustomerManager: LocalCustomerManager {
             ORDER BY s.sale_date DESC
             LIMIT ? OFFSET ?
             """
-        
+        print("[SQLiteCustomerManager] Fetching sales detail history for customer CIC: \(customerCic)")
         return try await db.readTransaction { tx in
             try tx.getAll(
                 sql: sql,
                 parameters: [customerCic, pageSize, offset],
                 mapper: { cursor in
-                    try SaleDetail(
-                        id: UUID(uuidString: try cursor.getString(name: "id")) ?? UUID(),
+                    guard let idString = try? cursor.getString(name: "id"), let id = UUID(uuidString: idString) else {
+                        print("[SQLiteCustomerManager] Failed to decode SaleDetail.id from database")
+                        throw NSError(domain: "MapperError", code: 0)
+                    }
+                    guard let productName = try? cursor.getString(name: "product_name") else {
+                        print("[SQLiteCustomerManager] Failed to decode SaleDetail.productName from database")
+                        throw NSError(domain: "MapperError", code: 0)
+                    }
+                    print("[SQLiteCustomerManager] ProductName: \(productName)")
+                    return try SaleDetail(
+                        id: id,
                         imageUrl: cursor.getStringOptional(name: "image_url"),
                         barCode: cursor.getStringOptional(name: "bar_code"),
                         productName: try cursor.getString(name: "product_name"),
@@ -190,7 +195,10 @@ final class SQLiteCustomerManager: LocalCustomerManager {
                 sql: sql,
                 parameters: [customerCic],
                 mapper: { cursor in
-                    try Customer(
+                    if let customerCic = try? cursor.getStringOptional(name: "customer_cic") {
+                        print("[SQLiteCustomerManager] CustomerCic: \(customerCic)")
+                    }
+                    return try Customer(
                         id: UUID(),
                         customerCic: cursor.getStringOptional(name: "customer_cic"),
                         name: try cursor.getString(name: "name"),

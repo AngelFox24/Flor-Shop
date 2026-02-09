@@ -168,7 +168,7 @@ final class SQLiteSaleManager: LocalSaleManager {
         
         var sql = """
                 SELECT
-                  COALESCE(s.customer_id, 'UNASSIGNED') AS customer_id,
+                  COALESCE(s.customer_cic, 'UNASSIGNED') AS customer_cic,
                   SUM(sd.quantity_sold) AS total_quantity,
                   SUM(sd.subtotal) AS total_income
                 FROM sale_details sd
@@ -184,7 +184,7 @@ final class SQLiteSaleManager: LocalSaleManager {
         }
         
         sql += """
-                GROUP BY s.customer_id
+                GROUP BY s.customer_cic
                 ORDER BY \(order.orderByClause)
                 LIMIT ? OFFSET ?
             """
@@ -200,13 +200,21 @@ final class SQLiteSaleManager: LocalSaleManager {
                 sql: finalSql,
                 parameters: finalParameters,
                 mapper: { cursor in
-                    let customerId = try cursor.getString(name: "customer_id")
+                    let customerCic = try cursor.getString(name: "customer_cic")
+                    let pruductName: String
+                    let imageUrl: String?
+                    if customerCic == "UNASSIGNED" {
+                        pruductName = "Venta sin cliente"
+                        imageUrl = nil
+                    } else {
+                        let customerEntity = try CustomerQueries.getCustomer(customerCic: customerCic, companyCic: self.sessionConfig.companyCic, tx: tx)
+                        pruductName = customerEntity.name + " \(customerEntity.lastName, default: "")"
+                        imageUrl = customerEntity.imageUrl
+                    }
                     return try SaleDetail(
                         id: UUID(),
-                        imageUrl: nil,
-                        productName: customerId == "UNASSIGNED"
-                        ? "Venta sin cliente"
-                        : customerId,
+                        imageUrl: imageUrl,
+                        productName: pruductName,
                         unitType: .unit,
                         unitCost: Money(0),
                         unitPrice: Money(0),

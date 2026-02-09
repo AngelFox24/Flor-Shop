@@ -2,15 +2,22 @@ import Foundation
 import PowerSync
 import FlorShopDTOs
 
+enum TypeOfVariation {
+    case increase
+    case decrease
+}
+
 protocol LocalCartManager {
     func initializeModel() async throws
     func getCart() async throws -> Car
     func deleteCartDetail(cartDetailId: UUID) async throws
-    func addProductToCart(productIn: Product) async throws
-    func changeProductAmountInCartDetail(cartDetailId: UUID, productCic: String, amount: Int) async throws
+    func addProductToCart(productCic: String) async throws
+    func addProductWithBarcode(barcode: String) async throws
+    func stepProductAmountInCartDetail(cartDetailId: UUID, type: TypeOfVariation) async throws
+    func changeProductAmountInCartDetail(cartDetailId: UUID, amount: Int) async throws
     func emptyCart() async throws
     func getCartQuantity() async throws -> Int
-    func setCustomerInCart(customerCic: String,) async throws
+    func setCustomerInCart(customerCic: String?) async throws
 }
 
 final class SQLiteCartManager: LocalCartManager {
@@ -55,13 +62,11 @@ final class SQLiteCartManager: LocalCartManager {
         }
     }
     
-    func addProductToCart(productIn: Product) async throws {
-        guard productIn.qty > 0 else {
-            throw LocalStorageError.invalidInput("[SQLiteCartManager] El producto no tiene stock")
-        }
+    func addProductToCart(productCic: String) async throws {
         return try await self.db.writeTransaction { tx in
-            guard let productCic = productIn.productCic else {
-                throw LocalStorageError.entityNotFound("Product a agregar no tiene CIC")
+            let productAmount = try ProductQueries.getProductAmount(productCic: productCic, subsidiaryCic: self.sessionConfig.subsidiaryCic, tx: tx)
+            guard productAmount > 0 else {
+                throw LocalStorageError.invalidInput("[SQLiteCartManager] El producto no tiene stock")
             }
             let cart = try self.getCartWithoutDetails(tx: tx)
             if let cartDetail = try CartDetailQueries.getCartDetail(
@@ -72,7 +77,6 @@ final class SQLiteCartManager: LocalCartManager {
             ) {
                 try self.changeProductAmountInCartDetail(
                     cartDetailId: cartDetail.id.uuidString,
-                    productCic: productCic,
                     amount: cartDetail.quantity + 1,
                     tx: tx
                 )
@@ -82,9 +86,65 @@ final class SQLiteCartManager: LocalCartManager {
         }
     }
     
-    func changeProductAmountInCartDetail(cartDetailId: UUID, productCic: String, amount: Int) async throws {
+    func addProductWithBarcode(barcode: String) async throws {
         return try await self.db.writeTransaction { tx in
-            try self.changeProductAmountInCartDetail(cartDetailId: cartDetailId.uuidString, productCic: productCic, amount: amount, tx: tx)
+            let product = try ProductQueries.getProductWithBarcode(barcode: barcode, subsidiaryCic: self.sessionConfig.subsidiaryCic, tx: tx)
+            guard let productCic = product.productCic,
+                  product.qty > 0 else {
+                throw LocalStorageError.invalidInput("[SQLiteCartManager] El producto no tiene stock")
+            }
+            let cart = try self.getCartWithoutDetails(tx: tx)
+            if let cartDetail = try CartDetailQueries.getCartDetail(
+                cartId: cart.id.uuidString,
+                productCic: productCic,
+                subsidiaryCic: self.sessionConfig.subsidiaryCic,
+                tx: tx
+            ) {
+                try self.changeProductAmountInCartDetail(
+                    cartDetailId: cartDetail.id.uuidString,
+                    amount: cartDetail.quantity + 1,
+                    tx: tx
+                )
+            } else {
+                try CartDetailQueries.insertCartDetail(cartId: cart.id.uuidString, productCic: productCic, tx: tx)
+            }
+        }
+    }
+    
+    func stepProductAmountInCartDetail(cartDetailId: UUID, type: TypeOfVariation) async throws {
+        try await self.db.writeTransaction { tx in
+            if let cartDetail = try CartDetailQueries.getCartDetail(
+                cartDetailId: cartDetailId.uuidString,
+                subsidiaryCic: self.sessionConfig.subsidiaryCic,
+                tx: tx
+            ) {
+                let unitType = cartDetail.product.unitType
+                let amountVariation: Int
+                switch unitType {
+                case .unit:
+                    amountVariation = 1
+                case .kilo:
+                    amountVariation = 100
+                }
+                let newAmount: Int
+                switch type {
+                case .increase:
+                    newAmount = cartDetail.quantity + amountVariation
+                case .decrease:
+                    newAmount = cartDetail.quantity - amountVariation
+                }
+                if newAmount <= 0 {
+                    try CartDetailQueries.deleteCartDetail(cartDetailId: cartDetailId.uuidString, tx: tx)
+                } else {
+                    try self.changeProductAmountInCartDetail(cartDetailId: cartDetailId.uuidString, amount: newAmount, tx: tx)
+                }
+            }
+        }
+    }
+    
+    func changeProductAmountInCartDetail(cartDetailId: UUID, amount: Int) async throws {
+        try await self.db.writeTransaction { tx in
+            try self.changeProductAmountInCartDetail(cartDetailId: cartDetailId.uuidString, amount: amount, tx: tx)
         }
     }
     
@@ -108,7 +168,7 @@ final class SQLiteCartManager: LocalCartManager {
         }
     }
     
-    func setCustomerInCart(customerCic: String) async throws {
+    func setCustomerInCart(customerCic: String?) async throws {
         try await self.db.writeTransaction { tx in
             let cart = try self.getCartWithoutDetails(tx: tx)
             let sql = """
@@ -156,12 +216,15 @@ final class SQLiteCartManager: LocalCartManager {
             """
         try tx.execute(sql: sql, parameters: [])
     }
-    private func changeProductAmountInCartDetail(cartDetailId: String, productCic: String, amount: Int, tx: Transaction) throws {
+    private func changeProductAmountInCartDetail(cartDetailId: String, amount: Int, tx: Transaction) throws {
         if let cartDetail = try CartDetailQueries.getCartDetail(
             cartDetailId: cartDetailId,
             subsidiaryCic: self.sessionConfig.subsidiaryCic,
             tx: tx
         ) {
+            guard amount >= 0 else {
+                throw LocalStorageError.invalidInput("El producto no puede tener una cantidad negativa")
+            }
             if cartDetail.product.qty >= amount {
                 try CartDetailQueries.updateCartDetailAmount(cartDetailId: cartDetail.id.uuidString, amount: amount, tx: tx)
             } else {

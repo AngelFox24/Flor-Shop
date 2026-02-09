@@ -1,7 +1,7 @@
 import Foundation
 
 protocol SetCustomerInCartUseCase {
-    func execute(customerCic: String) async
+    func execute(customerCic: String?) async
 }
 
 final class SetCustomerInCartInteractor: SetCustomerInCartUseCase {
@@ -11,7 +11,7 @@ final class SetCustomerInCartInteractor: SetCustomerInCartUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute(customerCic: String) async {
+    func execute(customerCic: String?) async {
         do {
             return try await self.cartRepository.setCustomerInCart(customerCic: customerCic)
         } catch {

@@ -9,6 +9,7 @@ enum SessionRoutes: Hashable {
 }
 
 struct WelcomeView: View {
+    @Environment(SessionManager.self) var sessionManager
     @State private var path: [SessionRoutes] = []
     var body: some View {
         NavigationStack(path: $path) {
@@ -73,6 +74,9 @@ struct WelcomeView: View {
                     CompleteEmployeeProfileView(subsidiaryCic: subsidiaryCic, path: $path)
                 }
             }
+        }
+        .task {
+            self.sessionManager.restoreSession()
         }
     }
 }

@@ -32,24 +32,37 @@ struct MainContendView: View {
             MenuView()
                 .environment(sessionContainer)
         }
+        .onChange(of: scenePhase) { oldScene, newScene in
+            if newScene == .inactive {
+                self.endConection()
+            }
+        }
         .task {
             await self.connectPowerSync()
             await self.initialization()
         }
     }
+    private func endConection() {
+        Task {
+            do {
+                try await self.sessionContainer.powerSyncService.disconnect()
+            } catch {
+                print("[MainContendView] Error al desconectar a PowerSync: \(error)")
+            }
+        }
+    }
     private func initialization() async {
-        let loadingId = self.overlayViewModel.showLoading()
+//        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
         do {
             try await self.sessionContainer.cartRepository.initializeModel()
-            try await self.sessionContainer.powerSyncService.waitForFirstSync()
-            try await Task.sleep(nanoseconds: 5_000_000_000)//5 segundos
-            self.overlayViewModel.endLoading(id: loadingId)
+//            try await self.sessionContainer.powerSyncService.waitForFirstSync()
+//            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
         } catch {
             self.overlayViewModel.showAlert(
                 title: "Error en la inicializacion.",
                 message: "Ha ocurrido un error en la incializacion.",
-                primary: AlertAction(title: "Aceptar") {
-                    self.overlayViewModel.endLoading(id: loadingId)
+                primary: ConfirmAction(title: "Aceptar") {
+//                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
                 }
             )
         }
@@ -62,7 +75,7 @@ struct MainContendView: View {
             self.overlayViewModel.showAlert(
                 title: "Error al contectar a PowerSync",
                 message: "Ha ocurrido un error en la sincronización.",
-                primary: AlertAction(title: "Aceptar") {
+                primary: ConfirmAction(title: "Aceptar") {
                     self.sessionManager.logout()
                 }
             )

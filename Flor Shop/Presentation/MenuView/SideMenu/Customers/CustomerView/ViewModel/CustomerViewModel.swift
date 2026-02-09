@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 @Observable
-class CustomerViewModel {
+final class CustomerViewModel {
     var searchText: String = ""
     var customerList: [Customer] = []
     var searchWord: String = "" {

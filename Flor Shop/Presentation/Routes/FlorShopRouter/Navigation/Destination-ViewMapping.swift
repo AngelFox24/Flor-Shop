@@ -39,21 +39,30 @@ func view(for destination: PushDestination) -> some View {
         WithSession { ses in
             AddEmployeeView(ses: ses)
         }
+    case .payCustomerTotalDebd(let customerCic):
+        WithSession { ses in
+            PaymentCustomerView(customerCic: customerCic, ses: ses)
+        }
     }
 }
 
 @ViewBuilder
 func view(for destination: SheetDestination) -> some View {
-    Text("Not implemented")
-//    Group {
-//        switch destination {
+//    Text("Not implemented")
+    Group {
+        switch destination {
+        case .barcodeScanner(let action):
+            BarcodeScannerView { code in
+                action.action(code)
+            }
+            .presentationDetents([.fraction(0.3)])
 //        case let .movieDescription(id):
 //            MovieDescriptionScreen(movieID: id)
 //
 //        case let .movieDescriptionValue(id, title, description):
 //            MovieDescriptionScreen(movieID: id, title: title, description: description)
-//        }
-//    }
+        }
+    }
 //    .navigationBarTitleDisplayMode(.inline)
 //    .addDismissButton()
 //    .presentationDetents([.medium, .large])

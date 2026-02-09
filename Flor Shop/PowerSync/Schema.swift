@@ -191,6 +191,7 @@ let SalesTable = Table(
         .text("subsidiary_cic"),
         .text("employee_subsidiary_id"),
         .text("customer_id"),
+        .text("customer_cic"),
         .text("created_at"),
         .text("updated_at")
     ],

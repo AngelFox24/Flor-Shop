@@ -20,7 +20,7 @@ struct CustomerTopToolbar: ToolbarContent {
                     }
                 }
             } label: {
-                Image(systemName: "line.3.horizontal.decrease")
+                Image(systemName: "ellipsis")
             }
         }
     }

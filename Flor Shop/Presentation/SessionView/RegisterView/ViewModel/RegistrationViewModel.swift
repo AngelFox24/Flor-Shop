@@ -1,7 +1,7 @@
 import Foundation
 
 @Observable
-class RegistrationViewModel {
+final class RegistrationViewModel {
     var registrationFields: RegistrationFields = RegistrationFields()
     func fieldsTrue() {
         registrationFields.subdomainEdited = true

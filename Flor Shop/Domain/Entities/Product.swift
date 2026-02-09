@@ -29,6 +29,24 @@ struct Product: Identifiable, Codable {
 }
 
 extension Product {
+    var quantityDisplay: String {
+        switch self.unitType {
+        case .unit:
+            return String(qty)
+        case .kilo:
+            let s = String(qty)
+            
+            guard s.count > 3 else {
+                return "0.\(s.padding(toLength: 3, withPad: "0", startingAt: 0))"
+            }
+            
+            let index = s.index(s.endIndex, offsetBy: -3)
+            return s[..<index] + "." + s[index...]
+        }
+    }
+}
+
+extension Product {
     func toProductDTO() -> ProductServerDTO {
         return ProductServerDTO(
             productCic: productCic,

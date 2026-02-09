@@ -16,7 +16,7 @@ struct MenuView: View {
                     }
                 case .customers:
                     NavigationContainer(parentRouter: mainRouter, tab: .customers, showMenu: $showMenu) {
-                        CustomersView(ses: sessionContainer, showMenu: changeShowMenu)
+                        CustomerView(ses: sessionContainer, showMenu: changeShowMenu)
                     }
                 case .employees:
                     NavigationContainer(parentRouter: mainRouter, tab: .employees, showMenu: $showMenu) {

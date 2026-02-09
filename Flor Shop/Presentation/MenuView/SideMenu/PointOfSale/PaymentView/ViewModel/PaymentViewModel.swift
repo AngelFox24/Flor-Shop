@@ -2,7 +2,7 @@ import Foundation
 import FlorShopDTOs
 
 @Observable
-class PaymentViewModel {
+final class PaymentViewModel {
     var cartCoreData: Car?
     var customerInCar: Customer?
     var paymentType: PaymentType = .cash
@@ -21,27 +21,37 @@ class PaymentViewModel {
     private let emptyCartUseCase: EmptyCartUseCase
     private let registerSaleUseCase: RegisterSaleUseCase
     private let getCustomersUseCase: GetCustomersUseCase
+    private let setCustomerInCartUseCase: SetCustomerInCartUseCase
     
     init(
         registerSaleUseCase: RegisterSaleUseCase,
         getCartUseCase: GetCartUseCase,
         emptyCartUseCase: EmptyCartUseCase,
-        getCustomersUseCase: GetCustomersUseCase
+        getCustomersUseCase: GetCustomersUseCase,
+        setCustomerInCartUseCase: SetCustomerInCartUseCase
     ) {
         self.registerSaleUseCase = registerSaleUseCase
         self.getCartUseCase = getCartUseCase
         self.emptyCartUseCase = emptyCartUseCase
         self.getCustomersUseCase = getCustomersUseCase
+        self.setCustomerInCartUseCase = setCustomerInCartUseCase
     }
     
     @MainActor
     func fetchCart() async {
         self.cartCoreData = await self.getCartUseCase.execute()
-        guard let customerCic = cartCoreData?.customerCic else {
-            return
+        await fechtCustomer()
+    }
+    func fechtCustomer() async {
+        let customerInCar: Customer?
+        if let customerCic = cartCoreData?.customerCic {
+            customerInCar = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)
+        } else {
+            customerInCar = nil
         }
-        let customer = await self.getCustomersUseCase.getCustomer(customerCic: customerCic)//TODO: Refactor, debe llamarse desde un hilo no principal
-        self.customerInCar = customer
+        await MainActor.run {
+            self.customerInCar = customerInCar
+        }
     }
     func emptyCart() async throws {
         try await self.emptyCartUseCase.execute()
@@ -50,5 +60,12 @@ class PaymentViewModel {
     func registerSale() async throws {
         guard let cart = cartCoreData else { return }
         try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerCic: customerInCar?.customerCic)
+    }
+    func unlinkClient() {
+        Task {
+            guard let _ = customerInCar else { return }
+            await self.setCustomerInCartUseCase.execute(customerCic: nil)
+            await fetchCart()
+        }
     }
 }

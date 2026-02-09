@@ -29,7 +29,7 @@ struct GoogleSingInButton: View {
         }
     }
     private func handleSignInButton() {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "[GoogleSingInButton]")
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
           print("There is no active window scene")
           return
@@ -50,15 +50,15 @@ struct GoogleSingInButton: View {
                 await MainActor.run {
                     self.path.append(.companySelection(provider: .google, token: token))
                 }
-                self.overlayViewModel.endLoading(id: loadingId)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[GoogleSingInButton]")
             } catch {
                 self.overlayViewModel.showAlert(
                     title: "Alert",
                     message: "No se pudo iniciar sesión con Google. Inténtalo nuevamente.",
-                    primary: AlertAction(
+                    primary: ConfirmAction(
                         title: "Ok",
                         action: {
-                            self.overlayViewModel.endLoading(id: loadingId)
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[GoogleSingInButton]")
                         }
                     )
                 )

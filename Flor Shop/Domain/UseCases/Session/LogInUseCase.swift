@@ -15,6 +15,6 @@ final class LogInInteractor: LogInUseCase {
         self.sessionRepository = sessionRepository
     }
     func execute(provider: AuthProvider, token: String) async throws {
-        try await self.sessionRepository.logIn(provider: provider, token: token)
+        let _ = try await self.sessionRepository.logIn(provider: provider, token: token)
     }
 }

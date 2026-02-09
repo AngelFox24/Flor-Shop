@@ -2,6 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct AddProductView: View {
+    private let className: StaticString = #filePath
     @Environment(FlorShopRouter.self) private var router
     @Environment(OverlayViewModel.self) private var overlayViewModel
     @State var agregarViewModel: AgregarViewModel
@@ -31,39 +32,39 @@ struct AddProductView: View {
             }
     }
     private func loadProduct(productCic: String) async {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "\(className)")
         do {
             try await agregarViewModel.loadProduct(productCic: productCic)
-            self.overlayViewModel.endLoading(id: loadingId)
+            self.overlayViewModel.endLoading(id: loadingId, origin: "\(className)")
         } catch {
             print("[AddProductView] Ha ocurrido un error: \(error)")
             self.overlayViewModel.showAlert(
                 title: "Error",
                 message: "Ha ocurrido un error al cargar un producto.",
-                primary: AlertAction(
+                primary: ConfirmAction(
                     title: "Aceptar",
                     action: {
-                        self.overlayViewModel.endLoading(id: loadingId)
+                        self.overlayViewModel.endLoading(id: loadingId, origin: "\(className)")
                     }
                 )
             )
         }
     }
     private func saveProduct() {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "\(className)")
         Task {
             do {
                 try await agregarViewModel.addProduct()
-                self.overlayViewModel.endLoading(id: loadingId)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "\(className)")
             } catch {
                 print("[AddProductView] Ha ocurrido un error: \(error)")
                 self.overlayViewModel.showAlert(
                     title: "Error",
                     message: "Ha ocurrido un error al guardar.",
-                    primary: AlertAction(
+                    primary: ConfirmAction(
                         title: "Aceptar",
                         action: {
-                            self.overlayViewModel.endLoading(id: loadingId)
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "\(className)")
                         }
                     )
                 )
@@ -91,6 +92,7 @@ struct ErrorMessageText: View {
 }
 
 struct CamposProductoAgregar: View {
+    @Environment(FlorShopRouter.self) private var router
     @Binding var agregarViewModel: AgregarViewModel
     var sizeCampo: CGFloat = 150
     var body: some View {
@@ -147,20 +149,14 @@ struct CamposProductoAgregar: View {
                 VStack {
                     HStack {
                         CustomTextField(title: "Código de barras", value: $agregarViewModel.agregarFields.scannedCode, edited: .constant(false))
-                        Button {
-                            agregarViewModel.agregarFields.isShowingScanner.toggle()
-                        } label: {
+                        NavigationButton(sheet: .barcodeScanner(action: BarcodeAction(action: { code in
+                            agregarViewModel.agregarFields.scannedCode = code
+                            self.router.dismissSheet()
+                        }))) {
                             Image(systemName: "barcode.viewfinder")
                                 .font(.largeTitle)
                                 .foregroundStyle(Color.accentColor)
                                 .padding(.horizontal, 5)
-                        }
-                        .sheet(isPresented: $agregarViewModel.agregarFields.isShowingScanner) {
-                            BarcodeScannerView { code in
-                                agregarViewModel.agregarFields.scannedCode = code
-                                agregarViewModel.agregarFields.isShowingScanner = false
-                            }
-                            .presentationDetents([.large])
                         }
                     }
                 }
@@ -192,7 +188,7 @@ struct CamposProductoAgregar: View {
                 }
                 VStack {
                     HStack(spacing: 10) {
-                        CustomTextField(title: "Cantidad" ,value: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, keyboardType: .numberPad)
+                        CustomNumberField(title: "Cantidad", userInput: $agregarViewModel.agregarFields.quantityStock, edited: $agregarViewModel.agregarFields.quantityEdited, numberOfDecimals: agregarViewModel.agregarFields.unitType == .kilo ? 3 : 0)
                         CustomNumberField(title: "Costo unitario", userInput: $agregarViewModel.agregarFields.unitCost, edited: $agregarViewModel.agregarFields.unitCostEdited)
                     }
                     if agregarViewModel.agregarFields.quantityError != "" {

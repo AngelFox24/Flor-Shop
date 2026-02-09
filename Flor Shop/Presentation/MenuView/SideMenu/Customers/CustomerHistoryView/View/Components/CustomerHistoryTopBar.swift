@@ -1,59 +1,21 @@
 import SwiftUI
 
-struct CustomerHistoryTopBar: View {
-    let customer: Customer?
-    let backAction: () -> Void
-    let payDebt: () -> Void
-    var body: some View {
-        HStack {
-            BackButton(backAction: backAction)
-            Spacer()
-            Button(action: payDebt) {
-                HStack(spacing: 5) {
-                    Text(String("S/. "))
-                        .font(.custom("Artifika-Regular", size: 15))
-                    Text(String(format: "%.2f", customer?.totalDebt.soles ?? 0.0))
-                        .font(.custom("Artifika-Regular", size: 20))
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-                .foregroundColor(Color.background)
-                .background(Color.accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: 15))
+struct CustomerHistoryTopBar: ToolbarContent {
+    let customer: Customer
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            NavigationButton(push: .selectCustomer) {
+                CustomAsyncImageView(imageUrlString: customer.imageUrl, size: 45)
+                    .clipShape(Circle())
             }
-            if let customer = customer {
-                NavigationButton(push: .addCustomer) {
-                    CustomAsyncImageView(imageUrlString: customer.imageUrl, size: 40)
-                }
-            } else {
-                EmptyProfileButton()
+            .buttonStyle(.borderless)
+        }
+        .sharedBackgroundVisibility(.hidden)
+        ToolbarSpacer(.fixed, placement: .confirmationAction)
+        if let customerCic = customer.customerCic {
+            ToolbarItem(placement: .confirmationAction) {
+                NavigationBasicButton(push: .payCustomerTotalDebd(customerCic: customerCic), systemImage: "checkmark")
             }
         }
     }
 }
-
-#Preview {
-    @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
-    CustomerHistoryTopBar(
-        customer: Customer(
-            id: UUID(),
-            customerCic: UUID().uuidString,
-            name: "Test Customer",
-            lastName: "Tests Last Name",
-            creditLimit: .init(2450),
-            creditDays: 23,
-            creditScore: 3000,
-            dateLimit: Date(),
-            phoneNumber: "99855352",
-            lastDatePurchase: Date(),
-            totalDebt: .init(7564),
-            isCreditLimitActive: false,
-            isDateLimitActive: false
-        ),
-        backAction: {},
-        payDebt: {}
-    )
-    .environment(mainRouter)
-    .background(Color.primary)
-}
-

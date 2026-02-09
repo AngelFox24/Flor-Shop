@@ -1,23 +1,46 @@
 import SwiftUI
+import FlorShopDTOs
 
 struct CartView: View {
     @Environment(FlorShopRouter.self) private var router
+    @Environment(OverlayViewModel.self) private var overlayViewModel
     @State var cartViewModel: CartViewModel
-    @State private var datesito = Date()
     init(ses: SessionContainer) {
         cartViewModel = CartViewModelFactory.getCartViewModel(sessionContainer: ses)
     }
     var body: some View {
         ListCartController(cartViewModel: $cartViewModel, backAction: router.back)
             .navigationTitle("Carrito")
-            .navigationSubtitle(Text(datesito.formatted(.dateTime.day().month().year())))
+            .navigationSubtitle(Text("\(cartViewModel.customerInCar?.name, default: "Cliente desconocido")"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                CartTopToolbar(cartViewModel: $cartViewModel)
+                CartTopToolbar(cartViewModel: $cartViewModel, scannerAction: addProductInCart)
             }
             .task {
                 await cartViewModel.fetchCart()
             }
+    }
+    func addProductInCart(barcode: String) {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[SaleListProductView]")
+        Task {
+            do {
+                try await cartViewModel.addProductInCart(barcode: barcode)
+                await cartViewModel.fetchCart()
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[SaleListProductView]")
+            } catch {
+                print("[SaleListProductView] Ha ocurrido un error: \(error)")
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ha ocurrido un error al agregar producto al carrito.",
+                    primary: ConfirmAction(
+                        title: "Aceptar",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[SaleListProductView]")
+                        }
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -28,6 +51,7 @@ struct CartView: View {
 }
 
 struct ListCartController: View {
+    @Environment(OverlayViewModel.self) private var overlayViewModel
     @Binding var cartViewModel: CartViewModel
     let backAction: () -> Void
     var body: some View {
@@ -35,12 +59,27 @@ struct ListCartController: View {
             if let cart = cartViewModel.cartCoreData {
                 List {
                     ForEach(cart.cartDetails) { cartDetail in
-                        CardViewTipe3(
-                            cartDetail: cartDetail,
-                            size: 80,
-                            decreceProductAmount: decreceProductAmount,
-                            increaceProductAmount: increaceProductAmount
-                        )
+                        Button {
+                            self.showEditAmountView(
+                                cartDetailId: cartDetail.id,
+                                productName: cartDetail.product.name,
+                                imageUrl: cartDetail.product.imageUrl,
+                                unitType: cartDetail.product.unitType,
+                                initialAmount: cartDetail.quantity
+                            )
+                        } label: {
+                            CartCardView(
+                                cartDetailId: cartDetail.id,
+                                imageUrl: cartDetail.product.imageUrl,
+                                productName: cartDetail.product.name,
+                                mainIndicatorPrefix: "S/. ",
+                                mainIndicator: cartDetail.product.unitPrice.solesString,
+                                secondaryIndicatorSuffix: " \(cartDetail.product.unitType.shortDescription)",
+                                secondaryIndicator: cartDetail.quantityDisplay,
+                                decreceProductAmount: decreceProductAmount,
+                                increaceProductAmount: increaceProductAmount
+                            )
+                        }
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color.background)
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -58,6 +97,7 @@ struct ListCartController: View {
                 .listStyle(PlainListStyle())
                 .safeAreaBar(edge: .top, alignment: .center) {
                     let total = cartViewModel.cartCoreData?.total.solesString ?? "0"
+//                    let _ = print("[ListCartController] total: \(total)")
                     TotalSafeAreaBarView(total: total)
                 }
             } else {
@@ -85,70 +125,61 @@ struct ListCartController: View {
         .padding(.horizontal, 10)
         .background(Color.background)
     }
-//    func goToProductsList() {
-//        self.tab = .magnifyingglass
-//        addProductToCart()
-//    }
-//    func addProductToCart() {
-//        let car = Car(
-//            id: UUID(),
-//            cartDetails: [.init(
-//                id: UUID(),
-//                quantity: 3,
-//                product: .init(
-//                    id: UUID(),
-//                    productCic: UUID().uuidString,
-//                    active: true,
-//                    name: "Test PRoduct",
-//                    qty: 23,
-//                    unitType: .unit,
-//                    unitCost: .init(3450),
-//                    unitPrice: .init(5650)
-//                )
-//            )]
-//        )
-//        cartViewModel.cartCoreData = car
-//    }
+    func showEditAmountView(cartDetailId: UUID, productName: String, imageUrl: String?, unitType: UnitType, initialAmount: Int) {
+        self.overlayViewModel.showEditAmountView(imageUrl: imageUrl, confirm: EditAction(title: productName) { amount in
+            self.editProductAmount(cartDetailId: cartDetailId, newAmount: amount)
+        }, type: unitType, initialAmount: initialAmount)
+    }
     func deleteCartDetail(cartDetailId: UUID) {
         Task {
-//            loading = true
             do {
                 try await cartViewModel.deleteCartDetail(cartDetailId: cartDetailId)
                 await cartViewModel.fetchCart()
             } catch {
-//                router.presentAlert(.error(error.localizedDescription))
+                print("[ListCartController] Error al eliminar el producto: \(error.localizedDescription)")
             }
-//            loading = false
         }
     }
-    func decreceProductAmount(cartDetail: CartDetail) {
+    func decreceProductAmount(cartDetailId: UUID) {
         Task {
-//            loading = true
             do {
-                if cartDetail.quantity - 1 <= 0 {
-                    try await cartViewModel.deleteCartDetail(cartDetailId: cartDetail.id)
-                } else if let productCic = cartDetail.product.productCic {
-                    try await cartViewModel.changeProductAmount(cartDetailId: cartDetail.id, productCic: productCic, amount: cartDetail.quantity - 1)
-                }
+                try await cartViewModel.stepProductAmount(cartDetailId: cartDetailId, type: .decrease)
                 await cartViewModel.fetchCart()
             } catch {
-//                router.presentAlert(.error(error.localizedDescription))
+                print("[ListCartController] Error al reducir la cantidad: \(error.localizedDescription)")
             }
-//            loading = false
         }
     }
-    func increaceProductAmount(cartDetail: CartDetail) {
+    func increaceProductAmount(cartDetailId: UUID) {
         Task {
-//            loading = true
             do {
-                if let productCic = cartDetail.product.productCic {
-                    try await cartViewModel.changeProductAmount(cartDetailId: cartDetail.id, productCic: productCic, amount: cartDetail.quantity + 1)
-                    await cartViewModel.fetchCart()
-                }
+                try await cartViewModel.stepProductAmount(cartDetailId: cartDetailId, type: .increase)
+                await cartViewModel.fetchCart()
             } catch {
-//                router.presentAlert(.error(error.localizedDescription))
+                print("[ListCartController] Error al aumentar la cantidad: \(error.localizedDescription)")
             }
-//            loading = false
+        }
+    }
+    func editProductAmount(cartDetailId: UUID, newAmount: Int) {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[ListCartController]")
+        Task {
+            do {
+                try await cartViewModel.changeProductAmount(cartDetailId: cartDetailId, amount: newAmount)
+                await cartViewModel.fetchCart()
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[ListCartController]")
+            } catch {
+               print("Error al modificar la cantidad: \(error.localizedDescription)")
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ha ocurrido un error al modificar la cantidad. Por favor, intente nuevamente.",
+                    primary: ConfirmAction(
+                        title: "Aceptar",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[ListCartController]")
+                        }
+                    )
+                )
+            }
         }
     }
 }

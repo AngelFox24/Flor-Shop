@@ -25,21 +25,21 @@ struct CompanySelectionView: View {
             }
     }
     private func loadInfo() async {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "[CompanySelectionView]")
         do {
             let companies = try await self.sessionManager.login(provider: self.provider, token: self.token)
             await MainActor.run {
                 self.companies = companies
             }
-            self.overlayViewModel.endLoading(id: loadingId)
+            self.overlayViewModel.endLoading(id: loadingId, origin: "[CompanySelectionView]")
         } catch {
             self.overlayViewModel.showAlert(
                 title: "Error",
                 message: "Ocurrio un error en la conexión. Intente nuevamente.",
-                primary: AlertAction(
+                primary: ConfirmAction(
                     title: "Ok",
                     action: {
-                        self.overlayViewModel.endLoading(id: loadingId)
+                        self.overlayViewModel.endLoading(id: loadingId, origin: "[CompanySelectionView]")
                     }
                 )
             )

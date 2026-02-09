@@ -20,7 +20,7 @@ struct ProductTopToolbar: ToolbarContent {
                     }
                 }
             } label: {
-                Image(systemName: "line.3.horizontal.decrease")
+                Image(systemName: "ellipsis")
             }
         }
         ToolbarItem(placement: .topBarTrailing) {

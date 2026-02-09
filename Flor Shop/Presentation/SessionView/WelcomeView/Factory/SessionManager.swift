@@ -15,7 +15,6 @@ final class SessionManager {
     
     init(sessionRepository: SessionRepository) {
         self.sessionRepository = sessionRepository
-        restoreSession()
     }
     
     func login(
@@ -59,7 +58,7 @@ final class SessionManager {
         self.state = .loggedIn(session)
     }
     
-    private func restoreSession() {
+    func restoreSession() {
         if let saved = sessionRepository.loadSession() {
             self.state = .loggedIn(saved)
         }

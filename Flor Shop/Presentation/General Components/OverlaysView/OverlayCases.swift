@@ -1,12 +1,7 @@
-//
-//  LoadingScreensCases.swift
-//  TestLoadingScreens
-//
-//  Created by Angel Curi Laurente on 24/12/2025.
-//
+import FlorShopDTOs
 
 enum OverlayCases: Equatable {
     case loading
-    case alert(message: String, primaryAction: AlertAction)
-//    case failure
+    case alert(message: String, primaryAction: ConfirmAction)
+    case editAmount(imageUrl: String?, confirm: EditAction, type: UnitType, initialAmount: Int)
 }

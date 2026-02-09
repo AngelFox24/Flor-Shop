@@ -19,19 +19,24 @@ struct Customer: Identifiable {
     var isDateLimitActive: Bool
     
     var isDateLimit: Bool {
-        if isDateLimitActive {
-            return true
-        } else {
-            return false
-        }
+        guard isDateLimitActive else { return false }
+        guard let dateLimit, let firstDatePurchaseWithCredit else { return false }
+        let today = Calendar.current.startOfDay(for: Date())
+        let limitDay = Calendar.current.startOfDay(for: dateLimit)
+        
+        let daysUntilLimit = Calendar.current.dateComponents(
+            [.day],
+            from: today,
+            to: limitDay
+        ).day ?? 0
+        return daysUntilLimit > creditDays
     }
+    
     var isCreditLimit: Bool {
-        if isCreditLimitActive {
-            return true
-        } else {
-            return false
-        }
+        guard isCreditLimitActive else { return false }
+        return totalDebt.cents > creditLimit.cents
     }
+    
     var customerType: CustomerTipeByCredit {
         if creditScore >= 0 && creditScore < 33 {
             return .bad

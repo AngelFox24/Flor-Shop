@@ -37,6 +37,7 @@ enum PushDestination: Hashable, CustomStringConvertible {
     case editProduct(productCic: String)
     case addProduct
     case addEmployee
+    case payCustomerTotalDebd(customerCic: String)
 
     var description: String {
         switch self {
@@ -50,18 +51,32 @@ enum PushDestination: Hashable, CustomStringConvertible {
         case .editProduct(let productId): ".editProduct(\(String(describing: productId)))"
         case .addProduct: ".addProduct"
         case .addEmployee: ".addEmployee"
+        case .payCustomerTotalDebd(let customerCic): ".payCustomerTotalDebd(\(String(describing: customerCic)))"
         }
+    }
+}
+
+public struct BarcodeAction: Equatable, Hashable {
+    let id: UUID = UUID()
+    let action: (String) -> Void
+    public static func == (lhs: BarcodeAction, rhs: BarcodeAction) -> Bool {
+        lhs.id == rhs.id
+    }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
 public enum SheetDestination: Hashable, CustomStringConvertible {
 //    case movieDescription(id: MovieID)
 //    case movieDescriptionValue(id: MovieID, title: String, description: String)
+    case barcodeScanner(action: BarcodeAction)
 
     public var description: String {
         switch self {
 //        case let .movieDescription(id): ".movieDescription(\(id))"
 //        case let .movieDescriptionValue(id, _, _): ".movieDescriptionValue(\(id))"
+        case .barcodeScanner: ".barcodeScanner"
         }
     }
 }
@@ -71,6 +86,7 @@ extension SheetDestination: Identifiable {
         switch self {
 //        case let .movieDescription(id): id.rawValue.formatted()
 //        case let .movieDescriptionValue(id, _, _): id.rawValue.formatted()
+            case .barcodeScanner: "barcodeScanner"
         }
     }
 }
@@ -85,6 +101,7 @@ public enum FullScreenDestination: Hashable {
     // when we will show the movie gallery
 //    case movieGallery(id: MovieID)
 //    case movieGalleryValue(id: MovieID, images: [MovieDetails.ImageCollection.Backdrop], selectedImageIndex: Int)
+//    case editAmount
 }
 
 extension FullScreenDestination: CustomStringConvertible {
@@ -92,6 +109,7 @@ extension FullScreenDestination: CustomStringConvertible {
         switch self {
 //        case let .movieGallery(id): ".movieGallery(\(id))"
 //        case let .movieGalleryValue(id, _, _): ".movieGalleryValue(\(id))"
+//        case .editAmount: ".editAmount"
         }
     }
 }
@@ -101,6 +119,7 @@ extension FullScreenDestination: Identifiable {
         switch self {
 //        case let .movieGallery(id): id.rawValue.formatted()
 //        case let .movieGalleryValue(id, _, _): id.rawValue.formatted()
+//        case .editAmount: "editAmount"
         }
     }
 }

@@ -5,7 +5,7 @@ protocol CustomerRepository {
     func save(customer: Customer) async throws
     func payClientTotalDebt(customer: Customer) async throws -> Bool
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) async throws -> [Customer]
-    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) async throws -> [SaleDetail]
+    func getSalesDetailHistory(customerCic: String, page: Int, pageSize: Int) async throws -> [SaleDetail]
     func getCustomer(customerCic: String) async throws -> Customer?
 }
 
@@ -44,8 +44,8 @@ class CustomerRepositoryImpl: CustomerRepository {
     func getCustomers(seachText: String, order: CustomerOrder, filter: CustomerFilterAttributes, page: Int, pageSize: Int) async throws -> [Customer] {
         return try await self.localManager.getCustomers(seachText: seachText, order: order, filter: filter, page: page, pageSize: pageSize)
     }
-    func getSalesDetailHistory(customer: Customer, page: Int, pageSize: Int) async throws -> [SaleDetail] {
-        return try await self.localManager.getSalesDetailHistory(customer: customer, page: page, pageSize: pageSize)
+    func getSalesDetailHistory(customerCic: String, page: Int, pageSize: Int) async throws -> [SaleDetail] {
+        return try await self.localManager.getSalesDetailHistory(customerCic: customerCic, page: page, pageSize: pageSize)
     }
     func getCustomer(customerCic: String) async throws -> Customer? {
         return try await self.localManager.getCustomer(customerCic: customerCic)

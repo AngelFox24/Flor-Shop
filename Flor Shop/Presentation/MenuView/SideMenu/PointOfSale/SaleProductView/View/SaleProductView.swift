@@ -1,18 +1,6 @@
 import SwiftUI
 import Equatable
 
-extension View {
-    nonisolated
-    func onChangeAsync<V: Equatable>(
-        of value: V,
-        _ action: @escaping @Sendable (_ newValue: V) async -> Void
-    ) -> some View {
-        task(id: value) {
-            await action(value)
-        }
-    }
-}
-
 @Equatable
 struct SaleProductView: View {
     @State var productViewModel: ProductViewModel
@@ -86,17 +74,13 @@ struct SaleListProductView: View {
                             }
                     }
                     ForEach(viewModel.productsCoreData) { producto in
-                        CardViewTipe2(
+                        ProductCardView(
                             imageUrl: producto.imageUrl,
-                            topStatusColor: Color.red,
-                            topStatus: nil,
                             mainText: producto.name,
                             mainIndicatorPrefix: "S/. ",
                             mainIndicator: producto.unitPrice.solesString,
-                            mainIndicatorAlert: false,
-                            secondaryIndicatorSuffix: " u",
-                            secondaryIndicator: String(producto.qty),
-                            secondaryIndicatorAlert: false, size: 80
+                            secondaryIndicatorSuffix: " \(producto.unitType.shortDescription)",
+                            secondaryIndicator: producto.quantityDisplay
                         )
                         .padding(.horizontal, 10)
                         .listRowSeparator(.hidden)
@@ -104,7 +88,8 @@ struct SaleListProductView: View {
                         .listRowBackground(Color.background)
                         .swipeActions(edge: .leading, allowsFullSwipe: true) {
                             Button {
-                                agregarProductoACarrito(producto: producto)
+                                guard let productCic = producto.productCic else { return }
+                                agregarProductoACarrito(productCic: productCic)
                             } label: {
                                 Image(systemName: "cart")
                             }
@@ -121,9 +106,9 @@ struct SaleListProductView: View {
                                     .tint(Color.gray)
                             }
                         }
-                        .onAppear(perform: {
+                        .onAppear {
                             shouldLoadData(product: producto)
-                        })
+                        }
                     }
                 }
                 .scrollIndicators(ScrollIndicatorVisibility.hidden)
@@ -150,22 +135,22 @@ struct SaleListProductView: View {
             }
         }
     }
-    func agregarProductoACarrito(producto: Product) {
-        let loadingId = self.overlayViewModel.showLoading()
+    func agregarProductoACarrito(productCic: String) {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[SaleListProductView]")
         Task {
             do {
-                try await viewModel.addProductoToCarrito(product: producto)
+                try await viewModel.addProductoToCarrito(productCic: productCic)
                 await viewModel.updateCartQuantity()
-                self.overlayViewModel.endLoading(id: loadingId)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[SaleListProductView]")
             } catch {
                 print("[SaleListProductView] Ha ocurrido un error: \(error)")
                 self.overlayViewModel.showAlert(
                     title: "Error",
                     message: "Ha ocurrido un error al agregar producto al carrito.",
-                    primary: AlertAction(
+                    primary: ConfirmAction(
                         title: "Aceptar",
                         action: {
-                            self.overlayViewModel.endLoading(id: loadingId)
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[SaleListProductView]")
                         }
                     )
                 )

@@ -23,21 +23,21 @@ struct SubsidiarySelectionView: View {
             }
     }
     private func loadInfo() async {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "[SubsidiarySelectionView]")
         do {
             let subsidiaries = try await self.sessionManager.getSubsidiaries(companyCic: self.companyCic)
             await MainActor.run {
                 self.subsidiaries = subsidiaries
             }
-            self.overlayViewModel.endLoading(id: loadingId)
+            self.overlayViewModel.endLoading(id: loadingId, origin: "[SubsidiarySelectionView]")
         } catch {
             self.overlayViewModel.showAlert(
                 title: "Error",
                 message: "Ocurrio un error en la conexión. Intente nuevamente.",
-                primary: AlertAction(
+                primary: ConfirmAction(
                     title: "Ok",
                     action: {
-                        self.overlayViewModel.endLoading(id: loadingId)
+                        self.overlayViewModel.endLoading(id: loadingId, origin: "[SubsidiarySelectionView]")
                     }
                 )
             )

@@ -18,21 +18,21 @@ struct AddEmployeeView: View {
     }
     
     private func inviteEmployee() {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "[AddEmployeeView]")
         Task {
             do {
                 try await self.addEmployeeViewModel.inviteEmployee()
                 router.back()
-                self.overlayViewModel.endLoading(id: loadingId)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[AddEmployeeView]")
             } catch {
                 print("Error al registrar invitacion de empleado: \(error.localizedDescription)")
                 self.overlayViewModel.showAlert(
                     title: "Error",
                     message: "Ha ocurrido un error al registrar invitacion de empleado.",
-                    primary: AlertAction(
+                    primary: ConfirmAction(
                         title: "Aceptar",
                         action: {
-                            self.overlayViewModel.endLoading(id: loadingId)
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[AddEmployeeView]")
                         }
                     )
                 )

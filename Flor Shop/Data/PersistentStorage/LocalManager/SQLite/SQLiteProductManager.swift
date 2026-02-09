@@ -92,7 +92,7 @@ final class SQLiteProductManager: LocalProductManager {
 extension ProductsFilterAttributes {
     var whereClause: String {
         switch self {
-        case .allProducts: return "ps.active = 1"
+        case .allProducts: return "ps.active = 1 AND ps.quantity_stock > 0"
         case .outOfStock: return "ps.quantity_stock <= 0"
         case .productWithdrawn: return "ps.active = 0"
         }

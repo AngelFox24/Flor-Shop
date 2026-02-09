@@ -1,7 +1,8 @@
 import Foundation
 
 protocol AddProductoToCartUseCase {
-    func execute(product: Product) async throws
+    func execute(productCic: String) async throws
+    func execute(barcode: String) async throws
     func getCartQuantity() async throws -> Int
 }
 
@@ -12,8 +13,12 @@ final class AddProductoToCartInteractor: AddProductoToCartUseCase {
         self.cartRepository = cartRepository
     }
     
-    func execute(product: Product) async throws {
-        try await self.cartRepository.addProductoToCarrito(product: product)
+    func execute(productCic: String) async throws {
+        try await self.cartRepository.addProductoToCarrito(productCic: productCic)
+    }
+    
+    func execute(barcode: String) async throws {
+        try await self.cartRepository.addProductWithBarcode(barcode: barcode)
     }
     
     func getCartQuantity() async throws -> Int {

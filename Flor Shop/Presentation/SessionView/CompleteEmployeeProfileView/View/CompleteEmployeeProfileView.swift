@@ -22,20 +22,20 @@ struct CompleteEmployeeProfileView: View {
             }
     }
     private func completeProfile() {
-        let loadingId = self.overlayViewModel.showLoading()
+        let loadingId = self.overlayViewModel.showLoading(origin: "[CompleteEmployeeProfileView]")
         Task {
             do {
                 let employee = self.viewModel.getEmployee()
                 try await self.sessionManager.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic)
-                self.overlayViewModel.endLoading(id: loadingId)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[CompleteEmployeeProfileView]")
             } catch {
                 self.overlayViewModel.showAlert(
                     title: "Error",
                     message: "Ocurrio un error al completar el perfil. Intente nuevamente.",
-                    primary: AlertAction(
+                    primary: ConfirmAction(
                         title: "Ok",
                         action: {
-                            self.overlayViewModel.endLoading(id: loadingId)
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[CompleteEmployeeProfileView]")
                         }
                     )
                 )

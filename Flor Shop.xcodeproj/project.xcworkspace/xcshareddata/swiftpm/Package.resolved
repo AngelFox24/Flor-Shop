@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/powersync-ja/CSQLite.git",
       "state" : {
-        "revision" : "25f4a02fce2dcd588bad37ea6fc047c2bbe8ef5e",
-        "version" : "3.51.1"
+        "revision" : "9f10da4272e292c453db400342d9e16c15e59db5",
+        "version" : "3.51.2"
       }
     },
     {
@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/powersync-ja/powersync-swift",
       "state" : {
-        "revision" : "9c31b12e8121630a3b2e5b9124d439c78b769050",
-        "version" : "1.9.0"
+        "revision" : "2539e0d5dc6c87ddb58cf43743f23607cd2adb8c",
+        "version" : "1.10.0"
       }
     },
     {

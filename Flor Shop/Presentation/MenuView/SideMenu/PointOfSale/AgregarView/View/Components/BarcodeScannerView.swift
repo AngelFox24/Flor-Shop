@@ -4,18 +4,24 @@ import AVFoundation
 struct BarcodeScannerView: UIViewControllerRepresentable {
     class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
         var parent: BarcodeScannerView
-
+        private var lastScanDate: Date?
+        private let cooldown: TimeInterval = 1.5 // segundos
         init(parent: BarcodeScannerView) {
             self.parent = parent
         }
 
         func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-            if let metadataObject = metadataObjects.first {
-                guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
-                guard let stringValue = readableObject.stringValue else { return }
-                AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-                parent.didFindCode(stringValue)
+            guard let metadataObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
+                  let stringValue = metadataObject.stringValue else {
+                return
             }
+            let now = Date()
+            if let last = lastScanDate, now.timeIntervalSince(last) < cooldown {
+                return
+            }
+            lastScanDate = now
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+            parent.didFindCode(stringValue)
         }
     }
 
@@ -67,7 +73,9 @@ struct BarcodeScannerView: UIViewControllerRepresentable {
         let previewY: CGFloat = viewController.view.frame.height * 0.05 // 5% de topMargin de la pantalla de alto
         
         previewLayer.frame = CGRect(x: previewX, y: previewY, width: previewWidth, height: previewHeight)
-        captureSession.startRunning()
+        DispatchQueue.global(qos: .userInitiated).async {
+            captureSession.startRunning()
+        }
         print("previewWidth: \(previewWidth), previewHeight: \(previewHeight), previewX: \(previewX), previewY: \(previewY)")
         return viewController
     }

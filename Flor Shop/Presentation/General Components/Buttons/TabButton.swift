@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TabButton: View {
-    var tab: TabDestination
+    let tab: TabDestination
     @Binding var selectedTab: TabDestination
     let showMenu: () -> Void
     var body: some View {

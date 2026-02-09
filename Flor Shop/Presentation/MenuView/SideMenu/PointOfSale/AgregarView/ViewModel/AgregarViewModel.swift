@@ -5,7 +5,7 @@ import FlorShopDTOs
 import _PhotosUI_SwiftUI
 
 @Observable
-class AgregarViewModel {
+final class AgregarViewModel {
     var agregarFields = AgregarFields()
     var selectedLocalImage: UIImage?
     var selectionImage: PhotosPickerItem? = nil {
@@ -114,7 +114,7 @@ class AgregarViewModel {
             self.agregarFields.active = product.active
             self.agregarFields.productName = product.name
             self.agregarFields.imageUrl = product.imageUrl ?? ""
-            self.agregarFields.quantityStock = String(product.qty)
+            self.agregarFields.quantityStock = product.qty
             self.agregarFields.unitType = product.unitType
             self.agregarFields.unitCost = product.unitCost.cents
             self.agregarFields.unitPrice = product.unitPrice.cents
@@ -174,8 +174,7 @@ class AgregarViewModel {
         if self.agregarFields.imageUrl == "" && self.selectedLocalImage != nil {
             try await self.saveSelectedImage()
         }
-        guard let quantityStock = Int(self.agregarFields.quantityStock),
-              let imageUrl = URL(string: self.agregarFields.imageUrl) else {
+        guard let imageUrl = URL(string: self.agregarFields.imageUrl) else {
             print("[AgregarViewModel] Los valores no se pueden convertir correctamente, url: \(self.agregarFields.imageUrl)")
             return nil
         }
@@ -186,7 +185,7 @@ class AgregarViewModel {
                 active: self.agregarFields.active,
                 barCode: self.agregarFields.scannedCode == "" ? nil : self.agregarFields.scannedCode,
                 name: self.agregarFields.productName,
-                qty: quantityStock,
+                qty: self.agregarFields.quantityStock,
                 unitType: self.agregarFields.unitType,
                 unitCost: Money(self.agregarFields.unitCost),
                 unitPrice: Money(self.agregarFields.unitPrice),
@@ -243,14 +242,11 @@ struct AgregarFields {
     }
     var expirationDate: Date?
     var expirationDateEdited: Bool = false
-    var quantityStock: String = ""
+    var quantityStock: Int = 0
     var quantityEdited: Bool = false
     var quantityError: String {
         if quantityEdited {
-            guard let quantityInt = Int(quantityStock) else {
-                return "Cantidad debe ser número entero"
-            }
-            if quantityInt < 0 && quantityEdited {
+            if quantityStock < 0 && quantityEdited {
                 return "Cantidad debe ser mayor a 0"
             } else {
                 return ""

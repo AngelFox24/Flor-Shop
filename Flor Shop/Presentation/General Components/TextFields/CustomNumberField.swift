@@ -1,15 +1,31 @@
 import SwiftUI
 
 struct CustomNumberField: View {
-    var title: String = "Campo"
+    var title: String
     @State private var firstFocusTriggered = false
     @State private var viewText: String = ""
     @Binding var userInput: Int
     @Binding var edited: Bool
     @FocusState var isInputActive: Bool
-    var disable: Bool = false
+    var disable: Bool
     var onUnFocused: (() -> Void)?
+    let numberOfDecimals: Int
     private var placeHolderPerform: Bool { isInputActive || !viewText.isEmpty }
+    init(
+        title: String = "Campo",
+        userInput: Binding<Int>,
+        edited: Binding<Bool>,
+        disable: Bool = false,
+        onUnFocused: (() -> Void)? = nil,
+        numberOfDecimals: Int = 2
+    ) {
+        self.title = title
+        self._userInput = userInput
+        self._edited = edited
+        self.disable = disable
+        self.onUnFocused = onUnFocused
+        self.numberOfDecimals = numberOfDecimals
+    }
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
@@ -28,9 +44,10 @@ struct CustomNumberField: View {
                                 edited = true
                             }
                             let stringsito = newValue.replacingOccurrences(of: ".", with: "")
+                            print("[CustomNumberField] stringsito: \(stringsito)")
                             if let val = Int(stringsito) {
                                 userInput = val
-                                viewText = formatNumber(val)
+                                viewText = formatCustomDecimal(val)
                             } else {
                                 viewText = "0"
                             }
@@ -53,7 +70,7 @@ struct CustomNumberField: View {
                                 viewText = ""
                             }
                         } else if !isInputActive {//Si no se esta editando y cambia el input entonces actualizamos el texto mostrado, es porque el input se actualizado desde fuera del CustomNumberField
-                            viewText = formatNumber(userInput)
+                            viewText = formatCustomDecimal(userInput)
                         }
                     }
                     .disabled(disable)
@@ -105,25 +122,20 @@ struct CustomNumberField: View {
             if userInput == 0 {
                 viewText = ""
             } else {
-                viewText = formatNumber(userInput)
+                viewText = formatCustomDecimal(userInput)
             }
         }
     }
-    func formatNumber(_ input: Int) -> String {
-        let inputString = String(input)
-        let count = inputString.count
-        
-        switch count {
-        case 0:
-            return "0.00"
-        case 1:
-            return "0.0\(inputString)"
-        default:
-            let index = inputString.index(inputString.endIndex, offsetBy: -2)
-            let wholePart = String(inputString[..<index])
-            let decimalPart = String(inputString[index...])
-            return "\(wholePart == "" ? "0" : wholePart).\(decimalPart)"
+    func formatCustomDecimal(_ input: Int) -> String {
+        let s = String(input)
+        guard numberOfDecimals >= 0 else { return s }
+        let newCeros = max((self.numberOfDecimals+1) - s.count, 0)
+        var newString = String(repeating: "0", count: newCeros) + s
+        if self.numberOfDecimals > 0 {
+            let index = newString.index(newString.endIndex, offsetBy: -numberOfDecimals)
+            newString.insert(".", at: index)
         }
+        return newString
     }
 }
 

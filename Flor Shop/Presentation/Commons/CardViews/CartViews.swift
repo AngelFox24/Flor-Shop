@@ -168,7 +168,7 @@ struct CardViewTipe3: View {
                             decreceProductAmount(cartDetail)
                         })
                         HStack { // Cantidad Producto
-                            Text(String(cartDetail.quantity)+" u")
+                            Text(String(cartDetail.quantityDisplay)+" \(cartDetail.product.unitType.shortDescription)")
                                 .foregroundColor(.black)
                                 .font(.custom("Artifika-Regular", size: 16))
                                 .padding(.vertical, 2)
@@ -204,7 +204,7 @@ struct CardViewTipe3: View {
                     .padding(.vertical, 6)
                     .padding(.horizontal, 8)
                     .foregroundColor(.black)
-                    .background(Color("color_secondary"))
+                    .background(Color.secondary)
                     .cornerRadius(20)
                 }
                 .padding(.horizontal, 10)

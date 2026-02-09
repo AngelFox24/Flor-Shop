@@ -1,7 +1,7 @@
 import Foundation
 
 @Observable
-class EmployeeViewModel {
+final class EmployeeViewModel {
     var employeeList: [Employee] = []
     var searchText: String = ""
     private let getEmployeesUseCase: GetEmployeesUseCase

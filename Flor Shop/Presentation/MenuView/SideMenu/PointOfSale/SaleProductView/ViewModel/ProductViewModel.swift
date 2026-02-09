@@ -114,8 +114,8 @@ final class ProductViewModel {
 //        print("CurrentPagesInScreenCount: \(currentPagesInScreen.count.description)")
 //        print("ProductsCoreData: \(productsCoreData.count.description)")
     }
-    func addProductoToCarrito(product: Product) async throws {
-        try await self.addProductoToCartUseCase.execute(product: product)
+    func addProductoToCarrito(productCic: String) async throws {
+        try await self.addProductoToCartUseCase.execute(productCic: productCic)
     }
     func shouldLoadData(product: Product) async throws {
         if self.productsCoreData.isEmpty {

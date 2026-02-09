@@ -147,3 +147,9 @@ extension FlorShopRouter: CustomDebugStringConvertible {
     }
 }
 
+extension FlorShopRouter {
+    func dismissSheet() {
+        presentingSheet = nil
+    }
+}
+

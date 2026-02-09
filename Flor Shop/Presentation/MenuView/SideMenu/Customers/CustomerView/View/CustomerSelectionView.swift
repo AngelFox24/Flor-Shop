@@ -48,34 +48,19 @@ struct CustomerSelectionListController: View {
         ZStack {
             VStack(spacing: 0) {
                 if customerViewModel.customerList.count == 0 {
-                    VStack {
-                        Image("groundhog_finding")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 300, height: 300)
-                        Text("No hay clientes registrados aún.")
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 20)
-                            .font(.custom("Artifika-Regular", size: 18))
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    CustomerEmptyView()
                 } else {
                     List {
                         ForEach(customerViewModel.customerList) { customer in
-                            CardViewTipe2(
+                            CustomerCardView(
                                 imageUrl: customer.imageUrl,
-                                topStatusColor: nil,
-                                topStatus: nil,
-                                mainText: customer.name + " " + (customer.lastName ?? ""),
+                                mainText: customer.mainText,
                                 mainIndicatorPrefix: "S/. ",
-                                mainIndicator: String(format: "%.2f", customer.totalDebt.soles),
+                                mainIndicator: customer.totalDebt.solesString,
                                 mainIndicatorAlert: customer.isCreditLimit,
-                                secondaryIndicatorSuffix: nil, //TODO: poner en variable calculada
-//                                    customer.isDateLimitActive ? (" " + String(customer.dateLimit.getShortNameComponent(dateStringNameComponent: .month))) : nil,
-                                secondaryIndicator: nil, //TODO: poner en variable calculada
-//                                customer.isDateLimitActive ? String(customer.dateLimit.getDateComponent(dateComponent: .day)) : nil,
-                                secondaryIndicatorAlert: customer.isDateLimit,
-                                size: 80
+                                secondaryIndicatorSuffix: customer.secondaryIndicatorSuffix,
+                                secondaryIndicator: customer.secondaryIndicator,
+                                secondaryIndicatorAlert: customer.isDateLimit
                             )
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))

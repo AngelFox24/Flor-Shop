@@ -23,7 +23,7 @@ extension FlorShopCoreApiRequest: NetworkRequest {
         case .saveCustomer:
             path = "/customers"
         case .payCustomerDebt:
-            path = "/customer/payDebt"
+            path = "/customers/payDebt"
         case .saveEmployee:
             path = "/employees"
         case .isRegistrationComplete:
