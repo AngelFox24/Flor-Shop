@@ -5,7 +5,6 @@ extension CompanyResponseDTO: @retroactive Equatable {
     public static func == (lhs: CompanyResponseDTO, rhs: CompanyResponseDTO) -> Bool {
         return lhs.company_cic == rhs.company_cic &&
                lhs.name == rhs.name &&
-               lhs.subdomain == rhs.subdomain &&
                lhs.is_company_owner == rhs.is_company_owner
     }
 }

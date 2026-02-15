@@ -20,7 +20,7 @@ struct Customer: Identifiable {
     
     var isDateLimit: Bool {
         guard isDateLimitActive else { return false }
-        guard let dateLimit, let firstDatePurchaseWithCredit else { return false }
+        guard let dateLimit else { return false }
         let today = Calendar.current.startOfDay(for: Date())
         let limitDay = Calendar.current.startOfDay(for: dateLimit)
         

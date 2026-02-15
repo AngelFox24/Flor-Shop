@@ -1,0 +1,11 @@
+SLASH = /
+FLORSHOP_CORE_BASE_URL = https:$(SLASH)$(SLASH)core.mrangel.dev
+FLORSHOP_AUTH_BASE_URL = https:$(SLASH)$(SLASH)auth.mrangel.dev
+FLORSHOP_IMAGES_BASE_URL = https:$(SLASH)$(SLASH)images.mrangel.dev
+FLORSHOP_SYNC_WS = https:$(SLASH)$(SLASH)sync.mrangel.dev$(SLASH)sync
+
+BUNDLE_ID_SUFFIX =
+DEEP_LINK_SCHEME = florshop
+
+//Configuracion de Xcode
+PRODUCT_BUNDLE_IDENTIFIER = MrProFox.FlorShop

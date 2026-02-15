@@ -17,7 +17,6 @@ final class RemoteSessionManagerMock: RemoteSessionManager {
         [.init(
             company_cic: UUID().uuidString,
             name: "Mock Company 1",
-            subdomain: "Mock Subdomain 1",
             is_company_owner: true
         )]
     }

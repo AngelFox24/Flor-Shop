@@ -6,8 +6,7 @@ extension RegisterCompanyRequest {
             provider: provider,
             company: registerStuff.company.toCompanyDTO(),
             subsidiary: registerStuff.subsidiary.toSubsidiaryDTO(),
-            role: registerStuff.employee.role,
-            subdomain: subdomain
+            role: registerStuff.employee.role
         )
     }
 }

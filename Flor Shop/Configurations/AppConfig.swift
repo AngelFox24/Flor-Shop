@@ -1,19 +1,46 @@
+import Foundation
+
 enum AppConfig {
-#if DEBUG
-    static let florShopCoreBaseURL = "http://192.168.2.5:8080"
-    static let florShopAuthBaseURL = "http://192.168.2.5:8081"
-    static let florShopImagesBaseURL = "http://192.168.2.5:8082"
-    static let powerSyncWS = "http://192.168.2.7:8083"
-    
-    static let bundleID = "MrProFox.FlorShop.dev"
-    static let deepLinkScheme = "florshop.dev"
-#else
-    static let florShopCoreBaseURL = "https://core.mrangel.dev"
-    static let florShopAuthBaseURL = "https://auth.mrangel.dev"
-    static let florShopImagesBaseURL = "https://images.mrangel.dev"
-    static let powerSyncWS = "https://sync.mrangel.dev/sync"
-    
-    static let bundleID = "MrProFox.FlorShop"
-    static let deepLinkScheme = "florshop"
-#endif
+    private static let infoDict: [String: Any] = {
+        guard let dict = Bundle.main.infoDictionary else {
+            fatalError("plist not found")
+        }
+        return dict
+    }()
+    static let florShopCoreBaseURL: String = {
+        guard let url = AppConfig.infoDict["FLORSHOP_CORE_BASE_URL"] as? String else {
+            fatalError("FLORSHOP_CORE_BASE_URL not found")
+        }
+        return url
+    }()
+    static let florShopAuthBaseURL: String = {
+        guard let url = AppConfig.infoDict["FLORSHOP_AUTH_BASE_URL"] as? String else {
+            fatalError("FLORSHOP_AUTH_BASE_URL not found")
+        }
+        return url
+    }()
+    static let florShopImagesBaseURL: String = {
+        guard let url = AppConfig.infoDict["FLORSHOP_IMAGES_BASE_URL"] as? String else {
+            fatalError("FLORSHOP_IMAGES_BASE_URL not found")
+        }
+        return url
+    }()
+    static let powerSyncWS: String = {
+        guard let url = AppConfig.infoDict["FLORSHOP_SYNC_WS"] as? String else {
+            fatalError("FLORSHOP_SYNC_WS not found")
+        }
+        return url
+    }()
+    static let bundleID: String = {
+        guard let id = Bundle.main.bundleIdentifier else {
+            fatalError("Bundle identifier not found")
+        }
+        return id
+    }()
+    static let deepLinkScheme: String = {
+        guard let scheme = infoDict["DEEP_LINK_SCHEME"] as? String else {
+            fatalError("DEEP_LINK_SCHEME not found")
+        }
+        return scheme
+    }()
 }

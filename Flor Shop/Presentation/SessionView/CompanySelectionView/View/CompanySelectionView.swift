@@ -90,7 +90,7 @@ struct CompanySelectionListView: View {
                                     topStatusColor: companyDTO.is_company_owner ? Color.accentColor : .clear,
                                     topStatus: companyDTO.is_company_owner ? "Dueño" : "",
                                     mainText: companyDTO.name,
-                                    secondaryText: companyDTO.subdomain,
+                                    secondaryText: "",
                                     size: 80
                                 )
                                 .contentShape(Rectangle()) // hace que todo el card sea clicable
