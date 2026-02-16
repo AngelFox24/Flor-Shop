@@ -4,6 +4,8 @@ protocol GetProductsUseCase {
     func updateProducts(products: [Product]) -> [Product]
     func execute(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int) async throws -> [Product]
     func getProduct(productCic: String) async throws -> Product
+    func watchProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes)
+    throws -> AsyncThrowingStream<[Product], Error>
 }
 
 final class GetProductInteractor: GetProductsUseCase {
@@ -23,5 +25,9 @@ final class GetProductInteractor: GetProductsUseCase {
     }
     func getProduct(productCic: String) async throws -> Product {
         return try await self.productRepository.getProduct(productCic: productCic)
+    }
+    func watchProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes)
+    throws -> AsyncThrowingStream<[Product], Error> {
+        return try self.productRepository.watchProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute)
     }
 }

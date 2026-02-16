@@ -6,6 +6,8 @@ protocol LocalProductManager {
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) async throws -> [Product]
     func updateProducts(products: [Product]) -> [Product]
     func getProduct(productCic: String) async throws -> Product
+    func watchProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes)
+    throws -> AsyncThrowingStream<[Product], Error>
 }
 
 final class SQLiteProductManager: LocalProductManager {
@@ -20,10 +22,10 @@ final class SQLiteProductManager: LocalProductManager {
     }
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) async throws -> [Product] {
         let trimmedText = seachText
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-                .split(separator: " ")
-                .first
-                .map(String.init) ?? ""
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .split(separator: " ")
+            .first
+            .map(String.init) ?? ""
         
         var whereClauses: [String] = []
         var parameters: [Any] = []
@@ -54,30 +56,30 @@ final class SQLiteProductManager: LocalProductManager {
                 \(orderBySQL)
                 LIMIT \(pageSize) OFFSET \(offset)
             """
-            
-            do {
-                return try await db.getAll(
-                    sql: sql,
-                    parameters: parameters,
-                    mapper: { cursor in
-                        return try Product(
-                            id: UUID(uuidString: cursor.getString(name: "id")) ?? UUID(),
-                            productCic: cursor.getStringOptional(name: "product_cic"),
-                            active: cursor.getBoolean(name: "active"),
-                            barCode: cursor.getStringOptional(name: "bar_code"),
-                            name: cursor.getString(name: "product_name"),
-                            qty: cursor.getInt(name: "quantity_stock"),
-                            unitType: UnitType(rawValue: cursor.getString(name: "unit_type")) ?? .unit,
-                            unitCost: Money(cursor.getInt(name: "unit_cost")),
-                            unitPrice: Money(cursor.getInt(name: "unit_price")),
-                            expirationDate: cursor.getStringOptional(name: "expiration_date").flatMap { ISO8601DateFormatter().date(from: $0) },
-                            imageUrl: cursor.getStringOptional(name: "image_url")
-                        )
-                    }
-                )
-            } catch {
-                return []
-            }
+        
+        do {
+            return try await db.getAll(
+                sql: sql,
+                parameters: parameters,
+                mapper: { cursor in
+                    return try Product(
+                        id: UUID(uuidString: cursor.getString(name: "id")) ?? UUID(),
+                        productCic: cursor.getStringOptional(name: "product_cic"),
+                        active: cursor.getBoolean(name: "active"),
+                        barCode: cursor.getStringOptional(name: "bar_code"),
+                        name: cursor.getString(name: "product_name"),
+                        qty: cursor.getInt(name: "quantity_stock"),
+                        unitType: UnitType(rawValue: cursor.getString(name: "unit_type")) ?? .unit,
+                        unitCost: Money(cursor.getInt(name: "unit_cost")),
+                        unitPrice: Money(cursor.getInt(name: "unit_price")),
+                        expirationDate: cursor.getStringOptional(name: "expiration_date").flatMap { ISO8601DateFormatter().date(from: $0) },
+                        imageUrl: cursor.getStringOptional(name: "image_url")
+                    )
+                }
+            )
+        } catch {
+            return []
+        }
     }
     func updateProducts(products: [Product]) -> [Product] {
         []//TODO: Creo que se debe reemplazar con watch
@@ -86,6 +88,70 @@ final class SQLiteProductManager: LocalProductManager {
         return try await self.db.readTransaction { tx in
             return try ProductQueries.getProduct(productCic: productCic, subsidiaryCic: self.sessionConfig.subsidiaryCic, tx: tx)
         }
+    }
+    func watchProducts(
+        seachText: String,
+        primaryOrder: PrimaryOrder,
+        filterAttribute: ProductsFilterAttributes
+    ) throws -> AsyncThrowingStream<[Product], Error> {
+        let trimmedText = seachText
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .split(separator: " ")
+            .first
+            .map(String.init) ?? ""
+        
+        var whereClauses: [String] = []
+        var parameters: [Any] = []
+        
+        if !trimmedText.isEmpty {
+            whereClauses.append("p.product_name LIKE ?")
+            parameters.append("%\(trimmedText)%")
+        }
+        
+        whereClauses.append(filterAttribute.whereClause)
+        
+        let whereSQL = whereClauses.isEmpty ? "" : "WHERE " + whereClauses.joined(separator: " AND ")
+        let orderBySQL = primaryOrder.orderBySQL
+        
+        let sql = """
+            SELECT
+                p.id,
+                p.product_cic,
+                p.product_name,
+                p.bar_code,
+                p.unit_type,
+                p.image_url,
+                ps.active,
+                ps.quantity_stock,
+                ps.unit_cost,
+                ps.unit_price,
+                ps.expiration_date
+            FROM products p
+            JOIN product_subsidiary ps ON ps.product_id = p.id
+            \(whereSQL)
+            \(orderBySQL)
+        """
+        
+        return try db.watch(
+            sql: sql,
+            parameters: parameters,
+            mapper: { cursor in
+                try Product(
+                    id: UUID(uuidString: cursor.getString(name: "id")) ?? UUID(),
+                    productCic: cursor.getStringOptional(name: "product_cic"),
+                    active: cursor.getBoolean(name: "active"),
+                    barCode: cursor.getStringOptional(name: "bar_code"),
+                    name: cursor.getString(name: "product_name"),
+                    qty: cursor.getInt(name: "quantity_stock"),
+                    unitType: UnitType(rawValue: cursor.getString(name: "unit_type")) ?? .unit,
+                    unitCost: Money(cursor.getInt(name: "unit_cost")),
+                    unitPrice: Money(cursor.getInt(name: "unit_price")),
+                    expirationDate: cursor.getStringOptional(name: "expiration_date")
+                        .flatMap { ISO8601DateFormatter().date(from: $0) },
+                    imageUrl: cursor.getStringOptional(name: "image_url")
+                )
+            }
+        )
     }
 }
 

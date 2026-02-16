@@ -11,6 +11,8 @@ protocol ProductRepository {
     func save(product: Product) async throws
     func getProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes, page: Int, pageSize: Int) async throws -> [Product]
     func getProduct(productCic: String) async throws -> Product
+    func watchProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes)
+    throws -> AsyncThrowingStream<[Product], Error>
 }
 
 public class ProductRepositoryImpl: ProductRepository {
@@ -37,5 +39,9 @@ public class ProductRepositoryImpl: ProductRepository {
     }
     func getProduct(productCic: String) async throws -> Product {
         return try await localManager.getProduct(productCic: productCic)
+    }
+    func watchProducts(seachText: String, primaryOrder: PrimaryOrder, filterAttribute: ProductsFilterAttributes)
+    throws -> AsyncThrowingStream<[Product], Error> {
+        return try self.localManager.watchProducts(seachText: seachText, primaryOrder: primaryOrder, filterAttribute: filterAttribute)
     }
 }

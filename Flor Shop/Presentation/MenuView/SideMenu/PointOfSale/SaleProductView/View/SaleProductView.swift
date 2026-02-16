@@ -3,6 +3,7 @@ import Equatable
 
 @Equatable
 struct SaleProductView: View {
+    @Environment(OverlayViewModel.self) private var overlayViewModel
     @State var productViewModel: ProductViewModel
     @EquatableIgnoredUnsafeClosure
     let showMenu: () -> Void
@@ -21,23 +22,22 @@ struct SaleProductView: View {
                 ProductTopToolbar(productViewModel: $productViewModel)
                 MainBottomToolbar(destination: .addProduct)
             }
-            .onChange(of: productViewModel.filterAttribute) { _, _ in
-                fetchProducts(forceUpdate: true)
-            }
-            .onChange(of: productViewModel.primaryOrder) { _, _ in
-                fetchProducts(forceUpdate: true)
-            }
-            .task {
-                try? await productViewModel.fetchProducts()
+            .task(id: productViewModel.taskID) {
+                await watchProducts()
             }
     }
-    private func fetchProducts(forceUpdate: Bool) {
-        Task {
-            do {
-                try await productViewModel.fetchProducts(forceUpdate: forceUpdate)
-            } catch {
-                print("[SaleProductView] Error: \(error)")
-            }
+    private func watchProducts() async {
+        do {
+            try await self.productViewModel.watchProducts()
+        } catch {
+            self.overlayViewModel.showAlert(
+                title: "Error",
+                message: "Ha ocurrido un error al cargar los productos.",
+                primary: ConfirmAction(
+                    title: "Aceptar",
+                    action: {}
+                )
+            )
         }
     }
 }
@@ -65,14 +65,6 @@ struct SaleListProductView: View {
                 )
             } else {
                 List {
-                    ForEach(0 ..< viewModel.deleteCount, id: \.self) { _ in
-                        Spacer()
-                            .frame(maxWidth: .infinity, minHeight: 80)
-                            .onAppear {
-                                print("Products gosht")
-                                loadProducts()
-                            }
-                    }
                     ForEach(viewModel.productsCoreData) { producto in
                         ProductCardView(
                             imageUrl: producto.imageUrl,
@@ -106,32 +98,10 @@ struct SaleListProductView: View {
                                     .tint(Color.gray)
                             }
                         }
-                        .onAppear {
-                            shouldLoadData(product: producto)
-                        }
                     }
                 }
                 .scrollIndicators(ScrollIndicatorVisibility.hidden)
                 .listStyle(PlainListStyle())
-            }
-        }
-    }
-    func shouldLoadData(product: Product) {
-        Task {
-            do {
-                try await viewModel.shouldLoadData(product: product)
-            } catch {
-                print("[SaleListProductView] Error: \(error)")
-            }
-        }
-    }
-    func loadProducts() {
-        Task {
-            do {
-                await viewModel.releaseResources()
-                try await viewModel.fetchProducts()
-            } catch {
-                print("[SaleListProductView] Error: \(error)")
             }
         }
     }
