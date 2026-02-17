@@ -35,6 +35,10 @@ struct MainContendView: View {
         .onChange(of: scenePhase) { oldScene, newScene in
             if newScene == .inactive {
                 self.endConection()
+            } else if newScene == .active {
+//                await self.connectPowerSync()
+                print("[MainContendView] App en uso")
+                connectPowerSyncTask()
             }
         }
         .task {
@@ -52,11 +56,11 @@ struct MainContendView: View {
         }
     }
     private func initialization() async {
-//        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
+        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
         do {
             try await self.sessionContainer.cartRepository.initializeModel()
-//            try await self.sessionContainer.powerSyncService.waitForFirstSync()
-//            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+            try await self.sessionContainer.powerSyncService.waitForFirstSync()
+            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
         } catch {
             self.overlayViewModel.showAlert(
                 title: "Error en la inicializacion.",
@@ -79,6 +83,14 @@ struct MainContendView: View {
                     self.sessionManager.logout()
                 }
             )
+        }
+    }
+    private func connectPowerSyncTask() {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
+        Task {
+            await connectPowerSync()
+            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+            await self.initialization()
         }
     }
 }

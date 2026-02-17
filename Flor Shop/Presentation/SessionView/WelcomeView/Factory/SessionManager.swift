@@ -32,6 +32,7 @@ final class SessionManager {
     
     func logout() {
         sessionRepository.clear()
+        print("[SessionManager] Logged out, logout")
         state = .loggedOut
     }
     @discardableResult
@@ -39,6 +40,7 @@ final class SessionManager {
         let session: SessionConfig = try await self.sessionRepository.selectSubsidiary(subsidiaryCic: subsidiaryCic)
         let isRegistered = try await self.isRegistrationComplete(subsidiaryCic: session.subsidiaryCic)
         if isRegistered {
+            print("[SessionManager] Logged in, selectSubsidiary")
             self.state = .loggedIn(session)
         }
         return session
@@ -55,11 +57,13 @@ final class SessionManager {
     
     func register(registerStuff: RegisterStuffs) async throws {
         let session = try await self.sessionRepository.register(registerStuff: registerStuff)
+        print("[SessionManager] Logged in, register")
         self.state = .loggedIn(session)
     }
     
     func restoreSession() {
         if let saved = sessionRepository.loadSession() {
+            print("[SessionManager] Logged in, restoreSession")
             self.state = .loggedIn(saved)
         }
     }
