@@ -62,11 +62,12 @@ struct SalesListController: View {
                             imageUrl: saleDetail.imageUrl,
                             mainText: saleDetail.productName,
                             mainIndicatorPrefix: "S/. ",
-                            mainIndicator: String(format: "%.2f", saleDetail.subtotal.soles),
+                            mainIndicator: saleDetail.subtotal.solesString,
                             mainIndicatorAlert: false,
-                            secondaryIndicatorSuffix: " u",
-                            secondaryIndicator: String(saleDetail.quantitySold),
-                            secondaryIndicatorAlert: false, size: 80
+                            secondaryIndicatorSuffix: " \(saleDetail.unitType.shortDescription)",
+                            secondaryIndicator: saleDetail.quantityDisplay,
+                            secondaryIndicatorAlert: false,
+                            size: 80
                         )
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))

@@ -12,13 +12,29 @@ struct Car: Identifiable {
             return Money(sub)
         }
     }
+    var totalRounded: Money {
+        let cents = total.cents
+        let remainder = cents % 10
+        
+        if remainder >= 5 {
+            // Round up
+            return Money(cents + (10 - remainder))
+        } else {
+            // Round down
+            return Money(cents - remainder)
+        }
+    }
+    var roundingDifference: Money {
+        return Money(totalRounded.cents - total.cents)
+    }
 }
 
 extension Car {
     func toCartDTO() -> CartServerDTO {
         return CartServerDTO(
             cartDetails: cartDetails.mapToListCartDetailsDTOs(),
-            total: total.cents
+            total: total.cents,
+            totalRounded: totalRounded.cents
         )
     }
 }

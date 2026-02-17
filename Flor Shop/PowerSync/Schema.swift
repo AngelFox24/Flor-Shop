@@ -187,6 +187,8 @@ let SalesTable = Table(
         .text("payment_type"),
         .text("sale_date"),
         .integer("total"),
+        .integer("total_charged"),
+        .integer("rounding_difference"),
         .text("subsidiary_id"),
         .text("subsidiary_cic"),
         .text("employee_subsidiary_id"),

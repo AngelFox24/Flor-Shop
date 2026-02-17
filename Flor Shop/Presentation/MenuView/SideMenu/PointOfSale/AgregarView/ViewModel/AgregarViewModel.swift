@@ -288,11 +288,12 @@ struct AgregarFields {
         }
     }
     var profitMargin: String {
-            if ((unitPrice - unitCost) > 0) && (unitPrice > 0) && (unitCost > 0) {
-                return String(Int(((unitPrice - unitCost) / unitCost) * 100)) + " %"
-            } else {
-                return "0 %"
-            }
+        if ((unitPrice - unitCost) > 0) && (unitPrice > 0) && (unitCost > 0) {
+            let margin = ((unitPrice - unitCost) * 100) / unitCost
+            return String(margin) + " %"
+        } else {
+            return "0 %"
+        }
     }
     var errorBD: String = ""
     

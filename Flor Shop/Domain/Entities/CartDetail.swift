@@ -12,7 +12,8 @@ struct CartDetail: Identifiable {
         case .unit:
             subTotal = quantity * product.unitPrice.cents
         case .kilo:
-            guard quantity > 0 else { return Money(1) }
+            //El costo se redondea por defecto y es un valor aproximado al costo real, porque en teoria el costo puede ser una divicion con decimales infinitos.
+            guard quantity > 0 else { return Money(0) }
             
             let precioEscalado = product.unitPrice.cents * quantity
             

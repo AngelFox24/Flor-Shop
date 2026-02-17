@@ -2730,7 +2730,7 @@
 			repositoryURL = "https://github.com/AngelFox24/florshop-dtos.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.0.19;
+				version = 1.0.20;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

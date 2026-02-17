@@ -72,7 +72,7 @@ final class SQLiteSaleManager: LocalSaleManager {
                     sql: finalSql,
                     parameters: finalParameters,
                     mapper: { cursor in
-                        try SaleDetail(
+                        return try SaleDetail(
                             id: UUID(),
                             imageUrl: cursor.getStringOptional(name: "image_url"),
                             barCode: cursor.getStringOptional(name: "bar_code"),
@@ -107,7 +107,8 @@ final class SQLiteSaleManager: LocalSaleManager {
                     sd.product_name,
                     sd.image_url,
                     SUM(sd.quantity_sold) AS total_quantity,
-                    SUM(sd.subtotal) AS total_income
+                    SUM(sd.subtotal) AS total_income,
+                    sd.unit_type
                 FROM sale_details sd
                 JOIN sales s ON s.id = sd.sale_id
                 WHERE \(interval.whereClause) AND s.subsidiary_cic = ?
@@ -137,11 +138,11 @@ final class SQLiteSaleManager: LocalSaleManager {
                 sql: finalSql,
                 parameters: finalParameters,
                 mapper: { cursor in
-                    try SaleDetail(
+                    return try SaleDetail(
                         id: UUID(),
                         imageUrl: cursor.getStringOptional(name: "image_url"),
                         productName: cursor.getString(name: "product_name"),
-                        unitType: .unit,
+                        unitType: UnitType(rawValue: cursor.getString(name: "unit_type")) ?? .unit,
                         unitCost: Money(0),
                         unitPrice: Money(0),
                         quantitySold: cursor.getInt(name: "total_quantity"),
@@ -170,7 +171,8 @@ final class SQLiteSaleManager: LocalSaleManager {
                 SELECT
                   COALESCE(s.customer_cic, 'UNASSIGNED') AS customer_cic,
                   SUM(sd.quantity_sold) AS total_quantity,
-                  SUM(sd.subtotal) AS total_income
+                  SUM(sd.subtotal) AS total_income,
+                  sd.unit_type
                 FROM sale_details sd
                 JOIN sales s ON s.id = sd.sale_id
                 WHERE \(interval.whereClause) AND s.subsidiary_cic = ?
@@ -215,7 +217,7 @@ final class SQLiteSaleManager: LocalSaleManager {
                         id: UUID(),
                         imageUrl: imageUrl,
                         productName: pruductName,
-                        unitType: .unit,
+                        unitType: UnitType(rawValue: cursor.getString(name: "unit_type")) ?? .unit,
                         unitCost: Money(0),
                         unitPrice: Money(0),
                         quantitySold: cursor.getInt(name: "total_quantity"),
@@ -232,7 +234,7 @@ final class SQLiteSaleManager: LocalSaleManager {
         let dateString = date.sqliteString()
         
         let sql: String = """
-            SELECT COALESCE(SUM(s.total), 0) AS sales_amount
+            SELECT COALESCE(SUM(s.total_charged), 0) AS sales_amount
             FROM sales s
             WHERE \(interval.whereClause)
             """
@@ -242,7 +244,7 @@ final class SQLiteSaleManager: LocalSaleManager {
                 sql: sql,
                 parameters: [dateString],
                 mapper: { cursor in
-                    try cursor.getInt(name: "sales_amount")
+                    return try cursor.getInt(name: "sales_amount")
                 }
             )
             return Money(amount)
@@ -251,20 +253,25 @@ final class SQLiteSaleManager: LocalSaleManager {
     
     func getCostAmount(date: Date, interval: SalesDateInterval) async throws -> Money {
         let dateString = date.sqliteString()
-        
+        //El costo se redondea por defecto y es un valor aproximado al costo real, porque en teoria el costo puede ser una divicion con decimales infinitos.
         let sql = """
-            SELECT COALESCE(SUM(sd.unit_cost * sd.quantity_sold), 0) AS cost_amount
+            SELECT COALESCE(SUM(
+                CASE
+                    WHEN sd.unit_type = 'Kilo'
+                        THEN (sd.unit_cost / 1000.0) * sd.quantity_sold
+                    ELSE sd.unit_cost * sd.quantity_sold
+                END
+            ), 0) AS cost_amount
             FROM sale_details sd
             JOIN sales s ON s.id = sd.sale_id
             WHERE \(interval.whereClause)
             """
-        
         return try await db.readTransaction { tx in
             let amount = try tx.get(
                 sql: sql,
                 parameters: [dateString],
                 mapper: { cursor in
-                    try cursor.getInt(name: "cost_amount")
+                    return try cursor.getInt(name: "cost_amount")
                 }
             )
             return Money(amount)

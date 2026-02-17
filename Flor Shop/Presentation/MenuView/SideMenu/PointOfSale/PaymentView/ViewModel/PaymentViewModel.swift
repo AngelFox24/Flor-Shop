@@ -17,6 +17,17 @@ final class PaymentViewModel {
             return [.cash]
         }
     }
+    var totalDisplay: String {
+        guard let car = cartCoreData else {
+            return "0.00"
+        }
+        switch paymentType {
+        case .cash:
+            return car.totalRounded.solesString
+        case .loan:
+            return car.total.solesString
+        }
+    }
     private let getCartUseCase: GetCartUseCase
     private let emptyCartUseCase: EmptyCartUseCase
     private let registerSaleUseCase: RegisterSaleUseCase
