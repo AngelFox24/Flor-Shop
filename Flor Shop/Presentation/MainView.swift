@@ -56,17 +56,21 @@ struct MainContendView: View {
         }
     }
     private func initialization() async {
-        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
+//        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
         do {
+            if try await !self.sessionContainer.subsidiaryRepository.initialDataExist() {
+                try await self.sessionContainer.companyRepository.initialData()
+            }
             try await self.sessionContainer.cartRepository.initializeModel()
-            try await self.sessionContainer.powerSyncService.waitForFirstSync()
-            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+//            try await self.sessionContainer.powerSyncService.waitForFirstSync()
+//            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
         } catch {
             self.overlayViewModel.showAlert(
                 title: "Error en la inicializacion.",
                 message: "Ha ocurrido un error en la incializacion.",
                 primary: ConfirmAction(title: "Aceptar") {
 //                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+                    self.sessionManager.logout()
                 }
             )
         }

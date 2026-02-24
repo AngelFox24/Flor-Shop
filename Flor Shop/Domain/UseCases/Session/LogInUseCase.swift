@@ -6,7 +6,6 @@ protocol LogInUseCase {
 }
 
 final class LogInInteractor: LogInUseCase {
-    
     private let sessionRepository: SessionRepository
     
     init(

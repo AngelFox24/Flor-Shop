@@ -1,14 +1,22 @@
 import Foundation
 
 struct CompleteEmployeeProfileViewModelFactory {
-    static func getViewModel() -> CompleteEmployeeProfileViewModel {
+    static func getViewModel(sessionContainer: SessionContainer) -> CompleteEmployeeProfileViewModel {
         return CompleteEmployeeProfileViewModel(
-            saveImageUseCase: getSaveImageUseCase()
+            saveImageUseCase: saveImageUseCase(sessionContainer: sessionContainer),
+            createEmployeeUseCase: getCreateEmployeeUseCase(sessionContainer: sessionContainer),
+            emptyCartUseCase: getEmptyCartUseCase(sessionContainer: sessionContainer)
         )
     }
-    static private func getSaveImageUseCase() -> SaveImageUseCase {
+    static private func getCreateEmployeeUseCase(sessionContainer: SessionContainer) -> CreateEmployeeUseCase {
+        return CreateEmployeeInteractor(employeeRepository: sessionContainer.employeeRepository)
+    }
+    static private func saveImageUseCase(sessionContainer: SessionContainer) -> SaveImageUseCase {
         return SaveImageInteractor(
-            imageRepository: AppContainer.shared.imageRepository
+            imageRepository: sessionContainer.imageRepository
         )
+    }
+    static private func getEmptyCartUseCase(sessionContainer: SessionContainer) -> EmptyCartUseCase {
+        return EmptyCartInteractor(cartRepository: sessionContainer.cartRepository)
     }
 }

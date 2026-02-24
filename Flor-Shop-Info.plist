@@ -58,6 +58,8 @@
 	<string>$(FLORSHOP_IMAGES_BASE_URL)</string>
 	<key>FLORSHOP_SYNC_WS</key>
 	<string>$(FLORSHOP_SYNC_WS)</string>
+	<key>FLORSHOP_PLATFORM_BASE_URL</key>
+	<string>$(FLORSHOP_PLATFORM_BASE_URL)</string>
 	<key>DEEP_LINK_SCHEME</key>
 	<string>$(DEEP_LINK_SCHEME)</string>
 </dict>

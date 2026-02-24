@@ -123,7 +123,7 @@ extension FlorShopRouter {
     }
     //TODO: Add fullScreen destionations
     func present(fullScreen destination: FullScreenDestination) {
-//        logger.debug("\(self.debugDescription): \(#function) \(destination)")
+        logger.debug("\(self.debugDescription): \(#function) \(destination)")
         presentingFullScreen = destination
     }
 
@@ -150,6 +150,9 @@ extension FlorShopRouter: CustomDebugStringConvertible {
 extension FlorShopRouter {
     func dismissSheet() {
         presentingSheet = nil
+    }
+    func dismissFullscreen() {
+        presentingFullScreen = nil
     }
 }
 

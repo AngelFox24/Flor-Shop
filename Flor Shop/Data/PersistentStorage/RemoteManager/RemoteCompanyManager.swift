@@ -3,7 +3,7 @@ import FlorShopDTOs
 
 protocol RemoteCompanyManager {
     func save(company: Company) async throws
-    func register(registerParams: RegisterParameters) async throws
+    func initialData() async throws
 }
 
 final class RemoteCompanyManagerImpl: RemoteCompanyManager {
@@ -23,12 +23,11 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
         )
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
-    func register(registerParams: RegisterParameters) async throws {
+    func initialData() async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
             throw NetworkError.dataNotFound
         }
         let request = FlorShopCoreApiRequest.register(
-            register: registerParams,
             token: scopedToken.accessToken
         )
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)

@@ -16,13 +16,19 @@ struct CompanySelectionView: View {
         self._path = path
     }
     var body: some View {
-        CompanySelectionListView(path: $path, viewModel: viewModel, companies: companies)
+        CompanySelectionListView(path: $path, action: registerCompany, companies: companies)
             .background(Color.background)
             .navigationTitle("Seleccione la compañía")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                CompanySelectionToolbar(action: registerCompany)
+            }
             .task {
                 await self.loadInfo()
             }
+    }
+    private func registerCompany() {
+        self.path.append(.registrationCompany(provider: self.provider, token: self.token))
     }
     private func loadInfo() async {
         let loadingId = self.overlayViewModel.showLoading(origin: "[CompanySelectionView]")
@@ -57,7 +63,7 @@ struct CompanySelectionView: View {
 
 struct CompanySelectionListView: View {
     @Binding var path: [SessionRoutes]
-    var viewModel: CompanySelectionViewModel
+    let action: () -> Void
     let companies: [CompanyResponseDTO]
     var body: some View {
         HStack(spacing: 0) {
@@ -74,6 +80,9 @@ struct CompanySelectionListView: View {
                             .foregroundColor(.black)
                             .padding(.horizontal, 20)
                             .font(.custom("Artifika-Regular", size: 18))
+                        Button(action: action) {
+                            CustomButton1(text: "Registrar comnpañia")
+                        }
                         Spacer()
                     }
                     Spacer()

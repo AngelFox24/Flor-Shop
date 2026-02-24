@@ -18,6 +18,7 @@ protocol LocalCartManager {
     func emptyCart() async throws
     func getCartQuantity() async throws -> Int
     func setCustomerInCart(customerCic: String?) async throws
+    func createCartIfNotExists() async throws
 }
 
 final class SQLiteCartManager: LocalCartManager {
@@ -34,7 +35,7 @@ final class SQLiteCartManager: LocalCartManager {
         return try await self.db.writeTransaction { tx in
             try self.createCartModel(tx: tx)
             try self.createCartDetailModel(tx: tx)
-            try self.createCartIfNotExists(tx: tx)
+//            try self.createCartIfNotExists(tx: tx)
             let tables = try tx.getAll(
                 sql: "SELECT name FROM sqlite_master WHERE type='table'",
                 parameters: [],
@@ -192,6 +193,37 @@ final class SQLiteCartManager: LocalCartManager {
             }
         }
     }
+    func createCartIfNotExists() async throws {
+        try await self.db.writeTransaction { tx in
+            let checkCartSQL = """
+                SELECT id
+                FROM cart
+                WHERE employee_cic = ? AND subsidiary_cic = ?
+                LIMIT 1
+                """
+            if let _ = try tx.getOptional(
+                sql: checkCartSQL,
+                parameters: [self.sessionConfig.employeeCic, self.sessionConfig.subsidiaryCic],
+                mapper: { cursor in
+                    let cartId = try cursor.getString(name: "id")
+                    guard let uuid = UUID(uuidString: cartId) else {
+                        throw NSError(domain: "InvalidCartId", code: 0)
+                    }
+                    return Car(
+                        id: uuid,
+                        cartDetails: [],
+                        customerCic: nil
+                    )
+                }
+            ) {
+                print("[SQLiteCartManager] Cart already exists")
+                return
+            } else {
+                print("[SQLiteCartManager] Creating new cart")
+                try self.insertEmptyCart(tx: tx)
+            }
+        }
+    }
     //MARK: Private funtions
     private func createCartModel(tx: Transaction) throws {
         let sql = """
@@ -231,35 +263,6 @@ final class SQLiteCartManager: LocalCartManager {
                 print("Producto no tiene stock suficiente")
                 throw BusinessLogicError.outOfStock("Producto no tiene stock suficiente")
             }
-        }
-    }
-    private func createCartIfNotExists(tx: Transaction) throws {
-        let checkCartSQL = """
-            SELECT id
-            FROM cart
-            WHERE employee_cic = ? AND subsidiary_cic = ?
-            LIMIT 1
-            """
-        if let _ = try tx.getOptional(
-            sql: checkCartSQL,
-            parameters: [self.sessionConfig.employeeCic, self.sessionConfig.subsidiaryCic],
-            mapper: { cursor in
-                let cartId = try cursor.getString(name: "id")
-                guard let uuid = UUID(uuidString: cartId) else {
-                    throw NSError(domain: "InvalidCartId", code: 0)
-                }
-                return Car(
-                    id: uuid,
-                    cartDetails: [],
-                    customerCic: nil
-                )
-            }
-        ) {
-            print("[SQLiteCartManager] Cart already exists")
-            return
-        } else {
-            print("[SQLiteCartManager] Creating new cart")
-            try self.insertEmptyCart(tx: tx)
         }
     }
     private func getCartWithoutDetails(tx: Transaction) throws -> Car {

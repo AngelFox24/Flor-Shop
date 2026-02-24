@@ -36,7 +36,7 @@ struct MenuView: View {
         }
         .ignoresSafeArea()
     }
-    func changeShowMenu() {
+    private func changeShowMenu() {
         withAnimation(.easeInOut) {
             showMenu.toggle()
         }

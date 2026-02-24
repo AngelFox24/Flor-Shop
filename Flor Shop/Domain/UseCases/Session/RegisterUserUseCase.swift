@@ -5,7 +5,6 @@ protocol RegisterUseCase {
 }
 
 final class RegisterInteractor: RegisterUseCase {
-    
     private let sessionRepository: SessionRepository
     
     init(

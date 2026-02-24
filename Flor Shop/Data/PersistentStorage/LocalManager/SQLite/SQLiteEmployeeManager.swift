@@ -4,6 +4,7 @@ import FlorShopDTOs
 
 protocol LocalEmployeeManager {
     func getEmployees() async throws -> [Employee]
+    func isEmployeeProfileComplete() async throws -> Bool
 }
 
 final class SQLiteEmployeeManager: LocalEmployeeManager {
@@ -58,5 +59,31 @@ final class SQLiteEmployeeManager: LocalEmployeeManager {
                 )
             }
         )
+    }
+    func isEmployeeProfileComplete() async throws -> Bool {
+        let sql = """
+            SELECT 1
+            FROM employees e
+            INNER JOIN employees_subsidiaries es
+                ON es.employee_id = e.id
+            INNER JOIN subsidiaries s
+                ON s.id = es.subsidiary_id
+            WHERE e.employee_cic = ?
+              AND s.subsidiary_cic = ?
+            LIMIT 1
+            """
+        
+        let results: [Int] = try await db.getAll(
+            sql: sql,
+            parameters: [
+                sessionConfig.employeeCic,
+                sessionConfig.subsidiaryCic
+            ],
+            mapper: { cursor in
+                try cursor.getInt(index: 0)
+            }
+        )
+        
+        return !results.isEmpty
     }
 }

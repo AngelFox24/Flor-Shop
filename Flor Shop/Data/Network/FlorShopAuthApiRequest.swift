@@ -25,7 +25,7 @@ extension FlorShopAuthApiRequest: NetworkRequest {
         case .selectSubsidiary(let subsidiaryCic, _):
             path = "/subsidiary/selection?cic=\(subsidiaryCic)"
         case .registerCompany:
-            path = "/company"
+            path = "/company/register"
         case .registerInvitation:
             path = "/invitation"
         case .refresh:

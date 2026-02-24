@@ -4,6 +4,8 @@ import Equatable
 @Equatable
 struct SaleProductView: View {
     @Environment(OverlayViewModel.self) private var overlayViewModel
+    @Environment(SessionContainer.self) var sessionContainer
+    @Environment(FlorShopRouter.self) var florShopRouter
     @State var productViewModel: ProductViewModel
     @EquatableIgnoredUnsafeClosure
     let showMenu: () -> Void
@@ -22,9 +24,29 @@ struct SaleProductView: View {
                 ProductTopToolbar(productViewModel: $productViewModel)
                 MainBottomToolbar(destination: .addProduct)
             }
+            .task {
+                await initialConfig()
+            }
             .task(id: productViewModel.taskID) {
                 await watchProducts()
             }
+    }
+    private func initialConfig() async {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[MenuView]")
+        do {
+            if try await !self.sessionContainer.employeeRepository.isEmployeeProfileComplete() {
+                self.florShopRouter.present(fullScreen: .completeEmployeeProfile)
+            }
+            self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
+        } catch {
+            self.overlayViewModel.showAlert(
+                title: "Error en la inicializacion.",
+                message: "Ha ocurrido un error en la incializacion del perfil.",
+                primary: ConfirmAction(title: "Aceptar") {
+                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
+                }
+            )
+        }
     }
     private func watchProducts() async {
         do {

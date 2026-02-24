@@ -31,6 +31,12 @@ enum AppConfig {
         }
         return url
     }()
+    static let florShopPlatformBaseURL: String = {
+        guard let url = AppConfig.infoDict["FLORSHOP_PLATFORM_BASE_URL"] as? String else {
+            fatalError("FLORSHOP_PLATFORM_BASE_URL not found")
+        }
+        return url
+    }()
     static let bundleID: String = {
         guard let id = Bundle.main.bundleIdentifier else {
             fatalError("Bundle identifier not found")

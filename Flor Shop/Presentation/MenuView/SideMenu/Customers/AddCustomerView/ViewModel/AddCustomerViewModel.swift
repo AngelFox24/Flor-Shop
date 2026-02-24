@@ -15,13 +15,16 @@ final class AddCustomerViewModel {
     
     private let saveCustomerUseCase: SaveCustomerUseCase
     private let saveImageUseCase: SaveImageUseCase
+    private let getCustomersUseCase: GetCustomersUseCase
     
     init(
         saveCustomerUseCase: SaveCustomerUseCase,
-        saveImageUseCase: SaveImageUseCase
+        saveImageUseCase: SaveImageUseCase,
+        getCustomersUseCase: GetCustomersUseCase
     ) {
         self.saveCustomerUseCase = saveCustomerUseCase
         self.saveImageUseCase = saveImageUseCase
+        self.getCustomersUseCase = getCustomersUseCase
     }
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
@@ -51,8 +54,9 @@ final class AddCustomerViewModel {
         //fieldsAddCustomer.dateLimitEdited = true
         fieldsAddCustomer.creditLimitEdited = true
     }
-    func loadCustomer(customerCic: String) {
-        
+    func loadCustomer(customerCic: String) async throws {
+        guard let customer = await self.getCustomersUseCase.getCustomer(customerCic: customerCic) else { return }
+        try await self.editCustomer(customer: customer)
     }
     func editCustomer(customer: Customer) async throws {
         if let imageUrlString = customer.imageUrl,

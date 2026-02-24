@@ -7,7 +7,6 @@ protocol RemoteSessionManager {
     func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO]
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig
-    func completeProfile(employee: Employee, subsidiaryCic: String) async throws
     func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool
 }
 
@@ -40,9 +39,6 @@ final class RemoteSessionManagerMock: RemoteSessionManager {
             subsidiaryCic: subsidiaryCic,
             employeeCic: UUID().uuidString
         )
-    }
-    func completeProfile(employee: Employee, subsidiaryCic: String) async throws {
-        
     }
     func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
         return true
@@ -105,24 +101,10 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
         )
     }
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
-        let allProviders = AuthProvider.allCases
-        var providerToken: TokenRefreshable? = nil
-        var providerFounded: AuthProvider? = nil
-        for provider in allProviders {
-            if let token = try? await TokenManager.shared.getToken(identifier: .providerToken(provider: provider)) {
-                providerToken = token
-                providerFounded = provider
-                break
-            }
-        }
-        guard let providerToken,
-              let providerFounded else {
-            throw NetworkError.dataNotFound
-        }
-        guard let registerRequest = RegisterCompanyRequest(from: registerStuff, provider: providerFounded, subdomain: registerStuff.subdomain) else {
+        guard let registerRequest = RegisterCompanyRequest(from: registerStuff, provider: registerStuff.authProvider, role: registerStuff.role) else {
             throw NetworkError.invalidResponse
         }
-        let request = FlorShopAuthApiRequest.registerCompany(request: registerRequest, providerToken: providerToken.accessToken)
+        let request = FlorShopAuthApiRequest.registerCompany(request: registerRequest, providerToken: registerStuff.token)
         let data: ScopedTokenWithRefreshResponse = try await NetworkManager.shared.perform(request, decodeTo: ScopedTokenWithRefreshResponse.self)
         guard let payload = ScopedTokenPayload(token: data.scopedToken) else {
             throw NetworkError.invalidResponse
@@ -140,16 +122,6 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
             subsidiaryCic: payload.subsidiaryCic,
             employeeCic: payload.sub
         )
-    }
-    func completeProfile(employee: Employee, subsidiaryCic: String) async throws {
-        guard let scopedToken: TokenRefreshable = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
-        }
-        let request = FlorShopCoreApiRequest.saveEmployee(
-            employee: employee.toEmployeeDTO(),
-            token: scopedToken.accessToken
-        )
-        let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)
     }
     func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {

@@ -2,19 +2,15 @@ import SwiftUI
 import FlorShopDTOs
 
 struct CompleteEmployeeProfileView: View {
+    @Environment(\.dismiss) var dismiss
     @Environment(OverlayViewModel.self) var overlayViewModel
-    @Environment(SessionManager.self) var sessionManager
-    @Binding var path: [SessionRoutes]
+    @Environment(FlorShopRouter.self) var florShopRouter
     @State private var viewModel: CompleteEmployeeProfileViewModel
-    let subsidiaryCic: String
-    init(subsidiaryCic: String, path: Binding<[SessionRoutes]>) {
-        self.viewModel = CompleteEmployeeProfileViewModelFactory.getViewModel()
-        self._path = path
-        self.subsidiaryCic = subsidiaryCic
+    init(ses: SessionContainer) {
+        self.viewModel = CompleteEmployeeProfileViewModelFactory.getViewModel(sessionContainer: ses)
     }
     var body: some View {
         CompleteEmployeeProfileListView(viewModel: $viewModel)
-            .background(Color.background)
             .navigationTitle("Complete su perfil")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -25,8 +21,8 @@ struct CompleteEmployeeProfileView: View {
         let loadingId = self.overlayViewModel.showLoading(origin: "[CompleteEmployeeProfileView]")
         Task {
             do {
-                let employee = self.viewModel.getEmployee()
-                try await self.sessionManager.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic)
+                try await self.viewModel.completeEmployeeProfile()
+                dismiss()
                 self.overlayViewModel.endLoading(id: loadingId, origin: "[CompleteEmployeeProfileView]")
             } catch {
                 self.overlayViewModel.showAlert(
@@ -45,7 +41,9 @@ struct CompleteEmployeeProfileView: View {
 }
 
 #Preview {
-    CompleteEmployeeProfileView(subsidiaryCic: UUID().uuidString, path: .constant([]))
+    @Previewable @State var overlayModel = OverlayViewModel()
+    CompleteEmployeeProfileView(ses: SessionContainer.preview)
+        .environment(overlayModel)
 }
 
 struct CompleteEmployeeProfileListView: View {
@@ -68,7 +66,7 @@ struct CompleteEmployeeProfileListView: View {
             CustomTextField(title: "Rol" , value: .constant(viewModel.fields.role.description), edited: .constant(false), disable: true)
         }
         .padding(.horizontal, 10)
-        .background(Color.background)
+//        .background(Color.background)
     }
     private func searchFromGallery() {
         viewModel.fields.isShowingPicker = true

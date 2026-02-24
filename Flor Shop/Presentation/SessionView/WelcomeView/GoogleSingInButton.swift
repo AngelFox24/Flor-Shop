@@ -6,8 +6,8 @@ import AVFoundation
 
 struct GoogleSingInButton: View {
     @Environment(OverlayViewModel.self) var overlayViewModel
-    @Binding var path: [SessionRoutes]
     @State private var audioPlayer: AVAudioPlayer? = nil
+    let action: (String) -> Void
     var body: some View {
         Button(action: handleSignInButton) {
             CustomButton2(text: "Continuar con Google", backgroudColor: Color("color_secondary"), minWidthC: 250)
@@ -47,9 +47,7 @@ struct GoogleSingInButton: View {
                     throw NSError(domain: "No token", code: 0, userInfo: nil)
                 }
                 print("[GoogleSingInButton] googletoken: \(token)")
-                await MainActor.run {
-                    self.path.append(.companySelection(provider: .google, token: token))
-                }
+                self.action(token)
                 self.overlayViewModel.endLoading(id: loadingId, origin: "[GoogleSingInButton]")
             } catch {
                 self.overlayViewModel.showAlert(

@@ -17,10 +17,7 @@ final class SessionManager {
         self.sessionRepository = sessionRepository
     }
     
-    func login(
-        provider: AuthProvider,
-        token: String
-    ) async throws -> [CompanyResponseDTO] {
+    func login(provider: AuthProvider,token: String) async throws -> [CompanyResponseDTO] {
         let companies = try await sessionRepository.logIn(provider: provider, token: token)
 //        self.state = .preLogIn(companies: companies)
         return companies
@@ -38,33 +35,26 @@ final class SessionManager {
     @discardableResult
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
         let session: SessionConfig = try await self.sessionRepository.selectSubsidiary(subsidiaryCic: subsidiaryCic)
-        let isRegistered = try await self.isRegistrationComplete(subsidiaryCic: session.subsidiaryCic)
-        if isRegistered {
-            print("[SessionManager] Logged in, selectSubsidiary")
-            self.state = .loggedIn(session)
-        }
+        print("[SessionManager] Logged in, selectSubsidiary")
+        await self.loginOk(session: session)
         return session
-    }
-    
-    func completeProfile(employee: Employee, subsidiaryCic: String) async throws {
-        try await self.sessionRepository.completeProfile(employee: employee, subsidiaryCic: subsidiaryCic)
-        self.restoreSession()
-    }
-    
-    func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
-        return try await self.sessionRepository.isRegistrationComplete(subsidiaryCic: subsidiaryCic)
     }
     
     func register(registerStuff: RegisterStuffs) async throws {
         let session = try await self.sessionRepository.register(registerStuff: registerStuff)
-        print("[SessionManager] Logged in, register")
-        self.state = .loggedIn(session)
+        print("[SessionManager] Logged in, selectSubsidiary")
+        await self.loginOk(session: session)
     }
     
-    func restoreSession() {
+    func restoreSession() async {
         if let saved = sessionRepository.loadSession() {
             print("[SessionManager] Logged in, restoreSession")
-            self.state = .loggedIn(saved)
+            await self.loginOk(session: saved)
+        }
+    }
+    private func loginOk(session: SessionConfig) async {
+        await MainActor.run {
+            self.state = .loggedIn(session)
         }
     }
 }

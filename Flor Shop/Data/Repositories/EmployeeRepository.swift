@@ -5,6 +5,7 @@ protocol EmployeeRepository {
     func save(employee: Employee) async throws
     func invite(email: String, role: UserSubsidiaryRole) async throws
     func getEmployees() async throws -> [Employee]
+    func isEmployeeProfileComplete() async throws -> Bool
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -30,5 +31,8 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     }
     func getEmployees() async throws -> [Employee] {
         return try await self.localManager.getEmployees()
+    }
+    func isEmployeeProfileComplete() async throws -> Bool {
+        return try await self.localManager.isEmployeeProfileComplete()
     }
 }

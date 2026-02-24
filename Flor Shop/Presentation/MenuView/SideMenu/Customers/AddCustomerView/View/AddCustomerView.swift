@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddCustomerView: View {
+    @Environment(OverlayViewModel.self) private var overlayViewModel
     @Environment(FlorShopRouter.self) private var router
     @State var addCustomerViewModel: AddCustomerViewModel
     let customerCic: String?
@@ -25,9 +26,30 @@ struct AddCustomerView: View {
                 MainConfirmationToolbar(disabled: false, action: addCustomer)
             }
             .task {
-                guard let customerCic else { return }
-                addCustomerViewModel.loadCustomer(customerCic: customerCic)
+                await loadCustomer()
             }
+    }
+    func loadCustomer() async {
+        guard let customerCic else { return }
+        let loadingId = self.overlayViewModel.showLoading(origin: "[AddCustomerView]")
+        Task {
+            do {
+                try await self.addCustomerViewModel.loadCustomer(customerCic: customerCic)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[AddCustomerView]")
+            } catch {
+                print("Error al cargar cliente: \(error.localizedDescription)")
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ha ocurrido un error al cargar el cliente. Inténtalo más tarde.",
+                    primary: ConfirmAction(
+                        title: "Aceptar",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[AddCustomerView]")
+                        }
+                    )
+                )
+            }
+        }
     }
     func addCustomer() {
         Task {

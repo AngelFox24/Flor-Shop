@@ -29,6 +29,7 @@ struct NavigationContainer<Content: View>: View {
         .clipShape(
             RoundedRectangle(cornerRadius: showMenu ? 35 : 0, style: .continuous)
         )
+        .ignoresSafeArea()
         .environment(router)
         .onAppear(perform: router.setActive)
         .onDisappear(perform: router.resignActive)
@@ -70,14 +71,19 @@ private struct InnerContainer<Content: View>: View {
         NavigationContainer(parentRouter: router) { view(for: destination) }
     }
 
-
     @ViewBuilder func navigationView(for destination: FullScreenDestination, from router: FlorShopRouter) -> some View {
         NavigationContainer(parentRouter: router) { view(for: destination) }
     }
 }
 
 #Preview {
+    @Previewable @State var overlayModel = OverlayViewModel()
+    @Previewable @State var session = SessionContainer.preview
     NavigationContainer(parentRouter: .previewRouter()) {
-        Text("Hello")
+//        Text("Hello")
+        view(for: .completeEmployeeProfile)
     }
+//    .ignoresSafeArea()
+    .environment(overlayModel)
+    .environment(session)
 }

@@ -1,111 +1,72 @@
 import SwiftUI
-import AVFoundation
+import FlorShopDTOs
 
 struct RegistrationView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(SessionManager.self) var sessionManager
-    @State var registrationViewModel = RegistrationViewModel()
-    @State private var audioPlayer: AVAudioPlayer?
+    @Environment(OverlayViewModel.self) var overlayViewModel
+    @Binding var path: [SessionRoutes]
+    @State var viewModel: RegistrationViewModel
+    let provider: AuthProvider
+    let token: String
+    init(provider: AuthProvider, token: String, path: Binding<[SessionRoutes]>) {
+        self.viewModel = RegistrationViewModelFactory.getViewModel()
+        self.provider = provider
+        self.token = token
+        self._path = path
+    }
     var body: some View {
-        ZStack {
-            Color("color_primary")
-                .ignoresSafeArea()
-            VStack(content: {
-                HStack(content: {
-                    BackButton {
-                        dismiss()
-                    }
-                    Spacer()
-                    Text("Crea una Cuenta")
-                        .font(.custom("Artifika-Regular", size: 25))
-                    Spacer()
-                    Spacer()
-                        .frame(width: 40, height: 40)
-                })
-                .padding(.horizontal, 15)
-                ScrollView {
-                    VStack(spacing: 30) {
-                        VStack(spacing: 40){
-                            VStack {
-                                CustomTextField(title: "Correo" ,value: $registrationViewModel.registrationFields.email, edited: $registrationViewModel.registrationFields.emailEdited)
-                                if registrationViewModel.registrationFields.emailError != "" {
-                                    ErrorMessageText(message: registrationViewModel.registrationFields.emailError)
-                                    //.padding(.top, 8)
-                                }
-                            }
-                            VStack {
-                                CustomTextField(title: "Subdominio" ,value: $registrationViewModel.registrationFields.subdomain, edited: $registrationViewModel.registrationFields.subdomainEdited)
-                                if registrationViewModel.registrationFields.subdomainError != "" {
-                                    ErrorMessageText(message: registrationViewModel.registrationFields.subdomainError)
-                                    //.padding(.top, 18)
-                                }
-                            }
-                            HStack {
-                                VStack {
-                                    CustomTextField(title: "Nombre de la Tienda" ,value: $registrationViewModel.registrationFields.companyName, edited: $registrationViewModel.registrationFields.companyNameEdited)
-                                    if registrationViewModel.registrationFields.companyNameError != "" {
-                                        ErrorMessageText(message: registrationViewModel.registrationFields.companyNameError)
-                                        //.padding(.top, 18)
-                                    }
-                                }
-                            }
-                            VStack {
-                                CustomTextField(title: "Nombre del Dueño" ,value: $registrationViewModel.registrationFields.managerName, edited: $registrationViewModel.registrationFields.managerNameEdited)
-                                if registrationViewModel.registrationFields.managerNameError != "" {
-                                    ErrorMessageText(message: registrationViewModel.registrationFields.managerNameError)
-                                    //.padding(.top, 18)
-                                }
-                            }
-                            VStack {
-                                CustomTextField(title: "Apellidos del Dueño" ,value: $registrationViewModel.registrationFields.managerLastName, edited: $registrationViewModel.registrationFields.managerLastNameEdited)
-                                if registrationViewModel.registrationFields.managerLastNameError != "" {
-                                    ErrorMessageText(message: registrationViewModel.registrationFields.managerLastNameError)
-                                    //.padding(.top, 18)
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 30)
-                        Button(action: registerUser) {
-                            CustomButton2(text: "Registrar", backgroudColor: Color.accentColor, minWidthC: 250)
-                                .foregroundColor(Color(.black))
-                        }
-                    }
-                    .padding(.top, 10)
-                }
-                .padding(.top, 1)
-            })
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
+        RegistrationFieldsView(viewModel: $viewModel)
+            .background(Color.background)
+            .navigationTitle("Registrar compañía")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                RegistrationToolbar(action: registerUser)
+            }
     }
     func registerUser() {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[RegistrationView]")
         Task {
             do {
-                let ses = try await registrationViewModel.registerUser()
-                try await self.sessionManager.register(registerStuff: ses)
-                playSound(named: "Success1")
+                let registerStuff = try await viewModel.registerUser(authProvider: self.provider, token: self.token)
+                try await self.sessionManager.register(registerStuff: registerStuff)
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[RegistrationView]")
             } catch {
-//                router.presentAlert(.error(error.localizedDescription))
-                playSound(named: "Fail1")
+                print("[RegistrationView] Ha ocurrido un error: \(error)")
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ha ocurrido un error al registrar la compañía.",
+                    primary: ConfirmAction(
+                        title: "Aceptar",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[RegistrationView]")
+                        }
+                    )
+                )
             }
         }
     }
-    private func playSound(named fileName: String) {
-        var soundURL: URL?
-        soundURL = Bundle.main.url(forResource: fileName, withExtension: "mp3")
-        guard let url = soundURL else {
-            print("No se pudo encontrar el archivo de sonido.")
-            return
+}
+
+struct RegistrationFieldsView: View {
+    @Binding var viewModel: RegistrationViewModel
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 40){
+                HStack {
+                    VStack {
+                        CustomTextField(title: "Nombre de la Tienda", value: $viewModel.registrationFields.companyName, edited: $viewModel.registrationFields.companyNameEdited)
+                        if viewModel.registrationFields.companyNameError != "" {
+                            ErrorMessageText(message: viewModel.registrationFields.companyNameError)
+                            //.padding(.top, 18)
+                        }
+                    }
+                }
+            }
         }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("No se pudo reproducir el sonido. Error: \(error.localizedDescription)")
-        }
+        .padding(.horizontal, 10)
     }
 }
 
-#Preview {
-    RegistrationView()
-}
+//#Preview {
+//    RegistrationView()
+//}

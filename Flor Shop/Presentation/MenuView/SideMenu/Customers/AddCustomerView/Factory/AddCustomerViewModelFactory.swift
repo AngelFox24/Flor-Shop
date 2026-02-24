@@ -4,7 +4,8 @@ struct AddCustomerViewModelFactory {
     static func getAddCustomerViewModel(sessionContainer: SessionContainer) -> AddCustomerViewModel {
         return AddCustomerViewModel(
             saveCustomerUseCase: getSaveCustomerUseCase(sessionContainer: sessionContainer),
-            saveImageUseCase: saveImageUseCase(sessionContainer: sessionContainer)
+            saveImageUseCase: saveImageUseCase(sessionContainer: sessionContainer),
+            getCustomersUseCase: getCustomersUseCase(sessionContainer: sessionContainer)
         )
     }
     static private func getSaveCustomerUseCase(sessionContainer: SessionContainer) -> SaveCustomerUseCase {
@@ -16,6 +17,11 @@ struct AddCustomerViewModelFactory {
     static private func saveImageUseCase(sessionContainer: SessionContainer) -> SaveImageUseCase {
         return SaveImageInteractor(
             imageRepository: sessionContainer.imageRepository
+        )
+    }
+    static private func getCustomersUseCase(sessionContainer: SessionContainer) -> GetCustomersUseCase {
+        return GetCustomersInteractor(
+            customerRepository: sessionContainer.customerRepository
         )
     }
 }

@@ -61,7 +61,7 @@ struct CustomerListController: View {
                                         NavigationButton(push: .editCustomer(customerCic: customerCic)) {
                                             Text("Editar cliente")
                                         }
-                                        NavigationButton(push: .payment) {
+                                        NavigationButton(push: .payCustomerTotalDebd(customerCic: customerCic)) {
                                             Text("Pagar deuda")
                                         }
                                     }

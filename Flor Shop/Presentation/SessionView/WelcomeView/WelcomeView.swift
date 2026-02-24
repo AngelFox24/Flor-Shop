@@ -5,7 +5,7 @@ import AVFoundation
 enum SessionRoutes: Hashable {
     case companySelection(provider: AuthProvider, token: String)
     case subsidiarySelection(companyCic: String)
-    case completeEmployeeProfile(subsidiaryCic: String)
+    case registrationCompany(provider: AuthProvider, token: String)
 }
 
 struct WelcomeView: View {
@@ -40,20 +40,8 @@ struct WelcomeView: View {
                                     .padding(.horizontal, 15)
                             }
                             VStack(spacing: 30) {
-                                GoogleSingInButton(path: $path)
-                                Button {
-                                    let session = SessionManager(sessionRepository: SessionRepositoryImpl.mock())
-                                    Task {
-                                        let companies = try? await session.login(provider: .google, token: "")
-                                        await MainActor.run {
-                                            self.path.append(.companySelection(provider: .google, token: ""))
-                                        }
-                                        print("COmpanies count: \(companies?.count ?? 0)")
-                                        print("Path count: \(self.path)")
-                                    }
-                                } label: {
-                                    CustomButton2(text: "Login mock", backgroudColor: Color("color_secondary"), minWidthC: 250)
-                                        .foregroundColor(Color(.black))
+                                GoogleSingInButton { token in
+                                    self.path.append(.companySelection(provider: .google, token: token))
                                 }
                             }
                             .padding(.top, 30)
@@ -70,13 +58,13 @@ struct WelcomeView: View {
                     CompanySelectionView(provider: provider, token: token, path: $path)
                 case .subsidiarySelection(let companyCic):
                     SubsidiarySelectionView(companyCic: companyCic, path: $path)
-                case .completeEmployeeProfile(let subsidiaryCic):
-                    CompleteEmployeeProfileView(subsidiaryCic: subsidiaryCic, path: $path)
+                case .registrationCompany(let provider, let token):
+                    RegistrationView(provider: provider, token: token, path: $path)
                 }
             }
         }
         .task {
-            self.sessionManager.restoreSession()
+            await self.sessionManager.restoreSession()
         }
     }
 }

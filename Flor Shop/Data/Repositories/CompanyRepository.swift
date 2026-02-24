@@ -3,6 +3,7 @@ import FlorShopDTOs
 
 protocol CompanyRepository {
     func save(company: Company) async throws
+    func initialData() async throws
 }
 
 class CompanyRepositoryImpl: CompanyRepository {
@@ -16,6 +17,11 @@ class CompanyRepositoryImpl: CompanyRepository {
     func save(company: Company) async throws {
         if cloudBD {
             try await self.remoteManager.save(company: company)
+        }
+    }
+    func initialData() async throws {
+        if cloudBD {
+            try await self.remoteManager.initialData()
         }
     }
 }

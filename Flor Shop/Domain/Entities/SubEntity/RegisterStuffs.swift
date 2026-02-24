@@ -1,8 +1,10 @@
 import Foundation
+import FlorShopDTOs
 
 struct RegisterStuffs {
     let company: Company
     let subsidiary: Subsidiary
-    let employee: Employee
-    let subdomain: String
+    let role: UserSubsidiaryRole
+    let authProvider: AuthProvider
+    let token: String
 }

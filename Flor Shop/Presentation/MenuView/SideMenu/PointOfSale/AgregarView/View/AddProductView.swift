@@ -97,7 +97,7 @@ struct CamposProductoAgregar: View {
     var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 23) {
+            VStack {
                 HStack {
                     VStack(spacing: 0) {
                         Spacer()
@@ -129,16 +129,14 @@ struct CamposProductoAgregar: View {
                 }
                 VStack {
                     HStack {
-                        HStack {
-                            Button(action: pasteFromInternet) {
-                                Text("Pegar Imagen")
-                                    .foregroundColor(.black)
-                                    .font(.custom("Artifika-Regular", size: 16))
-                                    .padding(.vertical, 6)
-                                    .padding(.horizontal, 5)
-                                    .background(Color("color_secondary"))
-                                    .cornerRadius(10)
-                            }
+                        Button(action: pasteFromInternet) {
+                            Text("Pegar Imagen")
+                                .foregroundColor(.black)
+                                .font(.custom("Artifika-Regular", size: 16))
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 5)
+                                .background(Color.secondary)
+                                .cornerRadius(10)
                         }
                     }
                     if agregarViewModel.agregarFields.imageURLError != "" {

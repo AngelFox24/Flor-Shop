@@ -30,63 +30,66 @@ struct CustomTextField: View {
     
     @State private var isKeyboardShowing = false
     var body: some View {
-        ZStack {
-            HStack(spacing: 0) {
-                TextField("", text: $value)
-                    .focused($isInputActive)
-                    .font(.custom("Artifika-Regular", size: 20))
-                    .multilineTextAlignment(alignment)
-                    .keyboardType(keyboardType)
-                    .padding(.all, 5)
-                    .foregroundColor(.black)
-                    .padding(.vertical, 4)
-                    .disableAutocorrection(disableAutocorrection)
-                    .onChange(of: value) { oldText, newText in
-                        if isInputActive {
-                            if newText != "" {
-                                edited = true
-                            }
-                        }
-                    }
-                    .disabled(disable)
-                    .toolbar {
-                        if isInputActive {
-                            ToolbarItem(placement: .keyboard) {
-                                CustomHideKeyboard {
-                                    isInputActive = false
+        VStack(spacing: 0) {
+            Spacer().frame(height: 24)
+            ZStack {
+                HStack(spacing: 0) {
+                    TextField("", text: $value)
+                        .focused($isInputActive)
+                        .font(.custom("Artifika-Regular", size: 20))
+                        .multilineTextAlignment(alignment)
+                        .keyboardType(keyboardType)
+                        .padding(.all, 5)
+                        .foregroundColor(.black)
+                        .padding(.vertical, 4)
+                        .disableAutocorrection(disableAutocorrection)
+                        .onChange(of: value) { oldText, newText in
+                            if isInputActive {
+                                if newText != "" {
+                                    edited = true
                                 }
                             }
                         }
-                    }
-                if isInputActive && !value.isEmpty {
-                    Button(action: {
-                        if isInputActive {
-                            value.removeAll()
-                        } else if !disable {
-                            isInputActive = true
+                        .disabled(disable)
+                        .toolbar {
+                            if isInputActive {
+                                ToolbarItem(placement: .keyboard) {
+                                    CustomHideKeyboard {
+                                        isInputActive = false
+                                    }
+                                }
+                            }
                         }
-                    }, label: {
-                        Image(systemName: "x.circle")
-                            .foregroundColor(Color.accentColor)
-                            .font(.custom("Artifika-Regular", size: 16))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 12)
-                            .animation(.easeInOut(duration: 0.9), value: isInputActive)
-                    })
+                    if isInputActive && !value.isEmpty {
+                        Button {
+                            if isInputActive {
+                                value.removeAll()
+                            } else if !disable {
+                                isInputActive = true
+                            }
+                        } label: {
+                            Image(systemName: "x.circle")
+                                .foregroundColor(Color.accentColor)
+                                .font(.custom("Artifika-Regular", size: 16))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 12)
+                                .animation(.easeInOut(duration: 0.9), value: isInputActive)
+                        }
+                    }
                 }
+                .background(disable ? Color.textFieldDisable : Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                HStack {
+                    Text(title)
+                        .font(.custom("Artifika-Regular", size: placeHolderPerform ? 14 : 20))
+                        .padding(.horizontal, 10)
+                        .foregroundColor(Color.textFieldTittle)
+                        .disabled(disable)
+                    Spacer()
+                }
+                .offset(y: placeHolderPerform ? -34 : 0)
+                .animation(.easeOut(duration: 0.2), value: placeHolderPerform)
             }
-            .background(disable ? Color.textFieldDisable : Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 25))
-            HStack {
-                Text(title)
-                    .font(.custom("Artifika-Regular", size: placeHolderPerform ? 14 : 20))
-                    .padding(.horizontal, 10)
-                    .foregroundColor(Color.textFieldTittle)
-                    .disabled(disable)
-                Spacer()
-            }
-            .offset(y: placeHolderPerform ? -34 : 0)
-            .animation(.easeOut(duration: 0.2), value: placeHolderPerform)
         }
         .onTapGesture {
             if !disable {

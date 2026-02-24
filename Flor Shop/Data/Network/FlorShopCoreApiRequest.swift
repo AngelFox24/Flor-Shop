@@ -9,7 +9,7 @@ enum FlorShopCoreApiRequest {
     case isRegistrationComplete(token: String)
     case saveProduct(product: ProductServerDTO, token: String)
     case registerSale(sale: RegisterSaleParameters, token: String)
-    case register(register: RegisterParameters, token: String)
+    case register(token: String)
     case saveSubsidiary(subsidiary: SubsidiaryServerDTO, token: String)
 }
 
@@ -82,7 +82,7 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             headers[.authorization] = "Bearer \(scopedToken)"
         case .registerSale(_, let scopedToken):
             headers[.authorization] = "Bearer \(scopedToken)"
-        case .register(_, let scopedToken):
+        case .register(let scopedToken):
             headers[.authorization] = "Bearer \(scopedToken)"
         case .saveSubsidiary(_, let scopedToken):
             headers[.authorization] = "Bearer \(scopedToken)"
@@ -106,8 +106,8 @@ extension FlorShopCoreApiRequest: NetworkRequest {
             return product
         case .registerSale(let sale, _):
             return sale
-        case .register(let register, _):
-            return register
+        case .register(_):
+            return nil
         case .saveSubsidiary(let subsidiary, _):
             return subsidiary
         }

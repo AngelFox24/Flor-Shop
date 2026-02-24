@@ -71,16 +71,20 @@ func view(for destination: SheetDestination) -> some View {
 
 @ViewBuilder
 func view(for destination: FullScreenDestination) -> some View {
-    Text("Not implemented")
-//    Group {
-//        switch destination {
+//    Text("Not implemented")
+    Group {
+        switch destination {
 //        case let .movieGallery(id):
 //            MovieImageGalleryScreen(movieID: id)
 //
 //        case let .movieGalleryValue(id, images, selectedImageIndex):
 //            MovieImageGalleryScreen(movieID: id, images: images, selectedImage: selectedImageIndex)
-//        }
-//    }
+        case .completeEmployeeProfile:
+            WithSession { ses in
+                CompleteEmployeeProfileView(ses: ses)
+            }
+        }
+    }
 //    .addDismissButton()
 //    .presentationBackground(.black)
 }

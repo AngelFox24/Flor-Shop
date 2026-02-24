@@ -3,7 +3,7 @@ import FlorShopDTOs
 
 protocol SubsidiaryRepository {
     func save(subsidiary: Subsidiary) async throws
-    func getSubsidiaries() async throws -> [Subsidiary]
+    func initialDataExist() async throws -> Bool
 }
 
 class SubsidiaryRepositoryImpl: SubsidiaryRepository {
@@ -22,7 +22,7 @@ class SubsidiaryRepositoryImpl: SubsidiaryRepository {
             try await self.remoteManager.save(subsidiary: subsidiary)
         }
     }
-    func getSubsidiaries() async throws -> [Subsidiary] {
-        return try await self.localManager.getSubsidiaries()
+    func initialDataExist() async throws -> Bool {
+        return try await self.localManager.initialDataExist()
     }
 }

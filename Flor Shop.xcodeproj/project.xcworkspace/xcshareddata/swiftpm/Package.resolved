@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AngelFox24/florshop-dtos.git",
       "state" : {
-        "revision" : "d5a7b98d968b7e9d663f888b8ff392c797de086b",
-        "version" : "1.0.20"
+        "revision" : "1a9d18cc18b39f20a44fe3d9d817309e7417a142",
+        "version" : "1.0.22"
       }
     },
     {
