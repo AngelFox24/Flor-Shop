@@ -8,10 +8,10 @@ enum VersionCheckState {
 
 struct VersionCheckView: View {
     @Environment(\.scenePhase) var scenePhase
-    @Environment(OverlayViewModel.self) var overlayViewModel
     @State private var viewModel: VersionCheckViewModel
     init() {
-        self.viewModel = VersionCheckViewModelFactory.getViewModel()
+        print("[VersionCheckView] Init.")
+        self._viewModel = State(initialValue: VersionCheckViewModelFactory.getViewModel())
     }
     var body: some View {
         VStack(spacing: 0) {
@@ -19,34 +19,15 @@ struct VersionCheckView: View {
             case .iddle:
                 RootView()
             case .loading:
-                LaunchScreenView()
+                LaunchScreenView(viewModel: $viewModel)
             case .lockVersion:
-                LockScreenView()
+                LockScreenView(viewModel: $viewModel)
             }
         }
-//        .task(id: scenePhase) {
-//            guard scenePhase == .active else { return }
-//            print("[VersionCheckView] Start check version with scenePhase: \(scenePhase)")
-//            await checkVersion()
-//        }
-    }
-    private func checkVersion() async {
-//        let loadingId = self.overlayViewModel.showLoading(origin: "[VersionCheckView]")
-        do {
-            try await self.viewModel.checkVersion()
-//            self.overlayViewModel.endLoading(id: loadingId, origin: "[VersionCheckView]")
-        } catch {
-            self.overlayViewModel.showAlert(
-                title: "Error",
-                message: "Ocurrio un error al valida la versión.",
-                primary: ConfirmAction(
-                    title: "Ok",
-                    action: {
-//                        self.overlayViewModel.endLoading(id: loadingId, origin: "[VersionCheckView]")
-                        self.viewModel.versionCheck = VersionCheckState.lockVersion
-                    }
-                )
-            )
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+            print("[VersionCheckView] Start check version with scenePhase: \(scenePhase)")
+            await viewModel.checkVersion()
         }
     }
 }
@@ -62,9 +43,31 @@ struct VersionCheckViewModelFactory {
     }
 }
 
+protocol AlertPresenting: AnyObject {
+    var alert: Bool { get set }
+    var alertInfo: AlertInfo? { get set }
+    func showAlert(alertInfo: AlertInfo) async
+    func dismissAlert()
+}
+
+extension AlertPresenting {
+    func showAlert(alertInfo: AlertInfo) async {
+        await MainActor.run {
+            self.alertInfo = alertInfo
+            self.alert = true
+        }
+    }
+    func dismissAlert() {
+        self.alertInfo = nil
+        self.alert = false
+    }
+}
+
 @Observable
-final class VersionCheckViewModel {
-    var versionCheck: VersionCheckState = .iddle
+final class VersionCheckViewModel: AlertPresenting {
+    var versionCheck: VersionCheckState = .loading
+    var alert: Bool = false
+    var alertInfo: AlertInfo?
     private var intervalRequest: TimeInterval = 15 * 60 // 15 minutos en segundos
     private var latestVersion: StableVersion?
     //Use Cases
@@ -74,9 +77,18 @@ final class VersionCheckViewModel {
     ) {
         self.checkLatestVersionUseCase = checkLatestVersionUseCase
     }
-    func checkVersion() async throws {
-        try await fetchLatestVersion()
-        try await validateVersion()
+    func checkVersion() async {
+        print("[VersionCheckViewModel] checkVersion...")
+        do {
+            try await fetchLatestVersion()
+            try await validateVersion()
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            let alertInfo = AlertInfo(tittle: "Error", message: error.localizedDescription, mainButton: AlertInfo.ButtonConfig(text: "Aceptar", action: { [weak self] in
+                self?.dismissAlert()
+            }))
+            await showAlert(alertInfo: alertInfo)
+        }
     }
     private func fetchLatestVersion() async throws {
         let currentDate = Date()

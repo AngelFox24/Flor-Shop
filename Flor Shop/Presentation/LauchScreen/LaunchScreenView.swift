@@ -1,8 +1,25 @@
 import SwiftUI
 
 struct LaunchScreenView: View {
+    @Binding var viewModel: VersionCheckViewModel
+    init(viewModel: Binding<VersionCheckViewModel>) {
+        print("[LaunchScreenView] Init.")
+        self._viewModel = viewModel
+    }
+    var body: some View {
+        LoadingScreenView()
+            .alert(alert: $viewModel.alert, alertInfo: viewModel.alertInfo)
+//            .task {
+//                await self.viewModel.checkVersion()
+//            }
+    }
+}
+struct LoadingScreenView: View {
     @State private var firstPhaseIsAnimating: Bool = false
     @State private var rotationAngle: Angle = .zero
+    init() {
+        print("[LoadingScreenView] Init.")
+    }
     private let timer = Timer.publish(every: 0.65, on: .main, in: .common).autoconnect()
     var body: some View {
         ZStack {
@@ -53,10 +70,8 @@ struct LoadingFotoView: View {
         .frame(width: size, height: size)
     }
 }
-struct LaunchScreenView_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack{
-            LaunchScreenView()
-        }
-    }
+
+#Preview {
+    @Previewable @State var viewModel = VersionCheckViewModelFactory.getViewModel()
+    LaunchScreenView(viewModel: $viewModel)
 }

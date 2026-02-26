@@ -1,20 +1,19 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var session: SessionManager
+    @Environment(SessionManager.self) var session
     init() {
-        self.session = SessionManagerFactory.getSessionManager()
+        print("[MainView] Init.")
     }
     var body: some View {
         VStack {
-            switch session.state {
-            case .loggedOut:
+            if let session = session.sessionContainer {
+                MainContendView()
+                    .environment(session)
+            } else {
                 WelcomeView()
-            case .loggedIn(let sessionConfig):
-                MainContendView(sessionConfig: sessionConfig)
             }
         }
-        .environment(session)
     }
 }
 
@@ -22,21 +21,18 @@ struct MainContendView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(OverlayViewModel.self) var overlayViewModel
     @Environment(SessionManager.self) var sessionManager
-    //TODO: Verificar si no perjudica a las vistar con el repintado
-    let sessionContainer: SessionContainer
-    init(sessionConfig: SessionConfig) {
-        self.sessionContainer = SessionContainer(sessionConfig: sessionConfig)
+    @Environment(SessionContainer.self) var sessionContainer
+    init() {
+        print("[MainContendView] Init.")
     }
     var body: some View {
         VStack(spacing: 0) {
             MenuView()
-                .environment(sessionContainer)
         }
         .onChange(of: scenePhase) { oldScene, newScene in
             if newScene == .inactive {
                 self.endConection()
             } else if newScene == .active {
-//                await self.connectPowerSync()
                 print("[MainContendView] App en uso")
                 connectPowerSyncTask()
             }
@@ -56,21 +52,22 @@ struct MainContendView: View {
         }
     }
     private func initialization() async {
-//        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
+        print("[MainContendView] initialization func")
+        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
         do {
             if try await !self.sessionContainer.subsidiaryRepository.initialDataExist() {
                 try await self.sessionContainer.companyRepository.initialData()
             }
             try await self.sessionContainer.cartRepository.initializeModel()
-//            try await self.sessionContainer.powerSyncService.waitForFirstSync()
-//            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+            try await self.sessionContainer.powerSyncService.waitForFirstSync()
+            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
         } catch {
             self.overlayViewModel.showAlert(
                 title: "Error en la inicializacion.",
                 message: "Ha ocurrido un error en la incializacion.",
                 primary: ConfirmAction(title: "Aceptar") {
-//                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
-                    self.sessionManager.logout()
+                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+//                    self.sessionManager.logout()
                 }
             )
         }
@@ -84,16 +81,16 @@ struct MainContendView: View {
                 title: "Error al contectar a PowerSync",
                 message: "Ha ocurrido un error en la sincronización.",
                 primary: ConfirmAction(title: "Aceptar") {
-                    self.sessionManager.logout()
+//                    self.sessionManager.logout()
                 }
             )
         }
     }
     private func connectPowerSyncTask() {
-        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
+//        let loadingId = self.overlayViewModel.showLoading(origin: "[MainContendView]")
         Task {
             await connectPowerSync()
-            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
+//            self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
             await self.initialization()
         }
     }

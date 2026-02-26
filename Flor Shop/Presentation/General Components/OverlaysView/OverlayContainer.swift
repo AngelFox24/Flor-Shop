@@ -5,6 +5,7 @@ struct OverlayContainer<Content: View>: View {
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {
+        print("[OverlayContainer] Init.")
         self.content = content()
     }
 

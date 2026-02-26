@@ -1,19 +1,19 @@
 import Foundation
 import FlorShopDTOs
 
-enum SessionState: Equatable {
-    case loggedOut
-//    case preLogIn(companies: [CompanyResponseDTO])
-    case loggedIn(SessionConfig)
-}
+//enum SessionState: Equatable {
+//    case loggedOut
+//    case loggedIn(SessionConfig)
+//}
 
 @Observable
 @MainActor
 final class SessionManager {
     private let sessionRepository: SessionRepository
-    private(set) var state: SessionState = .loggedOut
+    var sessionContainer: SessionContainer?
     
     init(sessionRepository: SessionRepository) {
+        print("[SessionManager] Init")
         self.sessionRepository = sessionRepository
     }
     
@@ -30,7 +30,7 @@ final class SessionManager {
     func logout() {
         sessionRepository.clear()
         print("[SessionManager] Logged out, logout")
-        state = .loggedOut
+        sessionContainer = nil
     }
     @discardableResult
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
@@ -47,6 +47,7 @@ final class SessionManager {
     }
     
     func restoreSession() async {
+        guard sessionContainer == nil else { return }
         if let saved = sessionRepository.loadSession() {
             print("[SessionManager] Logged in, restoreSession")
             await self.loginOk(session: saved)
@@ -54,7 +55,9 @@ final class SessionManager {
     }
     private func loginOk(session: SessionConfig) async {
         await MainActor.run {
-            self.state = .loggedIn(session)
+            print("[SessionManager] loginOk")
+            guard self.sessionContainer == nil else { return }
+            self.sessionContainer = SessionContainer(sessionConfig: session)
         }
     }
 }

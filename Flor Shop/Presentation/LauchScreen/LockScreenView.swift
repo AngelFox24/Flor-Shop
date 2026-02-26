@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct LockScreenView: View {
+    @Binding var viewModel: VersionCheckViewModel
+    init(viewModel: Binding<VersionCheckViewModel>) {
+        print("[LockScreenView] Init.")
+        self._viewModel = viewModel
+    }
     var body: some View {
         VStack {
             Image("groundhog-cry")
@@ -21,11 +26,11 @@ struct LockScreenView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color("color_background"))
         .ignoresSafeArea(.all)
+        .alert(alert: $viewModel.alert, alertInfo: viewModel.alertInfo)
     }
 }
 
-struct LockScreenView_Previews: PreviewProvider {
-    static var previews: some View {
-        LockScreenView()
-    }
+#Preview {
+    @Previewable @State var viewModel = VersionCheckViewModelFactory.getViewModel()
+    LockScreenView(viewModel: $viewModel)
 }

@@ -2,6 +2,9 @@ import SwiftUI
 
 struct RootView: View {
     @AppStorage("hasShownOnboarding") var hasShownOnboarding: Bool = false
+    init() {
+        print("[RootView] Init.")
+    }
     var body: some View {
         VStack(spacing: 0) {
             if !hasShownOnboarding {
@@ -9,9 +12,6 @@ struct RootView: View {
             } else {
                 MainView()
             }
-        }
-        .onAppear {
-            //versionCheck.checkAppVersion()
         }
     }
 }

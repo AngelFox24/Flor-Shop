@@ -22,6 +22,7 @@
 		0B31D0A22E62A68E00EE0D9F /* EmployeeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B31D0A12E62A68E00EE0D9F /* EmployeeViewModelFactory.swift */; };
 		0B360B5E2CAA1A19008BECFB /* BusinessLogicError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */; };
 		0B396B4E2F2D194A00D314A2 /* CustomerQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B396B4D2F2D194A00D314A2 /* CustomerQueries.swift */; };
+		0B4AC6422F50D41B00F99EC6 /* Alert+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4AC6412F50D41B00F99EC6 /* Alert+Default.swift */; };
 		0B632F542F0211D1003A9FD1 /* MainConfirmationToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B632F532F0211D1003A9FD1 /* MainConfirmationToolbar.swift */; };
 		0B65CB372F4758AE004AC105 /* RegistrationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65CB362F4758AE004AC105 /* RegistrationViewModelFactory.swift */; };
 		0B65CB3A2F475B34004AC105 /* RegistrationToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65CB392F475B34004AC105 /* RegistrationToolbar.swift */; };
@@ -286,6 +287,7 @@
 		0B31D0A12E62A68E00EE0D9F /* EmployeeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeViewModelFactory.swift; sourceTree = "<group>"; };
 		0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessLogicError.swift; sourceTree = "<group>"; };
 		0B396B4D2F2D194A00D314A2 /* CustomerQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerQueries.swift; sourceTree = "<group>"; };
+		0B4AC6412F50D41B00F99EC6 /* Alert+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Alert+Default.swift"; sourceTree = "<group>"; };
 		0B632F532F0211D1003A9FD1 /* MainConfirmationToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainConfirmationToolbar.swift; sourceTree = "<group>"; };
 		0B65CB362F4758AE004AC105 /* RegistrationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModelFactory.swift; sourceTree = "<group>"; };
 		0B65CB392F475B34004AC105 /* RegistrationToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationToolbar.swift; sourceTree = "<group>"; };
@@ -707,6 +709,7 @@
 			isa = PBXGroup;
 			children = (
 				0B675CF22F1D8D6D009BAD06 /* FlorShopButtonStyle.swift */,
+				0B4AC6412F50D41B00F99EC6 /* Alert+Default.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -1285,8 +1288,8 @@
 			isa = PBXGroup;
 			children = (
 				274CE29929E6D792007C703D /* FlorShopApp.swift */,
-				27B3936D29F74E4B0085D4EC /* RootView.swift */,
 				0BEAA5BA2DF6184E00D510FF /* VersionCheckView.swift */,
+				27B3936D29F74E4B0085D4EC /* RootView.swift */,
 				27448D762C4F134E00F1BEE6 /* MainView.swift */,
 				27EBAFE42A59A2AE006E5CAD /* LauchScreen */,
 				27CC2DFB2A881B4B000EDB64 /* SessionView */,
@@ -2342,6 +2345,7 @@
 				0B7A4EC62F3541D200C6EBFF /* CartCardView.swift in Sources */,
 				0B1D8F1F2ED904490001C6EE /* TokenManager.swift in Sources */,
 				27C7B9D32A60CEC600CA2818 /* OnboardingView.swift in Sources */,
+				0B4AC6422F50D41B00F99EC6 /* Alert+Default.swift in Sources */,
 				274960A22AD4933000BC257B /* PaymentView.swift in Sources */,
 				2735D45D2B21E28000C892AF /* SalesView.swift in Sources */,
 				0BA3A3C72EE886B000771CE2 /* BaseToken.swift in Sources */,

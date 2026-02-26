@@ -3,7 +3,9 @@ import SwiftUI
 @main
 struct FlorShopApp: App {
     @State private var overlay = OverlayViewModel()
+    @State private var session: SessionManager = SessionManagerFactory.getSessionManager()
     init() {
+        print("[FlorShopApp] Init.")
         KingfisherConfig.config()
         GoogleSignConfig.config()
     }
@@ -13,6 +15,7 @@ struct FlorShopApp: App {
                 VersionCheckView()
             }
             .environment(overlay)
+            .environment(session)
         }
     }
 }
