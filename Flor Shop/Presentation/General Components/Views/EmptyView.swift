@@ -1,10 +1,3 @@
-//
-//  EmptyView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 10/09/2025.
-//
-
 import SwiftUI
 
 struct EmptyView: View {

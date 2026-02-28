@@ -1,15 +1,15 @@
 import SwiftUI
 import FlorShopDTOs
 
-struct AddEmployeeView: View {
+struct InviteEmployeeView: View {
     @Environment(FlorShopRouter.self) private var router
     @Environment(OverlayViewModel.self) private var overlayViewModel
-    @State var addEmployeeViewModel: AddEmployeeViewModel
+    @State var viewModel: InviteEmployeeViewModel
     init(ses: SessionContainer) {
-        self.addEmployeeViewModel = AddEmployeeViewModelFactory.getAddEmployeeViewModel(sessionContainer: ses)
+        self.viewModel = InviteEmployeeViewModelFactory.getInviteEmployeeViewModel(sessionContainer: ses)
     }
     var body: some View {
-        AddEmployeeListController(addEmployeeViewModel: $addEmployeeViewModel)
+        InviteEmployeeListController(viewModel: $viewModel)
             .navigationTitle("Invitar empleado")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -21,7 +21,7 @@ struct AddEmployeeView: View {
         let loadingId = self.overlayViewModel.showLoading(origin: "[AddEmployeeView]")
         Task {
             do {
-                try await self.addEmployeeViewModel.inviteEmployee()
+                try await self.viewModel.inviteEmployee()
                 router.back()
                 self.overlayViewModel.endLoading(id: loadingId, origin: "[AddEmployeeView]")
             } catch {
@@ -44,22 +44,22 @@ struct AddEmployeeView: View {
 #Preview {
     @Previewable @State var overlayViewModel = OverlayViewModel()
     @Previewable @State var mainRouter = FlorShopRouter.previewRouter()
-    AddEmployeeView(ses: SessionContainer.preview)
+    InviteEmployeeView(ses: SessionContainer.preview)
         .environment(mainRouter)
         .environment(overlayViewModel)
 }
 
-struct AddEmployeeListController: View {
-    @Binding var addEmployeeViewModel: AddEmployeeViewModel
+struct InviteEmployeeListController: View {
+    @Binding var viewModel: InviteEmployeeViewModel
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 10) {
-                CustomTextField(title: "Correo" , value: $addEmployeeViewModel.email, edited: .constant(false))
+                CustomTextField(title: "Correo" , value: $viewModel.email, edited: .constant(false))
                 DropDownView(
                     hind: "Role",
                     options: UserSubsidiaryRole.allCases,
                     anchor: .bottom,
-                    selection: $addEmployeeViewModel.role
+                    selection: $viewModel.role
                 )
             }
         }

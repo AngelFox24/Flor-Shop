@@ -10,6 +10,7 @@ struct SaleProductView: View {
     @EquatableIgnoredUnsafeClosure
     let showMenu: () -> Void
     init(ses: SessionContainer, showMenu: @escaping () -> Void) {
+        print("[SaleProductView] Init.")
         self.productViewModel = ProductViewModelFactory.getProductViewModel(sessionContainer: ses)
         self.showMenu = showMenu
     }

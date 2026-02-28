@@ -18,7 +18,7 @@ struct EmployeeView: View {
             .toolbar {
                 LogoToolBar(action: showMenu)
 //                ProductTopToolbar(productViewModel: $productViewModel, badge: nil)
-                MainBottomToolbar(destination: .addEmployee)
+                MainBottomToolbar(destination: .inviteEmployee)
             }
             .task {
                 try? await employeeViewModel.fetchListEmployees()
@@ -61,6 +61,13 @@ struct EmployeeListController: View {
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
                         .listRowBackground(Color.background)
+                        .contextMenu {
+                            if let employeeCic = employee.employeeCic {
+                                NavigationButton(push: .editEmployee(employeeCic: employeeCic)) {
+                                    Text("Editar empleado")
+                                }
+                            }
+                        }
                     }
                 }
                 .scrollIndicators(ScrollIndicatorVisibility.hidden)

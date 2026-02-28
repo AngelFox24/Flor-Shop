@@ -10,3 +10,23 @@ struct MainConfirmationToolbar: ToolbarContent {
         }
     }
 }
+
+struct MainConfirmationAsyncToolbar: ToolbarContent {
+    let disabled: Bool
+    let isLoading: Bool
+    let action: () -> Void
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            Button(role: .confirm, action: action) {
+                Image(systemName: isLoading ? "progress.indicator" : "checkmark")
+                    .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(
+                        .rotate.byLayer,
+                        options: isLoading ? .repeat(.continuous) : .default,
+                        value: isLoading
+                    )
+            }
+            .disabled(disabled || isLoading)
+        }
+    }
+}

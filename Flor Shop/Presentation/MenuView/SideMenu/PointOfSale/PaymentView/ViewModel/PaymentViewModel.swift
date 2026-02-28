@@ -1,12 +1,40 @@
 import Foundation
 import FlorShopDTOs
 
+enum PaymentTransaction: Equatable {
+    static func == (lhs: PaymentTransaction, rhs: PaymentTransaction) -> Bool {
+            switch (lhs, rhs) {
+            case (.none, .none):
+                return true
+
+            case let (.send(lCar, lCustomer, lType),
+                      .send(rCar, rCustomer, rType)):
+
+                return lCar.id == rCar.id &&
+                       lCustomer?.customerCic == rCustomer?.customerCic &&
+                       lType == rType
+
+            default:
+                return false
+            }
+        }
+    
+    case none
+    case send(car: Car, customer: Customer?, paymentType: PaymentType)
+}
+
 @Observable
-final class PaymentViewModel {
+final class PaymentViewModel: AlertPresenting {
+    var alert: Bool = false
+    var alertInfo: AlertInfo?
     var cartCoreData: Car?
     var customerInCar: Customer?
     var paymentType: PaymentType = .cash
-    
+    var isLoading: Bool = false
+    var disabled: Bool {
+        cartCoreData == nil
+    }
+    var paymentTransaction: PaymentTransaction = .none
     var paymentTypes: [PaymentType] {
         guard let customer = customerInCar else {
             return [.cash]
@@ -28,6 +56,8 @@ final class PaymentViewModel {
             return car.total.solesString
         }
     }
+    var registerTask: Task<Void, Never>?
+    //Use Cases
     private let getCartUseCase: GetCartUseCase
     private let emptyCartUseCase: EmptyCartUseCase
     private let registerSaleUseCase: RegisterSaleUseCase
@@ -53,6 +83,7 @@ final class PaymentViewModel {
         self.cartCoreData = await self.getCartUseCase.execute()
         await fechtCustomer()
     }
+    
     func fechtCustomer() async {
         let customerInCar: Customer?
         if let customerCic = cartCoreData?.customerCic {
@@ -68,9 +99,44 @@ final class PaymentViewModel {
         try await self.emptyCartUseCase.execute()
         await fetchCart()
     }
-    func registerSale() async throws {
+    @MainActor
+    private func clearView() {
+        self.customerInCar = nil
+        self.cartCoreData = nil
+    }
+    @MainActor
+    func setSaleTransacction() {
         guard let cart = cartCoreData else { return }
-        try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerCic: customerInCar?.customerCic)
+        self.paymentTransaction = .send(car: cart, customer: self.customerInCar, paymentType: self.paymentType)
+    }
+    @MainActor
+    func registerSale() async {
+        self.isLoading = true
+            guard let cart = cartCoreData else {
+                await MainActor.run {
+                    self.isLoading = false
+                }
+                return
+            }
+            do {
+                try Task.checkCancellation()
+                try await self.registerSaleUseCase.execute(cart: cart, paymentType: paymentType, customerCic: customerInCar?.customerCic)
+                self.clearView()
+                await MainActor.run {
+                    self.isLoading = false
+                }
+            } catch is CancellationError {
+                await MainActor.run {
+                    self.isLoading = false
+                }
+            } catch {
+                print("Error: \(error.localizedDescription)")
+                let alertInfo = AlertInfo(tittle: "Error", message: error.localizedDescription, mainButton: AlertInfo.ButtonConfig(text: "Aceptar", action: { [weak self] in
+                    self?.dismissAlert()
+                    self?.isLoading = false
+                }))
+                await showAlert(alertInfo: alertInfo)
+            }
     }
     func unlinkClient() {
         Task {

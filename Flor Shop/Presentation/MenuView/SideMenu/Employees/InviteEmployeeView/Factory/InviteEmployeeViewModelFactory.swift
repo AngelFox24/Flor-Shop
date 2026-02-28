@@ -1,8 +1,8 @@
 import Foundation
 
-struct AddEmployeeViewModelFactory {
-    static func getAddEmployeeViewModel(sessionContainer: SessionContainer) -> AddEmployeeViewModel {
-        return AddEmployeeViewModel(
+struct InviteEmployeeViewModelFactory {
+    static func getInviteEmployeeViewModel(sessionContainer: SessionContainer) -> InviteEmployeeViewModel {
+        return InviteEmployeeViewModel(
             getEmployeesUseCase: getEmployeeUseCase(sessionContainer: sessionContainer)
         )
     }

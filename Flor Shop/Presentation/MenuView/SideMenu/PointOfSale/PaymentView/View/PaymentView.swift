@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PaymentView: View {
     @Environment(FlorShopRouter.self) private var router
-    @Environment(OverlayViewModel.self) private var overlayViewModel
     @State var paymentViewModel: PaymentViewModel
     init(ses: SessionContainer) {
         paymentViewModel = PaymentViewModelFactory.getPaymentViewModel(sessionContainer: ses)
@@ -11,34 +10,30 @@ struct PaymentView: View {
         PaymentsFields(paymentViewModel: $paymentViewModel)
             .padding(.horizontal, 10)
             .background(Color.background)
+            .disabled(paymentViewModel.isLoading)
+            .alert(alert: $paymentViewModel.alert, alertInfo: paymentViewModel.alertInfo)
             .toolbar {
-                MainConfirmationToolbar(disabled: false, action: registerSale)
+                MainConfirmationAsyncToolbar(disabled: paymentViewModel.disabled,isLoading: paymentViewModel.isLoading, action: paymentViewModel.setSaleTransacction)
+            }
+            .onDisappear {
+                paymentViewModel.registerTask?.cancel()
+                paymentViewModel.registerTask = nil
+                paymentViewModel.isLoading = false
+            }
+            .task(id: paymentViewModel.paymentTransaction) {
+                guard self.paymentViewModel.paymentTransaction != .none else { return }
+                switch self.paymentViewModel.paymentTransaction {
+                case .send(let car, let customer, let paymentType):
+                    await self.paymentViewModel.registerSale()
+                    self.paymentViewModel.paymentTransaction = .none
+                default:
+                    self.paymentViewModel.paymentTransaction = .none
+                    return
+                }
             }
             .task {
                 await self.paymentViewModel.fetchCart()
             }
-    }
-    func registerSale() {
-        let loadingId = self.overlayViewModel.showLoading(origin: "[PaymentView]")
-        Task {
-            do {
-                try await self.paymentViewModel.registerSale()
-                router.back()
-                self.overlayViewModel.endLoading(id: loadingId, origin: "[PaymentView]")
-            } catch {
-                print("Error al registrar la venta: \(error.localizedDescription)")
-                self.overlayViewModel.showAlert(
-                    title: "Error",
-                    message: "Ha ocurrido un error al registrar la venta.",
-                    primary: ConfirmAction(
-                        title: "Aceptar",
-                        action: {
-                            self.overlayViewModel.endLoading(id: loadingId, origin: "[PaymentView]")
-                        }
-                    )
-                )
-            }
-        }
     }
 }
 

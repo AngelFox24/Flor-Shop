@@ -16,6 +16,12 @@
 		0B1BA6F82ED0F2FE003F88B8 /* FlorShopAuthApiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1BA6F72ED0F2FE003F88B8 /* FlorShopAuthApiRequest.swift */; };
 		0B1D8F1F2ED904490001C6EE /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1D8F1E2ED904490001C6EE /* TokenManager.swift */; };
 		0B1D8F212ED904840001C6EE /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1D8F202ED904840001C6EE /* TokenStore.swift */; };
+		0B1E4A382F525871007FC9C7 /* InviteEmployeeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E4A372F525871007FC9C7 /* InviteEmployeeViewModelFactory.swift */; };
+		0B1E4A3C2F525894007FC9C7 /* InviteEmployeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E4A3B2F525894007FC9C7 /* InviteEmployeeViewModel.swift */; };
+		0B1E4A3E2F5258A7007FC9C7 /* InviteEmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E4A3D2F5258A7007FC9C7 /* InviteEmployeeView.swift */; };
+		0B1E4A4B2F526250007FC9C7 /* EditEmployeeProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E4A432F526250007FC9C7 /* EditEmployeeProfileViewModelFactory.swift */; };
+		0B1E4A4C2F526250007FC9C7 /* EditEmployeeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E4A452F526250007FC9C7 /* EditEmployeeProfileViewModel.swift */; };
+		0B1E4A4D2F526250007FC9C7 /* EditEmployeeProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E4A482F526250007FC9C7 /* EditEmployeeProfileView.swift */; };
 		0B28A7C12F225A9900C1D7F0 /* ProductQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B28A7C02F225A9900C1D7F0 /* ProductQueries.swift */; };
 		0B28A7C32F225F1200C1D7F0 /* CartDetailQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B28A7C22F225F1200C1D7F0 /* CartDetailQueries.swift */; };
 		0B28A7C52F22634F00C1D7F0 /* CartQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B28A7C42F22634F00C1D7F0 /* CartQueries.swift */; };
@@ -128,9 +134,6 @@
 		0BD175EC2F00AA81000BC828 /* ProductTopToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD175EB2F00AA81000BC828 /* ProductTopToolbar.swift */; };
 		0BD175EE2F00AB6B000BC828 /* LogoToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD175ED2F00AB6B000BC828 /* LogoToolBar.swift */; };
 		0BD175F12F00ABC5000BC828 /* MainBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD175F02F00ABC5000BC828 /* MainBottomToolbar.swift */; };
-		0BD4B3512F033990004DCFB3 /* AddEmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD4B3502F033990004DCFB3 /* AddEmployeeView.swift */; };
-		0BD4B3542F033A36004DCFB3 /* AddEmployeeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD4B3522F033A36004DCFB3 /* AddEmployeeViewModelFactory.swift */; };
-		0BD4B3562F033A44004DCFB3 /* AddEmployeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD4B3552F033A44004DCFB3 /* AddEmployeeViewModel.swift */; };
 		0BD4B3DB2F033EFD004DCFB3 /* DropDownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD4B3DA2F033EFD004DCFB3 /* DropDownView.swift */; };
 		0BD4B45F2F034046004DCFB3 /* Listable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD4B45E2F034046004DCFB3 /* Listable.swift */; };
 		0BD53CF52F0C21B400C2471C /* TotalSafeAreaBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD53CF42F0C21B400C2471C /* TotalSafeAreaBar.swift */; };
@@ -281,6 +284,12 @@
 		0B1BA6F72ED0F2FE003F88B8 /* FlorShopAuthApiRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlorShopAuthApiRequest.swift; sourceTree = "<group>"; };
 		0B1D8F1E2ED904490001C6EE /* TokenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManager.swift; sourceTree = "<group>"; };
 		0B1D8F202ED904840001C6EE /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
+		0B1E4A372F525871007FC9C7 /* InviteEmployeeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteEmployeeViewModelFactory.swift; sourceTree = "<group>"; };
+		0B1E4A3B2F525894007FC9C7 /* InviteEmployeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteEmployeeViewModel.swift; sourceTree = "<group>"; };
+		0B1E4A3D2F5258A7007FC9C7 /* InviteEmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteEmployeeView.swift; sourceTree = "<group>"; };
+		0B1E4A432F526250007FC9C7 /* EditEmployeeProfileViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEmployeeProfileViewModelFactory.swift; sourceTree = "<group>"; };
+		0B1E4A452F526250007FC9C7 /* EditEmployeeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEmployeeProfileViewModel.swift; sourceTree = "<group>"; };
+		0B1E4A482F526250007FC9C7 /* EditEmployeeProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEmployeeProfileView.swift; sourceTree = "<group>"; };
 		0B28A7C02F225A9900C1D7F0 /* ProductQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductQueries.swift; sourceTree = "<group>"; };
 		0B28A7C22F225F1200C1D7F0 /* CartDetailQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartDetailQueries.swift; sourceTree = "<group>"; };
 		0B28A7C42F22634F00C1D7F0 /* CartQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartQueries.swift; sourceTree = "<group>"; };
@@ -391,9 +400,6 @@
 		0BD175EB2F00AA81000BC828 /* ProductTopToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTopToolbar.swift; sourceTree = "<group>"; };
 		0BD175ED2F00AB6B000BC828 /* LogoToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoToolBar.swift; sourceTree = "<group>"; };
 		0BD175F02F00ABC5000BC828 /* MainBottomToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBottomToolbar.swift; sourceTree = "<group>"; };
-		0BD4B3502F033990004DCFB3 /* AddEmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEmployeeView.swift; sourceTree = "<group>"; };
-		0BD4B3522F033A36004DCFB3 /* AddEmployeeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEmployeeViewModelFactory.swift; sourceTree = "<group>"; };
-		0BD4B3552F033A44004DCFB3 /* AddEmployeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEmployeeViewModel.swift; sourceTree = "<group>"; };
 		0BD4B3DA2F033EFD004DCFB3 /* DropDownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownView.swift; sourceTree = "<group>"; };
 		0BD4B45E2F034046004DCFB3 /* Listable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listable.swift; sourceTree = "<group>"; };
 		0BD53CF42F0C21B400C2471C /* TotalSafeAreaBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalSafeAreaBar.swift; sourceTree = "<group>"; };
@@ -559,6 +565,82 @@
 				0BB48A7A2F3FF66900C0CBAE /* Release.xcconfig */,
 			);
 			path = Configurations;
+			sourceTree = "<group>";
+		};
+		0B1E4A3F2F525914007FC9C7 /* InviteEmployeeView */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A402F52592D007FC9C7 /* Factory */,
+				0B1E4A412F525934007FC9C7 /* ViewModel */,
+				0B1E4A422F52593B007FC9C7 /* View */,
+			);
+			path = InviteEmployeeView;
+			sourceTree = "<group>";
+		};
+		0B1E4A402F52592D007FC9C7 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A372F525871007FC9C7 /* InviteEmployeeViewModelFactory.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
+		0B1E4A412F525934007FC9C7 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A3B2F525894007FC9C7 /* InviteEmployeeViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		0B1E4A422F52593B007FC9C7 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A3D2F5258A7007FC9C7 /* InviteEmployeeView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		0B1E4A442F526250007FC9C7 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A432F526250007FC9C7 /* EditEmployeeProfileViewModelFactory.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
+		0B1E4A462F526250007FC9C7 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A452F526250007FC9C7 /* EditEmployeeProfileViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		0B1E4A472F526250007FC9C7 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		0B1E4A492F526250007FC9C7 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A472F526250007FC9C7 /* Components */,
+				0B1E4A482F526250007FC9C7 /* EditEmployeeProfileView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		0B1E4A4A2F526250007FC9C7 /* EditEmployeeProfileView */ = {
+			isa = PBXGroup;
+			children = (
+				0B1E4A442F526250007FC9C7 /* Factory */,
+				0B1E4A462F526250007FC9C7 /* ViewModel */,
+				0B1E4A492F526250007FC9C7 /* View */,
+			);
+			path = EditEmployeeProfileView;
 			sourceTree = "<group>";
 		};
 		0B28A7BF2F225A8300C1D7F0 /* Global Queries */ = {
@@ -1108,14 +1190,6 @@
 			path = Toolbars;
 			sourceTree = "<group>";
 		};
-		0BD4B3532F033A36004DCFB3 /* Factory */ = {
-			isa = PBXGroup;
-			children = (
-				0BD4B3522F033A36004DCFB3 /* AddEmployeeViewModelFactory.swift */,
-			);
-			path = Factory;
-			sourceTree = "<group>";
-		};
 		0BD4B3572F033EBA004DCFB3 /* Drop down selector */ = {
 			isa = PBXGroup;
 			children = (
@@ -1614,7 +1688,8 @@
 		27CC2E062A883BB0000EDB64 /* Employees */ = {
 			isa = PBXGroup;
 			children = (
-				27F2F47F2B1DF347003E4197 /* AddEmployeeViewModel */,
+				0B1E4A4A2F526250007FC9C7 /* EditEmployeeProfileView */,
+				0B1E4A3F2F525914007FC9C7 /* InviteEmployeeView */,
 				27F2F47C2B1DF32D003E4197 /* EmployeesView */,
 			);
 			path = Employees;
@@ -1962,32 +2037,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		27F2F47F2B1DF347003E4197 /* AddEmployeeViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				0BD4B3532F033A36004DCFB3 /* Factory */,
-				27F2F4812B1DF355003E4197 /* ViewModel */,
-				27F2F4802B1DF351003E4197 /* View */,
-			);
-			path = AddEmployeeViewModel;
-			sourceTree = "<group>";
-		};
-		27F2F4802B1DF351003E4197 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				0BD4B3502F033990004DCFB3 /* AddEmployeeView.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		27F2F4812B1DF355003E4197 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				0BD4B3552F033A44004DCFB3 /* AddEmployeeViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		27F2F4822B1DF388003E4197 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -2179,6 +2228,7 @@
 				0BC789402F08A5C2007CA80B /* CompleteEmployeeProfileViewModelFactory.swift in Sources */,
 				0BD53CFB2F0C38A800C2471C /* SalesBottomToolbar.swift in Sources */,
 				2733AF652ACB942E00BF8531 /* CustomerViewModel.swift in Sources */,
+				0B1E4A3C2F525894007FC9C7 /* InviteEmployeeViewModel.swift in Sources */,
 				2702C9D82ADACF8E008DBF66 /* AddCustomerViewModel.swift in Sources */,
 				0BA9A7492F4D25FD00FADE50 /* RemoteAppConfigManager.swift in Sources */,
 				0B675D142F1D8D74009BAD06 /* ExtensionViews.swift in Sources */,
@@ -2186,6 +2236,9 @@
 				278CA6432C42D06300C200C5 /* Money.swift in Sources */,
 				279C64882A8D7880003B29BC /* SubsidiaryRepository.swift in Sources */,
 				0B65CB3A2F475B34004AC105 /* RegistrationToolbar.swift in Sources */,
+				0B1E4A4B2F526250007FC9C7 /* EditEmployeeProfileViewModelFactory.swift in Sources */,
+				0B1E4A4C2F526250007FC9C7 /* EditEmployeeProfileViewModel.swift in Sources */,
+				0B1E4A4D2F526250007FC9C7 /* EditEmployeeProfileView.swift in Sources */,
 				0B776D3E2F38EB170061657E /* CustomerCardView.swift in Sources */,
 				0B8FE78C2EFDBF5C000623CD /* GoogleSingInButton.swift in Sources */,
 				0B1BA6F82ED0F2FE003F88B8 /* FlorShopAuthApiRequest.swift in Sources */,
@@ -2199,6 +2252,7 @@
 				0B396B4E2F2D194A00D314A2 /* CustomerQueries.swift in Sources */,
 				0B82651B2E65002100FAF6B3 /* AgregarViewModelFactory.swift in Sources */,
 				0B28A7C32F225F1200C1D7F0 /* CartDetailQueries.swift in Sources */,
+				0B1E4A382F525871007FC9C7 /* InviteEmployeeViewModelFactory.swift in Sources */,
 				0B675D022F1D8D6D009BAD06 /* BottomBar.swift in Sources */,
 				0B675D032F1D8D6D009BAD06 /* BackButton.swift in Sources */,
 				0B675D042F1D8D6D009BAD06 /* CustomButtons.swift in Sources */,
@@ -2248,6 +2302,7 @@
 				0B675CE02F1D8D68009BAD06 /* CustomRouter.swift in Sources */,
 				0B675CE12F1D8D68009BAD06 /* Protocols.swift in Sources */,
 				0B675CE22F1D8D68009BAD06 /* DeepLink.swift in Sources */,
+				0B1E4A3E2F5258A7007FC9C7 /* InviteEmployeeView.swift in Sources */,
 				0B675CE32F1D8D68009BAD06 /* DeepLinkParser.swift in Sources */,
 				0B675CE42F1D8D68009BAD06 /* Destination-ViewMapping.swift in Sources */,
 				0B675CE52F1D8D68009BAD06 /* NavigationContainer.swift in Sources */,
@@ -2270,7 +2325,6 @@
 				273BD5DF2A4B4493001C1C03 /* Notification.swift in Sources */,
 				2728EAB02A1B0BD5002B534A /* CarRepository.swift in Sources */,
 				271BA1552A58799800572674 /* AgregarViewModel.swift in Sources */,
-				0BD4B3512F033990004DCFB3 /* AddEmployeeView.swift in Sources */,
 				0B6A12442EF8DCBB00995525 /* SubsidiarySelectionView.swift in Sources */,
 				279C64A62A8D97E1003B29BC /* Customer.swift in Sources */,
 				0B950E4A2E67D206002DF1D1 /* SalesViewModelFactory.swift in Sources */,
@@ -2297,7 +2351,6 @@
 				0B95B9CA2F2E84F5007146E7 /* PaymentCustomerViewModel.swift in Sources */,
 				274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */,
 				278CA6492C42DED700C200C5 /* NetworkErrors.swift in Sources */,
-				0BD4B3562F033A44004DCFB3 /* AddEmployeeViewModel.swift in Sources */,
 				27F2F4902B1E0E82003E4197 /* CreateEmployeeUseCase.swift in Sources */,
 				0B6A12452EF8DCBB00995525 /* SubsidiarySelectionViewModel.swift in Sources */,
 				0BD53CF72F0C31C200C2471C /* SalesSafeAreaBar.swift in Sources */,
@@ -2321,7 +2374,6 @@
 				2731F0B92A956BF900F6E5E0 /* RegistrationViewModel.swift in Sources */,
 				2735768B2B1F83CD00E9CF12 /* GetEmployeesUseCase.swift in Sources */,
 				0B69C89D2E66893B00476B9C /* CustomerHistoryViewModelFactory.swift in Sources */,
-				0BD4B3542F033A36004DCFB3 /* AddEmployeeViewModelFactory.swift in Sources */,
 				0B69C9352E66B79A00476B9C /* PaymentViewModelFactory.swift in Sources */,
 				0BA9A74D2F4D28CC00FADE50 /* StableVersion.swift in Sources */,
 				0B69C9322E66B79200476B9C /* PaymentViewModel.swift in Sources */,

@@ -4,6 +4,9 @@ struct MenuView: View {
     @Environment(SessionContainer.self) var sessionContainer
     @State var mainRouter = FlorShopRouter(level: 0, identifierTab: nil)
     @State var showMenu: Bool = false
+    init() {
+        print("[MenuView] Init.")
+    }
     var body: some View {
         ZStack {
             SideMenuView(menuTab: $mainRouter.selectedTab, showMenu: changeShowMenu)

@@ -36,8 +36,9 @@ enum PushDestination: Hashable, CustomStringConvertible {
     case cartList
     case editProduct(productCic: String)
     case addProduct
-    case addEmployee
+    case inviteEmployee
     case payCustomerTotalDebd(customerCic: String)
+    case editEmployee(employeeCic: String)
 
     var description: String {
         switch self {
@@ -50,8 +51,9 @@ enum PushDestination: Hashable, CustomStringConvertible {
         case .cartList: ".cartList"
         case .editProduct(let productId): ".editProduct(\(String(describing: productId)))"
         case .addProduct: ".addProduct"
-        case .addEmployee: ".addEmployee"
+        case .inviteEmployee: ".addEmployee"
         case .payCustomerTotalDebd(let customerCic): ".payCustomerTotalDebd(\(String(describing: customerCic)))"
+        case .editEmployee(let employeeCic): ".editEmployee(\(String(describing: employeeCic)))"
         }
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 import FlorShopDTOs
 
 @Observable
-final class AddEmployeeViewModel {
+final class InviteEmployeeViewModel {
     var email: String = ""
     var role: UserSubsidiaryRole?
     private let getEmployeesUseCase: GetEmployeesUseCase

@@ -35,13 +35,17 @@ func view(for destination: PushDestination) -> some View {
         WithSession { ses in
             AddProductView(ses: ses)
         }
-    case .addEmployee:
+    case .inviteEmployee:
         WithSession { ses in
-            AddEmployeeView(ses: ses)
+            InviteEmployeeView(ses: ses)
         }
     case .payCustomerTotalDebd(let customerCic):
         WithSession { ses in
             PaymentCustomerView(customerCic: customerCic, ses: ses)
+        }
+    case .editEmployee(let employeeCic):
+        WithSession { ses in
+            EditEmployeeProfileView(employeeCic: employeeCic, ses: ses)
         }
     }
 }

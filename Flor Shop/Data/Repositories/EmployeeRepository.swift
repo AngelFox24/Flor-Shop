@@ -6,6 +6,8 @@ protocol EmployeeRepository {
     func invite(email: String, role: UserSubsidiaryRole) async throws
     func getEmployees() async throws -> [Employee]
     func isEmployeeProfileComplete() async throws -> Bool
+    func getEmployee(employeeCic: String) async throws -> Employee
+    func isOwnProfile(employeeCic: String) -> Bool
 }
 
 class EmployeeRepositoryImpl: EmployeeRepository {
@@ -34,5 +36,11 @@ class EmployeeRepositoryImpl: EmployeeRepository {
     }
     func isEmployeeProfileComplete() async throws -> Bool {
         return try await self.localManager.isEmployeeProfileComplete()
+    }
+    func getEmployee(employeeCic: String) async throws -> Employee {
+        return try await self.localManager.getEmployee(employeeCic: employeeCic)
+    }
+    func isOwnProfile(employeeCic: String) -> Bool {
+        return self.localManager.isOwnProfile(employeeCic: employeeCic)
     }
 }

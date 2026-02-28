@@ -1,10 +1,3 @@
-//
-//  LoadingView.swift
-//  Flor Shop
-//
-//  Created by Angel Curi Laurente on 24/12/2025.
-//
-
 import SwiftUI
 
 struct LoadingView: View {
