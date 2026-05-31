@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 enum FlorShopAuthApiRequest {
     case auth(provider: AuthProvider, providerToken: String)

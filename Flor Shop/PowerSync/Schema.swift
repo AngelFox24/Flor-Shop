@@ -1,5 +1,79 @@
 import Foundation
 import PowerSync
+// MARK: - Suscription
+let SuscriptionTable = Table(
+    name: "suscription",
+    columns: [
+        .text("suscription_cic"),
+        .text("plan_id"),
+        .text("company_cic"),
+        .text("status"),
+        .text("start_at"),
+        .text("end_at"),
+        .integer("cancel_at_period_end"),
+        .text("created_at"),
+        .text("updated_at")
+    ],
+    indexes: [
+        Index(
+            name: "idx_suscription_plan_id",
+            columns: [IndexedColumn.ascending("plan_id")]
+        ),
+        Index(
+            name: "idx_suscription_company_cic",
+            columns: [IndexedColumn.ascending("company_cic")]
+        ),
+        Index(
+            name: "idx_suscription_suscription_cic",
+            columns: [IndexedColumn.ascending("suscription_cic")]
+        )
+    ]
+)
+// MARK: - Plan
+let PlanTable = Table(
+    name: "plan",
+    columns: [
+        .text("plan_cic"),
+        .text("name"),
+        .integer("price"),
+        .text("currency"),
+        .text("interval"),
+        .integer("is_active"),
+        .text("created_at"),
+        .text("updated_at")
+    ],
+    indexes: [
+        Index(
+            name: "idx_plan_plan_cic",
+            columns: [IndexedColumn.ascending("plan_cic")]
+        )
+    ]
+)
+// MARK: - PlanFeature
+let PlanFeatureTable = Table(
+    name: "plan_feature",
+    columns: [
+        .text("plan_id"),
+        .text("key"),
+        .text("label"),
+        .integer("is_web_visible"),
+        .integer("value_int"),
+        .text("value_string"),
+        .integer("value_bool"),
+        .text("created_at"),
+        .text("updated_at")
+    ],
+    indexes: [
+        Index(
+            name: "idx_plan_feature_plan_id",
+            columns: [IndexedColumn.ascending("plan_id")]
+        ),
+        Index(
+            name: "idx_plan_feature_key",
+            columns: [IndexedColumn.ascending("key")]
+        )
+    ]
+)
 // MARK: - Companies
 let CompaniesTable = Table(
     name: "companies",
@@ -239,6 +313,9 @@ let SaleDetailsTable = Table(
 // MARK: - FlorShopCoreSchema
 let FlorShopCoreSchema = Schema(
     tables: [
+        SuscriptionTable,
+        PlanTable,
+        PlanFeatureTable,
         CompaniesTable,
         CustomersTable,
         EmployeesTable,

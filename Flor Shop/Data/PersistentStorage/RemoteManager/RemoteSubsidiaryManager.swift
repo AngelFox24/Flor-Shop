@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteSubsidiaryManager {
     func save(subsidiary: Subsidiary) async throws
@@ -14,7 +15,7 @@ final class RemoteSubsidiaryManagerImpl: RemoteSubsidiaryManager {
     }
     func save(subsidiary: Subsidiary) async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteSubsidiaryManagerImpl] Scoped token is invalid")
         }
         let request = FlorShopCoreApiRequest.saveSubsidiary(
             subsidiary: subsidiary.toSubsidiaryDTO(),

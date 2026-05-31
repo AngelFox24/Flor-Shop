@@ -57,6 +57,7 @@ final class AgregarViewModel {
         if self.agregarFields.productName != "" {
             let urlPasted = pasteFromClipboard()
 //            LocalImageManagerImpl.loadImage(image: imageUrl)
+            print("Url de la imagen: \(urlPasted)")
             if let url = URL(string: urlPasted) {
                 let result = try await KingfisherManager.shared.retrieveImage(
                     with: url,

@@ -1,4 +1,5 @@
 import SwiftUI
+import FlorShopNetworking
 
 @main
 struct FlorShopApp: App {
@@ -16,6 +17,11 @@ struct FlorShopApp: App {
             }
             .environment(overlay)
             .environment(session)
+            .task {
+                #if DEBUG
+                await NetworkManager.shared.enableDebugLogging()
+                #endif
+            }
         }
     }
 }

@@ -24,11 +24,11 @@ struct VersionCheckView: View {
                 LockScreenView(viewModel: $viewModel)
             }
         }
-        .task(id: scenePhase) {
-            guard scenePhase == .active else { return }
-            print("[VersionCheckView] Start check version with scenePhase: \(scenePhase)")
-            await viewModel.checkVersion()
-        }
+//        .task(id: scenePhase) {
+//            guard scenePhase == .active else { return }
+//            print("[VersionCheckView] Start check version with scenePhase: \(scenePhase)")
+//            await viewModel.checkVersion()
+//        }
     }
 }
 
@@ -65,7 +65,7 @@ extension AlertPresenting {
 
 @Observable
 final class VersionCheckViewModel: AlertPresenting {
-    var versionCheck: VersionCheckState = .loading
+    var versionCheck: VersionCheckState = .iddle
     var alert: Bool = false
     var alertInfo: AlertInfo?
     private var intervalRequest: TimeInterval = 15 * 60 // 15 minutos en segundos

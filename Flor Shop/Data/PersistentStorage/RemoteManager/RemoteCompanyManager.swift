@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteCompanyManager {
     func save(company: Company) async throws
@@ -15,7 +16,7 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
     }
     func save(company: Company) async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteCompanyManagerImpl] refreshToken is nil")
         }
         let request = FlorShopCoreApiRequest.saveCompany(
             company: company.toCompanyDTO(),
@@ -25,7 +26,7 @@ final class RemoteCompanyManagerImpl: RemoteCompanyManager {
     }
     func initialData() async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteCompanyManagerImpl] refreshToken is nil")
         }
         let request = FlorShopCoreApiRequest.register(
             token: scopedToken.accessToken

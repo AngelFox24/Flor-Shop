@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteAppConfigManager {
     func getAppConfig() async throws -> StableVersion

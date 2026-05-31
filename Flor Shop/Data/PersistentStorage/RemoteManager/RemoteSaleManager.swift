@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteSaleManager {
     func save(cart: Car, paymentType: PaymentType, customerCic: String?) async throws
@@ -14,7 +15,7 @@ final class RemoteSaleManagerImpl: RemoteSaleManager {
     }
     func save(cart: Car, paymentType: PaymentType, customerCic: String?) async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteProductManagerImpl] Scoped token is invalid")
         }
         let request = FlorShopCoreApiRequest.registerSale(
             sale: RegisterSaleParameters(

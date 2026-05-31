@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 enum FlorShopImagesApiRequest {
     case saveImage(image: ImageServerDTO)

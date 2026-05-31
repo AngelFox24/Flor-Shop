@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteSessionManager {
     func login(provider: AuthProvider, token: String) async throws
@@ -16,7 +17,8 @@ final class RemoteSessionManagerMock: RemoteSessionManager {
         [.init(
             company_cic: UUID().uuidString,
             name: "Mock Company 1",
-            is_company_owner: true
+            is_company_owner: true,
+            suscription: nil
         )]
     }
     func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO] {
@@ -50,7 +52,7 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
         let request = FlorShopAuthApiRequest.auth(provider: provider, providerToken: token)
         let data: BaseTokenResponse = try await NetworkManager.shared.perform(request, decodeTo: BaseTokenResponse.self)
         guard let payload = BaseTokenPayload(token: data.baseToken) else {
-            throw NetworkError.invalidResponse
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let token = TokenRefreshable(
             id: payload.type,
@@ -63,7 +65,7 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
     }
     func getCompanies() async throws -> [CompanyResponseDTO] {
         guard let baseToken = try await TokenManager.shared.getToken(identifier: .baseToken) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let request = FlorShopAuthApiRequest.getCompanies(baseToken: baseToken.accessToken)
         let data: [CompanyResponseDTO] = try await NetworkManager.shared.perform(request, decodeTo: [CompanyResponseDTO].self)
@@ -71,7 +73,7 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
     }
     func getSubsidiaries(companyCic: String) async throws -> [SubsidiaryResponseDTO] {
         guard let baseToken = try await TokenManager.shared.getToken(identifier: .baseToken) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let request = FlorShopAuthApiRequest.getSubsidiaries(companyCic: companyCic, baseToken: baseToken.accessToken)
         let data: [SubsidiaryResponseDTO] = try await NetworkManager.shared.perform(request, decodeTo: [SubsidiaryResponseDTO].self)
@@ -79,12 +81,12 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
     }
     func selectSubsidiary(subsidiaryCic: String) async throws -> SessionConfig {
         guard let baseToken = try await TokenManager.shared.getToken(identifier: .baseToken) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let request = FlorShopAuthApiRequest.selectSubsidiary(subsidiaryCic: subsidiaryCic, baseToken: baseToken.accessToken)
         let data: ScopedTokenWithRefreshResponse = try await NetworkManager.shared.perform(request, decodeTo: ScopedTokenWithRefreshResponse.self)
         guard let payload = ScopedTokenPayload(token: data.scopedToken) else {
-            throw NetworkError.invalidResponse
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let token = TokenRefreshable(
             id: payload.type,
@@ -102,12 +104,12 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
     }
     func register(registerStuff: RegisterStuffs) async throws -> SessionConfig {
         guard let registerRequest = RegisterCompanyRequest(from: registerStuff, provider: registerStuff.authProvider, role: registerStuff.role) else {
-            throw NetworkError.invalidResponse
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let request = FlorShopAuthApiRequest.registerCompany(request: registerRequest, providerToken: registerStuff.token)
         let data: ScopedTokenWithRefreshResponse = try await NetworkManager.shared.perform(request, decodeTo: ScopedTokenWithRefreshResponse.self)
         guard let payload = ScopedTokenPayload(token: data.scopedToken) else {
-            throw NetworkError.invalidResponse
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let token = TokenRefreshable(
             id: payload.type,
@@ -125,7 +127,7 @@ final class RemoteSessionManagerImpl: RemoteSessionManager {
     }
     func isRegistrationComplete(subsidiaryCic: String) async throws -> Bool {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteSessionManagerImpl] Base token is invalid")
         }
         let request = FlorShopCoreApiRequest.isRegistrationComplete(token: scopedToken.accessToken)
         let response: CompleteRegistrationResponse = try await NetworkManager.shared.perform(request, decodeTo: CompleteRegistrationResponse.self)

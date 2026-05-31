@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteCustomerManager {
     func save(customer: Customer) async throws
@@ -15,7 +16,7 @@ final class RemoteCustomerManagerImpl: RemoteCustomerManager {
     }
     func save(customer: Customer) async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteCustomerManagerImpl] refreshToken is nil")
         }
         let request = FlorShopCoreApiRequest.saveCustomer(
             customer: customer.toCustomerDTO(),
@@ -25,7 +26,7 @@ final class RemoteCustomerManagerImpl: RemoteCustomerManager {
     }
     func payDebt(customerCic: String, amount: Int) async throws -> Int {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteCustomerManagerImpl] refreshToken is nil")
         }
         let request = FlorShopCoreApiRequest.payCustomerDebt(
             params: PayCustomerDebtServerDTO(customerCic: customerCic, amount: amount),

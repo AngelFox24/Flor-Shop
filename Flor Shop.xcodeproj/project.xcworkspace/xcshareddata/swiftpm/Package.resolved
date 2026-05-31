@@ -1,5 +1,5 @@
 {
-  "originHash" : "848ff2584515cb8843b4fc1296b43e56fe96f41c466198c1e6f2e27e27446690",
+  "originHash" : "7e5732aae5e4fb8942abbe6d0a69a41960aba7c258fd9446a80d1f25dcec926a",
   "pins" : [
     {
       "identity" : "app-check",
@@ -42,8 +42,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AngelFox24/florshop-dtos.git",
       "state" : {
-        "revision" : "1a9d18cc18b39f20a44fe3d9d817309e7417a142",
-        "version" : "1.0.22"
+        "revision" : "65374cc289fbaeb5b85d8457c47817a410b335f9",
+        "version" : "1.0.29"
+      }
+    },
+    {
+      "identity" : "florshop-networking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AngelFox24/florshop-networking.git",
+      "state" : {
+        "revision" : "e9cdad901787bef4f4fad7cdb3fa9c958130b525",
+        "version" : "0.0.6"
       }
     },
     {

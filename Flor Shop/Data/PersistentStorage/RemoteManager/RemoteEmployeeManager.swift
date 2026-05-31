@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 protocol RemoteEmployeeManager {
     func save(employee: Employee) async throws
@@ -15,7 +16,7 @@ final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
     }
     func save(employee: Employee) async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteEmployeeManagerImpl] Scoped token is invalid")
         }
         let request = FlorShopCoreApiRequest.saveEmployee(
             employee: employee.toEmployeeDTO(),
@@ -25,7 +26,7 @@ final class RemoteEmployeeManagerImpl: RemoteEmployeeManager {
     }
     func invite(email: String, role: UserSubsidiaryRole) async throws {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.invalidInput("[RemoteEmployeeManagerImpl] Scoped token is invalid")
         }
         let request = FlorShopAuthApiRequest.registerInvitation(request: InvitationRequest(email: email, role: role), scopedToken: scopedToken.accessToken)
         let _: DefaultResponse = try await NetworkManager.shared.perform(request, decodeTo: DefaultResponse.self)

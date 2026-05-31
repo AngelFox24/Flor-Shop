@@ -37,6 +37,8 @@ struct SaleProductView: View {
         do {
             if try await !self.sessionContainer.employeeRepository.isEmployeeProfileComplete() {
                 self.florShopRouter.present(fullScreen: .completeEmployeeProfile)
+            } else {
+                try await self.sessionContainer.cartRepository.createCartIfNotExists()
             }
             self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
         } catch {

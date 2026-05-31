@@ -128,6 +128,7 @@
 		0BB505422F20219900042309 /* SQLiteProductManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB505412F20219900042309 /* SQLiteProductManager.swift */; };
 		0BB505442F20221100042309 /* SQLiteSaleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB505432F20221100042309 /* SQLiteSaleManager.swift */; };
 		0BB505462F20232700042309 /* SQLiteCartManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB505452F20232700042309 /* SQLiteCartManager.swift */; };
+		0BBC346A2FC3562F00CE0984 /* FlorShopNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 0BBC34692FC3562F00CE0984 /* FlorShopNetworking */; };
 		0BC789402F08A5C2007CA80B /* CompleteEmployeeProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC789362F08A5C2007CA80B /* CompleteEmployeeProfileViewModelFactory.swift */; };
 		0BC789412F08A5C2007CA80B /* CompleteEmployeeProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC7893C2F08A5C2007CA80B /* CompleteEmployeeProfileView.swift */; };
 		0BC789422F08A5C2007CA80B /* CompleteEmployeeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC789382F08A5C2007CA80B /* CompleteEmployeeProfileViewModel.swift */; };
@@ -196,9 +197,6 @@
 		2786CA1B2A6D44CC00A80585 /* Fail1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA192A6D44CC00A80585 /* Fail1.mp3 */; };
 		2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2786CA1A2A6D44CC00A80585 /* Success1.mp3 */; };
 		278CA6432C42D06300C200C5 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6422C42D06300C200C5 /* Money.swift */; };
-		278CA6462C42DEA300C200C5 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6452C42DEA300C200C5 /* NetworkManager.swift */; };
-		278CA6492C42DED700C200C5 /* NetworkErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6482C42DED700C200C5 /* NetworkErrors.swift */; };
-		278CA64B2C42DF0000C200C5 /* NetworkRequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA64A2C42DF0000C200C5 /* NetworkRequestProtocol.swift */; };
 		278CA64D2C42ED4600C200C5 /* LocalStorageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */; };
 		278CA6512C43093F00C200C5 /* RemoteCompanyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6502C43093F00C200C5 /* RemoteCompanyManager.swift */; };
 		278CA6532C43119E00C200C5 /* RemoteCustomerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278CA6522C43119E00C200C5 /* RemoteCustomerManager.swift */; };
@@ -463,9 +461,6 @@
 		2786CA192A6D44CC00A80585 /* Fail1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fail1.mp3; sourceTree = "<group>"; };
 		2786CA1A2A6D44CC00A80585 /* Success1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Success1.mp3; sourceTree = "<group>"; };
 		278CA6422C42D06300C200C5 /* Money.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Money.swift; sourceTree = "<group>"; };
-		278CA6452C42DEA300C200C5 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
-		278CA6482C42DED700C200C5 /* NetworkErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrors.swift; sourceTree = "<group>"; };
-		278CA64A2C42DF0000C200C5 /* NetworkRequestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequestProtocol.swift; sourceTree = "<group>"; };
 		278CA64C2C42ED4600C200C5 /* LocalStorageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageError.swift; sourceTree = "<group>"; };
 		278CA6502C43093F00C200C5 /* RemoteCompanyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCompanyManager.swift; sourceTree = "<group>"; };
 		278CA6522C43119E00C200C5 /* RemoteCustomerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCustomerManager.swift; sourceTree = "<group>"; };
@@ -540,6 +535,7 @@
 				0B7569392E75CEC500EC8673 /* Equatable in Frameworks */,
 				0BDBECE52ED408C50098FA3B /* FlorShopDTOs in Frameworks */,
 				0B7A4EC02F35209800C6EBFF /* PowerSyncDynamic in Frameworks */,
+				0BBC346A2FC3562F00CE0984 /* FlorShopNetworking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1202,7 +1198,6 @@
 		0BDBECEA2ED414E30098FA3B /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				278CA6472C42DEBB00C200C5 /* NetworkManager */,
 				27A6EF1E2ACC84A100F4D178 /* Extensions */,
 				270B71CB2BBB81B0002D79D6 /* OptimizedFuntions */,
 			);
@@ -1472,16 +1467,6 @@
 			path = SubEntity;
 			sourceTree = "<group>";
 		};
-		278CA6472C42DEBB00C200C5 /* NetworkManager */ = {
-			isa = PBXGroup;
-			children = (
-				278CA6452C42DEA300C200C5 /* NetworkManager.swift */,
-				278CA6482C42DED700C200C5 /* NetworkErrors.swift */,
-				278CA64A2C42DF0000C200C5 /* NetworkRequestProtocol.swift */,
-			);
-			path = NetworkManager;
-			sourceTree = "<group>";
-		};
 		27A6EF1E2ACC84A100F4D178 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -1644,8 +1629,8 @@
 		27CC2E022A881BC1000EDB64 /* PointOfSale */ = {
 			isa = PBXGroup;
 			children = (
-				27C241F92A0089B50045B2A0 /* AgregarView */,
 				27C241F62A0088DE0045B2A0 /* SaleProductView */,
+				27C241F92A0089B50045B2A0 /* AgregarView */,
 				27C241F72A0088E90045B2A0 /* CarritoView */,
 				274960A32AD4944F00BC257B /* PaymentView */,
 				0B95B9C82F2E84F5007146E7 /* PaymentCustomerView */,
@@ -2155,6 +2140,7 @@
 				0B6A121E2EF89E6100995525 /* GoogleSignInSwift */,
 				0B7A4EBF2F35209800C6EBFF /* PowerSyncDynamic */,
 				0BB48A7D2F40069400C0CBAE /* FlorShopDTOs */,
+				0BBC34692FC3562F00CE0984 /* FlorShopNetworking */,
 			);
 			productName = "Flor Shop";
 			productReference = 274CE29629E6D792007C703D /* Flor Shop.app */;
@@ -2190,6 +2176,7 @@
 				0B6A121B2EF89E6100995525 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				0B7A4EBE2F35209800C6EBFF /* XCRemoteSwiftPackageReference "powersync-swift" */,
 				0BB48A7C2F40069400C0CBAE /* XCRemoteSwiftPackageReference "florshop-dtos" */,
+				0BBC34682FC3562F00CE0984 /* XCRemoteSwiftPackageReference "florshop-networking" */,
 			);
 			productRefGroup = 274CE29729E6D792007C703D /* Products */;
 			projectDirPath = "";
@@ -2350,7 +2337,6 @@
 				279D1FB32BB5E94C00BCBBA8 /* PayClientDebtUseCase.swift in Sources */,
 				0B95B9CA2F2E84F5007146E7 /* PaymentCustomerViewModel.swift in Sources */,
 				274CE29A29E6D792007C703D /* FlorShopApp.swift in Sources */,
-				278CA6492C42DED700C200C5 /* NetworkErrors.swift in Sources */,
 				27F2F4902B1E0E82003E4197 /* CreateEmployeeUseCase.swift in Sources */,
 				0B6A12452EF8DCBB00995525 /* SubsidiarySelectionViewModel.swift in Sources */,
 				0BD53CF72F0C31C200C2471C /* SalesSafeAreaBar.swift in Sources */,
@@ -2377,7 +2363,6 @@
 				0B69C9352E66B79A00476B9C /* PaymentViewModelFactory.swift in Sources */,
 				0BA9A74D2F4D28CC00FADE50 /* StableVersion.swift in Sources */,
 				0B69C9322E66B79200476B9C /* PaymentViewModel.swift in Sources */,
-				278CA64B2C42DF0000C200C5 /* NetworkRequestProtocol.swift in Sources */,
 				27C241FC2A008CB50045B2A0 /* ProductViewModel.swift in Sources */,
 				274AF2792C5A053200165155 /* RemoteSessionManager.swift in Sources */,
 				274AF27B2C5A066B00165155 /* SessionRepository.swift in Sources */,
@@ -2407,7 +2392,6 @@
 				0B8265152E64EA3900FAF6B3 /* SessionManager.swift in Sources */,
 				27E113472A992B4C0027728A /* LocalImageManager.swift in Sources */,
 				0B6A12212EF8B60700995525 /* GoogleSignConfig.swift in Sources */,
-				278CA6462C42DEA300C200C5 /* NetworkManager.swift in Sources */,
 				2733AF632ACB934800BF8531 /* CustomerView.swift in Sources */,
 				278CA6512C43093F00C200C5 /* RemoteCompanyManager.swift in Sources */,
 				0B69C92C2E66ADC700476B9C /* CartViewModelFactory.swift in Sources */,
@@ -2850,7 +2834,15 @@
 			repositoryURL = "https://github.com/AngelFox24/florshop-dtos.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.0.22;
+				version = 1.0.29;
+			};
+		};
+		0BBC34682FC3562F00CE0984 /* XCRemoteSwiftPackageReference "florshop-networking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AngelFox24/florshop-networking.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.0.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -2885,6 +2877,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0BB48A7C2F40069400C0CBAE /* XCRemoteSwiftPackageReference "florshop-dtos" */;
 			productName = FlorShopDTOs;
+		};
+		0BBC34692FC3562F00CE0984 /* FlorShopNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BBC34682FC3562F00CE0984 /* XCRemoteSwiftPackageReference "florshop-networking" */;
+			productName = FlorShopNetworking;
 		};
 		0BDBECE42ED408C50098FA3B /* FlorShopDTOs */ = {
 			isa = XCSwiftPackageProductDependency;

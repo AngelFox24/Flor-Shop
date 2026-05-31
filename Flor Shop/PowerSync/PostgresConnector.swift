@@ -1,4 +1,5 @@
 import PowerSync
+import FlorShopNetworking
 
 final class PostgresConnector: PowerSyncBackendConnectorProtocol {
     let powerSyncEndpoint: String = AppConfig.powerSyncWS
@@ -8,7 +9,7 @@ final class PostgresConnector: PowerSyncBackendConnectorProtocol {
     }
     func fetchCredentials() async throws -> PowerSync.PowerSyncCredentials? {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
-            throw NetworkError.dataNotFound
+            throw LocalStorageError.fetchFailed("ScopedToken no encontrado")
         }
         return PowerSync.PowerSyncCredentials(
             endpoint: powerSyncEndpoint,

@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 enum FlorShopCoreApiRequest {
     case saveCompany(company: CompanyServerDTO, token: String)
@@ -43,24 +44,10 @@ extension FlorShopCoreApiRequest: NetworkRequest {
     
     var method: HTTPMethod {
         switch self {
-        case .saveCompany:
-                .post
-        case .saveCustomer:
-                .post
-        case .saveEmployee:
+        case .saveCompany, .saveCustomer, .saveEmployee, .payCustomerDebt, .saveProduct, .registerSale, .register, .saveSubsidiary:
                 .post
         case .isRegistrationComplete:
                 .get
-        case .payCustomerDebt:
-                .post
-        case .saveProduct:
-                .post
-        case .registerSale:
-                .post
-        case .register:
-                .post
-        case .saveSubsidiary:
-                .post
         }
     }
     
@@ -69,23 +56,23 @@ extension FlorShopCoreApiRequest: NetworkRequest {
         headers[.contentType] = ContentType.json.rawValue
         switch self {
         case .saveCompany(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .saveCustomer(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .payCustomerDebt(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .saveEmployee(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .isRegistrationComplete(let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .saveProduct(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .registerSale(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .register(let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         case .saveSubsidiary(_, let scopedToken):
-            headers[.authorization] = "Bearer \(scopedToken)"
+            headers[.scopedToken] = scopedToken
         }
         return headers
     }

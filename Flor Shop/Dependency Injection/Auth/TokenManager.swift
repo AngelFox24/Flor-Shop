@@ -27,7 +27,7 @@ actor TokenManager {
             bearerToken = currentToken
         } else {
             guard let token = try await self.store.load(identifier: identifier) else {
-                throw NetworkError.dataNotFound
+                throw LocalStorageError.invalidInput("[TokenManager] refreshToken is nil")
             }
             bearerToken = token
         }
@@ -48,7 +48,7 @@ actor TokenManager {
             defer { Task { await clearRefreshTask() } }
             guard let newToken = try? await token.refreshToken() else {
                 try await store.clear(identifier: identifier)
-                throw NetworkError.dataNotFound
+                throw LocalStorageError.invalidInput("[TokenManager] refreshToken is nil")
             }
             await self.save(token: newToken)
             return newToken

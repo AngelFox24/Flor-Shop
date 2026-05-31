@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 enum FlorShopPlatformApiRequest {
     case getVersionStatus

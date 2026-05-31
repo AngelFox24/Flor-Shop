@@ -1,5 +1,6 @@
 import Foundation
 import FlorShopDTOs
+import FlorShopNetworking
 
 struct TokenRefreshable: Sendable, Codable {
     let id: String
@@ -21,7 +22,7 @@ struct TokenRefreshable: Sendable, Codable {
         self.accessTokenExpiry = accessTokenExpiry
     }
     func refreshToken() async throws -> Self {
-        guard let refreshToken else { throw NetworkError.dataNotFound }
+        guard let refreshToken else { throw LocalStorageError.invalidInput("[TokenRefreshable] refreshToken is nil") }
         let request = FlorShopAuthApiRequest.refresh(request: RefreshTokenRequest(refreshToken: refreshToken, identifier: identifier))
         let response = try await NetworkManager.shared.perform(request, decodeTo: ScopedTokenResponse.self)
         let token = TokenRefreshable(
