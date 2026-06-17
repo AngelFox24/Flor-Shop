@@ -18,9 +18,9 @@ struct FlorShopApp: App {
             .environment(overlay)
             .environment(session)
             .task {
-                #if DEBUG
+//                #if DEBUG
                 await NetworkManager.shared.enableDebugLogging()
-                #endif
+//                #endif
             }
         }
     }

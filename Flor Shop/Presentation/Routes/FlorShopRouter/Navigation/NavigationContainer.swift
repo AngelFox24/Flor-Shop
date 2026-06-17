@@ -80,8 +80,8 @@ private struct InnerContainer<Content: View>: View {
     @Previewable @State var overlayModel = OverlayViewModel()
     @Previewable @State var session = SessionContainer.preview
     NavigationContainer(parentRouter: .previewRouter()) {
-//        Text("Hello")
-        view(for: .completeEmployeeProfile)
+        Text("Hello")
+//        view(for: .completeEmployeeProfile)
     }
 //    .ignoresSafeArea()
     .environment(overlayModel)

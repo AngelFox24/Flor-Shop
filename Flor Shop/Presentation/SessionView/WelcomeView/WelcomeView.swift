@@ -11,7 +11,12 @@ enum SessionRoutes: Hashable {
 struct WelcomeView: View {
     @Environment(SessionManager.self) var sessionManager
     @State private var path: [SessionRoutes] = []
+    init() {
+        print("[WelcomeView] Init")
+//        self._viewModel = State(initialValue: VersionCheckViewModelFactory.getViewModel())
+    }
     var body: some View {
+        let _ = Self._printChanges()
         NavigationStack(path: $path) {
             ZStack {
                 Color.primary
@@ -55,8 +60,10 @@ struct WelcomeView: View {
             .navigationDestination(for: SessionRoutes.self) { route in
                 switch route {
                 case .companySelection(let provider, let token):
+                    let _ = print("[WelcomeView] companySelection path: \(path)")
                     CompanySelectionView(provider: provider, token: token, path: $path)
                 case .subsidiarySelection(let companyCic):
+                    let _ = print("[WelcomeView] subsidiarySelection path: \(path)")
                     SubsidiarySelectionView(companyCic: companyCic, path: $path)
                 case .registrationCompany(let provider, let token):
                     RegistrationView(provider: provider, token: token, path: $path)

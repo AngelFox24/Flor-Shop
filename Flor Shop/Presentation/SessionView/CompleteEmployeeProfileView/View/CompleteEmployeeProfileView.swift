@@ -4,13 +4,17 @@ import FlorShopDTOs
 struct CompleteEmployeeProfileView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(OverlayViewModel.self) var overlayViewModel
-    @Environment(FlorShopRouter.self) var florShopRouter
     @State private var viewModel: CompleteEmployeeProfileViewModel
-    init(ses: SessionContainer) {
+    @Binding var state: MainViewState
+    init(
+        ses: SessionContainer,
+        state: Binding<MainViewState>
+    ) {
         self.viewModel = CompleteEmployeeProfileViewModelFactory.getViewModel(sessionContainer: ses)
+        self._state = state
     }
     var body: some View {
-        CompleteEmployeeProfileListView(viewModel: $viewModel)
+        CompleteEmployeeProfileListView(viewModel: $viewModel, state: $state)
             .navigationTitle("Complete su perfil")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -22,7 +26,8 @@ struct CompleteEmployeeProfileView: View {
         Task {
             do {
                 try await self.viewModel.completeEmployeeProfile()
-                dismiss()
+//                dismiss()
+                state = .iddle
                 self.overlayViewModel.endLoading(id: loadingId, origin: "[CompleteEmployeeProfileView]")
             } catch {
                 self.overlayViewModel.showAlert(
@@ -42,12 +47,15 @@ struct CompleteEmployeeProfileView: View {
 
 #Preview {
     @Previewable @State var overlayModel = OverlayViewModel()
-    CompleteEmployeeProfileView(ses: SessionContainer.preview)
+    @Previewable @State var state = MainViewState.completeProfile
+    CompleteEmployeeProfileView(ses: SessionContainer.preview, state: $state)
         .environment(overlayModel)
 }
 
 struct CompleteEmployeeProfileListView: View {
+    @Environment(OverlayViewModel.self) var overlayViewModel
     @Binding var viewModel: CompleteEmployeeProfileViewModel
+    @Binding var state: MainViewState
     var sizeCampo: CGFloat = 150
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -64,9 +72,35 @@ struct CompleteEmployeeProfileListView: View {
             CustomTextField(title: "Correo" , value: $viewModel.fields.email, edited: .constant(false))
             CustomTextField(title: "Móvil" , value: $viewModel.fields.phone, edited: .constant(false))
             CustomTextField(title: "Rol" , value: .constant(viewModel.fields.role.description), edited: .constant(false), disable: true)
+            Button {
+                completeProfile()
+            } label: {
+                CustomButton1(text: "Aceptar)")
+            }
         }
         .padding(.horizontal, 10)
 //        .background(Color.background)
+    }
+    private func completeProfile() {
+        let loadingId = self.overlayViewModel.showLoading(origin: "[CompleteEmployeeProfileView]")
+        Task {
+            do {
+                try await self.viewModel.completeEmployeeProfile()
+                state = .iddle
+                self.overlayViewModel.endLoading(id: loadingId, origin: "[CompleteEmployeeProfileView]")
+            } catch {
+                self.overlayViewModel.showAlert(
+                    title: "Error",
+                    message: "Ocurrio un error al completar el perfil. Intente nuevamente.",
+                    primary: ConfirmAction(
+                        title: "Ok",
+                        action: {
+                            self.overlayViewModel.endLoading(id: loadingId, origin: "[CompleteEmployeeProfileView]")
+                        }
+                    )
+                )
+            }
+        }
     }
     private func searchFromGallery() {
         viewModel.fields.isShowingPicker = true

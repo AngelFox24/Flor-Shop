@@ -11,6 +11,8 @@ final class PostgresConnector: PowerSyncBackendConnectorProtocol {
         guard let scopedToken = try await TokenManager.shared.getToken(identifier: .scopedToken(subsidiaryCic: self.sessionConfig.subsidiaryCic)) else {
             throw LocalStorageError.fetchFailed("ScopedToken no encontrado")
         }
+        print("[PostgresConnector] powerSyncEndpoint: \(powerSyncEndpoint)")
+        print("[PostgresConnector] scopedToken: \(scopedToken)")
         return PowerSync.PowerSyncCredentials(
             endpoint: powerSyncEndpoint,
             token: scopedToken.accessToken

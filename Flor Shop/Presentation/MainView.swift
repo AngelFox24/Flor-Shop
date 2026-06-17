@@ -17,24 +17,48 @@ struct MainView: View {
     }
 }
 
+enum MainViewState {
+    case completeProfile
+    case iddle
+}
+
 struct MainContendView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(OverlayViewModel.self) var overlayViewModel
     @Environment(SessionManager.self) var sessionManager
     @Environment(SessionContainer.self) var sessionContainer
+    @State var state: MainViewState = .completeProfile
     init() {
         print("[MainContendView] Init.")
     }
     var body: some View {
         VStack(spacing: 0) {
-            MenuView()
+            switch state {
+            case .completeProfile:
+                CompleteEmployeeProfileView(ses: sessionContainer, state: $state)
+            case .iddle:
+                MenuView()
+            }
         }
         .onChange(of: scenePhase) { oldScene, newScene in
-            if newScene == .inactive {
+            print("[Pow] oldScene: \(oldScene) newScene: \(newScene)")
+
+            switch newScene {
+            case .background:
+                print("[MainContendView] App en background")
                 self.endConection()
-            } else if newScene == .active {
+
+            case .active:
                 print("[MainContendView] App en uso")
-                connectPowerSyncTask()
+                Task {
+                    try? await sessionContainer.powerSyncService.connect()
+                }
+
+            case .inactive:
+                print("[MainContendView] App inactive")
+
+            @unknown default:
+                break
             }
         }
         .task {
@@ -43,13 +67,13 @@ struct MainContendView: View {
         }
     }
     private func endConection() {
-        Task {
-            do {
-                try await self.sessionContainer.powerSyncService.disconnect()
-            } catch {
-                print("[MainContendView] Error al desconectar a PowerSync: \(error)")
-            }
-        }
+//        Task {
+//            do {
+//                try await self.sessionContainer.powerSyncService.disconnect()
+//            } catch {
+//                print("[MainContendView] Error al desconectar a PowerSync: \(error)")
+//            }
+//        }
     }
     private func initialization() async {
         print("[MainContendView] initialization func")
@@ -60,8 +84,15 @@ struct MainContendView: View {
             }
             try await self.sessionContainer.cartRepository.initializeModel()
             try await self.sessionContainer.powerSyncService.waitForFirstSync()
+            if try await !self.sessionContainer.employeeRepository.isEmployeeProfileComplete() {
+                self.state = .completeProfile
+            } else {
+                try await self.sessionContainer.cartRepository.createCartIfNotExists()
+                self.state = .iddle
+            }
             self.overlayViewModel.endLoading(id: loadingId, origin: "[MainContendView]")
         } catch {
+            print("[MainContendView] Error: \(error)")
             self.overlayViewModel.showAlert(
                 title: "Error en la inicializacion.",
                 message: "Ha ocurrido un error en la incializacion.",

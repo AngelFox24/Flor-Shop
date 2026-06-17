@@ -26,31 +26,31 @@ struct SaleProductView: View {
                 MainBottomToolbar(destination: .addProduct)
             }
             .task {
-                await initialConfig()
+//                await initialConfig()
             }
             .task(id: productViewModel.taskID) {
                 await watchProducts()
             }
     }
-    private func initialConfig() async {
-        let loadingId = self.overlayViewModel.showLoading(origin: "[MenuView]")
-        do {
-            if try await !self.sessionContainer.employeeRepository.isEmployeeProfileComplete() {
-                self.florShopRouter.present(fullScreen: .completeEmployeeProfile)
-            } else {
-                try await self.sessionContainer.cartRepository.createCartIfNotExists()
-            }
-            self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
-        } catch {
-            self.overlayViewModel.showAlert(
-                title: "Error en la inicializacion.",
-                message: "Ha ocurrido un error en la incializacion del perfil.",
-                primary: ConfirmAction(title: "Aceptar") {
-                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
-                }
-            )
-        }
-    }
+//    private func initialConfig() async {
+//        let loadingId = self.overlayViewModel.showLoading(origin: "[MenuView]")
+//        do {
+//            if try await !self.sessionContainer.employeeRepository.isEmployeeProfileComplete() {
+//                self.florShopRouter.present(fullScreen: .completeEmployeeProfile)
+//            } else {
+//                try await self.sessionContainer.cartRepository.createCartIfNotExists()
+//            }
+//            self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
+//        } catch {
+//            self.overlayViewModel.showAlert(
+//                title: "Error en la inicializacion.",
+//                message: "Ha ocurrido un error en la incializacion del perfil.",
+//                primary: ConfirmAction(title: "Aceptar") {
+//                    self.overlayViewModel.endLoading(id: loadingId, origin: "[MenuView]")
+//                }
+//            )
+//        }
+//    }
     private func watchProducts() async {
         do {
             try await self.productViewModel.watchProducts()

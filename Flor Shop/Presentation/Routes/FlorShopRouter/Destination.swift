@@ -104,7 +104,7 @@ public enum FullScreenDestination: Hashable {
 //    case movieGallery(id: MovieID)
 //    case movieGalleryValue(id: MovieID, images: [MovieDetails.ImageCollection.Backdrop], selectedImageIndex: Int)
 //    case editAmount
-    case completeEmployeeProfile
+//    case completeEmployeeProfile
 }
 
 extension FullScreenDestination: CustomStringConvertible {
@@ -113,7 +113,7 @@ extension FullScreenDestination: CustomStringConvertible {
 //        case let .movieGallery(id): ".movieGallery(\(id))"
 //        case let .movieGalleryValue(id, _, _): ".movieGalleryValue(\(id))"
 //        case .editAmount: ".editAmount"
-        case .completeEmployeeProfile: ".completeEmployeeProfile"
+//        case .completeEmployeeProfile: ".completeEmployeeProfile"
         }
     }
 }
@@ -124,7 +124,7 @@ extension FullScreenDestination: Identifiable {
 //        case let .movieGallery(id): id.rawValue.formatted()
 //        case let .movieGalleryValue(id, _, _): id.rawValue.formatted()
 //        case .editAmount: "editAmount"
-        case .completeEmployeeProfile: "completeEmployeeProfile"
+//        case .completeEmployeeProfile: "completeEmployeeProfile"
         }
     }
 }
