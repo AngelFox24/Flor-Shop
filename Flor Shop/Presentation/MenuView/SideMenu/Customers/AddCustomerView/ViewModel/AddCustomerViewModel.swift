@@ -61,17 +61,18 @@ final class AddCustomerViewModel {
     func editCustomer(customer: Customer) async throws {
         if let imageUrlString = customer.imageUrl,
            let imageUrl = URL(string: imageUrlString) {
-            let result = try await KingfisherManager.shared.retrieveImage(
-                with: imageUrl,
-                options: [
-                    .cacheMemoryOnly
-                ]
-            )
-            let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: result.image)
-            await MainActor.run {
-                self.selectedImage = optimizedImage
+            do {
+                let result = try await KingfisherManager.shared.retrieveImage(
+                    with: imageUrl,
+                    options: [.cacheMemoryOnly]
+                )
+                let optimizedImage = try self.saveImageUseCase.getOptimizedImage(uiImage: result.image)
+                await MainActor.run {
+                    self.selectedImage = optimizedImage
+                }
+            } catch {
+                print("No se pudo cargar imagen, se ignora: \(error)")
             }
-            print("Se agrego el id correctamente")
         }
         await MainActor.run {
             fieldsAddCustomer.imageUrl = customer.imageUrl

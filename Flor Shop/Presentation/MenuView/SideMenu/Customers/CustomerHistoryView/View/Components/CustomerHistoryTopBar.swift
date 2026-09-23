@@ -3,14 +3,16 @@ import SwiftUI
 struct CustomerHistoryTopBar: ToolbarContent {
     let customer: Customer
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            NavigationButton(push: .selectCustomer) {
-                CustomAsyncImageView(imageUrlString: customer.imageUrl, size: 45)
-                    .clipShape(Circle())
+        if let customerCic = customer.customerCic {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationButton(push: .editCustomer(customerCic: customerCic)) {
+                    CustomAsyncImageView(imageUrlString: customer.imageUrl, size: 45)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.borderless)
             }
-            .buttonStyle(.borderless)
+            .sharedBackgroundVisibility(.hidden)
         }
-        .sharedBackgroundVisibility(.hidden)
         ToolbarSpacer(.fixed, placement: .confirmationAction)
         if let customerCic = customer.customerCic {
             ToolbarItem(placement: .confirmationAction) {

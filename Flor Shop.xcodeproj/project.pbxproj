@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 110;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -28,6 +28,7 @@
 		0B31D0A22E62A68E00EE0D9F /* EmployeeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B31D0A12E62A68E00EE0D9F /* EmployeeViewModelFactory.swift */; };
 		0B360B5E2CAA1A19008BECFB /* BusinessLogicError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */; };
 		0B396B4E2F2D194A00D314A2 /* CustomerQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B396B4D2F2D194A00D314A2 /* CustomerQueries.swift */; };
+		0B41B34D2FE62FC4009F2D25 /* Issue PowerSync.md in Resources */ = {isa = PBXBuildFile; fileRef = 0B41B34C2FE62FC4009F2D25 /* Issue PowerSync.md */; };
 		0B4AC6422F50D41B00F99EC6 /* Alert+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4AC6412F50D41B00F99EC6 /* Alert+Default.swift */; };
 		0B632F542F0211D1003A9FD1 /* MainConfirmationToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B632F532F0211D1003A9FD1 /* MainConfirmationToolbar.swift */; };
 		0B65CB372F4758AE004AC105 /* RegistrationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B65CB362F4758AE004AC105 /* RegistrationViewModelFactory.swift */; };
@@ -96,7 +97,6 @@
 		0B776D3E2F38EB170061657E /* CustomerCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B776D3D2F38EB170061657E /* CustomerCardView.swift */; };
 		0B776D402F38EE970061657E /* Customer+ViewAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B776D3F2F38EE970061657E /* Customer+ViewAdditions.swift */; };
 		0B776D422F38F5170061657E /* CustomerEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B776D412F38F5170061657E /* CustomerEmptyView.swift */; };
-		0B7828BC2FD26E570048B4F8 /* issu.md in Resources */ = {isa = PBXBuildFile; fileRef = 0B7828BB2FD26E570048B4F8 /* issu.md */; };
 		0B7A4EB12F351B6400C6EBFF /* TestPrev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7A4EB02F351B6400C6EBFF /* TestPrev.swift */; };
 		0B7A4EC02F35209800C6EBFF /* PowerSyncDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 0B7A4EBF2F35209800C6EBFF /* PowerSyncDynamic */; };
 		0B7A4EC22F35266D00C6EBFF /* ProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7A4EC12F35266C00C6EBFF /* ProductCardView.swift */; };
@@ -263,14 +263,12 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		0B7A4EC42F352BB700C6EBFF /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolder = Frameworks;
 			files = (
 				0B7A4EC32F352BB700C6EBFF /* PowerSyncDynamic in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -295,6 +293,7 @@
 		0B31D0A12E62A68E00EE0D9F /* EmployeeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeViewModelFactory.swift; sourceTree = "<group>"; };
 		0B360B5D2CAA1A16008BECFB /* BusinessLogicError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessLogicError.swift; sourceTree = "<group>"; };
 		0B396B4D2F2D194A00D314A2 /* CustomerQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerQueries.swift; sourceTree = "<group>"; };
+		0B41B34C2FE62FC4009F2D25 /* Issue PowerSync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Issue PowerSync.md"; sourceTree = "<group>"; };
 		0B4AC6412F50D41B00F99EC6 /* Alert+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Alert+Default.swift"; sourceTree = "<group>"; };
 		0B632F532F0211D1003A9FD1 /* MainConfirmationToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainConfirmationToolbar.swift; sourceTree = "<group>"; };
 		0B65CB362F4758AE004AC105 /* RegistrationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModelFactory.swift; sourceTree = "<group>"; };
@@ -360,7 +359,6 @@
 		0B776D3D2F38EB170061657E /* CustomerCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerCardView.swift; sourceTree = "<group>"; };
 		0B776D3F2F38EE970061657E /* Customer+ViewAdditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Customer+ViewAdditions.swift"; sourceTree = "<group>"; };
 		0B776D412F38F5170061657E /* CustomerEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerEmptyView.swift; sourceTree = "<group>"; };
-		0B7828BB2FD26E570048B4F8 /* issu.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = issu.md; sourceTree = "<group>"; };
 		0B7A4EB02F351B6400C6EBFF /* TestPrev.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPrev.swift; sourceTree = "<group>"; };
 		0B7A4EC12F35266C00C6EBFF /* ProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardView.swift; sourceTree = "<group>"; };
 		0B7A4EC52F3541D200C6EBFF /* CartCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartCardView.swift; sourceTree = "<group>"; };
@@ -528,7 +526,6 @@
 /* Begin PBXFrameworksBuildPhase section */
 		274CE29329E6D792007C703D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				0B6A121F2EF89E6100995525 /* GoogleSignInSwift in Frameworks */,
 				0BB48A7E2F40069400C0CBAE /* FlorShopDTOs in Frameworks */,
@@ -539,7 +536,6 @@
 				0B7A4EC02F35209800C6EBFF /* PowerSyncDynamic in Frameworks */,
 				0BBC346A2FC3562F00CE0984 /* FlorShopNetworking in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -648,6 +644,7 @@
 				0B396B4D2F2D194A00D314A2 /* CustomerQueries.swift */,
 				0B28A7C22F225F1200C1D7F0 /* CartDetailQueries.swift */,
 				0B28A7C42F22634F00C1D7F0 /* CartQueries.swift */,
+				0B41B34C2FE62FC4009F2D25 /* Issue PowerSync.md */,
 			);
 			path = "Global Queries";
 			sourceTree = "<group>";
@@ -1473,7 +1470,6 @@
 			isa = PBXGroup;
 			children = (
 				27A6EF1F2ACC84C100F4D178 /* Extensions.swift */,
-				0B7828BB2FD26E570048B4F8 /* issu.md */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2132,8 +2128,6 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			name = "Flor Shop";
 			packageProductDependencies = (
 				0B7569382E75CEC500EC8673 /* Equatable */,
@@ -2157,7 +2151,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					274CE29529E6D792007C703D = {
 						CreatedOnToolsVersion = 14.3;
@@ -2165,7 +2159,6 @@
 				};
 			};
 			buildConfigurationList = 274CE29129E6D792007C703D /* Build configuration list for PBXProject "Flor Shop" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -2181,6 +2174,7 @@
 				0BB48A7C2F40069400C0CBAE /* XCRemoteSwiftPackageReference "florshop-dtos" */,
 				0BBC34682FC3562F00CE0984 /* XCRemoteSwiftPackageReference "florshop-networking" */,
 			);
+			preferredProjectObjectVersion = 110;
 			productRefGroup = 274CE29729E6D792007C703D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -2193,23 +2187,20 @@
 /* Begin PBXResourcesBuildPhase section */
 		274CE29429E6D792007C703D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				0B7828BC2FD26E570048B4F8 /* issu.md in Resources */,
+				0B41B34D2FE62FC4009F2D25 /* Issue PowerSync.md in Resources */,
 				2786CA1B2A6D44CC00A80585 /* Fail1.mp3 in Resources */,
 				2786CA1C2A6D44CC00A80585 /* Success1.mp3 in Resources */,
 				27BA28192A79BF46008F3F08 /* Artifika-Regular.ttf in Resources */,
 				27E9FD1E2A582C710070216B /* GoogleService-Info.plist in Resources */,
 				0B675D242F1D8E3F009BAD06 /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		274CE29229E6D792007C703D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				0B675CD02F1D5D22009BAD06 /* SQLiteEmployeeManager.swift in Sources */,
 				0B0176142ED6744700134AAC /* AppConfig.swift in Sources */,
@@ -2448,12 +2439,11 @@
 				27F2F48B2B1E0869003E4197 /* CreateCompanyUseCase.swift in Sources */,
 				0B01760B2ED64D8000134AAC /* FlorShopImagesApiRequest.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		0BB48A722F3FEF1000C0CBAE /* Cert */ = {
+		0BB48A722F3FEF1000C0CBAE /* Cert configuration for PBXProject "Flor Shop" */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0BB48A782F3FF65F00C0CBAE /* Cert.xcconfig */;
 			buildSettings = {
@@ -2521,7 +2511,7 @@
 			};
 			name = Cert;
 		};
-		0BB48A732F3FEF1000C0CBAE /* Cert */ = {
+		0BB48A732F3FEF1000C0CBAE /* Cert configuration for PBXNativeTarget "Flor Shop" */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0BB48A782F3FF65F00C0CBAE /* Cert.xcconfig */;
 			buildSettings = {
@@ -2561,7 +2551,7 @@
 			};
 			name = Cert;
 		};
-		274CE2A229E6D793007C703D /* Debug */ = {
+		274CE2A229E6D793007C703D /* Debug configuration for PBXProject "Flor Shop" */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0BB48A762F3FF65400C0CBAE /* Debug.xcconfig */;
 			buildSettings = {
@@ -2629,7 +2619,7 @@
 			};
 			name = Debug;
 		};
-		274CE2A329E6D793007C703D /* Release */ = {
+		274CE2A329E6D793007C703D /* Release configuration for PBXProject "Flor Shop" */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0BB48A7A2F3FF66900C0CBAE /* Release.xcconfig */;
 			buildSettings = {
@@ -2690,13 +2680,12 @@
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VALIDATE_PRODUCT = NO;
 			};
 			name = Release;
 		};
-		274CE2A529E6D793007C703D /* Debug */ = {
+		274CE2A529E6D793007C703D /* Debug configuration for PBXNativeTarget "Flor Shop" */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0BB48A762F3FF65400C0CBAE /* Debug.xcconfig */;
 			buildSettings = {
@@ -2736,7 +2725,7 @@
 			};
 			name = Debug;
 		};
-		274CE2A629E6D793007C703D /* Release */ = {
+		274CE2A629E6D793007C703D /* Release configuration for PBXNativeTarget "Flor Shop" */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0BB48A7A2F3FF66900C0CBAE /* Release.xcconfig */;
 			buildSettings = {
@@ -2781,21 +2770,19 @@
 		274CE29129E6D792007C703D /* Build configuration list for PBXProject "Flor Shop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				274CE2A229E6D793007C703D /* Debug */,
-				0BB48A722F3FEF1000C0CBAE /* Cert */,
-				274CE2A329E6D793007C703D /* Release */,
+				274CE2A229E6D793007C703D /* Debug configuration for PBXProject "Flor Shop" */,
+				0BB48A722F3FEF1000C0CBAE /* Cert configuration for PBXProject "Flor Shop" */,
+				274CE2A329E6D793007C703D /* Release configuration for PBXProject "Flor Shop" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 		274CE2A429E6D793007C703D /* Build configuration list for PBXNativeTarget "Flor Shop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				274CE2A529E6D793007C703D /* Debug */,
-				0BB48A732F3FEF1000C0CBAE /* Cert */,
-				274CE2A629E6D793007C703D /* Release */,
+				274CE2A529E6D793007C703D /* Debug configuration for PBXNativeTarget "Flor Shop" */,
+				0BB48A732F3FEF1000C0CBAE /* Cert configuration for PBXNativeTarget "Flor Shop" */,
+				274CE2A629E6D793007C703D /* Release configuration for PBXNativeTarget "Flor Shop" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
